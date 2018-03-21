@@ -1,2 +1,12 @@
 *.txt
 *.log
+*.ibc
+*.rbc
+*.exe
+*.bc
+*.o
+*.out
+table.csv
+feat.dat
+prof.dat
+.DS_Store

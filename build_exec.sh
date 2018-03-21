@@ -65,12 +65,6 @@ trap 'echo "Killing build_exec.sh script" ; exit' INT TERM
 # Compile
 [[ -n $COMPILE ]] || COMPILE=1 ;
 
-if [[ -n $INSTRUCTIONS && $INSTRUCTIONS -eq 1 ]]; then
-  COMPILE=0 ;
-  INSTRUMENT=0 ;
-  EXEC=0 ;
-fi
-
 echo "#########################"
 echo "DEBUG is set to $DEBUG"
 echo "RUNTIME is set to $RUNTIME"
@@ -96,11 +90,12 @@ LLVM_PATH="$HOME/Programs/llvm38/build/bin"
 # PIN_PATH   => The place where I keep the pin source code
 PIN_PATH="$HOME/Programs/Pin"
 # PIN_LIB    => The place where I keep the Pin lib implemented
-[[ -n $PIN_PIB ]] || PIN_LIB="$HOME/Programs/C/faun/src/PinLib/obj-intel64/MyPinTool.${suffix}"
+[[ -n $PIN_PIB ]] || PIN_LIB="$HOME/Programs/C/faun/src/PinLib/"
 # PIN_FLAGS  => Flags to pass to PIN
 [[ -n $PIN_FLAGS ]] || PIN_FLAGS="-filter_no_shared_libs"
 
-BASEDIR="$HOME/Programs/C"
+# BASEDIR="$HOME/Programs/C"
+BASEDIR="$(pwd)" ;
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
@@ -189,11 +184,11 @@ function execute_and_read() {
   fi
 
   # Let's dump the command to init the profiler to a file called init.txt
-  echo "cd $(pwd) && $PROF_PATH/init_prof_data.exe " >> $BASEDIR/faun/init.txt ; 
+  echo "cd $(pwd) && $PROF_PATH/init_prof_data.exe " >> $BASEDIR/init.txt ; 
   
   if [[ $PIN -eq 1 ]]; then
     cmd="$TIMEOUT --signal=TERM ${RUNTIME} time \
-     $PIN_PATH/pin -t $PIN_LIB \
+     $PIN_PATH/pin -t $PIN_LIB/obj-intel64/MyPinTool.${suffix} \
      $PIN_FLAGS \
      -- ./$exe_name $RUN_OPTIONS < $STDIN > $STDOUT" ;
   else
@@ -212,15 +207,15 @@ function execute_and_read() {
     fi
   fi
 
-  # Let's dump the command to run it to a file called run.txt
-  echo "cd $(pwd) && $cmd" >> $BASEDIR/faun/run.txt ;
+  # Let's dump the command to run it in a file called run.txt
+  echo "cd $(pwd) && $cmd" >> $BASEDIR/run.txt ;
   
   if [[ $INSTRUMENT -eq 1 && $EXEC -eq 1 ]]; then
     $PROF_PATH/read_prof_data.exe ;
   fi
 
   # Let's dump the command to read the profiler data to a file called read.txt
-  echo "cd $(pwd) && $PROF_PATH/read_prof_data.exe " >> $BASEDIR/faun/read.txt ;
+  echo "cd $(pwd) && $PROF_PATH/read_prof_data.exe " >> $BASEDIR/read.txt ;
 
 }
 
@@ -393,21 +388,21 @@ benchs=( "ASC_Sequoia" "BenchmarkGame" "BitBench" "CoyoteBench" "DOE_ProxyApps_C
     "SciMark2-C" "sim" "mafft" "tramp3d-v4" "llubenchmark" "nbench" "Ptrdist"
     "Trimaran" "TSVC" "PAQ8p" "NPB-serial" "VersaBench" "FreeBench"
     "MallocBench" "McCat" "Olden" "Prolangs-C");
-
+  
 for bench in "${benchs[@]}"; do
-  cd $BASEDIR/faun/src/Benchs
+  cd $BASEDIR/Benchs
   echo "Starting $bench" ;
   cd $bench ;
   $bench ;
 done
 
-cd $BASEDIR/faun
+cd $BASEDIR
 
 cat init.txt
 cat run.txt
 cat read.txt
 
 if [[ $EXEC -eq 1 ]]; then
-  csvs=($( find "$BASEDIR/faun/src/Benchs" -name "*.csv" )) ;
+  csvs=($( find "$BASEDIR/Benchs" -name "*.csv" )) ;
   python3 analysis/merge.py "${csvs[@]}" > data/all.csv ;
 fi
