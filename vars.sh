@@ -49,6 +49,8 @@ fi
 
 BASEDIR="$(pwd)"
 
+TESTDIR="$BASEDIR/Benchs/"
+
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
 echo "#########################"
@@ -59,4 +61,5 @@ echo "EXEC is set to $EXEC"
 echo "COMPILE is set to $COMPILE"
 echo "suffix is set to $suffix"
 echo "BASEDIR is set to $BASEDIR"
+echo "TESTDIR is set to $TESTDIR"
 echo "#########################"

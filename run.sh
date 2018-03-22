@@ -150,7 +150,7 @@ fi
 rm -f run.txt
 
 for bench in "${benchs[@]}"; do
-  cd $BASEDIR/Benchs
+  cd $TESTDIR
   echo "Starting $bench" ;
   cd $bench ;
   $bench ;
