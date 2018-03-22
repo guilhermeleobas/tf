@@ -1,6 +1,6 @@
 #!/bin/bash
 
-function execute_and_read() {
+function execute() {
 
   cmd="$TIMEOUT --signal=TERM ${RUNTIME} time \
        $PIN_PATH/pin -t $PIN_LIB/obj-intel64/MyPinTool.${suffix} \

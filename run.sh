@@ -144,10 +144,17 @@ source "comp.sh"
 source "exec.sh"
 
 if [[ -n $PIN && $PIN -eq 1 ]]; then
+  # replace the function `execute`
   source "exec_pin.sh"
 fi
 
+if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]];
+  # replace the compile function
+  source "instrument.sh"
+fi
+
 rm -f run.txt
+touch run.txt
 
 for bench in "${benchs[@]}"; do
   cd $TESTDIR
