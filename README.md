@@ -79,7 +79,7 @@ Simply type `./run.sh`. If you only want to compile, set the flag `EXEC=0` befor
 
 Tip: You can skip compilation by setting `COMPILE=0` before calling `run.sh`.
 
-### Run with a time limit
+### Running with a time limit
 
 `RUNTIME=8m ./run.sh` or change the file `vars.sh`.
 
