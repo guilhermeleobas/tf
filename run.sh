@@ -122,7 +122,7 @@ function walk() {
     fi
 
     if [[ $EXEC -eq 1 ]]; then
-      execute_and_read ;
+      execute ;
     fi
 
     unset_vars ;
@@ -148,7 +148,7 @@ if [[ -n $PIN && $PIN -eq 1 ]]; then
   source "exec_pin.sh"
 fi
 
-if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]];
+if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
   # replace the compile function
   source "instrument.sh"
 fi
