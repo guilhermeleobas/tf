@@ -1,5 +1,5 @@
 # tf
-Easily run llvm test-suite benchmarks. This is a simple test framework built using bash. 
+Easily run llvm test-suite benchmarks. This is a simple test framework built using bash.
 
 ## What tf can do for you?
 - Run programs with [PIN](https://software.intel.com/en-us/articles/pin-a-dynamic-binary-instrumentation-tool)
@@ -17,7 +17,7 @@ Here is a list of benchmarks available in this repo:
 - BenchmarkGame
 - BitBench
 - CoyoteBench
-- cpu2006
+- ~~cpu2006~~ (**not available yet**)
 - Dhrystone
 - DOE_ProxyApps_C
 - Fhourstones
@@ -47,40 +47,41 @@ Here is a list of benchmarks available in this repo:
 - TSVC
 - VersaBench
 
-## Execute Benchmarks
+## Requirements
+- timeout or [gtimeout](https://stackoverflow.com/questions/3504945/timeout-command-on-mac-os-x) if you're on OS X.
+- [gnu-parallel](http://brewformulas.org/Parallel)
+- Any version of LLVM.
 
-Make sure you have installed on your computer the following tools:
+## Building LLVM (if you gonna use your pass)
 
-- timeout or gtimeout if you're on osx ([brew](https://stackoverflow.com/questions/3504945/timeout-command-on-mac-os-x) is your friend)
-- gnu-parallel for parallel execution
+Below is a set of instructions to build LLVM 3.8 from source. Remember the path you build LLVM because you gonna need later.
 
-The first thing you need to do is select which benchmarks you want to execute. Open `build_exec.sh`, go to the end of the file and replace the `benchs` variable. 
+```bash
+svn co http://llvm.org/svn/llvm-project/llvm/tags/RELEASE_380/final llvm38
+cd llvm38/tools
+svn co http://llvm.org/svn/llvm-project/cfe/tags/RELEASE_380/final clang
+cd ..
+mkdir build
+cd build
+../configure
+make -j8
+```
 
-Now, there is a bunch of ways you can execute the benchmarks.
-1) `TIMEOUT=2m INSTRUMENT=0 ./build_exec.sh` 
-This will compile and execute each benchmark inside `benchs` with a timeout of 2 minutes.
-2) `INSTRUMENT=0 COMPILE=1 EXEC=0 ./build_exec.sh`
-This will only compile the benchmarks and dump the commands to execute each benchmark in a file called `run.txt`. We can use this file to execute things in parallel using `gnu-parallel`. We will see that in a bit.
-3) `INSTRUMENT=0 COMPILE=1 EXEC=0 PIN=1 ./build_exec.sh`
-Does the same thing as the command above but execute things inside PIN. Note that you need to change the script (lines `90-95`) to specify a few things:
-	- `PIN_PATH` must point to where pin is installed. 
-	- `PIN_LIB` must point to where your Pintool **source code** is (Just don't include the `obj-intel64/MyPinTool.so` part). This way we can compile your lib before executing it. Also, if your Pintool calls something other than `MyPinTool.so`, you need to change the code (line `191`). 
-	- `PIN_FLAGS` is the flags you want to pass to pin
-4) `TIMEOUT=0 INSTRUMENT=0 ./build_exec.sh`
-Compile each benchmark and run **without** a timeout.
+## Usage
 
-### TIPS
-Compiling all benchmarks takes about 1 hour on OpenCL. It's a good idea to compile before and execute them later. 
+The first thing you need to do is select which benchmarks you want to execute. Open `benchs.sh` and add the benchmark you want to run into the variable `benchs`.
 
-1) To compile:
-`COMPILE=1 INSTRUMENT=0 EXEC=0 ./build_exec.sh`
-2) Execute sequentially:
-`COMPILE=0 INSTRUMENT=0 EXEC=1 ./build_exec.sh` 
-Or in parallel:
-`COMPILE=0 INSTRUMENT=0 EXEC=0 ./build_exec.sh`
-`JOBS=njobs ./parallel.sh`
+Then, go to the file `vars.sh` and set the variable `$LLVM_PATH` to where you build LLVM. This path is something like `/path/to/llvm/build/Release+Asserts/bin` or `.../build/DEBUG+Asserts/bin`.
 
-By default we send the output of each benchmark to `/dev/null` but you can send it to `/dev/stdout` setting the variable `DEBUG=1`.
+### Compiling Benchmarks
+
+Simply type `./run.sh`. If you only want to compile, set the flag `EXEC=0` before calling `run.sh`.
+
+Tip: You can skip compilation by setting `COMPILE=0` before calling `run.sh`.
+
+### Run with a time limit
+
+`RUNTIME=8m ./run.sh` or change the file `vars.sh`.
 
 `RUNTIME` receives a floating point number followed by an optional unit:
 - `s` for seconds (the default)
@@ -88,12 +89,25 @@ By default we send the output of each benchmark to `/dev/null` but you can send 
 - `h` for hours
 - `d` for days
 
+After the specified time interval, **timeout** will send a `TERM` signal to the benchmark process.
 
-## How to collect stats
-1) Run benchmarks using the `parallel.sh` script. Set the `JOBS=1` if you want to run them sequentially.
-2) `parallel.sh` creates a logfile called `run.log` in the same directory. 
+Tip: Set `RUNTIME=0` to run indefinitely.
 
-The log contains the job sequence, which host the job was run on, the start time and run time, how much data was transferred, the exit value, the signal that killed the job, and finally the command being run.
+### Parallel execution
+
+We use gnu-parallel to run the benchmarks, even if you're running things sequentially. To run in parallel, change the variable `$JOBS` in `vars.sh` or call `JOBS=njobs ./run.sh` from the command line.
+
+### Using together with Intel PIN
+
+You need to set a few variables before. Go to the file `vars.sh` and change:
+- `PIN_PATH=/path/to/pin/`
+- `PIN_LIB=/path/to/pintool/`
+
+The later must point to where your Pintool **source code** is, this way we can easily build your Pintool for you.
+
+### Collecting stats
+
+**gnu-parallel** creates a logfile called `run.log`. This log contains the job sequence, which host the job was run on, the start time and run time, how much data was transferred, the exit value, the signal that killed the job, and finally the command being run.
 
 You can easily parse the logfile to a csv using python and [pandas](https://pandas.pydata.org/):
 
@@ -102,15 +116,21 @@ import pandas as pd
 pd.read_csv('run.log', sep='\t').to_csv('run.csv')
 ```
 
-## Compiling with your llvm pass
-In the script `build_exec.sh`, change the function `compile` and add your pass when calling `opt`.
+You can also add your own code in the file `collect.sh`. **tf** will execute this file after all benchmarks have finished executing.
 
-## Instrumenting
-1) Change the function `instrument()` and add your llvm pass when calling `opt`.
-2) Set `INSTRUMENT=1` when calling `build_exec.sh`
+### Compiling with your own LLVM pass
 
+See `comp.sh` file. You can control how each benchmark is compiled there.
 
-## Adding more benchmarks
+Add your pass in the line we call `$LLVM_PATH/opt`:
+
+```bash
+$LLVM_PATH/opt -mem2reg -instnamer -load DCC888.$suffix -vssa $btc_name -o $rbc_name ;
+```
+
+------------
+
+### Adding more benchmarks
 
 1) For each folder that contains .c files, i.e., the folder that will
    contain the executable file that you are creating, add the following
@@ -128,20 +148,30 @@ In the script `build_exec.sh`, change the function `compile` and add your pass w
  RUN_OPTIONS=" irsmk_input " ;
  STDIN=" file.in "
 ```
-2) Add a function into `build_exec.sh`, for the new benchmark.
+2) Add a function into `benchs.sh`, for the new benchmark.
 
 If the benchmark does not contain subfolders, add:
 ```bash
-function Fhourstones() { 
-	walk "." ; 
+function Fhourstones() {
+	walk "." ;
 }
 ```
 otherwise, add:
 ```bash
-function Misc() { 
-	dirs=($( ls -d */ )) ;
-	walk "${dirs[@]}" ; 
+function Misc() {
+	dirs=($( ls -d */ )) ;   # list every folder inside Misc/
+	walk "${dirs[@]}" ;
 }
 ```
 
-See the lines `314-346` to see how we do in the benchmarks we already have.
+--------
+
+### TIPS
+Compiling all benchmarks takes a **considerable** amount of time. Is a good idea to compile them first and execute later:
+
+```bash
+COMPILE=1 EXEC=0 ./run.sh   # To compile
+COMPILE=0 EXEC=1 ./run.sh   # To execute
+```
+
+Also, run benchmarks in parallel whenever you can. Running 220 benchmarks with a time limit of 8 minutes takes 29 hours to complete.

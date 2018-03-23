@@ -38,11 +38,15 @@ if [[ $PIN -eq 1 ]]; then
   # PIN_PATH   => The place where I keep the pin source code
   PIN_PATH="$HOME/Programs/Pin"
   
-  # PIN_LIB    => The place where I keep the Pin lib implemented
+  # PIN_LIB    => The place where I keep the Pin lib implemented.
   PIN_LIB="$HOME/Programs/C/faun/src/PinLib/"
   
   # PIN_FLAGS  => Flags to pass to PIN
   PIN_FLAGS="" ;
+
+  echo "PIN_PATH is set to $PIN_PATH"
+  echo "PIN_LIB is set to $PIN_LIB"
+  PIN_ROOT=$PIN_PATH make -C $PIN_LIB
 fi
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 

@@ -20,7 +20,6 @@ function compile() {
   #Generate all the bcs into a big bc:
   $LLVM_PATH/llvm-link *.rbc -o $lnk_name ;
 
-  # Add your llvm pass here!
   $LLVM_PATH/opt $lnk_name -o $prf_name ;
   
   # Compile our instrumented file, in IR format, to x86:
