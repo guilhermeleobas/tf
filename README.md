@@ -105,6 +105,8 @@ You need to set a few variables before. Go to the file `vars.sh` and change:
 
 The later must point to where your Pintool **source code** is, this way we can easily build your Pintool for you.
 
+Now, call `PIN=1 ./run.sh`
+
 ### Collecting stats
 
 **gnu-parallel** creates a logfile called `run.log`. This log contains the job sequence, which host the job was run on, the start time and run time, how much data was transferred, the exit value, the signal that killed the job, and finally the command being run.
