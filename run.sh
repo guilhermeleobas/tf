@@ -148,9 +148,9 @@ if [[ -n $PIN && $PIN -eq 1 ]]; then
   source "exec_pin.sh"
 fi
 
-if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
-  # replace the compile function
-  source "instrument.sh"
+if [[ -n $TASKMINER && $TASKMINER -eq 1 ]]; then
+  # replace the comp function
+  source "comp_taskminer.sh"
 fi
 
 rm -f run.txt
