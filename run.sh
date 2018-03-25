@@ -1,54 +1,8 @@
 #!/bin/bash
 
-### BEGIN INSTRUCTIONS ###
-
-# 1) For each folder that contains .c files, i.e., the folder that will
-#    contain the executable file that you are creating, add the following
-#    "info.sh" file there:
-#
-#  bnc_name="XX" ;
-#  lnk_name="$bnc_name.rbc" ;
-#  prf_name="$bnc_name.ibc" ;
-#  obj_name="$bnc_name.o" ;
-#  exe_name="$bnc_name.exe" ;
-
-#  source_files=($(ls *.c)) ;
-#  CXXFLAGS=" -lm " ;
-#  COMPILER="clang"  # or clang++
-#  RUN_OPTIONS=" irsmk_input " ;
-#  STDIN=" file.in "
-#
-# 2) Add a function into build_exec.sh, for the new benchmark.
-# - if the benchmark does not contain subfolders, add:
-#   function Fhourstones() { walk "." ; }
-# - otherwise, add:
-#   function Misc() { dirs=($( ls -d */ )); walk "Misc" "${dirs[@]}" ; }
-#
-# 3) Add the benchmark that you want to run into the script:
-#   benchs=("BenchmarkGame"
-#           "CoyoteBench"
-#           "Dhrystone"
-#           "McGill"
-#   );
-#
-# 4) To set the timeout, simply modify it at the beginning of the
-#    script, or try:
-# $> TIMEOUT=2m ; ./build_exec.sh ;
-#
-# You can also specify other flags such as:
-#  INSTRUMENT=0         => This will prevent code from being instrumented
-#  DEBUG=1              => This will send benchmark output to /dev/stdout
-#  PIN=1                => This will not insert instrumentation and run each  
-#                          benchmark using PIN
-#  LARGE_PROBLEM_SIZE=1 => Use the large input. Default is small or medium.
-# 
-### END INSTRUCTIONS ###
-
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
 trap 'echo "Killing build_exec.sh script" ; exit' INT TERM
-
-
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
@@ -57,7 +11,14 @@ function cleanup() {
   rm -f *.rbc ;
   rm -f *.ibc ;
   rm -f *.o ;
-  rm -f *_AI.c
+  if [[ $ANNOTATE -eq 1 ]]; then
+    # delete the _AI.c only when we're annotating the benchmark
+    echo "deletou"
+    rm -f *_AI.c
+    rm -f *_AI.h
+    rm -f *c_scope.dot
+    rm -f taskminer*.out
+  fi
   # rm -f *.exe ;
   # rm -f table.csv
   # rm -f prof.dat ;
@@ -116,15 +77,19 @@ function walk() {
   for dir in "${dirs[@]}"; do
     cd "$parent_dir"/"$dir" ;
 
-    # Let's remove all _AI.c files before
+    # # Let's remove all _AI.c files before
     rm -f tmp.c
-    find . -name "*_AI.c" -exec rm -f {} \;
+    # find . -name "*_AI.c" -exec rm -f {} \;
 
     d=$(basename $(pwd))
     echo "Sourcing info.sh from $d" ;
     
     set_vars ;
     cleanup ;
+
+    if [[ $ANNOTATE -eq 1 ]]; then
+      annotate ;
+    fi
 
     if [[ $COMPILE -eq 1 ]]; then
       compile ;
@@ -157,8 +122,12 @@ if [[ -n $PIN && $PIN -eq 1 ]]; then
   source "exec_pin.sh"
 fi
 
+if [[ -n $ANNOTATE && $ANNOTATE -eq 1 ]]; then
+  # Create the _AI.c files
+  source "annotate.sh"
+fi
+
 if [[ -n $TASKMINER && $TASKMINER -eq 1 ]]; then
-  echo "opa"
   # replace the comp function
   source "comp_taskminer.sh"
 fi

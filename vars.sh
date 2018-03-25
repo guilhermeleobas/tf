@@ -13,6 +13,12 @@
 # Compile
 [[ -n $COMPILE ]] || COMPILE=1 ;
 
+# Annotate => Set if we're gonna annotate benchmarks (Create the *_AI.c files)
+[[ -n $ANNOTATE ]] || ANNOTATE=0;
+
+# TaskMiner => replace the compile function when = 1
+[[ -n $TASKMINER ]] || TASKMINER=0;
+
 # JOBS
 [[ -n $JOBS ]] || JOBS=1 ;
 
@@ -63,6 +69,8 @@ echo "RUNTIME is set to $RUNTIME"
 echo "PIN is set to $PIN"
 echo "EXEC is set to $EXEC"
 echo "COMPILE is set to $COMPILE"
+echo "COMPILE is set to $ANNOTATE"
+echo "TASKMINER is set to $TASKMINER"
 echo "suffix is set to $suffix"
 echo "BASEDIR is set to $BASEDIR"
 echo "TESTDIR is set to $TESTDIR"
