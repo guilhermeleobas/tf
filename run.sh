@@ -57,6 +57,7 @@ function cleanup() {
   rm -f *.rbc ;
   rm -f *.ibc ;
   rm -f *.o ;
+  rm -f *_AI.c
   # rm -f *.exe ;
   # rm -f table.csv
   # rm -f prof.dat ;
@@ -110,6 +111,11 @@ function walk() {
 
   for dir in "${dirs[@]}"; do
     cd "$parent_dir"/"$dir" ;
+
+    if [[ $TASKMINER -eq 1 ]]; then
+      # Let's remove all _AI.c files before
+      find . -name "*_AI.c" -exec rm -f {} \;
+    fi
 
     d=$(basename $(pwd))
     echo "Sourcing info.sh from $d" ;

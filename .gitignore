@@ -11,3 +11,7 @@ feat.dat
 prof.dat
 .DS_Store
 Benchs/sim/Output/sim.res
+tmp.c
+*_scope.dot
+*_AI.c
+*_AI.h

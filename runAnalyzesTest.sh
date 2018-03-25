@@ -34,17 +34,19 @@ export PATH=$PATH:/home/periclesrafael/openmp4/llvm/install/bin/
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/periclesrafael/openmp4/llvm/install/lib
 export C_INCLUDE_PATH=$C_INCLUDE_PATH:/home/periclesrafael/openmp4/llvm/install/include
 
+TMP_FILE="tmp.c"
+
 rm result.bc result2.bc
 
 echo "Running $1..."
 
-$CLANGFORM -style="{BasedOnStyle: llvm, IndentWidth: 2, ColumnLimit: 0}" ${THIS}/$1 &> tmp.txt
+$CLANGFORM -style="{BasedOnStyle: llvm, IndentWidth: 2, ColumnLimit: 0}" ${THIS}/$1 &> ${THIS}/$TMP_FILE
 
-mv tmp.txt ${THIS}/$1
+# mv tmp.txt ${THIS}/$1
 
-./scopetest.sh ${THIS}/$1
+bash $HOME/Programs/tf/scopetest.sh ${THIS}/$TMP_FILE
 
-$CLANG $OMP -g -S -emit-llvm ${THIS}/$1 -o result.bc 
+$CLANG $OMP -g -S -emit-llvm ${THIS}/$TMP_FILE -o result.bc 
 
 #OPT -mem2reg -instnamer result.bc -o result.mem.bc
 #OPT -load $WTM -taskminer result.mem.bc
@@ -54,6 +56,6 @@ $OPT -load $ST -instnamer -mem2reg -scopeTree result.bc
 $OPT -load $ST -load $WTM -load $WAI -instnamer -mem2reg -writeInFile -Run-Mode=true \
    -debug-only=print-tasks -S result.bc -o result2.bc
 
-$CLANGFORM -style="{BasedOnStyle: llvm, IndentWidth: 2}" ${THIS}/$1 &> tmp.txt
+$CLANGFORM -style="{BasedOnStyle: llvm, IndentWidth: 2}" ${THIS}/$TMP_FILE &> tmp.txt
 
-mv tmp.txt ${THIS}/$1
+mv tmp.txt ${THIS}/$TMP_FILE

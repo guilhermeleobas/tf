@@ -29,10 +29,10 @@ function ASCI_Purple() { walk "." ; }
 function SciMark2-C() { walk "." ; }
 function sim() { walk "." ; }
 function mafft() { walk "." ; }
-function tramp3d-v4() { walk "." ; }
+function tramp3d-v4() { walk "." ; } # c++
 function llubenchmark() { walk "." ; }
 function nbench() { walk "." ; }
-function PAQ8p() { walk "." ; }
+function PAQ8p() { walk "." ; } # c++
 
 function mediabench() {
   dirs=("adpcm/rawcaudio" "adpcm/rawdaudio" "g721/g721encode" "jpeg/jpeg-6a" 
@@ -47,4 +47,6 @@ benchs=( "ASC_Sequoia" "BenchmarkGame" "BitBench" "CoyoteBench" "DOE_ProxyApps_C
   "Trimaran" "TSVC" "PAQ8p" "NPB-serial" "VersaBench" "FreeBench"
   "MallocBench" "McCat" "Olden" "Prolangs-C");
 
-benchs=( "Fhourstones" )
+# single folder benchmarks
+benchs=( "Fhourstones" "Fhourstones_31" "Linpack" "ASCI_Purple" "SciMark2-C"
+  "sim" "mafft" "llubenchmark" "nbench")
