@@ -50,3 +50,5 @@ benchs=( "ASC_Sequoia" "BenchmarkGame" "BitBench" "CoyoteBench" "DOE_ProxyApps_C
 # single folder benchmarks
 benchs=( "Fhourstones" "Fhourstones_31" "Linpack" "ASCI_Purple" "SciMark2-C"
   "sim" "mafft" "llubenchmark" "nbench")
+
+benchs=( "llubenchmark" )

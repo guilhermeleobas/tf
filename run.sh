@@ -78,6 +78,10 @@ function set_vars(){
 
   # sometimes we need to use clang++
   [[ -n $COMPILER ]] || COMPILER=clang ;
+  if [[ -n TASKMINER && $TASKMINER -eq 1 ]]; then
+    COMPILER=gcc-6 ;
+  fi
+
   # We can specify STDIN to something other than /dev/stdin
   [[ -n $STDIN ]] || STDIN=/dev/stdin ;
   # And STDOUT default is /dev/null. 
@@ -112,10 +116,9 @@ function walk() {
   for dir in "${dirs[@]}"; do
     cd "$parent_dir"/"$dir" ;
 
-    if [[ $TASKMINER -eq 1 ]]; then
-      # Let's remove all _AI.c files before
-      find . -name "*_AI.c" -exec rm -f {} \;
-    fi
+    # Let's remove all _AI.c files before
+    rm -f tmp.c
+    find . -name "*_AI.c" -exec rm -f {} \;
 
     d=$(basename $(pwd))
     echo "Sourcing info.sh from $d" ;
@@ -155,6 +158,7 @@ if [[ -n $PIN && $PIN -eq 1 ]]; then
 fi
 
 if [[ -n $TASKMINER && $TASKMINER -eq 1 ]]; then
+  echo "opa"
   # replace the comp function
   source "comp_taskminer.sh"
 fi
