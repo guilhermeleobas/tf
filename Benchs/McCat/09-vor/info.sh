@@ -4,6 +4,6 @@ prf_name="$bnc_name.ibc" ;
 obj_name="$bnc_name.o" ;
 exe_name="$bnc_name.exe" ;
 
-source_files=($(ls *.c)) ;
+source_files=( "ch.c" "intersec.c" "pointlis.c" "splay.c" "splay2.c" "vor.c" )
 CXXFLAGS=" -lm " ;
 STDIN="vor.in3"
