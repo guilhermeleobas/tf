@@ -13,12 +13,12 @@ function cleanup() {
   rm -f *.o ;
   if [[ $ANNOTATE -eq 1 ]]; then
     # delete the _AI.c only when we're annotating the benchmark
-    echo "deletou"
     rm -f *_AI.c
     rm -f *_AI.h
     rm -f *c_scope.dot
     rm -f taskminer*.out
   fi
+  rm -f report.txt
   # rm -f *.exe ;
   # rm -f table.csv
   # rm -f prof.dat ;
@@ -39,9 +39,6 @@ function set_vars(){
 
   # sometimes we need to use clang++
   [[ -n $COMPILER ]] || COMPILER=clang ;
-  if [[ -n TASKMINER && $TASKMINER -eq 1 ]]; then
-    COMPILER=gcc-6 ;
-  fi
 
   # We can specify STDIN to something other than /dev/stdin
   [[ -n $STDIN ]] || STDIN=/dev/stdin ;
@@ -89,15 +86,22 @@ function walk() {
 
     if [[ $ANNOTATE -eq 1 ]]; then
       annotate ;
+      if [[ $? -ne 0 ]]; then
+        continue ;
+      fi
     fi
 
     if [[ $COMPILE -eq 1 ]]; then
       compile ;
+      if [[ $? -ne 0 ]]; then
+        echo 
+        echo "###############"
+        echo
+        continue ;
+      fi
     fi
 
-    if [[ $EXEC -eq 1 ]]; then
-      execute ;
-    fi
+    execute ;
 
     unset_vars ;
     
@@ -117,6 +121,7 @@ source "benchs.sh"
 source "comp.sh"
 source "exec.sh"
 
+
 if [[ -n $PIN && $PIN -eq 1 ]]; then
   # replace the function `execute`
   source "exec_pin.sh"
@@ -135,12 +140,20 @@ fi
 rm -f run.txt
 touch run.txt
 
-for bench in "${benchs[@]}"; do
-  cd $TESTDIR
-  echo "Starting $bench" ;
-  cd $bench ;
-  $bench ;
-done
+if [[ "$#" -ne 0 ]]; then
+  for dir in "$@"; do
+    cd $dir ;
+    walk "." ;
+  done
+else 
+  for bench in "${benchs[@]}"; do
+    cd $TESTDIR
+    echo "Starting $bench" ;
+    cd $bench ;
+    $bench ;
+  done
+fi
+
 
 cd $BASEDIR ;
 
