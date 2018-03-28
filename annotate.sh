@@ -1,5 +1,7 @@
 #!/bin/bash
 
+trap 'echo "killing annotate.sh" ; return 1' KILL 
+
 function annotate() {
   
   for file_name in "${source_files[@]}"; do
@@ -10,7 +12,7 @@ function annotate() {
     fi
 
     f=$(basename $file_name .c) # filename without extension
-    bash ${BASEDIR}/runAnalyzesTest.sh $file_name 2> taskminer_$f.out # creates a tmp_AI.c
+    $TIMEOUT --signal=KILL 5m ${BASEDIR}/runAnalyzesTest.sh $file_name 2> taskminer_$f.out # creates a tmp_AI.c
     mv tmp_AI.c ${f}_AI.c
     
     if [[ $? -ne 0 ]]; then

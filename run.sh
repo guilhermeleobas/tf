@@ -34,6 +34,8 @@ function unset_vars() {
 
 function set_vars(){
   source info.sh
+  COMP_FLAGS=$CXXFLAGS
+  export COMP_FLAGS
 
   # Let's set the variables that are unset
 
@@ -76,7 +78,6 @@ function walk() {
 
     # # Let's remove all _AI.c files before
     rm -f tmp.c
-    # find . -name "*_AI.c" -exec rm -f {} \;
 
     d=$(basename $(pwd))
     echo "Sourcing info.sh from $d" ;
@@ -87,6 +88,9 @@ function walk() {
     if [[ $ANNOTATE -eq 1 ]]; then
       annotate ;
       if [[ $? -ne 0 ]]; then
+        echo 
+        echo "###############"
+        echo
         continue ;
       fi
     fi

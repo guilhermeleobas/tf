@@ -1,31 +1,14 @@
 #!/bin/bash
 
-# function compile() {
-#
-#   # source_files is the variable with all the files we're gonna compile
-#
-#   files=$(ls -d *_AI.c)
-#   cmd="gcc-6 -lm -fopenmp  $files  -o $exe_name" ;
-#   eval $cmd ;
-#
-#   if [[ $? -ne 0 ]]; then
-#     report="Benchmark $(pwd) broke during compilation phrase. Jumping to next benchmarks"
-#     echo $report
-#     echo $report >> report.txt
-#     return 1 ;
-#   else
-#     echo "Benchmark $(pwd) compiled."
-#     echo "Benchmark $(pwd) compiled." >> report.txt
-#     return 0 ;
-#   fi
-#
-# }
-
 function compile() {
 
   # source_files is the variable with all the files we're gonna compile
 
+  touch tmp_AI.c
+  echo "char cutoff_test = 0;" > tmp_AI.c ;
+
   source_files=($(ls -d *_AI.c))
+  
   for file_name in "${source_files[@]}"; do
     base_name=$(basename $file_name .c) ;
     btc_name="$base_name.bc" ;

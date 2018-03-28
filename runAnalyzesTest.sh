@@ -46,7 +46,7 @@ $CLANGFORM -style="{BasedOnStyle: llvm, IndentWidth: 2, ColumnLimit: 0}" ${THIS}
 
 bash $HOME/Programs/tf/scopetest.sh ${THIS}/$TMP_FILE
 
-$CLANG $OMP -lm -g -S -emit-llvm ${THIS}/$TMP_FILE -o result.bc 
+$CLANG $OMP $COMP_FLAGS -lm -g -S -emit-llvm ${THIS}/$TMP_FILE -o result.bc 
 
 #OPT -mem2reg -instnamer result.bc -o result.mem.bc
 #OPT -load $WTM -taskminer result.mem.bc
