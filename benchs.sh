@@ -47,4 +47,10 @@ benchs=( "ASC_Sequoia" "BenchmarkGame" "BitBench" "CoyoteBench" "DOE_ProxyApps_C
   "Trimaran" "TSVC" "PAQ8p" "NPB-serial" "VersaBench" "FreeBench"
   "MallocBench" "McCat" "Olden" "Prolangs-C");
   
-benchs=("Linpack")
+  
+benchs=( "ASC_Sequoia" "BenchmarkGame" "BitBench" "CoyoteBench" "DOE_ProxyApps_C" 
+  "Dhrystone" "McGill" "MiBench" "Misc"  "Shootout" "Stanford" "Fhourstones" 
+  "Linpack" "mediabench" "ASCI_Purple" "Fhourstones_31" 
+  "SciMark2-C" "sim" "mafft" "llubenchmark" "nbench" "Ptrdist"
+  "Trimaran" "TSVC" "PAQ8p" "NPB-serial" "VersaBench" "FreeBench"
+  "MallocBench" "McCat" "Olden" "Prolangs-C");

@@ -1,4 +1,5 @@
 #!/bin/bash
 
 # this is left as an example for the user to collect their results.
-cat run.log
+csvs=($( find Benchs -name "*.csv" ))
+python3 pyscripts/merge.py "${csvs[@]}" > data/all.csv
