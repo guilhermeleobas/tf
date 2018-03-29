@@ -6,4 +6,4 @@ exe_name="$bnc_name.exe" ;
 
 source_files=($(ls *.c)) ;
 CXXFLAGS=" -lm " ;
-RUN_OPTIONS=" input.txt " ;
+RUN_OPTIONS=" input " ;
