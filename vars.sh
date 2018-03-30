@@ -33,6 +33,8 @@ fi
 # LLVM_PATH  => The place where I have all the LLVM tools
 LLVM_PATH="$HOME/Programs/llvm38/build-omp/bin"
 
+export LD_LIBRARY_PATH=$HOME/llvm38/build-omp/lib:$LD_LIBRARY_PATH
+
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
 # THIS PART IS LEFT AS AN EXAMPLE FOR THE PEOPLE WORKING WITH PIN!

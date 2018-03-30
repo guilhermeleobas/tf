@@ -161,6 +161,7 @@ fi
 
 cd $BASEDIR ;
 
+export LD_LIBRARY_PATH=$HOME/Programs/llvm38/build-omp/lib:$LD_LIBRARY_PATH
 source "parallel.sh"
 source "collect.sh"
 
