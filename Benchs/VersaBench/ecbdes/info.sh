@@ -4,7 +4,7 @@ prf_name="$bnc_name.ibc" ;
 obj_name="$bnc_name.o" ;
 exe_name="$bnc_name.exe" ;
 
-source_files=($(ls *.c)) ;
+source_files=( "des_enc.c" "driver.c" "ecb_enc.c" "set_key.c" )
 CXXFLAGS="" ;
 
 if [[ -n $LARGE_PROBLEM_SIZE ]]; then

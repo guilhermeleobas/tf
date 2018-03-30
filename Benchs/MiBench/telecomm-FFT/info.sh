@@ -4,6 +4,6 @@ prf_name="$bnc_name.ibc" ;
 obj_name="$bnc_name.o" ;
 exe_name="$bnc_name.exe" ;
 
-source_files=($(ls *.c)) ;
+source_files=( "fftmisc.c" "fourierf.c" "main.c" )
 CXXFLAGS=" -lm " ;
 RUN_OPTIONS=" 8 32768 -i " ;
