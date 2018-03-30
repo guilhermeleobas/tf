@@ -6,4 +6,4 @@ exe_name="$bnc_name.exe" ;
 
 source_files=($(ls *.c)) ;
 
-RUN_OPTIONS="-2 int InstructionCombining.cpp.txt" ;
+RUN_OPTIONS="-2 int InstructionCombining.cpp" ;
