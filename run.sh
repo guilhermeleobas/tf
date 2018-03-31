@@ -111,12 +111,20 @@ fi
 rm -f run.txt init.txt read.txt
 touch run.txt init.txt read.txt
 
-for bench in "${benchs[@]}"; do
-  cd $TESTDIR
-  echo "Starting $bench" ;
-  cd $bench ;
-  $bench ;
-done
+if [[ "$#" -ne 0 ]]; then
+  benchs="$@"
+  for dir in "$@"; do
+    cd $dir ;
+    walk "." ;
+  done
+else
+  for bench in "${benchs[@]}"; do
+    cd $TESTDIR
+    echo "Starting $bench" ;
+    cd $bench ;
+    $bench ;
+  done
+fi
 
 cd $BASEDIR ;
 

@@ -3,6 +3,18 @@
 # this is left as an example 
 function compile() {
 
+  if [[ -n $CPU2006 && $CPU2006 -eq 1 ]]; then
+    # Convert the program to SSA form:
+    $LLVM_PATH/opt -debug-only=StoreTagger -instcount -load DCC888.${suffix} -ssProf \
+      $lnk_name -o $prf_name 2> /dev/null ;
+    # Compile our file, in IR format, to x86:
+    $LLVM_PATH/llc -filetype=obj $prf_name -o $obj_name ;
+    # Compile everything now, producing a final executable file:
+    $LLVM_PATH/$COMPILER -lm $obj_name $PROF_PATH/store_data_collector.o -o $exe_name ;
+    
+    return
+  fi
+
   # source_files is the variable with all the files we're gonna compile
 
   for file_name in "${source_files[@]}"; do
