@@ -6,4 +6,4 @@ exe_name="$bnc_name.exe" ;
 
 source_files=( "n-body.c" )
 CXXFLAGS=" -lm " ;
-RUN_OPTIONS=" " ;
+RUN_OPTIONS=" 50000000 " ;

@@ -6,7 +6,7 @@ function execute() {
     exe_name="AI_"$exe_name ;
   fi
 
-  cmd="$TIMEOUT --signal=TERM ${RUNTIME} time ./$exe_name $RUN_OPTIONS < $STDIN > $STDOUT" ;
+  cmd="$TIMEOUT --signal=TERM ${RUNTIME} ./$exe_name $RUN_OPTIONS < $STDIN > $STDOUT" ;
 
   if [[ -f $exe_name ]]; then
     echo "$cmd"
