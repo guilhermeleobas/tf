@@ -30,18 +30,22 @@
 
 void bitstring(char *str, long byze, int biz, int strwid)
 {
-      int i, j;
+  int i, j;
 
-      j = strwid - (biz + (biz >> 2)- (biz % 4 ? 0 : 1));
-      for (i = 0; i < j; i++)
-            *str++ = ' ';
-      while (--biz >= 0)
-      {
-            *str++ = ((byze >> biz) & 1) + '0';
-            if (!(biz % 4) && biz)
-                  *str++ = ' ';
-      }
-      *str = '\0';
+  j = strwid - (biz + (biz >> 2) - (biz % 4 ? 0 : 1));
+  for (i = 0; i < j; i++)
+  {
+    *str++ = ' ';
+  }
+  while (--biz >= 0)
+  {
+    *str++ = ((byze >> biz) & 1) + '0';
+    if (!(biz % 4) && biz)
+    {
+      *str++ = ' ';
+    }
+  }
+  *str = '\0';
 }
 
 #ifdef TEST
@@ -50,13 +54,14 @@ void bitstring(char *str, long byze, int biz, int strwid)
 
 int main(void)
 {
-      char s[80]; long j;
-      for (j = 1L; j <= 16L; j++)
-      {
-            bitstring(s, (long)j, (int)j, 16);
-            printf("%2ld: %s\n", j, s);
-      }
-      return EXIT_SUCCESS;
+  char s[80];
+  long j;
+  for (j = 1L; j <= 16L; j++)
+  {
+    bitstring(s, (long)j, (int)j, 16);
+    printf("%2ld: %s\n", j, s);
+  }
+  return EXIT_SUCCESS;
 }
 
 #endif /* TEST */

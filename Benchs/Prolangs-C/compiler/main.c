@@ -9,5 +9,5 @@ int main(void)
 {
   init();
   parse();
-  return 0;     /*  successful termination  */
+  return 0; /*  successful termination  */
 }

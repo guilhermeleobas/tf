@@ -49,9 +49,9 @@ Frees itemset, ruleset and internal data.
 */
 
 #include <stdio.h>
+#include "gram.h"
 #include "machine.h"
 #include "new.h"
-#include "gram.h"
 
 extern short **derives;
 
@@ -69,7 +69,7 @@ static int rulesetsize;
 /* number of words required to hold a bit for each variable */
 static int varsetsize;
 
-extern void RTC(unsigned *R,int n);
+extern void RTC(unsigned *R, int n);
 
 void set_fderives(void);
 void set_firsts(void);
@@ -109,34 +109,34 @@ void set_fderives(void)
   rrow = fderives + ntokens * rulesetsize;
 
   for (i = ntokens; i < nsyms; i++)
+  {
+    vrow = firsts + ((i - ntokens) * varsetsize);
+    cword = *vrow++;
+    mask = 1;
+    for (j = ntokens; j < nsyms; j++)
     {
-      vrow = firsts + ((i - ntokens) * varsetsize);
-      cword = *vrow++;
-      mask = 1;
-      for (j = ntokens; j < nsyms; j++)
-	{
-	  if (cword & mask)
-	    {
-	      rp = derives[j];
-	      while ((ruleno = *rp++) > 0)
-		{
-		  SETBIT(rrow, ruleno);
-		}
-	    }
+      if (cword & mask)
+      {
+        rp = derives[j];
+        while ((ruleno = *rp++) > 0)
+        {
+          SETBIT(rrow, ruleno);
+        }
+      }
 
-	  mask <<= 1;
-	  if (mask == 0 && j + 1 < nsyms)
-	    {
-	      cword = *vrow++;
-	      mask = 1;
-	    }
-	}
-
-      vrow += varsetsize;
-      rrow += rulesetsize;
+      mask <<= 1;
+      if (mask == 0 && j + 1 < nsyms)
+      {
+        cword = *vrow++;
+        mask = 1;
+      }
     }
 
-#ifdef	DEBUG
+    vrow += varsetsize;
+    rrow += rulesetsize;
+  }
+
+#ifdef DEBUG
   print_fderives();
 #endif
 
@@ -145,14 +145,15 @@ void set_fderives(void)
 
 /* set firsts to be an nvars by nvars bit matrix indicating which items
    can represent the beginning of the input corresponding to which other items.
-   For example, if some rule expands symbol 5 into the sequence of symbols 8 3 20,
+   For example, if some rule expands symbol 5 into the sequence of symbols 8 3
+   20,
    the symbol 8 can be the beginning of the data for symbol 5,
    so the bit [8 - ntokens, 5 - ntokens] in firsts is set. */
 
 void set_firsts(void)
 {
   register unsigned *row;
-/*   register int done; JF unused */
+  /*   register int done; JF unused */
   register int symbol;
   register short *sp;
   register int rowsize;
@@ -165,29 +166,29 @@ void set_firsts(void)
 
   row = firsts;
   for (i = ntokens; i < nsyms; i++)
+  {
+    sp = derives[i];
+    while (*sp >= 0)
     {
-      sp = derives[i];
-      while (*sp >= 0)
-	{
-	  symbol = ritem[rrhs[*sp++]];
-	  if (ISVAR(symbol))
-	    {
-	      symbol -= ntokens;
-	      SETBIT(row, symbol);
-	    }
-	}
-
-      row += rowsize;
+      symbol = ritem[rrhs[*sp++]];
+      if (ISVAR(symbol))
+      {
+        symbol -= ntokens;
+        SETBIT(row, symbol);
+      }
     }
+
+    row += rowsize;
+  }
 
   RTC(firsts, nvars);
 
-#ifdef	DEBUG
+#ifdef DEBUG
   print_firsts();
 #endif
 }
 
-void closure(short *core,int n)
+void closure(short *core, int n)
 {
   register int ruleno;
   register unsigned word;
@@ -206,64 +207,74 @@ void closure(short *core,int n)
   csend = core + n;
 
   if (n == 0)
+  {
+    dsp = fderives + start_symbol * rulesetsize;
+    while (rsp < rsend)
     {
-      dsp = fderives + start_symbol * rulesetsize;
-      while (rsp < rsend)
-	*rsp++ = *dsp++;
+      *rsp++ = *dsp++;
     }
+  }
   else
+  {
+    while (rsp < rsend)
     {
-      while (rsp < rsend)
-	*rsp++ = 0;
-
-      csp = core;
-      while (csp < csend)
-	{
-	  symbol = ritem[*csp++];
-	  if (ISVAR(symbol))
-	    {
-	      dsp = fderives + symbol * rulesetsize;
-	      rsp = ruleset;
-	      while (rsp < rsend)
-		*rsp++ |= *dsp++;
-	    }
-	}
+      *rsp++ = 0;
     }
+
+    csp = core;
+    while (csp < csend)
+    {
+      symbol = ritem[*csp++];
+      if (ISVAR(symbol))
+      {
+        dsp = fderives + symbol * rulesetsize;
+        rsp = ruleset;
+        while (rsp < rsend)
+        {
+          *rsp++ |= *dsp++;
+        }
+      }
+    }
+  }
 
   ruleno = 0;
   itemsetend = itemset;
   csp = core;
   rsp = ruleset;
   while (rsp < rsend)
+  {
+    word = *rsp++;
+    if (word == 0)
     {
-      word = *rsp++;
-      if (word == 0)
-	{
-	  ruleno += BITS_PER_WORD;
-	}
-      else
-	{
-	  mask = 1;
-	  while (mask)
-	    {
-	      if (word & mask)
-		{
-		  itemno = rrhs[ruleno];
-		  while (csp < csend && *csp < itemno)
-		    *itemsetend++ = *csp++;
-		  *itemsetend++ = itemno;
-		}
-
-	      mask <<= 1;
-	      ruleno++;
-	    }
-	}
+      ruleno += BITS_PER_WORD;
     }
+    else
+    {
+      mask = 1;
+      while (mask)
+      {
+        if (word & mask)
+        {
+          itemno = rrhs[ruleno];
+          while (csp < csend && *csp < itemno)
+          {
+            *itemsetend++ = *csp++;
+          }
+          *itemsetend++ = itemno;
+        }
+
+        mask <<= 1;
+        ruleno++;
+      }
+    }
+  }
 
   while (csp < csend)
+  {
     *itemsetend++ = *csp++;
+  }
 
-#ifdef	DEBUG
+#ifdef DEBUG
   print_closure(n);
 #endif
 }
@@ -275,15 +286,14 @@ void finalize_closure(void)
   FREE(fderives + ntokens * rulesetsize);
 }
 
-#ifdef	DEBUG
+#ifdef DEBUG
 
 void print_closure(int n)
 {
   register short *isp;
 
   printf("\n\nn = %d\n\n", n);
-  for (isp = itemset; isp < itemsetend; isp++)
-    printf("   %d\n", *isp);
+  for (isp = itemset; isp < itemsetend; isp++) printf("   %d\n", *isp);
 }
 
 void print_firsts(void)
@@ -299,27 +309,26 @@ void print_firsts(void)
   printf("\n\n\nFIRSTS\n\n");
 
   for (i = ntokens; i < nsyms; i++)
+  {
+    printf("\n\n%s firsts\n\n", tags[i]);
+
+    rowp = firsts + ((i - ntokens) * vrowsize);
+
+    cword = *rowp++;
+    mask = 1;
+    for (j = 0; j < nsyms; j++)
     {
-      printf("\n\n%s firsts\n\n", tags[i]);
+      if (cword & mask) printf("   %s\n", tags[j + ntokens]);
 
-      rowp = firsts + ((i - ntokens) * vrowsize);
+      mask <<= 1;
 
-      cword = *rowp++;
-      mask = 1;
-      for (j = 0; j < nsyms; j++)
-	{
-	  if (cword & mask)
-	    printf("   %s\n", tags[j + ntokens]);
-
-	  mask <<= 1;
-
-	  if (mask == 0 && j + 1 < nsyms)
-	    {
-	      cword = *rowp++;
-	      mask = 1;
-	    }
-	}
+      if (mask == 0 && j + 1 < nsyms)
+      {
+        cword = *rowp++;
+        mask = 1;
+      }
     }
+  }
 }
 
 void print_fderives(void)
@@ -335,24 +344,23 @@ void print_fderives(void)
   printf("\n\n\nFDERIVES\n");
 
   for (i = ntokens; i < nsyms; i++)
+  {
+    printf("\n\n%s derives\n\n", tags[i]);
+    rp = fderives + i * rrowsize;
+    cword = *rp++;
+    mask = 1;
+    for (j = 0; j <= nrules; j++)
     {
-      printf("\n\n%s derives\n\n", tags[i]);
-      rp = fderives + i * rrowsize;
-      cword = *rp++;
-      mask = 1;
-      for (j = 0; j <= nrules; j++)
-        {
-	  if (cword & mask)
-	    printf("   %d\n", j);
+      if (cword & mask) printf("   %d\n", j);
 
-	  mask <<= 1;
-	  if (mask == 0 && j + 1 < nrules)
-	    {
-	      cword = *rp++;
-	      mask = 1;
-	    }
-	}
+      mask <<= 1;
+      if (mask == 0 && j + 1 < nrules)
+      {
+        cword = *rp++;
+        mask = 1;
+      }
     }
+  }
 
   fflush(stdout);
 }

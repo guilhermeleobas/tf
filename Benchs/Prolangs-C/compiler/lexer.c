@@ -1,7 +1,6 @@
 /**** lexer.c ***************************************************************/
 
-
-# include "global.h"
+#include "global.h"
 extern int Number(int t);
 extern int Indentifier(int t);
 extern int Equal(int t);
@@ -12,40 +11,47 @@ extern int GlobalLookup(char s[]);
 
 int lexan(void)
 {
-  int t;  /* temp to check next char in input */
-  
+  int t; /* temp to check next char in input */
+
   while (1)
   {
     t = getc(stdin);
     if (t == ' ' || t == '\t')
-      ;  /* strip out white space */
-
+    {
+      ; /* strip out white space */
+    }
     else if (t == '\n')
+    {
       ++lineno;
-
-    else if (isdigit(t) || t == '.' )
+    }
+    else if (isdigit(t) || t == '.')
+    {
       return (Number(t));
-
-    else if ( isalpha(t) || t == '_')
-      return(Indentifier(t));
-
+    }
+    else if (isalpha(t) || t == '_')
+    {
+      return (Indentifier(t));
+    }
     else if (t == '=')
-      return (Equal(t) );
-
+    {
+      return (Equal(t));
+    }
     else if (t == '!')
-      return (Nequal(t) );
-
+    {
+      return (Nequal(t));
+    }
     else if (t == EOF)
-      return(DONE);
-
+    {
+      return (DONE);
+    }
     else
     {
       NextTokenval = NONE;
-      return(t);
+      return (t);
     } /* end else */
-  }  /* end while (1) */
-}  /* end lexan */
- 
+  }   /* end while (1) */
+} /* end lexan */
+
 /* ======================================================================= */
 
 int Indentifier(int t)
@@ -61,8 +67,8 @@ int Indentifier(int t)
     if (t == '_')
     {
       error("Indentifier cannot begin with a double underscore");
-      return(lookahead);
-    }  /* end if (t == '_') */
+      return (lookahead);
+    } /* end if (t == '_') */
   }   /* end if (t == '_') */
 
   if (isalpha(t))
@@ -70,32 +76,38 @@ int Indentifier(int t)
     lexbuf[b] = t;
     ++b;
     t = getc(stdin);
-  }  /* end if (isalpha(t)) */
+  } /* end if (isalpha(t)) */
   else
   {
     error("improperly formed indentifier");
-    return(lookahead);
-  }  /* end else */
+    return (lookahead);
+  } /* end else */
 
   while (isalpha(t) || isdigit(t) || t == '_')
   {
     lexbuf[b] = t;
     ++b;
     t = getc(stdin);
-  }  /* end while */
+  } /* end while */
 
-  (void) ungetc (t, stdin);  
+  (void)ungetc(t, stdin);
   lexbuf[b] = EOS;
 
   LocalIndex = LocalLookup(lexbuf);
   GlobalIndex = GlobalLookup(lexbuf);
 
   if (LocalIndex)
-    return(LocalTable[LocalIndex].token);
+  {
+    return (LocalTable[LocalIndex].token);
+  }
   else if (GlobalIndex)
+  {
     return (GlobalTable[GlobalIndex].token);
+  }
   else
-    return(ID);
+  {
+    return (ID);
+  }
 }
 
 /* ======================================================================== */
@@ -104,14 +116,16 @@ int Equal(int t)
 {
   t = getc(stdin);
   if (t == '=')
-    return(EQUAL);
+  {
+    return (EQUAL);
+  }
   else
   {
-    (void) ungetc(t,stdin);
+    (void)ungetc(t, stdin);
     NextTokenval = NONE;
-    return('=');
+    return ('=');
   } /* end else */
-}  /* end Equal function */
+} /* end Equal function */
 
 /* ======================================================================= */
 
@@ -119,14 +133,16 @@ int Nequal(int t)
 {
   t = getc(stdin);
   if (t == '=')
-    return(NEQUAL);
+  {
+    return (NEQUAL);
+  }
   else
   {
-    (void) ungetc(t,stdin);
+    (void)ungetc(t, stdin);
     NextTokenval = NONE;
-    return('!');
-  }  /* end else */
-}  /* end function Nequal */
+    return ('!');
+  } /* end else */
+} /* end function Nequal */
 
 /* ====================================================================== */
 
@@ -136,18 +152,18 @@ int Number(int t)
   int Exponent;
   int NumOfZeros;
 
-  NextFtokenval = 0.0; 
+  NextFtokenval = 0.0;
   NextTokenval = 0;
 
   /* get interger portion of float or the whole integer */
-  if (isdigit (t))
+  if (isdigit(t))
   {
-    (void) ungetc(t, stdin);
+    (void)ungetc(t, stdin);
     scanf("%d", &NextTokenval);
     t = getc(stdin);
     if ((t != '.') && (t != 'e') && (t != 'E'))
     {
-      (void) ungetc(t, stdin);
+      (void)ungetc(t, stdin);
       return (NUM);
     }
   } /* end if t is digit */
@@ -158,7 +174,7 @@ int Number(int t)
     t = getc(stdin);
     NumOfZeros = 0;
 
-    /* 
+    /*
        counts the number of zeros left of decimal and right of the
        first non-zero digit.
     */
@@ -169,11 +185,11 @@ int Number(int t)
     } /* end while t == 0 */
 
     /* reads the number after any leading zeros */
-    if (isdigit (t))
+    if (isdigit(t))
     {
-      (void) ungetc(t, stdin);
+      (void)ungetc(t, stdin);
       scanf("%d", &DecimalAsInt);
-      NextFtokenval = (float) DecimalAsInt;
+      NextFtokenval = (float)DecimalAsInt;
 
       /* converts the decimal characters into a decimal of the number */
       while (NextFtokenval >= 1.0)
@@ -186,26 +202,26 @@ int Number(int t)
         {
           NextFtokenval /= 10;
           --NumOfZeros;
-        } /* end num of zeros > 0 */
-      } /* end if num of zeros > 0 */
+        }              /* end num of zeros > 0 */
+      }                /* end if num of zeros > 0 */
       t = getc(stdin); /* not needed here, but used later */
-    } /* end if t is digit */
-  } /* end if t == . */
-      
+    }                  /* end if t is digit */
+  }                    /* end if t == . */
+
   /* tokenval and ftokenval set if needed, otherwise still zero */
   NextFtokenval += NextTokenval;
   if ((t == 'e') || (t == 'E'))
   {
     t = getc(stdin);
-    if ((t == '+') || (t == '-') || (isdigit (t)))
+    if ((t == '+') || (t == '-') || (isdigit(t)))
     {
-      (void) ungetc(t, stdin);
+      (void)ungetc(t, stdin);
       scanf("%d", &Exponent);
       t = getc(stdin); /* used for error checking, but also used later */
       if (t == '.')
       {
         error("Exponents must be integer values");
-        return(lookahead);
+        return (lookahead);
       } /* end if exponent value is a float */
       if (Exponent > 0)
       {
@@ -214,7 +230,7 @@ int Number(int t)
           NextFtokenval *= 10;
           --Exponent;
         } /* end while */
-      } /* end if Exponent > 0 */
+      }   /* end if Exponent > 0 */
       else
       {
         while (Exponent < 0)
@@ -222,10 +238,9 @@ int Number(int t)
           NextFtokenval /= 10;
           ++Exponent;
         } /* end while */
-      } /* end else Exponent > 0 */
-    } /* end if t is +, -, or a digit */
-  } /* if t == e or t == E */
-  (void) ungetc(t, stdin);
-  return(RNUM);
+      }   /* end else Exponent > 0 */
+    }     /* end if t is +, -, or a digit */
+  }       /* if t == e or t == E */
+  (void)ungetc(t, stdin);
+  return (RNUM);
 } /* end isdigit or . */
- 

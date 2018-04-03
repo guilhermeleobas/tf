@@ -6,7 +6,7 @@
 #endif
 
 #ifdef TORONTO
- int NumNodes;
+int NumNodes;
 #else
 extern int __NumNodes;
 #endif
@@ -28,14 +28,14 @@ int dealwithargs(int argc, char *argv[])
   int level;
 
 #ifdef TORONTO
-  if (argc > 2) 
+  if (argc > 2)
     NumNodes = atoi(argv[2]);
-  else 
+  else
     NumNodes = 4;
 #else
-  if (argc > 2) 
+  if (argc > 2)
     __NumNodes = atoi(argv[2]);
-  else 
+  else
     __NumNodes = 4;
 #endif
 
@@ -46,4 +46,3 @@ int dealwithargs(int argc, char *argv[])
 
   return level;
 }
-
