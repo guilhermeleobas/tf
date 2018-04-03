@@ -9,7 +9,6 @@
 
 #define OPTION_CODE
 
-
 /*
  *
  * Includes.
@@ -20,27 +19,25 @@
 #include <stdlib.h>
 #include "channel.h"
 
-
 /*
  *
  * Code.
  *
  */
 
-void
-Option(int argc,
-       char *argv[])
+void Option(int argc, char *argv[])
 {
-    /*
-     * Check arguments.
-     */
-    if (argc != 2) {
-	printf("\nUsage: yacr2 <filename>\n\n");
-	exit(1);
-    }
+  /*
+   * Check arguments.
+   */
+  if (argc != 2)
+  {
+    printf("\nUsage: yacr2 <filename>\n\n");
+    exit(1);
+  }
 
-    /*
-     * Specified options.
-     */
-    channelFile = argv[1];
+  /*
+   * Specified options.
+   */
+  channelFile = argv[1];
 }

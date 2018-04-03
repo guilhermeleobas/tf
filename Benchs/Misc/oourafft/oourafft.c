@@ -2,13 +2,13 @@
 #include <memory.h>
 #include <stdio.h>
 #include <stdlib.h>
-#if !defined(__APPLE__) && !defined(__FreeBSD__) // memalign
+#if !defined(__APPLE__) && !defined(__FreeBSD__)  // memalign
 #include <malloc.h>
 #endif
 
 /* random number generator, 0 <= RND < 1 */
-#define RND(p) ((*(p) = (*(p) * 7141 + 54773) % 259200) * (1.0 / 259200.0))
-#define MAX(x,y) ((x) > (y) ? (x) : (y))
+#define RND(p) ((*(p) = (*(p)*7141 + 54773) % 259200) * (1.0 / 259200.0))
+#define MAX(x, y) ((x) > (y) ? (x) : (y))
 
 void makewt(int nw, int *ip, double *w);
 void cdft(int, int, double *, int *, double *);
@@ -36,75 +36,83 @@ int main()
   t_end = get_time();
   t_overhead = t_end - t_start;
 
-  /* Prepare aux data */
-#if !defined(__APPLE__) && !defined(__FreeBSD__) /* Darwin always 16-byte aligns malloc data */
-  ip = memalign(16, sqrt(N)*sizeof(int));
-  w  = memalign(16, 2*N*5/4*sizeof(double));
+/* Prepare aux data */
+#if !defined(__APPLE__) && \
+    !defined(__FreeBSD__) /* Darwin always 16-byte aligns malloc data */
+  ip = memalign(16, sqrt(N) * sizeof(int));
+  w = memalign(16, 2 * N * 5 / 4 * sizeof(double));
 #else
-  ip = malloc(sqrt(N)*sizeof(int));
-  w  = malloc(2*N*5/4*sizeof(double));
+  ip = malloc(sqrt(N) * sizeof(int));
+  w = malloc(2 * N * 5 / 4 * sizeof(double));
 #endif
   makewt(N >> 1, ip, w);
-  
-  /* Allocate buffers */
-#if !defined(__APPLE__) && !defined(__FreeBSD__) /* Darwin always 16-byte aligns malloc data */
-  ref = memalign(16, 2*N*sizeof(double));
-  cmp = memalign(16, 2*N*sizeof(double));
-  src = memalign(16, 2*N*sizeof(double));
+
+/* Allocate buffers */
+#if !defined(__APPLE__) && \
+    !defined(__FreeBSD__) /* Darwin always 16-byte aligns malloc data */
+  ref = memalign(16, 2 * N * sizeof(double));
+  cmp = memalign(16, 2 * N * sizeof(double));
+  src = memalign(16, 2 * N * sizeof(double));
 #else
-  ref = malloc(2*N*sizeof(double));
-  cmp = malloc(2*N*sizeof(double));
-  src = malloc(2*N*sizeof(double));
+  ref = malloc(2 * N * sizeof(double));
+  cmp = malloc(2 * N * sizeof(double));
+  src = malloc(2 * N * sizeof(double));
 #endif
-  
+
   /* Perform sanity check of FFT */
-  putdata(0, 2*N - 1, ref);
-  cdft(2*N,  1, ref, ip, w);
-  cdft(2*N, -1, ref, ip, w);
-  err_val = errorcheck(0, 2*N - 1, 1.0/N, ref);
-  if (fabs(err_val) > 1e-10) {
+  putdata(0, 2 * N - 1, ref);
+  cdft(2 * N, 1, ref, ip, w);
+  cdft(2 * N, -1, ref, ip, w);
+  err_val = errorcheck(0, 2 * N - 1, 1.0 / N, ref);
+  if (fabs(err_val) > 1e-10)
+  {
     printf("FFT sanity check failed! Difference is: %le\n", err_val);
     abort();
   }
-  
+
   /* Prepare reference sequence */
-  memset(ref, 0, 2*N*sizeof(double));
-  putdata(0, N-1, ref);
-  cdft(2*N, 1, ref, ip, w);
-  for (j=0; j<N; ++j)
-    ref[2*j+1] = -ref[2*j+1];
-  
+  memset(ref, 0, 2 * N * sizeof(double));
+  putdata(0, N - 1, ref);
+  cdft(2 * N, 1, ref, ip, w);
+  for (j = 0; j < N; ++j)
+  {
+    ref[2 * j + 1] = -ref[2 * j + 1];
+  }
+
   /*printf("Doing %d correlations (%d FFTs of size %d)\n", TRIES, 2*TRIES, N);*/
-  memset(src, 0, 2*N*sizeof(double));
-  putdata(0, N-1, src);
+  memset(src, 0, 2 * N * sizeof(double));
+  putdata(0, N - 1, src);
 
   t_start = get_time();
-  for (i=0; i<TRIES; ++i) {
+  for (i = 0; i < TRIES; ++i)
+  {
     int k;
 
-    memcpy(cmp, src, 2*N*sizeof(double));
-    cdft(2*N, 1, cmp, ip, w);
+    memcpy(cmp, src, 2 * N * sizeof(double));
+    cdft(2 * N, 1, cmp, ip, w);
 
-    for (k=0; k<N; ++k) {
-      double re1 = cmp[2*k];
-      double re2 = ref[2*k];
-      double im1 = cmp[2*k+1];
-      double im2 = ref[2*k+1];
-      cmp[2*k]   = re1*re2 - im1*im2;
-      cmp[2*k+1] = re1*im2 + im1*re2;
+    for (k = 0; k < N; ++k)
+    {
+      double re1 = cmp[2 * k];
+      double re2 = ref[2 * k];
+      double im1 = cmp[2 * k + 1];
+      double im2 = ref[2 * k + 1];
+      cmp[2 * k] = re1 * re2 - im1 * im2;
+      cmp[2 * k + 1] = re1 * im2 + im1 * re2;
     }
 
-    cdft(2*N, -1, cmp, ip, w);
+    cdft(2 * N, -1, cmp, ip, w);
   }
   t_end = get_time();
-  t_total += t_end - t_start - t_overhead; 
+  t_total += t_end - t_start - t_overhead;
 
-  for (j=0; j<N; ++j) {
-    printf("%e %e\n",
-           (fabs(cmp[2*j]) > 1e-9 ? cmp[2*j] : 0),
-           (fabs(cmp[2*j+1]) > 1e-9 ? cmp[2*j+1] : 0));
+  for (j = 0; j < N; ++j)
+  {
+    printf("%e %e\n", (fabs(cmp[2 * j]) > 1e-9 ? cmp[2 * j] : 0),
+           (fabs(cmp[2 * j + 1]) > 1e-9 ? cmp[2 * j + 1] : 0));
   }
-  /*printf("Overall time: %le, for single correlation: %le\n", t_total, t_total/TRIES);*/
+  /*printf("Overall time: %le, for single correlation: %le\n", t_total,
+   * t_total/TRIES);*/
 
   free(ref);
   free(w);
@@ -112,7 +120,7 @@ int main()
 
   free(cmp);
   free(src);
-  
+
   return 0;
 }
 
@@ -121,7 +129,9 @@ void putdata(int nini, int nend, double *a)
   int j, seed = 0;
 
   for (j = nini; j <= nend; j++)
+  {
     a[j] = RND(&seed);
+  }
 }
 
 double errorcheck(int nini, int nend, double scale, double *a)
@@ -129,7 +139,8 @@ double errorcheck(int nini, int nend, double scale, double *a)
   int j, seed = 0;
   double err = 0, e;
 
-  for (j = nini; j <= nend; j++) {
+  for (j = nini; j <= nend; j++)
+  {
     e = RND(&seed) - a[j] * scale;
     err = MAX(err, fabs(e));
   }
@@ -144,8 +155,7 @@ static LARGE_INTEGER t = {0, 0};
 double get_time(void)
 {
   LARGE_INTEGER l;
-  if (t.QuadPart == 0)
-    QueryPerformanceFrequency(&t);
+  if (t.QuadPart == 0) QueryPerformanceFrequency(&t);
   QueryPerformanceCounter(&l);
   return (double)l.QuadPart / (double)t.QuadPart;
 }
@@ -172,16 +182,22 @@ static inline void cft1st(int n, double *a, double *w);
 static inline void cftmdl(int n, int l, double *a, double *w);
 
 void cdft(int n, int isgn, double *a, int *ip, double *w)
-{    
-  if (n > 4) {
-    if (isgn >= 0) {
+{
+  if (n > 4)
+  {
+    if (isgn >= 0)
+    {
       bitrv2(n, ip, a);
       cftfsub(n, a, w);
-    } else {
+    }
+    else
+    {
       bitrv2conj(n, ip, a);
       cftbsub(n, a, w);
     }
-  } else if (n == 4) {
+  }
+  else if (n == 4)
+  {
     cftfsub(n, a, w);
   }
 }
@@ -194,16 +210,19 @@ void makewt(int nw, int *ip, double *w)
 {
   int j, nwh;
   double delta, x, y;
-    
-  if (nw > 2) {
+
+  if (nw > 2)
+  {
     nwh = nw >> 1;
     delta = atan(1.0) / nwh;
     w[0] = 1;
     w[1] = 0;
     w[nwh] = cos(delta * nwh);
     w[nwh + 1] = w[nwh];
-    if (nwh > 2) {
-      for (j = 2; j < nwh; j += 2) {
+    if (nwh > 2)
+    {
+      for (j = 2; j < nwh; j += 2)
+      {
         x = cos(delta * j);
         y = sin(delta * j);
         w[j] = x;
@@ -222,21 +241,26 @@ void bitrv2(int n, int *ip, double *a)
 {
   int j, j1, k, k1, l, m, m2;
   double xr, xi, yr, yi;
-    
+
   ip[0] = 0;
   l = n;
   m = 1;
-  while ((m << 3) < l) {
+  while ((m << 3) < l)
+  {
     l >>= 1;
-    for (j = 0; j < m; j++) {
+    for (j = 0; j < m; j++)
+    {
       ip[m + j] = ip[j] + l;
     }
     m <<= 1;
   }
   m2 = 2 * m;
-  if ((m << 3) == l) {
-    for (k = 0; k < m; k++) {
-      for (j = 0; j < k; j++) {
+  if ((m << 3) == l)
+  {
+    for (k = 0; k < m; k++)
+    {
+      for (j = 0; j < k; j++)
+      {
         j1 = 2 * j + ip[k];
         k1 = 2 * k + ip[j];
         xr = a[j1];
@@ -289,9 +313,13 @@ void bitrv2(int n, int *ip, double *a)
       a[k1] = xr;
       a[k1 + 1] = xi;
     }
-  } else {
-    for (k = 1; k < m; k++) {
-      for (j = 0; j < k; j++) {
+  }
+  else
+  {
+    for (k = 1; k < m; k++)
+    {
+      for (j = 0; j < k; j++)
+      {
         j1 = 2 * j + ip[k];
         k1 = 2 * k + ip[j];
         xr = a[j1];
@@ -317,26 +345,30 @@ void bitrv2(int n, int *ip, double *a)
   }
 }
 
-
 static void bitrv2conj(int n, int *ip, double *a)
 {
   int j, j1, k, k1, l, m, m2;
   double xr, xi, yr, yi;
-    
+
   ip[0] = 0;
   l = n;
   m = 1;
-  while ((m << 3) < l) {
+  while ((m << 3) < l)
+  {
     l >>= 1;
-    for (j = 0; j < m; j++) {
+    for (j = 0; j < m; j++)
+    {
       ip[m + j] = ip[j] + l;
     }
     m <<= 1;
   }
   m2 = 2 * m;
-  if ((m << 3) == l) {
-    for (k = 0; k < m; k++) {
-      for (j = 0; j < k; j++) {
+  if ((m << 3) == l)
+  {
+    for (k = 0; k < m; k++)
+    {
+      for (j = 0; j < k; j++)
+      {
         j1 = 2 * j + ip[k];
         k1 = 2 * k + ip[j];
         xr = a[j1];
@@ -393,11 +425,15 @@ static void bitrv2conj(int n, int *ip, double *a)
       k1 += m2;
       a[k1 + 1] = -a[k1 + 1];
     }
-  } else {
+  }
+  else
+  {
     a[1] = -a[1];
     a[m2 + 1] = -a[m2 + 1];
-    for (k = 1; k < m; k++) {
-      for (j = 0; j < k; j++) {
+    for (k = 1; k < m; k++)
+    {
+      for (j = 0; j < k; j++)
+      {
         j1 = 2 * j + ip[k];
         k1 = 2 * k + ip[j];
         xr = a[j1];
@@ -426,23 +462,26 @@ static void bitrv2conj(int n, int *ip, double *a)
   }
 }
 
-
 void cftfsub(int n, double *a, double *w)
 {
   int j, j1, j2, j3, l;
   double x0r, x0i, x1r, x1i, x2r, x2i, x3r, x3i;
-    
+
   l = 2;
-  if (n > 8) {
+  if (n > 8)
+  {
     cft1st(n, a, w);
     l = 8;
-    while ((l << 2) < n) {
+    while ((l << 2) < n)
+    {
       cftmdl(n, l, a, w);
       l <<= 2;
     }
   }
-  if ((l << 2) == n) {
-    for (j = 0; j < l; j += 2) {
+  if ((l << 2) == n)
+  {
+    for (j = 0; j < l; j += 2)
+    {
       j1 = j + l;
       j2 = j1 + l;
       j3 = j2 + l;
@@ -463,8 +502,11 @@ void cftfsub(int n, double *a, double *w)
       a[j3] = x1r + x3i;
       a[j3 + 1] = x1i - x3r;
     }
-  } else {
-    for (j = 0; j < l; j += 2) {
+  }
+  else
+  {
+    for (j = 0; j < l; j += 2)
+    {
       j1 = j + l;
       x0r = a[j] - a[j1];
       x0i = a[j + 1] - a[j1 + 1];
@@ -476,23 +518,26 @@ void cftfsub(int n, double *a, double *w)
   }
 }
 
-
 void cftbsub(int n, double *a, double *w)
 {
   int j, j1, j2, j3, l;
   double x0r, x0i, x1r, x1i, x2r, x2i, x3r, x3i;
-    
+
   l = 2;
-  if (n > 8) {
+  if (n > 8)
+  {
     cft1st(n, a, w);
     l = 8;
-    while ((l << 2) < n) {
+    while ((l << 2) < n)
+    {
       cftmdl(n, l, a, w);
       l <<= 2;
     }
   }
-  if ((l << 2) == n) {
-    for (j = 0; j < l; j += 2) {
+  if ((l << 2) == n)
+  {
+    for (j = 0; j < l; j += 2)
+    {
       j1 = j + l;
       j2 = j1 + l;
       j3 = j2 + l;
@@ -513,8 +558,11 @@ void cftbsub(int n, double *a, double *w)
       a[j3] = x1r + x3i;
       a[j3 + 1] = x1i + x3r;
     }
-  } else {
-    for (j = 0; j < l; j += 2) {
+  }
+  else
+  {
+    for (j = 0; j < l; j += 2)
+    {
       j1 = j + l;
       x0r = a[j] - a[j1];
       x0i = -a[j + 1] + a[j1 + 1];
@@ -526,13 +574,12 @@ void cftbsub(int n, double *a, double *w)
   }
 }
 
-
 void cft1st(int n, double *a, double *w)
 {
   int j, k1, k2;
   double wk1r, wk1i, wk2r, wk2i, wk3r, wk3i;
   double x0r, x0i, x1r, x1i, x2r, x2i, x3r, x3i;
-    
+
   x0r = a[0] + a[2];
   x0i = a[1] + a[3];
   x1r = a[0] - a[2];
@@ -571,7 +618,8 @@ void cft1st(int n, double *a, double *w)
   a[14] = wk1r * (x0i - x0r);
   a[15] = wk1r * (x0i + x0r);
   k1 = 0;
-  for (j = 16; j < n; j += 16) {
+  for (j = 16; j < n; j += 16)
+  {
     k1 += 2;
     k2 = 2 * k1;
     wk2r = w[k1];
@@ -631,15 +679,15 @@ void cft1st(int n, double *a, double *w)
   }
 }
 
-
 void cftmdl(int n, int l, double *a, double *w)
 {
   int j, j1, j2, j3, k, k1, k2, m, m2;
   double wk1r, wk1i, wk2r, wk2i, wk3r, wk3i;
   double x0r, x0i, x1r, x1i, x2r, x2i, x3r, x3i;
-    
+
   m = l << 2;
-  for (j = 0; j < l; j += 2) {
+  for (j = 0; j < l; j += 2)
+  {
     j1 = j + l;
     j2 = j1 + l;
     j3 = j2 + l;
@@ -661,7 +709,8 @@ void cftmdl(int n, int l, double *a, double *w)
     a[j3 + 1] = x1i - x3r;
   }
   wk1r = w[2];
-  for (j = m; j < l + m; j += 2) {
+  for (j = m; j < l + m; j += 2)
+  {
     j1 = j + l;
     j2 = j1 + l;
     j3 = j2 + l;
@@ -688,7 +737,8 @@ void cftmdl(int n, int l, double *a, double *w)
   }
   k1 = 0;
   m2 = 2 * m;
-  for (k = m2; k < n; k += m2) {
+  for (k = m2; k < n; k += m2)
+  {
     k1 += 2;
     k2 = 2 * k1;
     wk2r = w[k1];
@@ -697,7 +747,8 @@ void cftmdl(int n, int l, double *a, double *w)
     wk1i = w[k2 + 1];
     wk3r = wk1r - 2 * wk2i * wk1i;
     wk3i = 2 * wk2i * wk1r - wk1i;
-    for (j = k; j < l + k; j += 2) {
+    for (j = k; j < l + k; j += 2)
+    {
       j1 = j + l;
       j2 = j1 + l;
       j3 = j2 + l;
@@ -728,7 +779,8 @@ void cftmdl(int n, int l, double *a, double *w)
     wk1i = w[k2 + 3];
     wk3r = wk1r - 2 * wk2r * wk1i;
     wk3i = 2 * wk2r * wk1r - wk1i;
-    for (j = k + m; j < l + (k + m); j += 2) {
+    for (j = k + m; j < l + (k + m); j += 2)
+    {
       j1 = j + l;
       j2 = j1 + l;
       j3 = j2 + l;
@@ -757,4 +809,3 @@ void cftmdl(int n, int l, double *a, double *w)
     }
   }
 }
-

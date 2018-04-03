@@ -26,14 +26,14 @@ int verboseflag;
 int definesflag;
 int debugflag;
 int nolinesflag;
-extern int fixed_outfiles;/* JF */
+extern int fixed_outfiles; /* JF */
 
 extern void fatal(char *s);
 #ifndef __sun__
-extern int getopt(int argc,char **argv,char *optstring);
+extern int getopt(int argc, char **argv, char *optstring);
 #endif
 
-void getargs(int argc,char *argv[])
+void getargs(int argc, char *argv[])
 {
   register int c;
   char *p = argv[0];
@@ -51,47 +51,59 @@ void getargs(int argc,char *argv[])
 
   lastcomponent = p;
   while (*p)
+  {
+    if (*p == '/')
     {
-      if (*p == '/')
-	lastcomponent = p + 1;
-      p++;
+      lastcomponent = p + 1;
     }
-  if (! strcmp (lastcomponent, "yacc"))
+    p++;
+  }
+  if (!strcmp(lastcomponent, "yacc"))
+  {
     /* If so, pretend we have "-y" as argument.  */
     fixed_outfiles = 1;
+  }
 
-  while ((c = getopt (argc, argv, "yvdlto:")) != EOF)
+  while ((c = getopt(argc, argv, "yvdlto:")) != EOF)
+  {
     switch (c)
-      {
+    {
       case 'y':
-	fixed_outfiles = 1;
-	break;
+        fixed_outfiles = 1;
+        break;
 
       case 'v':
-	verboseflag = 1;
-	break;
+        verboseflag = 1;
+        break;
 
       case 'd':
-	definesflag = 1;
-	break;
+        definesflag = 1;
+        break;
 
       case 'l':
-	nolinesflag = 1;
-	break;
+        nolinesflag = 1;
+        break;
 
       case 't':
-	debugflag = 1;
-	break;
+        debugflag = 1;
+        break;
 
       case 'o':
-	spec_outfile = optarg;
-      }
+        spec_outfile = optarg;
+    }
+  }
 
   if (optind == argc)
+  {
     fatal("grammar file not specified");
+  }
   else
+  {
     infile = argv[optind];
+  }
 
   if (optind < argc - 1)
+  {
     fprintf(stderr, "bison: warning: extra arguments ignored\n");
+  }
 }

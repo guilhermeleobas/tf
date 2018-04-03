@@ -5,12 +5,12 @@
  *
  */
 
-#include <stdio.h>
 #include <ctype.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "checkfile.h"
 
@@ -33,36 +33,42 @@ unsigned char ibuf[MAXLINE];
 
 int check_file(char *fname)
 {
-struct stat buf;
+  struct stat buf;
 
-
-  if (stat(fname, &buf) != 0) {
+  if (stat(fname, &buf) != 0)
+  {
     if (errno == ENOENT)
+    {
       return NOSUCHFILE;
-    else
-      return STATFAILED;  
-    } else {
-/*
-      if (S_ISREG(buf.st_mode)) {
-        if ((ftype = samplefile(fname)) == ISASCIIFILE) {
-          return ISASCIIFILE;
-        } else if (ftype == ISBINARYFILE) {
-          return ISBINARYFILE;
-        } else if (ftype == OPENFAILED) {
-          return OPENFAILED;
-        }
-      }
-      if (S_ISDIR(buf.st_mode)) {
-        return ISDIRECTORY;
-      }
-      if (S_ISBLK(buf.st_mode)) {
-        return ISBLOCKFILE;
-      }
-      if (S_ISSOCK(buf.st_mode)) {
-        return ISSOCKET;
-      }
-*/
     }
+    else
+    {
+      return STATFAILED;
+    }
+  }
+  else
+  {
+    /*
+          if (S_ISREG(buf.st_mode)) {
+            if ((ftype = samplefile(fname)) == ISASCIIFILE) {
+              return ISASCIIFILE;
+            } else if (ftype == ISBINARYFILE) {
+              return ISBINARYFILE;
+            } else if (ftype == OPENFAILED) {
+              return OPENFAILED;
+            }
+          }
+          if (S_ISDIR(buf.st_mode)) {
+            return ISDIRECTORY;
+          }
+          if (S_ISBLK(buf.st_mode)) {
+            return ISBLOCKFILE;
+          }
+          if (S_ISSOCK(buf.st_mode)) {
+            return ISSOCKET;
+          }
+    */
+  }
   return 0;
 }
 

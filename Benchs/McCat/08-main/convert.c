@@ -10,7 +10,7 @@
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ****/
 
 /*****************************************************************************/
@@ -19,8 +19,7 @@
 
 #include "header.h"
 /****************************************************************************/
-HPoint 
-PointToHPoint(ObjPoint P)
+HPoint PointToHPoint(ObjPoint P)
 {
   HPoint res;
   res.x = P.x;
@@ -29,8 +28,7 @@ PointToHPoint(ObjPoint P)
   res.w = 1;
   return res;
 }
-HPoint 
-TPointToHPoint(ObjPoint TP)
+HPoint TPointToHPoint(ObjPoint TP)
 {
   HPoint res;
   res.x = TP.tx;
@@ -39,8 +37,7 @@ TPointToHPoint(ObjPoint TP)
   res.w = 1;
   return res;
 }
-ObjPoint 
-HPointToPoint(HPoint P)
+ObjPoint HPointToPoint(HPoint P)
 {
   ObjPoint res;
   res.x = P.x;
@@ -48,8 +45,7 @@ HPointToPoint(HPoint P)
   res.z = P.z;
   return res;
 }
-ObjPoint 
-HPointToTPoint(HPoint P)
+ObjPoint HPointToTPoint(HPoint P)
 {
   ObjPoint res;
   res.tx = P.x;

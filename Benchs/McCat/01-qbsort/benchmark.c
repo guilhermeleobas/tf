@@ -10,7 +10,7 @@
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ****/
 
 /*         benchmark.c          */
@@ -27,8 +27,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "sort.h"
 #include "readlist.h"
+#include "sort.h"
 
 #ifdef TIMEREPEAT
 #include <sys/time.h>
@@ -36,11 +36,7 @@
 
 BOOL LessThan(int x, int y);
 
-BOOL LessThan(int x, int y)
-{
-  return (x < y);
-}
-
+BOOL LessThan(int x, int y) { return (x < y); }
 int main(int argc, char **argv)
 {
   int listno = 1;
@@ -53,38 +49,44 @@ int main(int argc, char **argv)
   LinkList *origLinkList;
   int *origList;
   int repeat = 0;
-  if (argc > 1) {
+  if (argc > 1)
+  {
     repeat = strtol(argv[1], 0, 0);
   }
 #ifdef TIMEREPEAT
   long long stime = 0;
   struct timeval t, tt;
 #endif
-  while ((err = ReadList(&ll, &l)) == 0) {
+  while ((err = ReadList(&ll, &l)) == 0)
+  {
     origLinkList = ll;
     origList = l->l;
-    l->l = (int*) malloc(sizeof(int)*l->n);
-    memcpy(l->l, origList, sizeof(int)*l->n);
+    l->l = (int *)malloc(sizeof(int) * l->n);
+    memcpy(l->l, origList, sizeof(int) * l->n);
 #ifdef TIMEREPEAT
-    gettimeofday(&t,0);
+    gettimeofday(&t, 0);
 #endif
-    for (; repeat > 0; --repeat) {
+    for (; repeat > 0; --repeat)
+    {
       l = BubbleSort(l, LessThan);
-      memcpy(l->l, origList, sizeof(int)*l->n);
+      memcpy(l->l, origList, sizeof(int) * l->n);
       /* QuickSort returns a new list, and origLinkList is unmodified */
       ll = QuickSort(origLinkList, LessThan);
       FreeLinkList(ll);
     }
 #ifdef TIMEREPEAT
-    gettimeofday(&tt,0);
-    stime += (tt.tv_sec-t.tv_sec)*1000000 + (tt.tv_usec-t.tv_usec);
+    gettimeofday(&tt, 0);
+    stime += (tt.tv_sec - t.tv_sec) * 1000000 + (tt.tv_usec - t.tv_usec);
 #endif
-    printf("\nList read (reverse order): ");fflush(stdout);
+    printf("\nList read (reverse order): ");
+    fflush(stdout);
     PrintList(l);
-    printf("\nBubbleSort: "); fflush(stdout);
+    printf("\nBubbleSort: ");
+    fflush(stdout);
     l = BubbleSort(l, LessThan);
     PrintList(l);
-    printf("\nQuickSort:  "); fflush(stdout);
+    printf("\nQuickSort:  ");
+    fflush(stdout);
     ll = QuickSort(origLinkList, LessThan);
     PrintLinkList(ll);
     printf("\n");
@@ -96,18 +98,19 @@ int main(int argc, char **argv)
     listno++;
   }
 
-  switch(err) {
-  case COMMA_EXPECTED:
-    printf("Comma expected in list number %d\n", listno);
-    exit(1);
-    break;
-  case READ_EOF:
-    printf("Last list read\n");
-    break;
-  default:
-    printf("Program Error: Unrecognized errorcode from ReadList\n");
-    exit(1);
-    break;
+  switch (err)
+  {
+    case COMMA_EXPECTED:
+      printf("Comma expected in list number %d\n", listno);
+      exit(1);
+      break;
+    case READ_EOF:
+      printf("Last list read\n");
+      break;
+    default:
+      printf("Program Error: Unrecognized errorcode from ReadList\n");
+      exit(1);
+      break;
   }
 #ifdef TIMEREPEAT
   printf("sort time = %lld usec\n", stime);

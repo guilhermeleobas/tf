@@ -10,7 +10,7 @@
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ****/
 
 /************************************************************************/
@@ -21,9 +21,9 @@
 /*             email mikdam@daimi.aau.dk                                */
 /*                                                                      */
 /*  files :                                                             */
-/*  Divsol.c           QRfact.h           Divsol.h           Jacobi.c   */     
-/*  Jacobi.h           Triang.c           print.c            MM.c       */   
-/*  Triang.h           print.h            MM.h               QRfact.c   */   
+/*  Divsol.c           QRfact.h           Divsol.h           Jacobi.c   */
+/*  Jacobi.h           Triang.c           print.c            MM.c       */
+/*  Triang.h           print.h            MM.h               QRfact.c   */
 /*  main.c             main.h                                           */
 /*                                                                      */
 /*  It calculates the eigenvalues for 4 different matrixes. It does not */
@@ -38,8 +38,10 @@ void printMatrix(Matrix A)
 {
   int i;
 
-  for (i=0;i<n;i++)
+  for (i = 0; i < n; i++)
+  {
     printVector(A[i]);
+  }
   printf("\n");
 }
 
@@ -47,8 +49,9 @@ void printVector(Vector v)
 {
   int i;
 
-  for (i=0;i<n;i++)
-    printf("%f ",v[i]);
+  for (i = 0; i < n; i++)
+  {
+    printf("%f ", v[i]);
+  }
   printf("\n");
 }
-     

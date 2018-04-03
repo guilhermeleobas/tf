@@ -5,9 +5,7 @@
  *
  */
 
-
 #define MAIN_CODE
-
 
 /*
  *
@@ -15,16 +13,15 @@
  *
  */
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
-#include "option.h"
-#include "channel.h"
-#include "vcg.h"
-#include "hcg.h"
 #include "assign.h"
+#include "channel.h"
+#include "hcg.h"
 #include "maze.h"
-
+#include "option.h"
+#include "vcg.h"
 
 /*
  *
@@ -32,18 +29,16 @@
  *
  */
 
-int
-main(int argc,
-     char *argv[])
+int main(int argc, char *argv[])
 {
-    ulong      	done;
-    ulong	fail;
-    ulong	net;
-    ulong	insert;
-    int		netsLeft;
-int TIMELOOP;
-for (TIMELOOP = 0; TIMELOOP < 20; ++TIMELOOP) {
-
+  ulong done;
+  ulong fail;
+  ulong net;
+  ulong insert;
+  int netsLeft;
+  int TIMELOOP;
+  for (TIMELOOP = 0; TIMELOOP < 20; ++TIMELOOP)
+  {
     Option(argc, argv);
 
     BuildChannel();
@@ -51,88 +46,101 @@ for (TIMELOOP = 0; TIMELOOP < 20; ++TIMELOOP) {
     AcyclicVCG();
     BuildHCG();
 
-    do {
-	/*
-	 * Setup.
-	 */
-	AllocAssign();
-	NetsAssign();
-	InitAllocMaps();
+    do
+    {
+      /*
+       * Setup.
+       */
+      AllocAssign();
+      NetsAssign();
+      InitAllocMaps();
 
-	/*
-	 * Copy the nets assign.
-	 */
-	channelTracksCopy = channelTracks;
-	for (net = 1; net <= channelNets; net++) {
-	    netsAssignCopy[net] = netsAssign[net];
-	}
+      /*
+       * Copy the nets assign.
+       */
+      channelTracksCopy = channelTracks;
+      for (net = 1; net <= channelNets; net++)
+      {
+        netsAssignCopy[net] = netsAssign[net];
+      }
 
-	/*
-	 * Route, adding a row if necessary.
-	 */
-	fail = 0;
-	do {
-	    done = TRUE;
-	    if ((netsLeft = DrawNets()) != 0) {
-		printf("Assignment could not route %d columns, trying maze1...\n",
-		       netsLeft);
-		if ((netsLeft = Maze1()) != 0) {
-		    printf("Maze1 could not route %d columns, trying maze2...\n",
-			   netsLeft);
-		    if ((netsLeft = Maze2()) != 0) {
-			printf("Maze2 could not route %d columns, trying maze3...\n",
-			       netsLeft);
-			if ((netsLeft = Maze3()) != 0) {
-			    printf("Maze3 could not route %d columns, adding a track...\n",
-				   netsLeft);
-			    /* PrintChannel(); */
-			    if (! fail) {
-				channelTracks++;
-			    }
-			    fail++;
+      /*
+       * Route, adding a row if necessary.
+       */
+      fail = 0;
+      do
+      {
+        done = TRUE;
+        if ((netsLeft = DrawNets()) != 0)
+        {
+          printf("Assignment could not route %d columns, trying maze1...\n",
+                 netsLeft);
+          if ((netsLeft = Maze1()) != 0)
+          {
+            printf("Maze1 could not route %d columns, trying maze2...\n",
+                   netsLeft);
+            if ((netsLeft = Maze2()) != 0)
+            {
+              printf("Maze2 could not route %d columns, trying maze3...\n",
+                     netsLeft);
+              if ((netsLeft = Maze3()) != 0)
+              {
+                printf("Maze3 could not route %d columns, adding a track...\n",
+                       netsLeft);
+                /* PrintChannel(); */
+                if (!fail)
+                {
+                  channelTracks++;
+                }
+                fail++;
 
-			    /*
-			     * Restore the nets assign.
-			     */
-			    for (net = 1; net <= channelNets; net++) {
-				netsAssign[net] = netsAssignCopy[net];
-			    }
+                /*
+                 * Restore the nets assign.
+                 */
+                for (net = 1; net <= channelNets; net++)
+                {
+                  netsAssign[net] = netsAssignCopy[net];
+                }
 
-			    /*
-			     * Damn!
-			     */
-			    done = FALSE;
-			}
-		    }
-		}
-	    }
+                /*
+                 * Damn!
+                 */
+                done = FALSE;
+              }
+            }
+          }
+        }
 
-	    /*
-	     * Add a track at track # fail, thereby shifting
-	     * all tracks at that point down one track.
-	     */
-	    if ((! done) && fail) {
+        /*
+         * Add a track at track # fail, thereby shifting
+         * all tracks at that point down one track.
+         */
+        if ((!done) && fail)
+        {
 #ifdef VERBOSE
-		printf("\n*** fail (insert track at %d) ***\n", fail);
+          printf("\n*** fail (insert track at %d) ***\n", fail);
 #endif
-		for (insert = 1; insert <= channelNets; insert++) {
-		    if (netsAssign[insert] >= fail) {
-			netsAssign[insert]++;
-		    }
-		}
-	    }
-	} while ((! done) && (fail <= channelTracksCopy + 1));
+          for (insert = 1; insert <= channelNets; insert++)
+          {
+            if (netsAssign[insert] >= fail)
+            {
+              netsAssign[insert]++;
+            }
+          }
+        }
+      } while ((!done) && (fail <= channelTracksCopy + 1));
 
-	/*
-	 * Did adding a row within existing assignment work?
-	 * If not, just start over.
-	 */
-	if (! done) {
-	    FreeAllocMaps();
-	    FreeAssign();
-	    assert(channelTracks == channelTracksCopy + 1);
-	}
-    } while (! done);
+      /*
+       * Did adding a row within existing assignment work?
+       * If not, just start over.
+       */
+      if (!done)
+      {
+        FreeAllocMaps();
+        FreeAssign();
+        assert(channelTracks == channelTracksCopy + 1);
+      }
+    } while (!done);
 
     printf("\n");
     PrintChannel();
@@ -140,6 +148,6 @@ for (TIMELOOP = 0; TIMELOOP < 20; ++TIMELOOP) {
     PrintDerefStats(stderr);
     PrintHeapSize(stderr);
 #endif /* PLUS_STATS */
-}
-    exit(0);
+  }
+  exit(0);
 }

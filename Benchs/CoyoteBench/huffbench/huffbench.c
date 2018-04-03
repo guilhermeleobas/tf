@@ -497,7 +497,7 @@ int main(int argc, char **argv)
   // calculate run time
   // clock_gettime(CLOCK_REALTIME,&stop);
   double run_time = 0;  //(stop.tv_sec - start.tv_sec) + (double)(stop.tv_nsec -
-                        //start.tv_nsec) / 1000000000.0;
+                        // start.tv_nsec) / 1000000000.0;
 
   /*
   FILE * after = fopen("after","wb");

@@ -31,17 +31,18 @@ void dealwithargs(int argc, char *argv[])
 {
 #ifdef TORONTO
   if (argc > 4)
-    NumNodes = atoi(argv[4]);    
+    NumNodes = atoi(argv[4]);
   else
     NumNodes = 1;
 #else
 #ifdef OLDEN
   if (argc > 5)
     DebugFlag = atoi(argv[5]);
-  else DebugFlag = 0;
+  else
+    DebugFlag = 0;
 
   if (argc > 4)
-    __NumNodes = atoi(argv[4]);    
+    __NumNodes = atoi(argv[4]);
   else
     __NumNodes = 4;
 #endif
@@ -62,5 +63,3 @@ void dealwithargs(int argc, char *argv[])
   else
     local_p = 75;
 }
-
-
