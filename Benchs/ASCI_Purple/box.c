@@ -75,14 +75,14 @@ int hypre_BoxArraySetSize(hypre_BoxArray *box_array, int size)
   alloc_size = hypre_BoxArrayAllocSize(box_array);
 
   if (size > alloc_size)
-  {
-    alloc_size = size + hypre_BoxArrayExcess;
+    {
+      alloc_size = size + hypre_BoxArrayExcess;
 
-    hypre_BoxArrayBoxes(box_array) =
-        hypre_TReAlloc(hypre_BoxArrayBoxes(box_array), hypre_Box, alloc_size);
+      hypre_BoxArrayBoxes(box_array) =
+          hypre_TReAlloc(hypre_BoxArrayBoxes(box_array), hypre_Box, alloc_size);
 
-    hypre_BoxArrayAllocSize(box_array) = alloc_size;
-  }
+      hypre_BoxArrayAllocSize(box_array) = alloc_size;
+    }
 
   hypre_BoxArraySize(box_array) = size;
 
@@ -104,9 +104,9 @@ hypre_BoxArrayArray *hypre_BoxArrayArrayCreate(int size)
       hypre_CTAlloc(hypre_BoxArray *, size);
 
   for (i = 0; i < size; i++)
-  {
-    hypre_BoxArrayArrayBoxArray(box_array_array, i) = hypre_BoxArrayCreate(0);
-  }
+    {
+      hypre_BoxArrayArrayBoxArray(box_array_array, i) = hypre_BoxArrayCreate(0);
+    }
   hypre_BoxArrayArraySize(box_array_array) = size;
 
   return box_array_array;
@@ -121,13 +121,13 @@ int hypre_BoxDestroy(hypre_Box *box)
   int ierr = 0;
 
   if (box)
-  {
+    {
 #if 1
-    hypre_TFree(box);
+      hypre_TFree(box);
 #else
-    hypre_BoxFree(box);
+      hypre_BoxFree(box);
 #endif
-  }
+    }
 
   return ierr;
 }
@@ -141,10 +141,10 @@ int hypre_BoxArrayDestroy(hypre_BoxArray *box_array)
   int ierr = 0;
 
   if (box_array)
-  {
-    hypre_TFree(hypre_BoxArrayBoxes(box_array));
-    hypre_TFree(box_array);
-  }
+    {
+      hypre_TFree(hypre_BoxArrayBoxes(box_array));
+      hypre_TFree(box_array);
+    }
 
   return ierr;
 }
@@ -159,13 +159,13 @@ int hypre_BoxArrayArrayDestroy(hypre_BoxArrayArray *box_array_array)
   int i;
 
   if (box_array_array)
-  {
-    hypre_ForBoxArrayI(i, box_array_array)
-        hypre_BoxArrayDestroy(hypre_BoxArrayArrayBoxArray(box_array_array, i));
+    {
+      hypre_ForBoxArrayI(i, box_array_array)
+          hypre_BoxArrayDestroy(hypre_BoxArrayArrayBoxArray(box_array_array, i));
 
-    hypre_TFree(hypre_BoxArrayArrayBoxArrays(box_array_array));
-    hypre_TFree(box_array_array);
-  }
+      hypre_TFree(hypre_BoxArrayArrayBoxArrays(box_array_array));
+      hypre_TFree(box_array_array);
+    }
 
   return ierr;
 }
@@ -225,15 +225,15 @@ hypre_BoxArrayArray *hypre_BoxArrayArrayDuplicate(
   new_box_array_array = hypre_BoxArrayArrayCreate(new_size);
 
   if (new_size)
-  {
-    new_box_arrays = hypre_BoxArrayArrayBoxArrays(new_box_array_array);
-    box_arrays = hypre_BoxArrayArrayBoxArrays(box_array_array);
-
-    for (i = 0; i < new_size; i++)
     {
-      hypre_AppendBoxArray(box_arrays[i], new_box_arrays[i]);
+      new_box_arrays = hypre_BoxArrayArrayBoxArrays(new_box_array_array);
+      box_arrays = hypre_BoxArrayArrayBoxArrays(box_array_array);
+
+      for (i = 0; i < new_size; i++)
+        {
+          hypre_AppendBoxArray(box_arrays[i], new_box_arrays[i]);
+        }
     }
-  }
 
   return new_box_array_array;
 }
@@ -267,10 +267,10 @@ int hypre_DeleteBox(hypre_BoxArray *box_array, int index)
   int i;
 
   for (i = index; i < hypre_BoxArraySize(box_array) - 1; i++)
-  {
-    hypre_CopyBox(hypre_BoxArrayBox(box_array, i + 1),
-                  hypre_BoxArrayBox(box_array, i));
-  }
+    {
+      hypre_CopyBox(hypre_BoxArrayBox(box_array, i + 1),
+                    hypre_BoxArrayBox(box_array, i));
+    }
 
   hypre_BoxArraySize(box_array)--;
 
@@ -296,10 +296,10 @@ int hypre_AppendBoxArray(hypre_BoxArray *box_array_0,
 
   /* copy box_array_0 boxes into box_array_1 */
   for (i = 0; i < size_0; i++)
-  {
-    hypre_CopyBox(hypre_BoxArrayBox(box_array_0, i),
-                  hypre_BoxArrayBox(box_array_1, size + i));
-  }
+    {
+      hypre_CopyBox(hypre_BoxArrayBox(box_array_0, i),
+                    hypre_BoxArrayBox(box_array_1, size + i));
+    }
 
   return ierr;
 }
@@ -326,14 +326,14 @@ int hypre_BoxGetStrideSize(hypre_Box *box, hypre_Index stride, hypre_Index size)
   int d, s;
 
   for (d = 0; d < 3; d++)
-  {
-    s = hypre_BoxSizeD(box, d);
-    if (s > 0)
     {
-      s = (s - 1) / hypre_IndexD(stride, d) + 1;
+      s = hypre_BoxSizeD(box, d);
+      if (s > 0)
+        {
+          s = (s - 1) / hypre_IndexD(stride, d) + 1;
+        }
+      hypre_IndexD(size, d) = s;
     }
-    hypre_IndexD(size, d) = s;
-  }
 
   return 0;
 }
@@ -349,22 +349,22 @@ int hypre_IModPeriod(int i, int period)
   int shift;
 
   if (period == 0)
-  {
-    i_mod_p = i;
-  }
+    {
+      i_mod_p = i;
+    }
   else if (i >= period)
-  {
-    i_mod_p = i % period;
-  }
+    {
+      i_mod_p = i % period;
+    }
   else if (i < 0)
-  {
-    shift = (-i / period + 1) * period;
-    i_mod_p = (i + shift) % period;
-  }
+    {
+      shift = (-i / period + 1) * period;
+      i_mod_p = (i + shift) % period;
+    }
   else
-  {
-    i_mod_p = i;
-  }
+    {
+      i_mod_p = i;
+    }
 
   return i_mod_p;
 }

@@ -100,12 +100,12 @@ int swap_bytes(int x)
    known sizes in byte reversed form. The last entry should be 0. */
 
 int known_size[32] = {
-    504,  /* plot3d output 504x504 */
+    504, /* plot3d output 504x504 */
     2048, /* versatek plotter 2048x2048 */
     2100, /* plot3d output */
     3120, /* Tektronix 4010 terminal 3120x3120 */
     4096, /* GSI 300 terminal 4096x4096 */
-    0     /* the last entry should be 0 */
+    0 /* the last entry should be 0 */
 };
 
 /* find_byte_order takes four integer arguments and matches third one
@@ -120,25 +120,25 @@ void find_byte_order(int *x0, int *y0, int *x1, int *y1)
 {
   int i;
   for (i = 0; known_size[i] != 0; i++)
-  {
-    if (*x1 == known_size[i])
     {
-      return;
+      if (*x1 == known_size[i])
+        {
+          return;
+        }
     }
-  }
   /* now check to see if reversing the bytes allows a match... */
   for (i = 0; known_size[i] != 0; i++)
-  {
-    if (*x1 == swap_bytes(known_size[i]))
     {
-      *x0 = swap_bytes(*x0);
-      *y0 = swap_bytes(*y0);
-      *x1 = swap_bytes(*x1);
-      *y1 = swap_bytes(*y1);
-      high_byte_first = !high_byte_first;
-      return;
+      if (*x1 == swap_bytes(known_size[i]))
+        {
+          *x0 = swap_bytes(*x0);
+          *y0 = swap_bytes(*y0);
+          *x1 = swap_bytes(*x1);
+          *y1 = swap_bytes(*y1);
+          high_byte_first = !high_byte_first;
+          return;
+        }
     }
-  }
 }
 
 /* Read a byte */
@@ -151,19 +151,19 @@ int coord(FILE *input)
 {
   int x;
   if (high_byte_first)
-  {
-    x = ((char)read_byte(input)) << 8; /* get sign from high byte */
-    x |= read_byte(input) & 0xFF;      /* not from low byte */
-  }
+    {
+      x = ((char)read_byte(input)) << 8; /* get sign from high byte */
+      x |= read_byte(input) & 0xFF; /* not from low byte */
+    }
   else
-  {
-    x = read_byte(input) & 0xFF;        /* ingnore sign in low byte */
-    x |= ((char)read_byte(input)) << 8; /* get sign from high byte */
-  }
+    {
+      x = read_byte(input) & 0xFF; /* ingnore sign in low byte */
+      x |= ((char)read_byte(input)) << 8; /* get sign from high byte */
+    }
   if (!signed_input)
-  {
-    x &= 0xFFFF;
-  }
+    {
+      x &= 0xFFFF;
+    }
 
   return x;
 }
@@ -178,24 +178,24 @@ void read_string(FILE *input, char *buffer, int buffer_length)
   char c = '\0';
 
   while (!feof(input))
-  {
-    if (length > buffer_length)
     {
-      buffer_length *= 2;
-      buffer = (char *)realloc(buffer, buffer_length);
-      if (buffer <= (char *)0)
-      {
-        perror("realloc failed:");
-        exit(-1);
-      }
+      if (length > buffer_length)
+        {
+          buffer_length *= 2;
+          buffer = (char *)realloc(buffer, buffer_length);
+          if (buffer <= (char *)0)
+            {
+              perror("realloc failed:");
+              exit(-1);
+            }
+        }
+      c = read_byte(input);
+      if (c == termination)
+        {
+          break;
+        }
+      buffer[length++] = c;
     }
-    c = read_byte(input);
-    if (c == termination)
-    {
-      break;
-    }
-    buffer[length++] = c;
-  }
 
   buffer[length] = '\0'; /*  null terminate label */
 }
@@ -212,105 +212,105 @@ void read_plot(FILE *in_stream, char *buffer, int buffer_length)
 
   instruction = read_byte(in_stream);
   while (!feof(in_stream))
-  {
-    switch (instruction)
     {
-      /*  Note: we must get all but the last argument before calling to
+      switch (instruction)
+        {
+            /*  Note: we must get all but the last argument before calling to
           ensure reading them in the proper order. */
 
-      case ALABEL:
-        x_adjust = read_byte(in_stream);
-        y_adjust = read_byte(in_stream);
-        read_string(in_stream, buffer, buffer_length);
-        alabel(x_adjust, y_adjust, buffer);
-        break;
-      case ARC:
-        x0 = coord(in_stream);
-        y0 = coord(in_stream);
-        x1 = coord(in_stream);
-        y1 = coord(in_stream);
-        x2 = coord(in_stream);
-        y2 = coord(in_stream);
-        arc(x0, y0, x1, y1, x2, y2);
-        break;
-      case CIRCLE:
-        x0 = coord(in_stream);
-        y0 = coord(in_stream);
-        x1 = coord(in_stream);
-        circle(x0, y0, x1);
-        break;
-      case COLOR:
-        x0 = coord(in_stream) & 0xFFFF;
-        y0 = coord(in_stream) & 0xFFFF;
-        x1 = coord(in_stream) & 0xFFFF;
-        color(x0, y0, x1);
-        break;
-      case CONT:
-        x0 = coord(in_stream);
-        y0 = coord(in_stream);
-        cont(x0, y0);
-        break;
-      case ERASE:
-        erase(in_stream);
-        break;
-      case FILL:
-        fill(coord(in_stream) & 0xFFFF);
-        break;
-      case FONT:
-        read_string(in_stream, buffer, buffer_length);
-        fontname(buffer);
-        break;
-      case FONTSIZE:
-        fontsize(coord(in_stream));
-        break;
-      case LABEL:
-        read_string(in_stream, buffer, buffer_length);
-        label(buffer);
-        break;
-      case LINE:
-        x0 = coord(in_stream);
-        y0 = coord(in_stream);
-        x1 = coord(in_stream);
-        y1 = coord(in_stream);
-        line(x0, y0, x1, y1);
-        break;
-      case LINEMOD:
-        read_string(in_stream, buffer, buffer_length);
-        linemod(buffer);
-        break;
-      case MOVE:
-        x0 = coord(in_stream);
-        y0 = coord(in_stream);
-        move_nasko(x0, y0);
-        break;
-      case POINT:
-        x0 = coord(in_stream);
-        y0 = coord(in_stream);
-        point(x0, y0);
-        break;
-      case ROTATE:
-        x0 = coord(in_stream);
-        y0 = coord(in_stream);
-        x1 = coord(in_stream);
-        rotate(x0, y0, x1);
-        break;
-      case SPACE:
-        x0 = coord(in_stream);
-        y0 = coord(in_stream);
-        x1 = coord(in_stream);
-        y1 = coord(in_stream);
-        if (guess_byte_order)
-        {
-          find_byte_order(&x0, &y0, &x1, &y1);
+          case ALABEL:
+            x_adjust = read_byte(in_stream);
+            y_adjust = read_byte(in_stream);
+            read_string(in_stream, buffer, buffer_length);
+            alabel(x_adjust, y_adjust, buffer);
+            break;
+          case ARC:
+            x0 = coord(in_stream);
+            y0 = coord(in_stream);
+            x1 = coord(in_stream);
+            y1 = coord(in_stream);
+            x2 = coord(in_stream);
+            y2 = coord(in_stream);
+            arc(x0, y0, x1, y1, x2, y2);
+            break;
+          case CIRCLE:
+            x0 = coord(in_stream);
+            y0 = coord(in_stream);
+            x1 = coord(in_stream);
+            circle(x0, y0, x1);
+            break;
+          case COLOR:
+            x0 = coord(in_stream) & 0xFFFF;
+            y0 = coord(in_stream) & 0xFFFF;
+            x1 = coord(in_stream) & 0xFFFF;
+            color(x0, y0, x1);
+            break;
+          case CONT:
+            x0 = coord(in_stream);
+            y0 = coord(in_stream);
+            cont(x0, y0);
+            break;
+          case ERASE:
+            erase(in_stream);
+            break;
+          case FILL:
+            fill(coord(in_stream) & 0xFFFF);
+            break;
+          case FONT:
+            read_string(in_stream, buffer, buffer_length);
+            fontname(buffer);
+            break;
+          case FONTSIZE:
+            fontsize(coord(in_stream));
+            break;
+          case LABEL:
+            read_string(in_stream, buffer, buffer_length);
+            label(buffer);
+            break;
+          case LINE:
+            x0 = coord(in_stream);
+            y0 = coord(in_stream);
+            x1 = coord(in_stream);
+            y1 = coord(in_stream);
+            line(x0, y0, x1, y1);
+            break;
+          case LINEMOD:
+            read_string(in_stream, buffer, buffer_length);
+            linemod(buffer);
+            break;
+          case MOVE:
+            x0 = coord(in_stream);
+            y0 = coord(in_stream);
+            move_nasko(x0, y0);
+            break;
+          case POINT:
+            x0 = coord(in_stream);
+            y0 = coord(in_stream);
+            point(x0, y0);
+            break;
+          case ROTATE:
+            x0 = coord(in_stream);
+            y0 = coord(in_stream);
+            x1 = coord(in_stream);
+            rotate(x0, y0, x1);
+            break;
+          case SPACE:
+            x0 = coord(in_stream);
+            y0 = coord(in_stream);
+            x1 = coord(in_stream);
+            y1 = coord(in_stream);
+            if (guess_byte_order)
+              {
+                find_byte_order(&x0, &y0, &x1, &y1);
+              }
+            space(x0, y0, x1, y1);
+            break;
+          default:
+            fprintf(stderr, "Unrecognized plot command `%c' ignored.\n",
+                    instruction);
         }
-        space(x0, y0, x1, y1);
-        break;
-      default:
-        fprintf(stderr, "Unrecognized plot command `%c' ignored.\n",
-                instruction);
+      instruction = read_byte(in_stream);
     }
-    instruction = read_byte(in_stream);
-  }
   return;
 }
 
@@ -321,124 +321,124 @@ int main(int argc, char *argv[])
   int buffer_length;
   int named_plot = 0; /* count named plot files on command line. */
   int show_usage = 0; /* remember whether to output usage message. */
-  int opened = 0;     /* remember whether we have opened output. */
+  int opened = 0; /* remember whether we have opened output. */
 
   buffer_length = 1024;
   buffer = (char *)malloc(buffer_length);
   if (buffer <= (char *)0)
-  {
-    perror("malloc failed:");
-    exit(-1);
-  }
+    {
+      perror("malloc failed:");
+      exit(-1);
+    }
 
   for (i = 1; i < argc; i++)
-  {
-    if ((strcmp(argv[i], "-fontsize") == 0) || (strcmp(argv[i], "-fs") == 0))
     {
-      /* Sizes supported by X: 8, 10, 12, 14, 18, and 24. */
-      fontsize(atoi(argv[i + 1]));
-      i += 1;
-    }
-    else if ((strcmp(argv[i], "-fontname") == 0) ||
-             (strcmp(argv[i], "-fn") == 0))
-    {
-      fontname(argv[i + 1]);
-      i += 1;
-    }
-    else if ((strcmp(argv[i], "-high-byte-first") == 0) ||
-             (strcmp(argv[i], "-h") == 0))
-    {
-      guess_byte_order = 0;
-      high_byte_first = 1;
-    }
-    else if ((strcmp(argv[i], "-low-byte-first") == 0) ||
-             (strcmp(argv[i], "-l") == 0))
-    {
-      guess_byte_order = 0;
-      high_byte_first = 0;
-    }
-    else if ((strcmp(argv[i], "-warranty") == 0) ||
-             (strcmp(argv[i], "-copying") == 0))
-    {
-      /*
+      if ((strcmp(argv[i], "-fontsize") == 0) || (strcmp(argv[i], "-fs") == 0))
+        {
+          /* Sizes supported by X: 8, 10, 12, 14, 18, and 24. */
+          fontsize(atoi(argv[i + 1]));
+          i += 1;
+        }
+      else if ((strcmp(argv[i], "-fontname") == 0) ||
+               (strcmp(argv[i], "-fn") == 0))
+        {
+          fontname(argv[i + 1]);
+          i += 1;
+        }
+      else if ((strcmp(argv[i], "-high-byte-first") == 0) ||
+               (strcmp(argv[i], "-h") == 0))
+        {
+          guess_byte_order = 0;
+          high_byte_first = 1;
+        }
+      else if ((strcmp(argv[i], "-low-byte-first") == 0) ||
+               (strcmp(argv[i], "-l") == 0))
+        {
+          guess_byte_order = 0;
+          high_byte_first = 0;
+        }
+      else if ((strcmp(argv[i], "-warranty") == 0) ||
+               (strcmp(argv[i], "-copying") == 0))
+        {
+          /*
                 for (i=0; copy_notice[i][0]>0; i++)
                   fputs (copy_notice[i], stdout);
       */
-      named_plot++;
-    }
-    else if ((strcmp(argv[i], "-help") == 0) || (strcmp(argv[i], "-V") == 0))
-    {
-      printf("%s version %s\n", argv[0], "0.0");
-      show_usage++;
-      named_plot++;
-    }
-    else if ((strcmp(argv[i], "-signed") == 0))
-    {
-      signed_input = 1;
-    }
-    else if ((strcmp(argv[i], "-unsigned") == 0))
-    {
-      signed_input = 0;
-    }
-    else if ((strcmp(argv[i], "-") == 0))
-    {
-      read_plot(stdin, buffer, buffer_length);
-      named_plot++;
-    }
-    else
-    {
-      FILE *filep;
-      filep = fopen(argv[i], "r");
-      if (filep == NULL)
-      {
-        fprintf(stderr, "Unrecognized option or file `%s' ignored.\n", argv[i]);
-        show_usage++;
-      }
-      else
-      {
-        named_plot++;
-        if (!opened)
-        {
-          openpl();
-          opened++;
+          named_plot++;
         }
-        read_plot(filep, buffer, buffer_length);
-        fclose(filep);
-      }
+      else if ((strcmp(argv[i], "-help") == 0) || (strcmp(argv[i], "-V") == 0))
+        {
+          printf("%s version %s\n", argv[0], "0.0");
+          show_usage++;
+          named_plot++;
+        }
+      else if ((strcmp(argv[i], "-signed") == 0))
+        {
+          signed_input = 1;
+        }
+      else if ((strcmp(argv[i], "-unsigned") == 0))
+        {
+          signed_input = 0;
+        }
+      else if ((strcmp(argv[i], "-") == 0))
+        {
+          read_plot(stdin, buffer, buffer_length);
+          named_plot++;
+        }
+      else
+        {
+          FILE *filep;
+          filep = fopen(argv[i], "r");
+          if (filep == NULL)
+            {
+              fprintf(stderr, "Unrecognized option or file `%s' ignored.\n", argv[i]);
+              show_usage++;
+            }
+          else
+            {
+              named_plot++;
+              if (!opened)
+                {
+                  openpl();
+                  opened++;
+                }
+              read_plot(filep, buffer, buffer_length);
+              fclose(filep);
+            }
+        }
     }
-  }
 
   /* if there were no named plot files on the command line, then read
      the standard input. */
   if (named_plot == 0)
-  {
-    if (!opened)
     {
-      openpl();
-      opened++;
+      if (!opened)
+        {
+          openpl();
+          opened++;
+        }
+      read_plot(stdin, buffer, buffer_length);
     }
-    read_plot(stdin, buffer, buffer_length);
-  }
   if (opened)
-  {
-    closepl();
-  }
+    {
+      closepl();
+    }
 
   if (show_usage || !opened)
-  {
-    fprintf(stderr,
-            "\n\
+    {
+      fprintf(stderr,
+              "\n\
 usage: %s [-fontsize|-fs SIZE] [-high-byte-first|-h]\n\
        [-low-byte-first|-l] [-fontname|-fn FONTNAME]\n\
        [-help|-V] [-copying|-warranty] [PLOT_FILE_NAMES ...]\n",
-            *argv);
-    fprintf(stderr,
-            "\n\
+              *argv);
+      fprintf(stderr,
+              "\n\
     %s version 0.9, Copyright (C) 1989 Free Software Foundation, Inc.\n\
     %s comes with ABSOLUTELY NO WARRANTY.  This is free software, and\n\
     you are welcome to redistribute it. Type `%s -warranty' for warranty\n\
     details and copying conditions.\n\n",
-            *argv, *argv, *argv);
-  }
+              *argv, *argv, *argv);
+    }
   return 0;
 }

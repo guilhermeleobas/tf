@@ -20,9 +20,9 @@ int gsm_print P3((f, s, c), FILE* f, gsm s, gsm_byte* c)
   /* GSM_MAGIC  = (*c >> 4) & 0xF; */
 
   if (((*c >> 4) & 0x0F) != GSM_MAGIC)
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
 
   LARc[0] = (*c++ & 0xF) << 2; /* 1 */
   LARc[0] |= (*c >> 6) & 0x3;

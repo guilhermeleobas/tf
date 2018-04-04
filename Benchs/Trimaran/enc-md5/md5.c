@@ -176,9 +176,9 @@ void md5_update(md5_context *ctx, uint8 *input, uint32 length)
   uint32 left, fill;
 
   if (!length)
-  {
-    return;
-  }
+    {
+      return;
+    }
 
   left = ctx->total[0] & 0x3F;
   fill = 64 - left;
@@ -187,36 +187,36 @@ void md5_update(md5_context *ctx, uint8 *input, uint32 length)
   ctx->total[0] &= 0xFFFFFFFF;
 
   if (ctx->total[0] < length)
-  {
-    ctx->total[1]++;
-  }
+    {
+      ctx->total[1]++;
+    }
 
   if (left && length >= fill)
-  {
-    memcpy((void *)(ctx->buffer + left), (void *)input, fill);
-    md5_process(ctx, ctx->buffer);
-    length -= fill;
-    input += fill;
-    left = 0;
-  }
+    {
+      memcpy((void *)(ctx->buffer + left), (void *)input, fill);
+      md5_process(ctx, ctx->buffer);
+      length -= fill;
+      input += fill;
+      left = 0;
+    }
 
   while (length >= 64)
-  {
-    md5_process(ctx, input);
-    length -= 64;
-    input += 64;
-  }
+    {
+      md5_process(ctx, input);
+      length -= 64;
+      input += 64;
+    }
 
   if (length)
-  {
-    memcpy((void *)(ctx->buffer + left), (void *)input, length);
-  }
+    {
+      memcpy((void *)(ctx->buffer + left), (void *)input, length);
+    }
 }
 
 static uint8 md5_padding[64] = {
     0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0,    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 void md5_finish(md5_context *ctx, uint8 digest[16])
 {
@@ -267,32 +267,32 @@ int main(int argc, char *argv[])
   // Fill buffer with random, but deterministic data.
   int random_seed = 1;
   for (i = 0; i < sizeof(buf); ++i)
-  {
-    buf[i] = my_rand_r(&random_seed);
-  }
+    {
+      buf[i] = my_rand_r(&random_seed);
+    }
 
   repeat = 1;
   if (argc == 2)
-  {
-    repeat = atoi(argv[1]);
-  }
+    {
+      repeat = atoi(argv[1]);
+    }
 
   for (; repeat; --repeat)
-  {
-    md5_starts(&ctx);
-    for (i = 0; i < 512; ++i)
     {
-      md5_update(&ctx, buf + repeat, sizeof(buf) - repeat);
-    }
-    md5_finish(&ctx, md5sum);
+      md5_starts(&ctx);
+      for (i = 0; i < 512; ++i)
+        {
+          md5_update(&ctx, buf + repeat, sizeof(buf) - repeat);
+        }
+      md5_finish(&ctx, md5sum);
 
-    for (j = 0; j < 16; j++)
-    {
-      printf("%02x", md5sum[j]);
-    }
+      for (j = 0; j < 16; j++)
+        {
+          printf("%02x", md5sum[j]);
+        }
 
-    printf("\n");
-  }
+      printf("\n");
+    }
 
   return (0);
 }

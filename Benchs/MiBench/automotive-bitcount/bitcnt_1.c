@@ -14,12 +14,13 @@ int CDECL bit_count(long x)
   ** twice as fast as the shift/test method.
   */
   if (x)
-  {
-    do
     {
-      n++;
-    } while (0 != (x = x & (x - 1)));
-  }
+      do
+        {
+          n++;
+        }
+      while (0 != (x = x & (x - 1)));
+    }
   return (n);
 }
 
@@ -33,13 +34,13 @@ main(int argc, char *argv[])
   long n;
 
   while (--argc)
-  {
-    int i;
+    {
+      int i;
 
-    n = atol(*++argv);
-    i = bit_count(n);
-    printf("%ld contains %d bit%s set\n", n, i, plural_text(i));
-  }
+      n = atol(*++argv);
+      i = bit_count(n);
+      printf("%ld contains %d bit%s set\n", n, i, plural_text(i));
+    }
   return 0;
 }
 

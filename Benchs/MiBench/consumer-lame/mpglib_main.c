@@ -1,7 +1,7 @@
 #ifdef HAVEMPGLIB
 
-#include "mpglib.h"
 #include "mpg123.h"
+#include "mpglib.h"
 
 #ifdef OS_AMIGAOS
 #include "/VbrTag.h"
@@ -54,10 +54,10 @@ int lame_decode_initfile(FILE *fd, int *stereo, int *samp, int *bitrate,
   /* skip RIFF type proprietary headers  */
   /* look for sync word  FFF */
   while (!is_syncword(buf))
-  {
-    buf[0] = buf[1];
-    if (fread(&buf[1], 1, 1, fd) == 0) return -1; /* failed */
-  }
+    {
+      buf[0] = buf[1];
+      if (fread(&buf[1], 1, 1, fd) == 0) return -1; /* failed */
+    }
   /*  ret = decodeMP3(&mp,buf,2,out,FSIZE,&size); */
 
   /* read the header */
@@ -68,16 +68,16 @@ int lame_decode_initfile(FILE *fd, int *stereo, int *samp, int *bitrate,
   /* check for Xing header */
   xing_header = GetVbrTag(&pTagData, (unsigned char *)buf);
   if (xing_header)
-  {
-    num_frames = pTagData.frames;
-  }
+    {
+      num_frames = pTagData.frames;
+    }
 
   size = 0;
   ret = decodeMP3(&mp, buf, len, out, FSIZE, &size);
   if (size > 0 && !xing_header)
-  {
-    fprintf(stderr, "Opps: first frame of mpglib output will be lost \n");
-  }
+    {
+      fprintf(stderr, "Opps: first frame of mpglib output will be lost \n");
+    }
 
   *stereo = mp.fr.stereo;
   *samp = freqs[mp.fr.sampling_frequency];
@@ -85,9 +85,9 @@ int lame_decode_initfile(FILE *fd, int *stereo, int *samp, int *bitrate,
   framesize = (mp.fr.lsf == 0) ? 1152 : 576;
   *num_samples = MAX_U_32_NUM;
   if (xing_header && num_frames)
-  {
-    *num_samples = framesize * num_frames;
-  }
+    {
+      *num_samples = framesize * num_frames;
+    }
 
   /*
   printf("ret = %i NEED_MORE=%i \n",ret,MP3_NEED_MORE);
@@ -126,38 +126,38 @@ int lame_decode_fromfile(FILE *fd, short pcm_l[], short pcm_r[])
 
   /* read more until we get a valid output frame */
   while ((ret == MP3_NEED_MORE) || !size)
-  {
-    len = fread(buf, 1, 100, fd);
-    if (len == 0) return -1;
-    ret = decodeMP3(&mp, buf, len, out, FSIZE, &size);
-    /* if (ret ==MP3_ERR) return -1;  lets ignore errors and keep reading... */
-    /*
+    {
+      len = fread(buf, 1, 100, fd);
+      if (len == 0) return -1;
+      ret = decodeMP3(&mp, buf, len, out, FSIZE, &size);
+      /* if (ret ==MP3_ERR) return -1;  lets ignore errors and keep reading... */
+      /*
     printf("ret = %i size= %i  %i   %i  %i \n",ret,size,
            MP3_NEED_MORE,MP3_ERR,MP3_OK);
     */
-  }
+    }
 
   stereo = mp.fr.stereo;
 
   if (ret == MP3_OK)
-  {
-    /*    write(1,out,size); */
-    outsize = size / (2 * (stereo));
-    if ((outsize != 576) && (outsize != 1152))
     {
-      fprintf(
-          stderr,
-          "Opps: mpg123 returned more than one frame!  Cant handle this... \n");
-      exit(-50);
-    }
+      /*    write(1,out,size); */
+      outsize = size / (2 * (stereo));
+      if ((outsize != 576) && (outsize != 1152))
+        {
+          fprintf(
+              stderr,
+              "Opps: mpg123 returned more than one frame!  Cant handle this... \n");
+          exit(-50);
+        }
 
-    for (j = 0; j < stereo; j++)
-      for (i = 0; i < outsize; i++)
-        if (j == 0)
-          pcm_l[i] = ((short *)out)[mp.fr.stereo * i + j];
-        else
-          pcm_r[i] = ((short *)out)[mp.fr.stereo * i + j];
-  }
+      for (j = 0; j < stereo; j++)
+        for (i = 0; i < outsize; i++)
+          if (j == 0)
+            pcm_l[i] = ((short *)out)[mp.fr.stereo * i + j];
+          else
+            pcm_r[i] = ((short *)out)[mp.fr.stereo * i + j];
+    }
   if (ret == MP3_ERR)
     return -1;
   else
@@ -177,24 +177,24 @@ int lame_decode(char *buf, int len, short pcm_l[], short pcm_r[])
 
   ret = decodeMP3(&mp, buf, len, out, FSIZE, &size);
   if (ret == MP3_OK)
-  {
-    /*    printf("mpg123 output one frame out=%i \n",size/4);  */
-    outsize = size / (2 * mp.fr.stereo);
-    if (outsize > 1152)
     {
-      fprintf(
-          stderr,
-          "Opps: mpg123 returned more than one frame!  shouldn't happen... \n");
-      exit(-50);
-    }
+      /*    printf("mpg123 output one frame out=%i \n",size/4);  */
+      outsize = size / (2 * mp.fr.stereo);
+      if (outsize > 1152)
+        {
+          fprintf(
+              stderr,
+              "Opps: mpg123 returned more than one frame!  shouldn't happen... \n");
+          exit(-50);
+        }
 
-    for (j = 0; j < mp.fr.stereo; j++)
-      for (i = 0; i < outsize; i++)
-        if (j == 0)
-          pcm_l[i] = ((short *)out)[mp.fr.stereo * i + j];
-        else
-          pcm_r[i] = ((short *)out)[mp.fr.stereo * i + j];
-  }
+      for (j = 0; j < mp.fr.stereo; j++)
+        for (i = 0; i < outsize; i++)
+          if (j == 0)
+            pcm_l[i] = ((short *)out)[mp.fr.stereo * i + j];
+          else
+            pcm_r[i] = ((short *)out)[mp.fr.stereo * i + j];
+    }
   /*
   printf("ok, more, err:  %i %i %i  \n",MP3_OK, MP3_NEED_MORE, MP3_ERR);
   printf("ret = %i out=%i \n",ret,outsize);

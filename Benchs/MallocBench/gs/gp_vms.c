@@ -84,20 +84,22 @@ char gp_file_name_list_separator = ';';
 /* Answer whether a file name contains a directory/device specification, */
 /* i.e. is absolute (not directory- or device-relative). */
 int gp_file_name_is_absolute(char *fname, uint len)
-{ /****** THIS NEEDS TO BE WRITTEN ******/ return 0; }
+{ /****** THIS NEEDS TO BE WRITTEN ******/
+  return 0;
+}
 
 /* Answer the string to be used for combining a directory/device prefix */
 /* with a base file name.  The file name is known to not be absolute. */
 char *gp_file_name_concat_string(char *prefix, uint plen, char *fname, uint len)
 { /****** THIS NEEDS TO BE CHECKED ******/
   if (plen > 0)
-  {
-    switch (prefix[plen - 1])
     {
-      case ':':
-      case ']':
-        return "";
-    }
-  };
+      switch (prefix[plen - 1])
+        {
+          case ':':
+          case ']':
+            return "";
+        }
+    };
   return ":";
 }

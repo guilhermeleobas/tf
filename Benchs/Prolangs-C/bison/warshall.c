@@ -44,39 +44,39 @@ void TC(unsigned *R, int n)
   mask = 1;
   rowi = R;
   while (rowi < relend)
-  {
-    ccol = cword;
-    rowj = R;
-
-    while (rowj < relend)
     {
-      if (*ccol & mask)
-      {
-        rp = rowi;
-        rend = (unsigned *)((char *)rowj + rowsize);
+      ccol = cword;
+      rowj = R;
 
-        while (rowj < rend)
+      while (rowj < relend)
         {
-          *rowj++ |= *rp++;
+          if (*ccol & mask)
+            {
+              rp = rowi;
+              rend = (unsigned *)((char *)rowj + rowsize);
+
+              while (rowj < rend)
+                {
+                  *rowj++ |= *rp++;
+                }
+            }
+          else
+            {
+              rowj = (unsigned *)((char *)rowj + rowsize);
+            }
+
+          ccol = (unsigned *)((char *)ccol + rowsize);
         }
-      }
-      else
-      {
-        rowj = (unsigned *)((char *)rowj + rowsize);
-      }
 
-      ccol = (unsigned *)((char *)ccol + rowsize);
+      mask <<= 1;
+      if (mask == 0)
+        {
+          mask = 1;
+          cword++;
+        }
+
+      rowi = (unsigned *)((char *)rowi + rowsize);
     }
-
-    mask <<= 1;
-    if (mask == 0)
-    {
-      mask = 1;
-      cword++;
-    }
-
-    rowi = (unsigned *)((char *)rowi + rowsize);
-  }
 }
 
 /* Reflexive Transitive Closure.  Same as TC
@@ -97,16 +97,16 @@ void RTC(unsigned *R, int n)
   mask = 1;
   rp = R;
   while (rp < relend)
-  {
-    *rp |= mask;
-
-    mask <<= 1;
-    if (mask == 0)
     {
-      mask = 1;
-      rp++;
-    }
+      *rp |= mask;
 
-    rp = (unsigned *)((char *)rp + rowsize);
-  }
+      mask <<= 1;
+      if (mask == 0)
+        {
+          mask = 1;
+          rp++;
+        }
+
+      rp = (unsigned *)((char *)rp + rowsize);
+    }
 }

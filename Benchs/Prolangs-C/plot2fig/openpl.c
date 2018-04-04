@@ -49,8 +49,8 @@ int openpl(void)
 {
   printf("#FIG 2.0\n");
   printf("%d %d\n", 80, /* pixels per inch */
-         2              /* origin in lower left corner */
-         );
+         2 /* origin in lower left corner */
+  );
 
   return 0;
 }

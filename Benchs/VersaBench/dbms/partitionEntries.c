@@ -50,12 +50,12 @@
  *              Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include <assert.h>         /* for assert()                   */
-#include <stdlib.h>         /* for NULL definition            */
+#include <assert.h> /* for assert()                   */
+#include <stdlib.h> /* for NULL definition            */
 #include "dataManagement.h" /* for primitive type definitions */
-#include "errorMessage.h"   /* for errorMessage() definition  */
-#include "index.h"          /* for IndexEntry definition      */
-#include "indexKey.h"       /* for IndexKey definition        */
+#include "errorMessage.h" /* for errorMessage() definition  */
+#include "index.h" /* for IndexEntry definition      */
+#include "indexKey.h" /* for IndexKey definition        */
 
 /*
  *  Function prototypes
@@ -64,21 +64,21 @@ extern Float penalty(IndexEntry A, IndexEntry B);
 extern Float volume(IndexKey key);
 extern void keyUnion(IndexKey *A, IndexKey *B, IndexKey *U);
 
-void partitionEntries(IndexEntry *I,  /*  input entry list to partition */
-                      Int fan,        /*  fan or order of index         */
+void partitionEntries(IndexEntry *I, /*  input entry list to partition */
+                      Int fan, /*  fan or order of index         */
                       IndexEntry **A, /*  1st group partitioned entries */
                       IndexEntry **B) /*  2nd group partitioned entries */
-{                                     /* beginning of partitionEntries()  */
-  IndexEntry *entry1;        /* looping entry to find first entry of groups */
-  IndexEntry *entry2;        /* looping entry to find first entry of groups */
-  IndexEntry *currentEntry;  /* looping entry for input list                */
+{ /* beginning of partitionEntries()  */
+  IndexEntry *entry1; /* looping entry to find first entry of groups */
+  IndexEntry *entry2; /* looping entry to find first entry of groups */
+  IndexEntry *currentEntry; /* looping entry for input list                */
   IndexEntry *previousEntry; /* looping entry for input list                */
-  IndexEntry *tempA;         /* temp entry to find first entry of group A   */
-  IndexEntry *tempB;         /* temp entry to find first entry of group B   */
-  IndexKey unionAB;          /* union of first entries of group A and B     */
-  Float volumeAB;            /* volume of first entries of group A and B    */
-  Int sizeOfGroupA;          /* current size of group A                     */
-  Int sizeOfGroupB;          /* current size of group B                     */
+  IndexEntry *tempA; /* temp entry to find first entry of group A   */
+  IndexEntry *tempB; /* temp entry to find first entry of group B   */
+  IndexKey unionAB; /* union of first entries of group A and B     */
+  Float volumeAB; /* volume of first entries of group A and B    */
+  Int sizeOfGroupA; /* current size of group A                     */
+  Int sizeOfGroupB; /* current size of group B                     */
 
   static Char name[] = "partitionEntries";
 
@@ -107,28 +107,28 @@ void partitionEntries(IndexEntry *I,  /*  input entry list to partition */
    *  combinations.
    */
   for (entry1 = I; entry1 != NULL; entry1 = entry1->next)
-  {
-    for (entry2 = entry1->next; entry2 != NULL; entry2 = entry2->next)
     {
-      IndexKey tempKey;
-      Float tempVolume;
+      for (entry2 = entry1->next; entry2 != NULL; entry2 = entry2->next)
+        {
+          IndexKey tempKey;
+          Float tempVolume;
 
-      /*
+          /*
        *  If this combination produces a worse penalty, then replace old
        *  candidates with new pair.
        */
-      keyUnion(&entry1->key, &entry2->key, &tempKey);
-      tempVolume = volume(tempKey);
+          keyUnion(&entry1->key, &entry2->key, &tempKey);
+          tempVolume = volume(tempKey);
 
-      if (tempVolume > volumeAB)
-      {
-        *A = entry1;
-        *B = entry2;
-        unionAB = tempKey;
-        volumeAB = tempVolume;
-      } /*  end of if ( tempVolume > volumeAB )   */
-    }   /*  end of loop for entry2  */
-  }     /* end of loop for entry1   */
+          if (tempVolume > volumeAB)
+            {
+              *A = entry1;
+              *B = entry2;
+              unionAB = tempKey;
+              volumeAB = tempVolume;
+            } /*  end of if ( tempVolume > volumeAB )   */
+        } /*  end of loop for entry2  */
+    } /* end of loop for entry1   */
 
   /*
    *  The entry pointers, A and B, now point to the first entries of the
@@ -137,53 +137,53 @@ void partitionEntries(IndexEntry *I,  /*  input entry list to partition */
    *  entries.  The entries of I which correspond to A and B are
    *  found by comparing pointer values.
    */
-  currentEntry = I;     /*  current entry  (starts at beginning of I)   */
+  currentEntry = I; /*  current entry  (starts at beginning of I)   */
   previousEntry = NULL; /*  previous entry (NULL for first entry)       */
   while (currentEntry != NULL)
-  {
-    if (currentEntry == *A || currentEntry == *B)
     {
-      /*
+      if (currentEntry == *A || currentEntry == *B)
+        {
+          /*
        *  Found A or B in list as currentEntry. Remove current entry from
        *  list, checking for special case where current entry is the head
        *  of list, i.e., no previous entry.
        */
-      if (previousEntry == NULL)
-      {
-        /*
+          if (previousEntry == NULL)
+            {
+              /*
          *  No previous pointer means that the current entry is the
          *  head of the list.  Removing the entry means updating I and
          *  reseting the values for currentEntry and previousEntry.
          */
-        I = currentEntry->next;
-        currentEntry = I;
-        previousEntry = NULL;
-      } /*  end of if ( previousEntry == NULL )    */
-      else
-      {
-        /*
+              I = currentEntry->next;
+              currentEntry = I;
+              previousEntry = NULL;
+            } /*  end of if ( previousEntry == NULL )    */
+          else
+            {
+              /*
          *  Remove current entry by setting previous entry's pointer to
          *  skip the current.
          */
-        previousEntry->next = currentEntry->next;
+              previousEntry->next = currentEntry->next;
 
-        /*
+              /*
          *  Setup entries for next loop. Since an entry was removed
          *  from the list, the previous entry, previousEntry, does not
          *  change.
          */
-        currentEntry = previousEntry->next;
-      } /*  end of else */
-    }   /*  end of if ( currentEntry == A || currentEntry == B )    */
-    else
-    {
-      /*
+              currentEntry = previousEntry->next;
+            } /*  end of else */
+        } /*  end of if ( currentEntry == A || currentEntry == B )    */
+      else
+        {
+          /*
        *  Did not find either A or B, so just set up for next loop
        */
-      previousEntry = currentEntry;
-      currentEntry = currentEntry->next;
-    } /*  end of else */
-  }   /* end of loop for currentEntry   */
+          previousEntry = currentEntry;
+          currentEntry = currentEntry->next;
+        } /*  end of else */
+    } /* end of loop for currentEntry   */
 
   /*
    *  Finish up by fixing the next pointers for both A and B to NULL since
@@ -209,81 +209,81 @@ void partitionEntries(IndexEntry *I,  /*  input entry list to partition */
   tempA = *A;
   tempB = *B;
   while (I != NULL)
-  {
-    /*
+    {
+      /*
      *  If neither group is full, add according to penalty
      */
-    if (sizeOfGroupA < fan && sizeOfGroupB < fan)
-    {
-      if (penalty(**A, *I) < penalty(**B, *I))
-      {
-        /*
+      if (sizeOfGroupA < fan && sizeOfGroupB < fan)
+        {
+          if (penalty(**A, *I) < penalty(**B, *I))
+            {
+              /*
          *  Place current entry into group A, incrementing counter
          */
-        tempA->next = I;     /*  add current entry to group A  */
-        I = I->next;         /*  increment current entry       */
-        tempA = tempA->next; /*  increment group A ptr         */
-        tempA->next = NULL;  /*  remove new entry from group I */
+              tempA->next = I; /*  add current entry to group A  */
+              I = I->next; /*  increment current entry       */
+              tempA = tempA->next; /*  increment group A ptr         */
+              tempA->next = NULL; /*  remove new entry from group I */
 
-        sizeOfGroupA++;
-      } /*  end of if ( penalty( I, A ) < penalty( I, B ) ) */
-      else
-      {
-        /*
+              sizeOfGroupA++;
+            } /*  end of if ( penalty( I, A ) < penalty( I, B ) ) */
+          else
+            {
+              /*
          *  Place current entry into group B, incrementing counter
          */
-        tempB->next = I;     /*  add current entry to group B  */
-        I = I->next;         /*  increment current entry       */
-        tempB = tempB->next; /*  increment group B ptr         */
-        tempB->next = NULL;  /*  remove new entry from group I */
+              tempB->next = I; /*  add current entry to group B  */
+              I = I->next; /*  increment current entry       */
+              tempB = tempB->next; /*  increment group B ptr         */
+              tempB->next = NULL; /*  remove new entry from group I */
 
-        sizeOfGroupB++;
-      } /*  end of else */
-    }   /*  end of if ( sizeOfGroupA < fan && sizeOfGroupB < fan )  */
-        /*
+              sizeOfGroupB++;
+            } /*  end of else */
+        } /*  end of if ( sizeOfGroupA < fan && sizeOfGroupB < fan )  */
+      /*
          *  If group A is full and there is room on group B, then add entry to
          *  group B
          */
-    else if (sizeOfGroupA >= fan && sizeOfGroupB < fan)
-    {
-      /*
+      else if (sizeOfGroupA >= fan && sizeOfGroupB < fan)
+        {
+          /*
        *  Place entry into group B, incrementing counter
        */
-      tempB->next = I;     /*  add current entry to group B  */
-      I = I->next;         /*  increment current entry       */
-      tempB = tempB->next; /*  increment group B ptr         */
-      tempB->next = NULL;  /*  remove new entry from group I */
+          tempB->next = I; /*  add current entry to group B  */
+          I = I->next; /*  increment current entry       */
+          tempB = tempB->next; /*  increment group B ptr         */
+          tempB->next = NULL; /*  remove new entry from group I */
 
-      sizeOfGroupB++;
-    } /*  end of if ( sizeOfGroupA >= fan )   */
+          sizeOfGroupB++;
+        } /*  end of if ( sizeOfGroupA >= fan )   */
       /*
        *  If group B is full and there is room on group A, then add entry to
        *  group A
        */
-    else if (sizeOfGroupB >= fan && sizeOfGroupA < fan)
-    {
-      /*
+      else if (sizeOfGroupB >= fan && sizeOfGroupA < fan)
+        {
+          /*
        *  Place current entry into group A, incrementing counter
        */
-      tempA->next = I;     /*  add current entry to group A  */
-      I = I->next;         /*  increment current entry       */
-      tempA = tempA->next; /*  increment group A ptr         */
-      tempA->next = NULL;  /*  remove new entry from group I */
+          tempA->next = I; /*  add current entry to group A  */
+          I = I->next; /*  increment current entry       */
+          tempA = tempA->next; /*  increment group A ptr         */
+          tempA->next = NULL; /*  remove new entry from group I */
 
-      sizeOfGroupA++;
-    } /*  end of if ( sizeOfGroupB >= fan )   */
-    else
-    {
-      /*
+          sizeOfGroupA++;
+        } /*  end of if ( sizeOfGroupB >= fan )   */
+      else
+        {
+          /*
        *  Special(error) case when both groups are full and no where to
        *  place entry.  Simply ignore entry and try to continue.
        */
-      I = I->next;
+          I = I->next;
 
-      errorMessage("too many entries to partition", REPLACE);
-      errorMessage(name, PREPEND);
-    }
-  } /* end of loop for currentEntry   */
+          errorMessage("too many entries to partition", REPLACE);
+          errorMessage(name, PREPEND);
+        }
+    } /* end of loop for currentEntry   */
 
   return;
 } /*  end paritionEntries()   */

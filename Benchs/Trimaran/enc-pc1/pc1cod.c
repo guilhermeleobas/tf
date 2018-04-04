@@ -160,9 +160,9 @@ code()
 
   if (ax != 0)
 
-  {
-    ax = ax * bx;
-  }
+    {
+      ax = ax * bx;
+    }
 
   tmp = ax;
 
@@ -172,11 +172,11 @@ code()
 
   if (ax != 0)
 
-  {
-    ax = ax * si;
+    {
+      ax = ax * si;
 
-    cx = ax + cx;
-  }
+      cx = ax + cx;
+    }
 
   tmp = ax;
 
@@ -217,9 +217,9 @@ main(int argc, const char **argv)
   int random_seed = 1;
 
   if (argc == 2)
-  {
-    NumInput = atoi(argv[1]);
-  }
+    {
+      NumInput = atoi(argv[1]);
+    }
 
   si = 0;
 
@@ -240,56 +240,56 @@ main(int argc, const char **argv)
 
   if (strlen(buff) > 32)
 
-  {
-    count = 32;
-  }
+    {
+      count = 32;
+    }
   else
 
-  {
-    count = strlen(buff);
-  }
+    {
+      count = strlen(buff);
+    }
 
   for (c1 = 0; c1 < count; c1++)
 
-  {
-    cle[c1] = buff[c1];
-  }
+    {
+      cle[c1] = buff[c1];
+    }
 
   Print = 0;
   while (--NumInput)
-  {
-    c = my_rand_r(&random_seed); /* c contains the byte read in the file */
-    assemble();
+    {
+      c = my_rand_r(&random_seed); /* c contains the byte read in the file */
+      assemble();
 
-    cfc = inter >> 8;
+      cfc = inter >> 8;
 
-    cfd = inter & 255; /* cfc^cfd = random byte */
+      cfd = inter & 255; /* cfc^cfd = random byte */
 
-    /* K ZONE !!!!!!!!!!!!! */
-    /*
+      /* K ZONE !!!!!!!!!!!!! */
+      /*
      * here the mix of c and cle[compte] is before the encryption
      * of c
      */
 
-    for (compte = 0; compte <= 31; compte++)
-    {
-      /* we mix the plaintext byte with the key */
+      for (compte = 0; compte <= 31; compte++)
+        {
+          /* we mix the plaintext byte with the key */
 
-      cle[compte] = cle[compte] ^ c;
-    }
+          cle[compte] = cle[compte] ^ c;
+        }
 
-    c = c ^ (cfc ^ cfd);
+      c = c ^ (cfc ^ cfd);
 
-    d = (c >> 4); /* we split the 'c' crypted byte into
+      d = (c >> 4); /* we split the 'c' crypted byte into
 *two 4 bits parts 'd' and 'e' */
 
-    e = (c & 15);
+      e = (c & 15);
 
-    if ((++Print & 2047) == 0)
-    {
-      printf("%d %d ", d, e);
+      if ((++Print & 2047) == 0)
+        {
+          printf("%d %d ", d, e);
+        }
     }
-  }
 
   printf("\n");
   return (0);

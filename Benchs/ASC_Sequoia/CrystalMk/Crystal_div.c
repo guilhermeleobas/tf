@@ -6,9 +6,9 @@
  *                                                                      *
  *EHEADER****************************************************************/
 
-#include "Crystal.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "Crystal.h"
 
 //--------------
 //  test FDIV
@@ -39,43 +39,43 @@ void Crystal_div(int nSlip, double deltaTime,
   int m = 0;
 
   for (n = 0; n < nSlip; n++)
-  {
-    sgn[n] = 1.0;
-    rateFact[n] = 0.9 + (0.2 * n) / MS_XTAL_NSLIP_MAX;
-  }
+    {
+      sgn[n] = 1.0;
+      rateFact[n] = 0.9 + (0.2 * n) / MS_XTAL_NSLIP_MAX;
+    }
 
   //----MS_Xtal_PowerTay
   for (n = 0; n < nSlip; n++)
-  {
-    bor_array[n] = 1 / (slipRate[n] * sgn[n] + rate_offset);
-  }
+    {
+      bor_array[n] = 1 / (slipRate[n] * sgn[n] + rate_offset);
+    }
 
   for (n = 0; n < nSlip; n++)
-  {
-    tau[n] = tauA * rateFact[n] * sgn[n];
-    for (m = 0; m < nSlip; m++)
     {
-      dtcdgd[n][m] = tauH * deltaTime * rateFact[n];
+      tau[n] = tauA * rateFact[n] * sgn[n];
+      for (m = 0; m < nSlip; m++)
+        {
+          dtcdgd[n][m] = tauH * deltaTime * rateFact[n];
+        }
+      dtcdgd[n][n] += tau[n] * rate_exp * sgn[n] * bor_array[n];
     }
-    dtcdgd[n][n] += tau[n] * rate_exp * sgn[n] * bor_array[n];
-  }
 
   //-----MS_Xtal_SlipRateCalc
   for (n = 0; n < nSlip; n++)
-  {
-    bor_array[n] = 1 / dtcdgd[n][n];
-  }
+    {
+      bor_array[n] = 1 / dtcdgd[n][n];
+    }
 
   for (n = 0; n < nSlip; n++)
-  {
-    tauN[n] = tau[n];
-    for (m = 0; m < nSlip; m++)
     {
-      bor_s_tmp = dtdg[n][m] * deltaTime;
-      tauN[n] += bor_s_tmp * dSlipRate[m];
-      matrix[n][m] = (-bor_s_tmp + dtcdgd[n][m]) * bor_array[n];
+      tauN[n] = tau[n];
+      for (m = 0; m < nSlip; m++)
+        {
+          bor_s_tmp = dtdg[n][m] * deltaTime;
+          tauN[n] += bor_s_tmp * dSlipRate[m];
+          matrix[n][m] = (-bor_s_tmp + dtcdgd[n][m]) * bor_array[n];
+        }
+      err[n] = tauN[n] - tauc[n];
+      rhs[n] = err[n] * bor_array[n];
     }
-    err[n] = tauN[n] - tauc[n];
-    rhs[n] = err[n] * bor_array[n];
-  }
 }

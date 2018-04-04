@@ -60,77 +60,77 @@ ObjPointPtr InsertPoint(ObjPtr o, double x, double y, double z)
 #ifdef DEBUG_OSYS
   printf("****Entered InsertPoint(%2.2f, %2.2f, %2.2f)****\n", x, y, z);
   fflush(stdout);
-#endif                          /*DEBUG_OSYS*/
+#endif /*DEBUG_OSYS*/
   if (o->Number_of_Points == 0) /* The simple case */
-  {
-#ifdef DEBUG_OSYS
-    printf("Starting new structure\n");
-    fflush(stdout);
-#endif /*DEBUG_OSYS*/
-    o->Points = malloc(sizeof(PointList));
-    o->Points->P = malloc(sizeof(ObjPoint));
-    o->Points->P->x = x;
-    o->Points->P->y = y;
-    o->Points->P->z = z;
-    o->Points->P->tx = x;
-    o->Points->P->ty = y;
-    o->Points->P->tz = z;
-
-    o->Points->NextPoint = NULL;
-    o->Points->PrevPoint = NULL;
-    p = o->Points->P;
-    o->Number_of_Points++;
-  }
-  else
-  {
-    tmp = o->Points;
-    /*Iterative search through the pointlist, as long as p==NULL point not
-     * found*/
-    while (((tmp) != NULL) && (p == NULL))
     {
-      if (FPEqual(tmp->P->x, x) && FPEqual(tmp->P->y, y) &&
-          FPEqual(tmp->P->z, z))
-      { /* We found the point in the list */
 #ifdef DEBUG_OSYS
-        printf("Found (%2.2f,%2.2f,%2.2f,)\n", x, y, z);
-        printf("x,y,z (%2.2f,%2.2f,%2.2f,)\n", x, y, z);
-        fflush(stdout);
-#endif /*DEBUG_OSYS*/
-        p = tmp->P;
-      }
-      else
-      { /*We are still looking */
-        prv = tmp;
-        tmp = tmp->NextPoint;
-      }
-    }
-    if (tmp == NULL && p == NULL)
-    { /*Then we haven't found the point in the list so we insert new */
-#ifdef DEBUG_OSYS
-      printf("New   (%2.2f,%2.2f,%2.2f,)\n", x, y, z);
-      printf("x,y,z (%2.2f,%2.2f,%2.2f,)\n", x, y, z);
+      printf("Starting new structure\n");
       fflush(stdout);
 #endif /*DEBUG_OSYS*/
-      tmp = malloc(sizeof(PointList));
-      prv->NextPoint = tmp;
-      tmp->P = (ObjPointPtr)malloc(sizeof(ObjPoint));
-      tmp->P->x = x;
-      tmp->P->y = y;
-      tmp->P->z = z;
-      tmp->P->tx = x;
-      tmp->P->ty = y;
-      tmp->P->tz = z;
-      tmp->PrevPoint = prv;
-      tmp->NextPoint = NULL;
-      p = tmp->P;
+      o->Points = malloc(sizeof(PointList));
+      o->Points->P = malloc(sizeof(ObjPoint));
+      o->Points->P->x = x;
+      o->Points->P->y = y;
+      o->Points->P->z = z;
+      o->Points->P->tx = x;
+      o->Points->P->ty = y;
+      o->Points->P->tz = z;
+
+      o->Points->NextPoint = NULL;
+      o->Points->PrevPoint = NULL;
+      p = o->Points->P;
       o->Number_of_Points++;
     }
-  }
+  else
+    {
+      tmp = o->Points;
+      /*Iterative search through the pointlist, as long as p==NULL point not
+     * found*/
+      while (((tmp) != NULL) && (p == NULL))
+        {
+          if (FPEqual(tmp->P->x, x) && FPEqual(tmp->P->y, y) &&
+              FPEqual(tmp->P->z, z))
+            { /* We found the point in the list */
+#ifdef DEBUG_OSYS
+              printf("Found (%2.2f,%2.2f,%2.2f,)\n", x, y, z);
+              printf("x,y,z (%2.2f,%2.2f,%2.2f,)\n", x, y, z);
+              fflush(stdout);
+#endif /*DEBUG_OSYS*/
+              p = tmp->P;
+            }
+          else
+            { /*We are still looking */
+              prv = tmp;
+              tmp = tmp->NextPoint;
+            }
+        }
+      if (tmp == NULL && p == NULL)
+        { /*Then we haven't found the point in the list so we insert new */
+#ifdef DEBUG_OSYS
+          printf("New   (%2.2f,%2.2f,%2.2f,)\n", x, y, z);
+          printf("x,y,z (%2.2f,%2.2f,%2.2f,)\n", x, y, z);
+          fflush(stdout);
+#endif /*DEBUG_OSYS*/
+          tmp = malloc(sizeof(PointList));
+          prv->NextPoint = tmp;
+          tmp->P = (ObjPointPtr)malloc(sizeof(ObjPoint));
+          tmp->P->x = x;
+          tmp->P->y = y;
+          tmp->P->z = z;
+          tmp->P->tx = x;
+          tmp->P->ty = y;
+          tmp->P->tz = z;
+          tmp->PrevPoint = prv;
+          tmp->NextPoint = NULL;
+          p = tmp->P;
+          o->Number_of_Points++;
+        }
+    }
 
   return p;
 }
 void /* The Poly p are inserted in o, with the texture txture and .... */
-    InsertPoly3(ObjPtr o, Point p[3], TexturePtr txture, MaterialPtr mtrial)
+InsertPoly3(ObjPtr o, Point p[3], TexturePtr txture, MaterialPtr mtrial)
 {
   Poly3Ptr tmp = NULL;
   int i;
@@ -144,26 +144,26 @@ void /* The Poly p are inserted in o, with the texture txture and .... */
   tmp->Mat = NULL;
   tmp->Txt = NULL;
   for (i = 0; i < 3; i++)
-  {
-    tmp->P[i] = InsertPoint(o, p[i].x, p[i].y, p[i].z);
-  }
+    {
+      tmp->P[i] = InsertPoint(o, p[i].x, p[i].y, p[i].z);
+    }
 
   if (o->Poly3s == NULL)
-  {
-    o->Poly3s = tmp;
-  }
+    {
+      o->Poly3s = tmp;
+    }
   else
-  {
-    o->Poly3s->Prev = tmp;
-    tmp->Next = o->Poly3s;
-    o->Poly3s = tmp;
-  }
+    {
+      o->Poly3s->Prev = tmp;
+      tmp->Next = o->Poly3s;
+      o->Poly3s = tmp;
+    }
   o->Number_of_Poly3s++;
   return;
 }
 
 void /* The Poly p are inserted in o, with the texture txture and .... */
-    InsertPoly4(ObjPtr o, Point p[4], TexturePtr txture, MaterialPtr mtrial)
+InsertPoly4(ObjPtr o, Point p[4], TexturePtr txture, MaterialPtr mtrial)
 {
   Poly4Ptr tmp = NULL;
   int i;
@@ -177,26 +177,26 @@ void /* The Poly p are inserted in o, with the texture txture and .... */
   tmp->Mat = NULL;
   tmp->Txt = NULL;
   for (i = 0; i < 4; i++)
-  {
-    tmp->P[i] = InsertPoint(o, p[i].x, p[i].y, p[i].z);
-  }
+    {
+      tmp->P[i] = InsertPoint(o, p[i].x, p[i].y, p[i].z);
+    }
 
   if (o->Poly4s == NULL)
-  {
-    o->Poly4s = tmp;
-  }
+    {
+      o->Poly4s = tmp;
+    }
   else
-  {
-    o->Poly4s->Prev = tmp;
-    tmp->Next = o->Poly4s;
-    o->Poly4s = tmp;
-  }
+    {
+      o->Poly4s->Prev = tmp;
+      tmp->Next = o->Poly4s;
+      o->Poly4s = tmp;
+    }
   o->Number_of_Poly4s++;
   return;
 }
 
 ObjPtr /*  (         double array[][]        ) giver 1 array med alle tal */
-    ArrayToPoly3(ObjPtr o, double array[][3], int size)
+ArrayToPoly3(ObjPtr o, double array[][3], int size)
 {
   Point p[3];
   int i = 0;
@@ -204,25 +204,25 @@ ObjPtr /*  (         double array[][]        ) giver 1 array med alle tal */
   printf("ArrayToPoly3\n");
 #endif
   for (i = 0; i < size; i = i + 3)
-  {
-    p[0].x = array[i][0];
-    p[0].y = array[i][1];
-    p[0].z = array[i][2];
+    {
+      p[0].x = array[i][0];
+      p[0].y = array[i][1];
+      p[0].z = array[i][2];
 
-    p[1].x = array[i + 1][0];
-    p[1].y = array[i + 1][1];
-    p[1].z = array[i + 1][2];
+      p[1].x = array[i + 1][0];
+      p[1].y = array[i + 1][1];
+      p[1].z = array[i + 1][2];
 
-    p[2].x = array[i + 2][0];
-    p[2].y = array[i + 2][1];
-    p[2].z = array[i + 2][2];
+      p[2].x = array[i + 2][0];
+      p[2].y = array[i + 2][1];
+      p[2].z = array[i + 2][2];
 
-    InsertPoly3(o, p, NULL, NULL);
-  }
+      InsertPoly3(o, p, NULL, NULL);
+    }
   return o;
 }
 ObjPtr /*  (         double array[][]        ) giver 1 array med alle tal */
-    ArrayToPoly4(ObjPtr o, double array[][3], int size)
+ArrayToPoly4(ObjPtr o, double array[][3], int size)
 {
   Point p[4];
   int i = 0;
@@ -230,25 +230,25 @@ ObjPtr /*  (         double array[][]        ) giver 1 array med alle tal */
   printf("ArrayToPoly\n");
 #endif
   for (i = 0; i < size; i = i + 4)
-  {
-    p[0].x = array[i][0];
-    p[0].y = array[i][1];
-    p[0].z = array[i][2];
+    {
+      p[0].x = array[i][0];
+      p[0].y = array[i][1];
+      p[0].z = array[i][2];
 
-    p[1].x = array[i + 1][0];
-    p[1].y = array[i + 1][1];
-    p[1].z = array[i + 1][2];
+      p[1].x = array[i + 1][0];
+      p[1].y = array[i + 1][1];
+      p[1].z = array[i + 1][2];
 
-    p[2].x = array[i + 2][0];
-    p[2].y = array[i + 2][1];
-    p[2].z = array[i + 2][2];
+      p[2].x = array[i + 2][0];
+      p[2].y = array[i + 2][1];
+      p[2].z = array[i + 2][2];
 
-    p[3].x = array[i + 3][0];
-    p[3].y = array[i + 3][1];
-    p[3].z = array[i + 3][2];
+      p[3].x = array[i + 3][0];
+      p[3].y = array[i + 3][1];
+      p[3].z = array[i + 3][2];
 
-    InsertPoly4(o, p, NULL, NULL);
-  }
+      InsertPoly4(o, p, NULL, NULL);
+    }
   return o;
 }
 
@@ -257,17 +257,17 @@ void PrintPoints(ObjPtr o)
   int i = 0;
   PointListPtr tmp = NULL;
   if (o->Points != NULL)
-  {
-    tmp = o->Points;
-  }
+    {
+      tmp = o->Points;
+    }
   while (tmp != NULL)
-  {
-    printf("Point[%i] = (%.2f, %.2f, %.2f)", i, tmp->P->x, tmp->P->y,
-           tmp->P->z);
-    printf(" -> (%.2f, %.2f, %.2f)\n", tmp->P->tx, tmp->P->ty, tmp->P->tz);
-    ++i;
-    tmp = tmp->NextPoint;
-  }
+    {
+      printf("Point[%i] = (%.2f, %.2f, %.2f)", i, tmp->P->x, tmp->P->y,
+             tmp->P->z);
+      printf(" -> (%.2f, %.2f, %.2f)\n", tmp->P->tx, tmp->P->ty, tmp->P->tz);
+      ++i;
+      tmp = tmp->NextPoint;
+    }
   return;
 }
 void PrintPoly3s(ObjPtr o)
@@ -275,42 +275,42 @@ void PrintPoly3s(ObjPtr o)
   Poly3Ptr tmp = NULL;
   int i, j = 0;
   if (o->Poly3s != NULL)
-  {
-    tmp = o->Poly3s;
-    while (tmp != NULL)
     {
-      for (i = 0; i < 3; i++)
-      {
-        printf("PrintPoly3s[%i] = (%.2f, %.2f, %.2f)", i, tmp->P[i]->x,
-               tmp->P[i]->y, tmp->P[i]->z);
-        printf("-> (%.2f, %.2f, %.2f)\n", tmp->P[i]->tx, tmp->P[i]->ty,
-               tmp->P[i]->tz);
-      }
-      tmp = tmp->Next;
-      j++;
+      tmp = o->Poly3s;
+      while (tmp != NULL)
+        {
+          for (i = 0; i < 3; i++)
+            {
+              printf("PrintPoly3s[%i] = (%.2f, %.2f, %.2f)", i, tmp->P[i]->x,
+                     tmp->P[i]->y, tmp->P[i]->z);
+              printf("-> (%.2f, %.2f, %.2f)\n", tmp->P[i]->tx, tmp->P[i]->ty,
+                     tmp->P[i]->tz);
+            }
+          tmp = tmp->Next;
+          j++;
+        }
     }
-  }
 }
 void PrintPoly4s(ObjPtr o)
 {
   Poly4Ptr tmp = NULL;
   int i, j = 0;
   if (o->Poly4s != NULL)
-  {
-    tmp = o->Poly4s;
-    while (tmp != NULL)
     {
-      for (i = 0; i < 4; i++)
-      {
-        printf("PrintPoly4s[%i] = %.2f, %.2f, %.2f", i, tmp->P[i]->x,
-               tmp->P[i]->y, tmp->P[i]->z);
-        printf("-> (%.2f, %.2f, %.2f)\n", tmp->P[i]->tx, tmp->P[i]->ty,
-               tmp->P[i]->tz);
-      }
-      tmp = tmp->Next;
-      j++;
+      tmp = o->Poly4s;
+      while (tmp != NULL)
+        {
+          for (i = 0; i < 4; i++)
+            {
+              printf("PrintPoly4s[%i] = %.2f, %.2f, %.2f", i, tmp->P[i]->x,
+                     tmp->P[i]->y, tmp->P[i]->z);
+              printf("-> (%.2f, %.2f, %.2f)\n", tmp->P[i]->tx, tmp->P[i]->ty,
+                     tmp->P[i]->tz);
+            }
+          tmp = tmp->Next;
+          j++;
+        }
     }
-  }
 }
 
 void PrintObject(ObjPtr o)
@@ -329,35 +329,35 @@ void PrintObject(ObjPtr o)
          o->Rotation.z);
   printf("Color    : (%.2f,%.2f,%.2f)\n", o->Color.R, o->Color.G, o->Color.B);
   if (o->styletag == FULL)
-  {
-    printf("Style     : FULL\n");
-  }
+    {
+      printf("Style     : FULL\n");
+    }
   if (o->styletag == HALF)
-  {
-    printf("Style     : HALF\n");
-  }
+    {
+      printf("Style     : HALF\n");
+    }
   if (o->styletag == NONE)
-  {
-    printf("Style     : NONE\n");
-  }
+    {
+      printf("Style     : NONE\n");
+    }
   /* Print Names of Children & Parents */
 }
 void InsertChild(ObjPtr par, ObjPtr chld)
 {
   if (par != NULL)
-  {
-    if (par->Children == NULL)
     {
-      par->Children = chld;
+      if (par->Children == NULL)
+        {
+          par->Children = chld;
+        }
+      else
+        {
+          par->Children->next = chld;
+          chld->prev = par->Children;
+          chld->next = NULL;
+          par->Children = chld;
+        }
     }
-    else
-    {
-      par->Children->next = chld;
-      chld->prev = par->Children;
-      chld->next = NULL;
-      par->Children = chld;
-    }
-  }
 }
 /****************************** Trig Routines
  * ***********************************/
@@ -367,42 +367,42 @@ void CalcObjectChildren(ObjPtr o, double sx, double sy, double sz, double ax,
 {
   ObjPtr tmp = NULL;
   if (o != NULL)
-  {
-    /*printf("CalcObjChildren(%s,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f)\n",
+    {
+      /*printf("CalcObjChildren(%s,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f)\n",
            o->Name,
            sx,sy,sz,
            ax,ay,az,
            dx,dy,dz);*/
-    tmp = o->Children;
-    while (tmp != NULL)
-    {
-      ScaleObjectAdd(tmp, sx, sy, sz);
-      RotateObjectAdd(tmp, ax, ay, az);
-      TranslateObjectAdd(tmp, dx, dy, dz);
-      CalcObjectChildren(tmp, sx, sy, sz, ax, ay, az, dx, dy, dz);
-      tmp = tmp->next;
+      tmp = o->Children;
+      while (tmp != NULL)
+        {
+          ScaleObjectAdd(tmp, sx, sy, sz);
+          RotateObjectAdd(tmp, ax, ay, az);
+          TranslateObjectAdd(tmp, dx, dy, dz);
+          CalcObjectChildren(tmp, sx, sy, sz, ax, ay, az, dx, dy, dz);
+          tmp = tmp->next;
+        }
     }
-  }
 }
 void CalcObject(ObjPtr o)
 {
   ObjPtr tmp = NULL;
   if (o != NULL)
-  {
-    /*printf("CalcObj(%s)\n",o->Name);*/
-    tmp = o->Children;
-    while (tmp != NULL)
     {
-      CalcObject(tmp);
-      tmp = tmp->next;
+      /*printf("CalcObj(%s)\n",o->Name);*/
+      tmp = o->Children;
+      while (tmp != NULL)
+        {
+          CalcObject(tmp);
+          tmp = tmp->next;
+        }
+      CalcObjectChildren(o, o->Scale.x, o->Scale.y, o->Scale.z, o->Rotation.x,
+                         o->Rotation.y, o->Rotation.z, o->Origin.x, o->Origin.y,
+                         o->Origin.z);
+      ScaleObjectOverwrite(o, o->Scale.x, o->Scale.y, o->Scale.z);
+      RotateObjectAdd(o, o->Rotation.x, o->Rotation.y, o->Rotation.z);
+      TranslateObjectAdd(o, o->Origin.x, o->Origin.y, o->Origin.z);
     }
-    CalcObjectChildren(o, o->Scale.x, o->Scale.y, o->Scale.z, o->Rotation.x,
-                       o->Rotation.y, o->Rotation.z, o->Origin.x, o->Origin.y,
-                       o->Origin.z);
-    ScaleObjectOverwrite(o, o->Scale.x, o->Scale.y, o->Scale.z);
-    RotateObjectAdd(o, o->Rotation.x, o->Rotation.y, o->Rotation.z);
-    TranslateObjectAdd(o, o->Origin.x, o->Origin.y, o->Origin.z);
-  }
 }
 void TranslateObjectAdd(ObjPtr o, double dx, double dy, double dz)
 {
@@ -410,24 +410,24 @@ void TranslateObjectAdd(ObjPtr o, double dx, double dy, double dz)
   HPoint hp;
   PointListPtr index = NULL;
   if (o != NULL)
-  {
-    /*printf("TranslateObjectAdd(%s, %.2f, %.2f, %.2f)\n",o->Name,dx,dy,dz);*/
-    Rot = TranslateMatrix(dx, dy, dz);
-    index = o->Points;
-    while (index != NULL)
     {
-      hp = TPointToHPoint(*index->P);
-      hp = MultMatrixHPoint(Rot, hp);
-      index->P->tx = hp.x;
-      index->P->ty = hp.y;
-      index->P->tz = hp.z;
-      index = index->NextPoint;
+      /*printf("TranslateObjectAdd(%s, %.2f, %.2f, %.2f)\n",o->Name,dx,dy,dz);*/
+      Rot = TranslateMatrix(dx, dy, dz);
+      index = o->Points;
+      while (index != NULL)
+        {
+          hp = TPointToHPoint(*index->P);
+          hp = MultMatrixHPoint(Rot, hp);
+          index->P->tx = hp.x;
+          index->P->ty = hp.y;
+          index->P->tz = hp.z;
+          index = index->NextPoint;
+        }
     }
-  }
   else
-  {
-    fprintf(stderr, "Cannot Translate NULL-object\n");
-  }
+    {
+      fprintf(stderr, "Cannot Translate NULL-object\n");
+    }
 }
 void TranslateObjectOverwrite(ObjPtr o, double dx, double dy, double dz)
 {
@@ -435,25 +435,25 @@ void TranslateObjectOverwrite(ObjPtr o, double dx, double dy, double dz)
   HPoint hp;
   PointListPtr index = NULL;
   if (o != NULL)
-  {
-    /*printf("TranslateObjectOverwrite(%s, %.2f, %.2f,
-     * %.2f)\n",o->Name,dx,dy,dz);*/
-    Rot = TranslateMatrix(dx, dy, dz);
-    index = o->Points;
-    while (index != NULL)
     {
-      hp = PointToHPoint(*index->P);
-      hp = MultMatrixHPoint(Rot, hp);
-      index->P->tx = hp.x;
-      index->P->ty = hp.y;
-      index->P->tz = hp.z;
-      index = index->NextPoint;
+      /*printf("TranslateObjectOverwrite(%s, %.2f, %.2f,
+     * %.2f)\n",o->Name,dx,dy,dz);*/
+      Rot = TranslateMatrix(dx, dy, dz);
+      index = o->Points;
+      while (index != NULL)
+        {
+          hp = PointToHPoint(*index->P);
+          hp = MultMatrixHPoint(Rot, hp);
+          index->P->tx = hp.x;
+          index->P->ty = hp.y;
+          index->P->tz = hp.z;
+          index = index->NextPoint;
+        }
     }
-  }
   else
-  {
-    fprintf(stderr, "Cannot Translate NULL-object\n");
-  }
+    {
+      fprintf(stderr, "Cannot Translate NULL-object\n");
+    }
 }
 void RotateObjectAdd(ObjPtr o, double ax, double ay, double az)
 {
@@ -461,24 +461,24 @@ void RotateObjectAdd(ObjPtr o, double ax, double ay, double az)
   HPoint hp;
   PointListPtr index = NULL;
   if (o != NULL)
-  {
-    /*printf("RotateObjectAdd(%s, %.2f, %.2f, %.2f)\n",o->Name,ax,ay,az);*/
-    Rot = RotateMatrix(ax, ay, az);
-    index = o->Points;
-    while (index != NULL)
     {
-      hp = TPointToHPoint(*index->P);
-      hp = MultMatrixHPoint(Rot, hp);
-      index->P->tx = hp.x;
-      index->P->ty = hp.y;
-      index->P->tz = hp.z;
-      index = index->NextPoint;
+      /*printf("RotateObjectAdd(%s, %.2f, %.2f, %.2f)\n",o->Name,ax,ay,az);*/
+      Rot = RotateMatrix(ax, ay, az);
+      index = o->Points;
+      while (index != NULL)
+        {
+          hp = TPointToHPoint(*index->P);
+          hp = MultMatrixHPoint(Rot, hp);
+          index->P->tx = hp.x;
+          index->P->ty = hp.y;
+          index->P->tz = hp.z;
+          index = index->NextPoint;
+        }
     }
-  }
   else
-  {
-    fprintf(stderr, "Cannot Rotate NULL-object\n");
-  }
+    {
+      fprintf(stderr, "Cannot Rotate NULL-object\n");
+    }
 }
 void RotateObjectOverwrite(ObjPtr o, double ax, double ay, double az)
 {
@@ -488,22 +488,22 @@ void RotateObjectOverwrite(ObjPtr o, double ax, double ay, double az)
   /*printf("RotateObjectOverwrite(%s, %.2f, %.2f, %.2f)\n",o->Name,ax,ay,az);*/
   Rot = RotateMatrix(ax, ay, az);
   if (o != NULL)
-  {
-    index = o->Points;
-    while (index != NULL)
     {
-      hp = PointToHPoint(*index->P);
-      hp = MultMatrixHPoint(Rot, hp);
-      index->P->tx = hp.x;
-      index->P->ty = hp.y;
-      index->P->tz = hp.z;
-      index = index->NextPoint;
+      index = o->Points;
+      while (index != NULL)
+        {
+          hp = PointToHPoint(*index->P);
+          hp = MultMatrixHPoint(Rot, hp);
+          index->P->tx = hp.x;
+          index->P->ty = hp.y;
+          index->P->tz = hp.z;
+          index = index->NextPoint;
+        }
     }
-  }
   else
-  {
-    fprintf(stderr, "Cannot Rotate NULL-object\n");
-  }
+    {
+      fprintf(stderr, "Cannot Rotate NULL-object\n");
+    }
 }
 void ScaleObjectAdd(ObjPtr o, double sx, double sy, double sz)
 {
@@ -513,22 +513,22 @@ void ScaleObjectAdd(ObjPtr o, double sx, double sy, double sz)
   /*printf("ScaleObjectAdd(%s, %.2f, %.2f, %.2f)\n",o->Name,sx,sy,sz);*/
   Scale = ScaleMatrix(sx, sy, sz);
   if (o != NULL)
-  {
-    index = o->Points;
-    while (index != NULL)
     {
-      hp = TPointToHPoint(*index->P);
-      hp = MultMatrixHPoint(Scale, hp);
-      index->P->tx = hp.x;
-      index->P->ty = hp.y;
-      index->P->tz = hp.z;
-      index = index->NextPoint;
+      index = o->Points;
+      while (index != NULL)
+        {
+          hp = TPointToHPoint(*index->P);
+          hp = MultMatrixHPoint(Scale, hp);
+          index->P->tx = hp.x;
+          index->P->ty = hp.y;
+          index->P->tz = hp.z;
+          index = index->NextPoint;
+        }
     }
-  }
   else
-  {
-    fprintf(stderr, "Cannot Scale NULL-object\n");
-  }
+    {
+      fprintf(stderr, "Cannot Scale NULL-object\n");
+    }
 }
 void ScaleObjectOverwrite(ObjPtr o, double sx, double sy, double sz)
 {
@@ -538,32 +538,32 @@ void ScaleObjectOverwrite(ObjPtr o, double sx, double sy, double sz)
   /*printf("ScaleObjectOverwrite(%s, %.2f, %.2f, %.2f)\n",o->Name,sx,sy,sz);*/
   Scale = ScaleMatrix(sx, sy, sz);
   if (o != NULL)
-  {
-    index = o->Points;
-    while (index != NULL)
     {
-      hp = PointToHPoint(*index->P);
-      hp = MultMatrixHPoint(Scale, hp);
-      index->P->tx = hp.x;
-      index->P->ty = hp.y;
-      index->P->tz = hp.z;
-      index = index->NextPoint;
+      index = o->Points;
+      while (index != NULL)
+        {
+          hp = PointToHPoint(*index->P);
+          hp = MultMatrixHPoint(Scale, hp);
+          index->P->tx = hp.x;
+          index->P->ty = hp.y;
+          index->P->tz = hp.z;
+          index = index->NextPoint;
+        }
     }
-  }
   else
-  {
-    fprintf(stderr, "Cannot Scale NULL-object\n");
-  }
+    {
+      fprintf(stderr, "Cannot Scale NULL-object\n");
+    }
 }
 
 /***********************Converted  GL Routines ****************************/
 void SetObjectColor(ObjPtr o, float R, float G, float B)
 {
   if (o != NULL)
-  {
-    /*    printf("SetColor(%s)\n",o->Name);*/
-    o->Color.R = R;
-  }
+    {
+      /*    printf("SetColor(%s)\n",o->Name);*/
+      o->Color.R = R;
+    }
   o->Color.G = G;
   o->Color.B = B;
 }
@@ -571,64 +571,64 @@ void Draw_Children(ObjPtr o)
 {
   ObjPtr tmp = NULL;
   if (o != NULL)
-  {
-    /*    printf("Draw_Children(%s)",o->Name);*/
-    PrintObject(o);
-    tmp = o->Children;
-    while (tmp != NULL)
     {
-      Draw_Children(tmp);
-      tmp = tmp->next;
+      /*    printf("Draw_Children(%s)",o->Name);*/
+      PrintObject(o);
+      tmp = o->Children;
+      while (tmp != NULL)
+        {
+          Draw_Children(tmp);
+          tmp = tmp->next;
+        }
     }
-  }
 }
 void Draw_Object(ObjPtr o)
 {
   if (o != NULL)
-  {
-    /*    printf("Draw_Object(%s)\n",o->Name);*/
-    PrintObject(o);
-    /*printf("o->Children: %x\n",(unsigned) o->Children);*/
-    Draw_Children(o->Children);
-  }
+    {
+      /*    printf("Draw_Object(%s)\n",o->Name);*/
+      PrintObject(o);
+      /*printf("o->Children: %x\n",(unsigned) o->Children);*/
+      Draw_Children(o->Children);
+    }
 }
 void Draw_All_Nexts(ObjPtr o)
 {
   ObjPtr tmp = NULL;
   if (o != NULL)
-  {
-    /*    printf("Draw_All_Nexts(%s)\n",o->Name);*/
-    tmp = o->next;
-    while (tmp != NULL)
     {
-      CalcObject(tmp);
-      Draw_Object(tmp);
-      tmp = tmp->next;
+      /*    printf("Draw_All_Nexts(%s)\n",o->Name);*/
+      tmp = o->next;
+      while (tmp != NULL)
+        {
+          CalcObject(tmp);
+          Draw_Object(tmp);
+          tmp = tmp->next;
+        }
     }
-  }
 }
 void Draw_All_Prevs(ObjPtr o)
 {
   ObjPtr tmp = NULL;
   if (o != NULL)
-  {
-    /*    printf("Draw_All_Prevs(%s)\n",o->Name);*/
-    tmp = o->prev;
-    while (tmp != NULL)
     {
-      CalcObject(tmp);
-      Draw_Object(tmp);
-      tmp = tmp->prev;
+      /*    printf("Draw_All_Prevs(%s)\n",o->Name);*/
+      tmp = o->prev;
+      while (tmp != NULL)
+        {
+          CalcObject(tmp);
+          Draw_Object(tmp);
+          tmp = tmp->prev;
+        }
     }
-  }
 }
 void Draw_All(ObjPtr o)
 {
   if (o != NULL)
-  {
-    /*    printf("Draw_all(%s)\n",o->Name);*/
-    CalcObject(o);
-  }
+    {
+      /*    printf("Draw_all(%s)\n",o->Name);*/
+      CalcObject(o);
+    }
   Draw_All_Prevs(o);
   Draw_Object(o);
   Draw_All_Nexts(o);

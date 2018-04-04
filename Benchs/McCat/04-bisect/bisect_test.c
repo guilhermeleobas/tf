@@ -35,11 +35,11 @@ void test_matrix(int n, double *C, double *B)
   int i;
 
   for (i = 0; i < n; i++)
-  {
-    B[i] = (double)i;
-    C[i] = (double)(i + 1) * (i + 1);
-    C[i] = C[i] * C[i];
-  }
+    {
+      B[i] = (double)i;
+      C[i] = (double)(i + 1) * (i + 1);
+      C[i] = C[i] * C[i];
+    }
 }
 
 int main(int argc, char *argv[])
@@ -58,23 +58,23 @@ int main(int argc, char *argv[])
   dallocvector(n, &S);
 
   for (j = 0; j < rep; j++)
-  {
-    test_matrix(n, D, E);
-
-    for (i = 0; i < n; i++)
     {
-      beta[i] = E[i] * E[i];
-      S[i] = 0.0;
+      test_matrix(n, D, E);
+
+      for (i = 0; i < n; i++)
+        {
+          beta[i] = E[i] * E[i];
+          S[i] = 0.0;
+        }
+
+      E[0] = beta[0] = 0;
+      dbisect(D, E, beta, n, 1, n, eps, &eps2, &k, &S[-1]);
     }
 
-    E[0] = beta[0] = 0;
-    dbisect(D, E, beta, n, 1, n, eps, &eps2, &k, &S[-1]);
-  }
-
   for (i = 1; i < n; i++)
-  {
-    printf("%5d %.15e\n", i + 1, S[i]);
-  }
+    {
+      printf("%5d %.15e\n", i + 1, S[i]);
+    }
 
   printf("eps2 = %e,  k = %d\n", eps2, k);
 

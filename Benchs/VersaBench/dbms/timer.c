@@ -40,16 +40,16 @@
  */
 
 #ifdef USE_GETTIMEOFDAY
-#include <sys/time.h>     /* for timeval definition           */
-#include <unistd.h>       /* for gettimeofday() definition    */
+#include <sys/time.h> /* for timeval definition           */
+#include <unistd.h> /* for gettimeofday() definition    */
 #include "errorMessage.h" /* for errorMessage() definition    */
-#else                     /* USE_GETTIMEOFDAY undefined */
-#include <time.h>         /* for time() definition            */
-#endif                    /* USE_GETTIMEOFDAY */
+#else /* USE_GETTIMEOFDAY undefined */
+#include <time.h> /* for time() definition            */
+#endif /* USE_GETTIMEOFDAY */
 
-#include <assert.h>         /* for assert()                     */
+#include <assert.h> /* for assert()                     */
 #include "dataManagement.h" /* for primitive type definitions   */
-#include "metrics.h"        /* for Time type definition         */
+#include "metrics.h" /* for Time type definition         */
 
 /*
  *  Static value of program start time
@@ -104,11 +104,11 @@ void initTime(void)
 
   error = gettimeofday(&startTime, NULL);
   if (error == -1)
-  { /* check for error */
-    errorMessage("system time failure - can't set start time", REPLACE);
-    errorMessage(name, PREPEND);
-    flushErrorMessage();
-  } /*  end of if error == -1 */
+    { /* check for error */
+      errorMessage("system time failure - can't set start time", REPLACE);
+      errorMessage(name, PREPEND);
+      flushErrorMessage();
+    } /*  end of if error == -1 */
 
   /*
    *  Check that seconds and microseconds from Jan 1, 1970 are positive, and
@@ -154,14 +154,14 @@ void initTime(void)
  */
 
 Time getTime(void)
-{                   /*  beginning of getTime()  */
+{ /*  beginning of getTime()  */
   Time currentTime; /*  current time in milliseconds            */
 
 #ifdef USE_GETTIMEOFDAY
-  Int error;           /*  flag for checking on gettimeofday()     */
+  Int error; /*  flag for checking on gettimeofday()     */
   struct timeval temp; /*  current time returned by gettimeofday() */
   static Char name[] = "getTime";
-#else  /* USE_GETTIMEOFDAY undefined */
+#else /* USE_GETTIMEOFDAY undefined */
   time_t temp; /*  current time returned by time()         */
 #endif /* USE_GETTIMEOFDAY */
 
@@ -181,30 +181,30 @@ Time getTime(void)
    */
   error = gettimeofday(&temp, NULL);
   if (error == -1)
-  { /* check for error */
-    errorMessage("system time failure - can't get time", REPLACE);
-    errorMessage(name, PREPEND);
-    flushErrorMessage();
+    { /* check for error */
+      errorMessage("system time failure - can't get time", REPLACE);
+      errorMessage(name, PREPEND);
+      flushErrorMessage();
 
-    currentTime = MINIMUM_VALUE_OF_INT;
-  } /*  end of if error == -1 */
+      currentTime = MINIMUM_VALUE_OF_INT;
+    } /*  end of if error == -1 */
   else
-  {
-    /*
+    {
+      /*
      *  Check that seconds and microseconds from Jan 1, 1970 are positive,
      *  and that the microseconds value is less than a million, otherwise
      *  the seconds would have been incremented.
      */
-    assert(temp.tv_sec >= 0 && temp.tv_usec >= 0 && temp.tv_usec < MILLION);
-    /*
+      assert(temp.tv_sec >= 0 && temp.tv_usec >= 0 && temp.tv_usec < MILLION);
+      /*
      *  The current time must be later than the start time for the time
      *  difference arithmetic to work properly.
      */
-    assert(
-        temp.tv_sec > startTime.tv_sec ||
-        (temp.tv_sec == startTime.tv_sec && temp.tv_usec >= startTime.tv_usec));
+      assert(
+          temp.tv_sec > startTime.tv_sec ||
+          (temp.tv_sec == startTime.tv_sec && temp.tv_usec >= startTime.tv_usec));
 
-    /*
+      /*
      *  Determine milliseconds conversion of difference between the current
      *  time, temp, and the start time, startTime.  Because 0 <= usec <
      *  MILLION and it is assumed that the current time is later than the
@@ -222,41 +222,41 @@ Time getTime(void)
      *  microseconds, is the carry, i.e., a second was taken from the
      *  seconds place and added to the microseconds place.
      */
-    if (temp.tv_usec >= startTime.tv_usec)
-    {
-      currentTime = SECONDS_TO_MILLI * (temp.tv_sec - startTime.tv_sec);
-      currentTime += MILLION_TO_MILLI * (temp.tv_usec - startTime.tv_usec);
-    } /*  end of temp.usec >= start.usec */
-    else
-    {
-      currentTime = SECONDS_TO_MILLI * (temp.tv_sec - startTime.tv_sec - 1);
-      currentTime +=
-          MILLION_TO_MILLI * (temp.tv_usec - startTime.tv_usec + MILLION);
-    } /*  end of temp.usec <  start.usec */
+      if (temp.tv_usec >= startTime.tv_usec)
+        {
+          currentTime = SECONDS_TO_MILLI * (temp.tv_sec - startTime.tv_sec);
+          currentTime += MILLION_TO_MILLI * (temp.tv_usec - startTime.tv_usec);
+        } /*  end of temp.usec >= start.usec */
+      else
+        {
+          currentTime = SECONDS_TO_MILLI * (temp.tv_sec - startTime.tv_sec - 1);
+          currentTime +=
+              MILLION_TO_MILLI * (temp.tv_usec - startTime.tv_usec + MILLION);
+        } /*  end of temp.usec <  start.usec */
 
-    /*
+      /*
      *  Check for overflow of negative time difference, both of which should
      *  never happen since the system call should ensure non-negative
      *  differences and the maximum value for a time difference using
      *  milliseconds is 49.71 days.
      */
-    if (currentTime > MAXIMUM_VALUE_OF_INT)
-    {
-      errorMessage("overflow error calculating current time", REPLACE);
-      errorMessage(name, PREPEND);
-      flushErrorMessage();
+      if (currentTime > MAXIMUM_VALUE_OF_INT)
+        {
+          errorMessage("overflow error calculating current time", REPLACE);
+          errorMessage(name, PREPEND);
+          flushErrorMessage();
 
-      currentTime = MAXIMUM_VALUE_OF_INT;
-    } /*  end of upper bound check on currentTime */
-    else if (currentTime < 0)
-    {
-      errorMessage("start time appears not to be set", REPLACE);
-      errorMessage(name, PREPEND);
-      flushErrorMessage();
+          currentTime = MAXIMUM_VALUE_OF_INT;
+        } /*  end of upper bound check on currentTime */
+      else if (currentTime < 0)
+        {
+          errorMessage("start time appears not to be set", REPLACE);
+          errorMessage(name, PREPEND);
+          flushErrorMessage();
 
-      currentTime = 0;
-    } /*  end of lower bound check on currentTime */
-  }   /*  end of if error != -1 */
+          currentTime = 0;
+        } /*  end of lower bound check on currentTime */
+    } /*  end of if error != -1 */
 
 #else /* USE_GETTIMEOFDAY undefined */
 

@@ -34,52 +34,52 @@ network_t *net;
   arc_t *first_impl = net->stop_arcs - net->m_impl;
 
   if ((out = fopen(outfile, "w")) == NULL)
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
 
   refresh_neighbour_lists(net);
 
   for (block = net->nodes[net->n].firstout; block; block = block->nextout)
-  {
-    if (block->flow)
     {
-      fprintf(out, "()\n");
+      if (block->flow)
+        {
+          fprintf(out, "()\n");
 
-      arc = block;
-      while (arc)
-      {
-        if (arc >= first_impl)
-        {
-          fprintf(out, "***\n");
-        }
+          arc = block;
+          while (arc)
+            {
+              if (arc >= first_impl)
+                {
+                  fprintf(out, "***\n");
+                }
 
-        fprintf(out, "%d\n", -arc->head->number);
-        arc2 = arc->head[net->n_trips].firstout;
-        for (; arc2; arc2 = arc2->nextout)
-        {
-          if (arc2->flow)
-          {
-            break;
-          }
-        }
-        if (!arc2)
-        {
-          fclose(out);
-          return -1;
-        }
+              fprintf(out, "%d\n", -arc->head->number);
+              arc2 = arc->head[net->n_trips].firstout;
+              for (; arc2; arc2 = arc2->nextout)
+                {
+                  if (arc2->flow)
+                    {
+                      break;
+                    }
+                }
+              if (!arc2)
+                {
+                  fclose(out);
+                  return -1;
+                }
 
-        if (arc2->head->number)
-        {
-          arc = arc2;
+              if (arc2->head->number)
+                {
+                  arc = arc2;
+                }
+              else
+                {
+                  arc = NULL;
+                }
+            }
         }
-        else
-        {
-          arc = NULL;
-        }
-      }
     }
-  }
 
   fclose(out);
 

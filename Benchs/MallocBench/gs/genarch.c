@@ -14,10 +14,10 @@ char *argv[];
   int v16 = 1 << 16;
   FILE *f = fopen("arch.h", "w");
   if (f == NULL)
-  {
-    fprintf(stderr, "genarch.c: can't open arch.h for writing\n");
-    exit(1);
-  }
+    {
+      fprintf(stderr, "genarch.c: can't open arch.h for writing\n");
+      exit(1);
+    }
   fprintf(f, "#define big_endian %d\n", 1 - *(char *)&one);
   fprintf(f, "#define ints_are_short %d\n", v16 == 0);
   fclose(f);

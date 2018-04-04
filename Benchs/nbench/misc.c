@@ -73,9 +73,9 @@ u32 abs_randwc(u32 num)
 
   temp = randwc(num);
   if (temp < 0)
-  {
-    temp = (int32)0 - temp;
-  }
+    {
+      temp = (int32)0 - temp;
+    }
 
   return ((u32)temp);
 }
@@ -109,10 +109,10 @@ int32 randnum(int32 lngval)
   static int32 randw[2] = {(int32)13, (int32)117};
 
   if (lngval != (int32)0)
-  {
-    randw[0] = (int32)13;
-    randw[1] = (int32)117;
-  }
+    {
+      randw[0] = (int32)13;
+      randw[1] = (int32)117;
+    }
 
   interm =
       (randw[0] * (int32)254754 + randw[1] * (int32)529562) % (int32)999563;

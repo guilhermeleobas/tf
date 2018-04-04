@@ -23,53 +23,55 @@ precision atop(chp) register char *chp;
   register int i;
 
   if (chp != (char *)0)
-  {
-    while (isspace(*chp))
     {
-      chp++; /* skip whitespace */
-    }
-    if (*chp == '-')
-    {
-      sign = 1;
-      ++chp;
-    }
-    else if (*chp == '+')
-    {
-      ++chp;
-    }
-    if (isdigit(ch = *(unsigned char *)chp))
-    {
-      pset(&res, pzero);
-      pset(&clump, utop(aDigit));
-      do
-      {
-        i = aDigitLog - 1;
-        temp = ch - '0';
-        do
+      while (isspace(*chp))
         {
-          if (!isdigit(ch = *(unsigned char *)++chp))
-          {
-            goto atoplast;
-          }
-          temp = temp * aBase + (ch - '0');
-        } while (--i > 0);
-        pset(&res, padd(pmul(res, clump), utop(temp)));
-      } while (isdigit(ch = *(unsigned char *)++chp));
-      goto atopdone;
-    atoplast:
-      x = aBase;
-      while (i++ < aDigitLog - 1)
-      {
-        x *= aBase;
-      }
-      pset(&res, padd(pmul(res, utop(x)), utop(temp)));
-    atopdone:
-      if (sign)
-      {
-        pset(&res, pneg(res));
-      }
+          chp++; /* skip whitespace */
+        }
+      if (*chp == '-')
+        {
+          sign = 1;
+          ++chp;
+        }
+      else if (*chp == '+')
+        {
+          ++chp;
+        }
+      if (isdigit(ch = *(unsigned char *)chp))
+        {
+          pset(&res, pzero);
+          pset(&clump, utop(aDigit));
+          do
+            {
+              i = aDigitLog - 1;
+              temp = ch - '0';
+              do
+                {
+                  if (!isdigit(ch = *(unsigned char *)++chp))
+                    {
+                      goto atoplast;
+                    }
+                  temp = temp * aBase + (ch - '0');
+                }
+              while (--i > 0);
+              pset(&res, padd(pmul(res, clump), utop(temp)));
+            }
+          while (isdigit(ch = *(unsigned char *)++chp));
+          goto atopdone;
+        atoplast:
+          x = aBase;
+          while (i++ < aDigitLog - 1)
+            {
+              x *= aBase;
+            }
+          pset(&res, padd(pmul(res, utop(x)), utop(temp)));
+        atopdone:
+          if (sign)
+            {
+              pset(&res, pneg(res));
+            }
+        }
     }
-  }
   pdestroy(clump);
   return presult(res);
 }

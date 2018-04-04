@@ -203,24 +203,26 @@
 #define MY_LSTAT stat
 #define MY_STAT stat
 #undef SET_BINARY_MODE
-#define SET_BINARY_MODE(fd)                     \
-  do                                            \
-  {                                             \
-    int retVal = setmode(fileno(fd), O_BINARY); \
-    ERROR_IF_MINUS_ONE(retVal);                 \
-  } while (0)
+#define SET_BINARY_MODE(fd)                       \
+  do                                              \
+    {                                             \
+      int retVal = setmode(fileno(fd), O_BINARY); \
+      ERROR_IF_MINUS_ONE(retVal);                 \
+    }                                             \
+  while (0)
 #endif
 
 #ifdef __CYGWIN__
 #include <fcntl.h>
 #include <io.h>
 #undef SET_BINARY_MODE
-#define SET_BINARY_MODE(fd)                     \
-  do                                            \
-  {                                             \
-    int retVal = setmode(fileno(fd), O_BINARY); \
-    ERROR_IF_MINUS_ONE(retVal);                 \
-  } while (0)
+#define SET_BINARY_MODE(fd)                       \
+  do                                              \
+    {                                             \
+      int retVal = setmode(fileno(fd), O_BINARY); \
+      ERROR_IF_MINUS_ONE(retVal);                 \
+    }                                             \
+  while (0)
 #endif
 #endif /* BZ_UNIX */
 
@@ -240,12 +242,13 @@
 
 #define APPEND_FILESPEC(root, name) root = snocString((root), (name))
 
-#define SET_BINARY_MODE(fd)                     \
-  do                                            \
-  {                                             \
-    int retVal = setmode(fileno(fd), O_BINARY); \
-    ERROR_IF_MINUS_ONE(retVal);                 \
-  } while (0)
+#define SET_BINARY_MODE(fd)                       \
+  do                                              \
+    {                                             \
+      int retVal = setmode(fileno(fd), O_BINARY); \
+      ERROR_IF_MINUS_ONE(retVal);                 \
+    }                                             \
+  while (0)
 
 #endif /* BZ_LCCWIN32 */
 
@@ -348,10 +351,10 @@ static double uInt64_to_double(UInt64* n)
   double base = 1.0;
   double sum = 0.0;
   for (i = 0; i < 8; i++)
-  {
-    sum += base * (double)(n->b[i]);
-    base *= 256.0;
-  }
+    {
+      sum += base * (double)(n->b[i]);
+      base *= 256.0;
+    }
   return sum;
 }
 
@@ -359,12 +362,12 @@ static Bool uInt64_isZero(UInt64* n)
 {
   Int32 i;
   for (i = 0; i < 8; i++)
-  {
-    if (n->b[i] != 0)
     {
-      return 0;
+      if (n->b[i] != 0)
+        {
+          return 0;
+        }
     }
-  }
   return 1;
 }
 
@@ -375,11 +378,11 @@ static Int32 uInt64_qrm10(UInt64* n)
   Int32 i;
   rem = 0;
   for (i = 7; i >= 0; i--)
-  {
-    tmp = rem * 256 + n->b[i];
-    n->b[i] = tmp / 10;
-    rem = tmp % 10;
-  }
+    {
+      tmp = rem * 256 + n->b[i];
+      n->b[i] = tmp / 10;
+      rem = tmp % 10;
+    }
   return rem;
 }
 
@@ -393,16 +396,17 @@ static void uInt64_toAscii(char* outbuf, UInt64* n)
   Int32 nBuf = 0;
   UInt64 n_copy = *n;
   do
-  {
-    q = uInt64_qrm10(&n_copy);
-    buf[nBuf] = q + '0';
-    nBuf++;
-  } while (!uInt64_isZero(&n_copy));
+    {
+      q = uInt64_qrm10(&n_copy);
+      buf[nBuf] = q + '0';
+      nBuf++;
+    }
+  while (!uInt64_isZero(&n_copy));
   outbuf[nBuf] = 0;
   for (i = 0; i < nBuf; i++)
-  {
-    outbuf[i] = buf[nBuf - i - 1];
-  }
+    {
+      outbuf[i] = buf[nBuf - i - 1];
+    }
 }
 
 /*---------------------------------------------------*/
@@ -421,9 +425,9 @@ static
 {
   Int32 c = fgetc(f);
   if (c == EOF)
-  {
-    return True;
-  }
+    {
+      return True;
+    }
   ungetc(c, f);
   return False;
 }
@@ -446,111 +450,111 @@ static void compressStream(FILE* stream, FILE* zStream)
   SET_BINARY_MODE(zStream);
 
   if (ferror(stream))
-  {
-    goto errhandler_io;
-  }
-  if (ferror(zStream))
-  {
-    goto errhandler_io;
-  }
-
-  bzf = BZ2_bzWriteOpen(&bzerr, zStream, blockSize100k, verbosity, workFactor);
-  if (bzerr != BZ_OK)
-  {
-    goto errhandler;
-  }
-
-  if (verbosity >= 2)
-  {
-    fprintf(stderr, "\n");
-  }
-
-  while (True)
-  {
-    if (myfeof(stream))
-    {
-      break;
-    }
-    nIbuf = fread(ibuf, sizeof(UChar), 5000, stream);
-    if (ferror(stream))
     {
       goto errhandler_io;
     }
-    if (nIbuf > 0)
+  if (ferror(zStream))
     {
-      BZ2_bzWrite(&bzerr, bzf, (void*)ibuf, nIbuf);
+      goto errhandler_io;
     }
-    if (bzerr != BZ_OK)
+
+  bzf = BZ2_bzWriteOpen(&bzerr, zStream, blockSize100k, verbosity, workFactor);
+  if (bzerr != BZ_OK)
     {
       goto errhandler;
     }
-  }
+
+  if (verbosity >= 2)
+    {
+      fprintf(stderr, "\n");
+    }
+
+  while (True)
+    {
+      if (myfeof(stream))
+        {
+          break;
+        }
+      nIbuf = fread(ibuf, sizeof(UChar), 5000, stream);
+      if (ferror(stream))
+        {
+          goto errhandler_io;
+        }
+      if (nIbuf > 0)
+        {
+          BZ2_bzWrite(&bzerr, bzf, (void*)ibuf, nIbuf);
+        }
+      if (bzerr != BZ_OK)
+        {
+          goto errhandler;
+        }
+    }
 
   BZ2_bzWriteClose64(&bzerr, bzf, 0, &nbytes_in_lo32, &nbytes_in_hi32,
                      &nbytes_out_lo32, &nbytes_out_hi32);
   if (bzerr != BZ_OK)
-  {
-    goto errhandler;
-  }
+    {
+      goto errhandler;
+    }
 
   if (ferror(zStream))
-  {
-    goto errhandler_io;
-  }
-  ret = fflush(zStream);
-  if (ret == EOF)
-  {
-    goto errhandler_io;
-  }
-#if defined(SPEC_CPU)
-  if (zStream != SPEC_STDOUT)
-  {
-#else
-  if (zStream != stdout)
-  {
-#endif
-    ret = fclose(zStream);
-    outputHandleJustInCase = SPEC_NULLCAST NULL;
-    if (ret == EOF)
     {
       goto errhandler_io;
     }
-  }
+  ret = fflush(zStream);
+  if (ret == EOF)
+    {
+      goto errhandler_io;
+    }
+#if defined(SPEC_CPU)
+  if (zStream != SPEC_STDOUT)
+    {
+#else
+  if (zStream != stdout)
+    {
+#endif
+      ret = fclose(zStream);
+      outputHandleJustInCase = SPEC_NULLCAST NULL;
+      if (ret == EOF)
+        {
+          goto errhandler_io;
+        }
+    }
   outputHandleJustInCase = NULL;
   if (ferror(stream))
-  {
-    goto errhandler_io;
-  }
+    {
+      goto errhandler_io;
+    }
   ret = fclose(stream);
   if (ret == EOF)
-  {
-    goto errhandler_io;
-  }
+    {
+      goto errhandler_io;
+    }
 
   if (verbosity >= 1)
-  {
-    if (nbytes_in_lo32 == 0 && nbytes_in_hi32 == 0)
     {
-      fprintf(stderr, " no data compressed.\n");
+      if (nbytes_in_lo32 == 0 && nbytes_in_hi32 == 0)
+        {
+          fprintf(stderr, " no data compressed.\n");
+        }
+      else
+        {
+          Char buf_nin[32], buf_nout[32];
+          UInt64 nbytes_in, nbytes_out;
+          double nbytes_in_d, nbytes_out_d;
+          uInt64_from_UInt32s(&nbytes_in, nbytes_in_lo32, nbytes_in_hi32);
+          uInt64_from_UInt32s(&nbytes_out, nbytes_out_lo32, nbytes_out_hi32);
+          nbytes_in_d = uInt64_to_double(&nbytes_in);
+          nbytes_out_d = uInt64_to_double(&nbytes_out);
+          uInt64_toAscii(buf_nin, &nbytes_in);
+          uInt64_toAscii(buf_nout, &nbytes_out);
+          fprintf(stderr,
+                  "%6.3f:1, %6.3f bits/byte, "
+                  "%5.2f%% saved, %s in, %s out.\n",
+                  nbytes_in_d / nbytes_out_d, (8.0 * nbytes_out_d) / nbytes_in_d,
+                  100.0 * (1.0 - nbytes_out_d / nbytes_in_d), buf_nin, buf_nout);
+        }
     }
-    else
-    {
-      Char buf_nin[32], buf_nout[32];
-      UInt64 nbytes_in, nbytes_out;
-      double nbytes_in_d, nbytes_out_d;
-      uInt64_from_UInt32s(&nbytes_in, nbytes_in_lo32, nbytes_in_hi32);
-      uInt64_from_UInt32s(&nbytes_out, nbytes_out_lo32, nbytes_out_hi32);
-      nbytes_in_d = uInt64_to_double(&nbytes_in);
-      nbytes_out_d = uInt64_to_double(&nbytes_out);
-      uInt64_toAscii(buf_nin, &nbytes_in);
-      uInt64_toAscii(buf_nout, &nbytes_out);
-      fprintf(stderr,
-              "%6.3f:1, %6.3f bits/byte, "
-              "%5.2f%% saved, %s in, %s out.\n",
-              nbytes_in_d / nbytes_out_d, (8.0 * nbytes_out_d) / nbytes_in_d,
-              100.0 * (1.0 - nbytes_out_d / nbytes_in_d), buf_nin, buf_nout);
-    }
-  }
 
   return;
 
@@ -558,20 +562,20 @@ errhandler:
   BZ2_bzWriteClose64(&bzerr_dummy, bzf, 1, &nbytes_in_lo32, &nbytes_in_hi32,
                      &nbytes_out_lo32, &nbytes_out_hi32);
   switch (bzerr)
-  {
-    case BZ_CONFIG_ERROR:
-      configError();
-      break;
-    case BZ_MEM_ERROR:
-      outOfMemory();
-      break;
-    case BZ_IO_ERROR:
-    errhandler_io:
-      ioError();
-      break;
-    default:
-      panic("compress:unexpected error");
-  }
+    {
+      case BZ_CONFIG_ERROR:
+        configError();
+        break;
+      case BZ_MEM_ERROR:
+        outOfMemory();
+        break;
+      case BZ_IO_ERROR:
+      errhandler_io:
+        ioError();
+        break;
+      default:
+        panic("compress:unexpected error");
+    }
 
   panic("compress:end");
   /*notreached*/
@@ -599,184 +603,184 @@ static Bool uncompressStream(FILE* zStream, FILE* stream)
   SET_BINARY_MODE(zStream);
 
   if (ferror(stream))
-  {
-    goto errhandler_io;
-  }
-  if (ferror(zStream))
-  {
-    goto errhandler_io;
-  }
-
-  while (True)
-  {
-    bzf = BZ2_bzReadOpen(&bzerr, zStream, verbosity, (int)smallMode, unused,
-                         nUnused);
-    if (bzf == NULL || bzerr != BZ_OK)
-    {
-      goto errhandler;
-    }
-    streamNo++;
-
-    while (bzerr == BZ_OK)
-    {
-      nread = BZ2_bzRead(&bzerr, bzf, obuf, 5000);
-      if (bzerr == BZ_DATA_ERROR_MAGIC)
-      {
-        goto trycat;
-      }
-      if ((bzerr == BZ_OK || bzerr == BZ_STREAM_END) && nread > 0)
-      {
-        fwrite(obuf, sizeof(UChar), nread, stream);
-      }
-      if (ferror(stream))
-      {
-        goto errhandler_io;
-      }
-    }
-    if (bzerr != BZ_STREAM_END)
-    {
-      goto errhandler;
-    }
-
-    BZ2_bzReadGetUnused(&bzerr, bzf, &unusedTmpV, &nUnused);
-    if (bzerr != BZ_OK)
-    {
-      panic("decompress:bzReadGetUnused");
-    }
-
-    unusedTmp = (UChar*)unusedTmpV;
-    for (i = 0; i < nUnused; i++)
-    {
-      unused[i] = unusedTmp[i];
-    }
-
-    BZ2_bzReadClose(&bzerr, bzf);
-    if (bzerr != BZ_OK)
-    {
-      panic("decompress:bzReadGetUnused");
-    }
-
-    if (nUnused == 0 && myfeof(zStream))
-    {
-      break;
-    }
-  }
-
-closeok:
-  if (ferror(zStream))
-  {
-    goto errhandler_io;
-  }
-  ret = fclose(zStream);
-  if (ret == EOF)
-  {
-    goto errhandler_io;
-  }
-
-  if (ferror(stream))
-  {
-    goto errhandler_io;
-  }
-  ret = fflush(stream);
-  if (ret != 0)
-  {
-    goto errhandler_io;
-  }
-#if defined(SPEC_CPU)
-  if (stream != SPEC_STDOUT)
-  {
-#else
-  if (stream != stdout)
-  {
-#endif
-    ret = fclose(stream);
-    outputHandleJustInCase = SPEC_NULLCAST NULL;
-    if (ret == EOF)
     {
       goto errhandler_io;
     }
-  }
+  if (ferror(zStream))
+    {
+      goto errhandler_io;
+    }
+
+  while (True)
+    {
+      bzf = BZ2_bzReadOpen(&bzerr, zStream, verbosity, (int)smallMode, unused,
+                           nUnused);
+      if (bzf == NULL || bzerr != BZ_OK)
+        {
+          goto errhandler;
+        }
+      streamNo++;
+
+      while (bzerr == BZ_OK)
+        {
+          nread = BZ2_bzRead(&bzerr, bzf, obuf, 5000);
+          if (bzerr == BZ_DATA_ERROR_MAGIC)
+            {
+              goto trycat;
+            }
+          if ((bzerr == BZ_OK || bzerr == BZ_STREAM_END) && nread > 0)
+            {
+              fwrite(obuf, sizeof(UChar), nread, stream);
+            }
+          if (ferror(stream))
+            {
+              goto errhandler_io;
+            }
+        }
+      if (bzerr != BZ_STREAM_END)
+        {
+          goto errhandler;
+        }
+
+      BZ2_bzReadGetUnused(&bzerr, bzf, &unusedTmpV, &nUnused);
+      if (bzerr != BZ_OK)
+        {
+          panic("decompress:bzReadGetUnused");
+        }
+
+      unusedTmp = (UChar*)unusedTmpV;
+      for (i = 0; i < nUnused; i++)
+        {
+          unused[i] = unusedTmp[i];
+        }
+
+      BZ2_bzReadClose(&bzerr, bzf);
+      if (bzerr != BZ_OK)
+        {
+          panic("decompress:bzReadGetUnused");
+        }
+
+      if (nUnused == 0 && myfeof(zStream))
+        {
+          break;
+        }
+    }
+
+closeok:
+  if (ferror(zStream))
+    {
+      goto errhandler_io;
+    }
+  ret = fclose(zStream);
+  if (ret == EOF)
+    {
+      goto errhandler_io;
+    }
+
+  if (ferror(stream))
+    {
+      goto errhandler_io;
+    }
+  ret = fflush(stream);
+  if (ret != 0)
+    {
+      goto errhandler_io;
+    }
+#if defined(SPEC_CPU)
+  if (stream != SPEC_STDOUT)
+    {
+#else
+  if (stream != stdout)
+    {
+#endif
+      ret = fclose(stream);
+      outputHandleJustInCase = SPEC_NULLCAST NULL;
+      if (ret == EOF)
+        {
+          goto errhandler_io;
+        }
+    }
   outputHandleJustInCase = NULL;
   if (verbosity >= 2)
-  {
-    fprintf(stderr, "\n    ");
-  }
+    {
+      fprintf(stderr, "\n    ");
+    }
   return True;
 
 trycat:
   if (forceOverwrite)
-  {
-    rewind(zStream);
-    while (True)
     {
-      if (myfeof(zStream))
-      {
-        break;
-      }
-      nread = fread(obuf, sizeof(UChar), 5000, zStream);
-      if (ferror(zStream))
-      {
-        goto errhandler_io;
-      }
-      if (nread > 0)
-      {
-        fwrite(obuf, sizeof(UChar), nread, stream);
-      }
-      if (ferror(stream))
-      {
-        goto errhandler_io;
-      }
+      rewind(zStream);
+      while (True)
+        {
+          if (myfeof(zStream))
+            {
+              break;
+            }
+          nread = fread(obuf, sizeof(UChar), 5000, zStream);
+          if (ferror(zStream))
+            {
+              goto errhandler_io;
+            }
+          if (nread > 0)
+            {
+              fwrite(obuf, sizeof(UChar), nread, stream);
+            }
+          if (ferror(stream))
+            {
+              goto errhandler_io;
+            }
+        }
+      goto closeok;
     }
-    goto closeok;
-  }
 
 errhandler:
   BZ2_bzReadClose(&bzerr_dummy, bzf);
   switch (bzerr)
-  {
-    case BZ_CONFIG_ERROR:
-      configError();
-      break;
-    case BZ_IO_ERROR:
-    errhandler_io:
-      ioError();
-      break;
-    case BZ_DATA_ERROR:
-      crcError();
-    case BZ_MEM_ERROR:
-      outOfMemory();
-    case BZ_UNEXPECTED_EOF:
-      compressedStreamEOF();
-    case BZ_DATA_ERROR_MAGIC:
+    {
+      case BZ_CONFIG_ERROR:
+        configError();
+        break;
+      case BZ_IO_ERROR:
+      errhandler_io:
+        ioError();
+        break;
+      case BZ_DATA_ERROR:
+        crcError();
+      case BZ_MEM_ERROR:
+        outOfMemory();
+      case BZ_UNEXPECTED_EOF:
+        compressedStreamEOF();
+      case BZ_DATA_ERROR_MAGIC:
 #if defined(SPEC_CPU)
-      if (zStream != SPEC_STDIN) fclose(zStream);
-      if (stream != SPEC_STDOUT) fclose(stream);
+        if (zStream != SPEC_STDIN) fclose(zStream);
+        if (stream != SPEC_STDOUT) fclose(stream);
 #else
-      if (zStream != stdin)
-      {
-        fclose(zStream);
-      }
-      if (stream != stdout)
-      {
-        fclose(stream);
-      }
+        if (zStream != stdin)
+          {
+            fclose(zStream);
+          }
+        if (stream != stdout)
+          {
+            fclose(stream);
+          }
 #endif
-      if (streamNo == 1)
-      {
-        return False;
-      }
-      else
-      {
-        if (noisy)
-        {
-          fprintf(stderr, "\n%s: %s: trailing garbage after EOF ignored\n",
-                  progName, inName);
-        }
-        return True;
-      }
-    default:
-      panic("decompress:unexpected error");
-  }
+        if (streamNo == 1)
+          {
+            return False;
+          }
+        else
+          {
+            if (noisy)
+              {
+                fprintf(stderr, "\n%s: %s: trailing garbage after EOF ignored\n",
+                        progName, inName);
+              }
+            return True;
+          }
+      default:
+        panic("decompress:unexpected error");
+    }
 
   panic("decompress:end");
   return True; /*notreached*/
@@ -805,120 +809,120 @@ static
 
   SET_BINARY_MODE(zStream);
   if (ferror(zStream))
-  {
-    goto errhandler_io;
-  }
+    {
+      goto errhandler_io;
+    }
 
   while (True)
-  {
-    bzf = BZ2_bzReadOpen(&bzerr, zStream, verbosity, (int)smallMode, unused,
-                         nUnused);
-    if (bzf == NULL || bzerr != BZ_OK)
     {
-      goto errhandler;
-    }
-    streamNo++;
+      bzf = BZ2_bzReadOpen(&bzerr, zStream, verbosity, (int)smallMode, unused,
+                           nUnused);
+      if (bzf == NULL || bzerr != BZ_OK)
+        {
+          goto errhandler;
+        }
+      streamNo++;
 
-    while (bzerr == BZ_OK)
-    {
-      nread = BZ2_bzRead(&bzerr, bzf, obuf, 5000);
-      if (bzerr == BZ_DATA_ERROR_MAGIC)
-      {
-        goto errhandler;
-      }
-    }
-    if (bzerr != BZ_STREAM_END)
-    {
-      goto errhandler;
-    }
+      while (bzerr == BZ_OK)
+        {
+          nread = BZ2_bzRead(&bzerr, bzf, obuf, 5000);
+          if (bzerr == BZ_DATA_ERROR_MAGIC)
+            {
+              goto errhandler;
+            }
+        }
+      if (bzerr != BZ_STREAM_END)
+        {
+          goto errhandler;
+        }
 
-    BZ2_bzReadGetUnused(&bzerr, bzf, &unusedTmpV, &nUnused);
-    if (bzerr != BZ_OK)
-    {
-      panic("test:bzReadGetUnused");
-    }
+      BZ2_bzReadGetUnused(&bzerr, bzf, &unusedTmpV, &nUnused);
+      if (bzerr != BZ_OK)
+        {
+          panic("test:bzReadGetUnused");
+        }
 
-    unusedTmp = (UChar*)unusedTmpV;
-    for (i = 0; i < nUnused; i++)
-    {
-      unused[i] = unusedTmp[i];
-    }
+      unusedTmp = (UChar*)unusedTmpV;
+      for (i = 0; i < nUnused; i++)
+        {
+          unused[i] = unusedTmp[i];
+        }
 
-    BZ2_bzReadClose(&bzerr, bzf);
-    if (bzerr != BZ_OK)
-    {
-      panic("test:bzReadGetUnused");
+      BZ2_bzReadClose(&bzerr, bzf);
+      if (bzerr != BZ_OK)
+        {
+          panic("test:bzReadGetUnused");
+        }
+      if (nUnused == 0 && myfeof(zStream))
+        {
+          break;
+        }
     }
-    if (nUnused == 0 && myfeof(zStream))
-    {
-      break;
-    }
-  }
 
   if (ferror(zStream))
-  {
-    goto errhandler_io;
-  }
+    {
+      goto errhandler_io;
+    }
   ret = fclose(zStream);
   if (ret == EOF)
-  {
-    goto errhandler_io;
-  }
+    {
+      goto errhandler_io;
+    }
 
   if (verbosity >= 2)
-  {
-    fprintf(stderr, "\n    ");
-  }
+    {
+      fprintf(stderr, "\n    ");
+    }
   return True;
 
 errhandler:
   BZ2_bzReadClose(&bzerr_dummy, bzf);
   if (verbosity == 0)
-  {
-    fprintf(stderr, "%s: %s: ", progName, inName);
-  }
+    {
+      fprintf(stderr, "%s: %s: ", progName, inName);
+    }
   switch (bzerr)
-  {
-    case BZ_CONFIG_ERROR:
-      configError();
-      break;
-    case BZ_IO_ERROR:
-    errhandler_io:
-      ioError();
-      break;
-    case BZ_DATA_ERROR:
-      fprintf(stderr, "data integrity (CRC) error in data\n");
-      return False;
-    case BZ_MEM_ERROR:
-      outOfMemory();
-    case BZ_UNEXPECTED_EOF:
-      fprintf(stderr, "file ends unexpectedly\n");
-      return False;
-    case BZ_DATA_ERROR_MAGIC:
-#if defined(SPEC_CPU)
-      if (zStream != SPEC_STDIN) fclose(zStream);
-#else
-      if (zStream != stdin)
-      {
-        fclose(zStream);
-      }
-#endif
-      if (streamNo == 1)
-      {
-        fprintf(stderr, "bad magic number (file not created by bzip2)\n");
+    {
+      case BZ_CONFIG_ERROR:
+        configError();
+        break;
+      case BZ_IO_ERROR:
+      errhandler_io:
+        ioError();
+        break;
+      case BZ_DATA_ERROR:
+        fprintf(stderr, "data integrity (CRC) error in data\n");
         return False;
-      }
-      else
-      {
-        if (noisy)
-        {
-          fprintf(stderr, "trailing garbage after EOF ignored\n");
-        }
-        return True;
-      }
-    default:
-      panic("test:unexpected error");
-  }
+      case BZ_MEM_ERROR:
+        outOfMemory();
+      case BZ_UNEXPECTED_EOF:
+        fprintf(stderr, "file ends unexpectedly\n");
+        return False;
+      case BZ_DATA_ERROR_MAGIC:
+#if defined(SPEC_CPU)
+        if (zStream != SPEC_STDIN) fclose(zStream);
+#else
+        if (zStream != stdin)
+          {
+            fclose(zStream);
+          }
+#endif
+        if (streamNo == 1)
+          {
+            fprintf(stderr, "bad magic number (file not created by bzip2)\n");
+            return False;
+          }
+        else
+          {
+            if (noisy)
+              {
+                fprintf(stderr, "trailing garbage after EOF ignored\n");
+              }
+            return True;
+          }
+      default:
+        panic("test:unexpected error");
+    }
 
   panic("test:end");
   return True; /*notreached*/
@@ -935,9 +939,9 @@ static void setExit(Int32 v)
   exitValue = 0; /* Only a crash should generate an RE */
 #else
   if (v > exitValue)
-  {
-    exitValue = v;
-  }
+    {
+      exitValue = v;
+    }
 #endif
 }
 
@@ -945,23 +949,23 @@ static void setExit(Int32 v)
 static void cadvise(void)
 {
   if (noisy)
-  {
-    fprintf(
-        stderr,
-        "\nIt is possible that the compressed file(s) have become corrupted.\n"
-        "You can use the -tvv option to test integrity of such files.\n\n"
-        "You can use the `bzip2recover' program to attempt to recover\n"
-        "data from undamaged sections of corrupted files.\n\n");
-  }
+    {
+      fprintf(
+          stderr,
+          "\nIt is possible that the compressed file(s) have become corrupted.\n"
+          "You can use the -tvv option to test integrity of such files.\n\n"
+          "You can use the `bzip2recover' program to attempt to recover\n"
+          "data from undamaged sections of corrupted files.\n\n");
+    }
 }
 
 /*---------------------------------------------*/
 static void showFileNames(void)
 {
   if (noisy)
-  {
-    fprintf(stderr, "\tInput file = %s, output file = %s\n", inName, outName);
-  }
+    {
+      fprintf(stderr, "\tInput file = %s, output file = %s\n", inName, outName);
+    }
 }
 
 /*---------------------------------------------*/
@@ -972,55 +976,55 @@ static void cleanUpAndFail(Int32 ec)
   struct MY_STAT statBuf;
 
   if (srcMode == SM_F2F && opMode != OM_TEST && deleteOutputOnInterrupt)
-  {
-    /* Check whether input file still exists.  Delete output file
+    {
+      /* Check whether input file still exists.  Delete output file
        only if input exists to avoid loss of data.  Joerg Prante, 5
        January 2002.  (JRS 06-Jan-2002: other changes in 1.0.2 mean
        this is less likely to happen.  But to be ultra-paranoid, we
        do the check anyway.)  */
-    retVal = MY_STAT(inName, &statBuf);
-    if (retVal == 0)
-    {
-      if (noisy)
-      {
-        fprintf(stderr, "%s: Deleting output file %s, if it exists.\n",
-                progName, outName);
-      }
-      if (outputHandleJustInCase != NULL)
-      {
-        fclose(outputHandleJustInCase);
-      }
-      retVal = remove(outName);
-      if (retVal != 0)
-      {
-        fprintf(stderr,
-                "%s: WARNING: deletion of output file "
-                "(apparently) failed.\n",
-                progName);
-      }
+      retVal = MY_STAT(inName, &statBuf);
+      if (retVal == 0)
+        {
+          if (noisy)
+            {
+              fprintf(stderr, "%s: Deleting output file %s, if it exists.\n",
+                      progName, outName);
+            }
+          if (outputHandleJustInCase != NULL)
+            {
+              fclose(outputHandleJustInCase);
+            }
+          retVal = remove(outName);
+          if (retVal != 0)
+            {
+              fprintf(stderr,
+                      "%s: WARNING: deletion of output file "
+                      "(apparently) failed.\n",
+                      progName);
+            }
+        }
+      else
+        {
+          fprintf(stderr, "%s: WARNING: deletion of output file suppressed\n",
+                  progName);
+          fprintf(stderr,
+                  "%s:    since input file no longer exists.  Output file\n",
+                  progName);
+          fprintf(stderr, "%s:    `%s' may be incomplete.\n", progName, outName);
+          fprintf(stderr,
+                  "%s:    I suggest doing an integrity test (bzip2 -tv)"
+                  " of it.\n",
+                  progName);
+        }
     }
-    else
-    {
-      fprintf(stderr, "%s: WARNING: deletion of output file suppressed\n",
-              progName);
-      fprintf(stderr,
-              "%s:    since input file no longer exists.  Output file\n",
-              progName);
-      fprintf(stderr, "%s:    `%s' may be incomplete.\n", progName, outName);
-      fprintf(stderr,
-              "%s:    I suggest doing an integrity test (bzip2 -tv)"
-              " of it.\n",
-              progName);
-    }
-  }
 
   if (noisy && numFileNames > 0 && numFilesProcessed < numFileNames)
-  {
-    fprintf(stderr,
-            "%s: WARNING: some files have not been processed:\n"
-            "%s:    %d specified on command line, %d not processed yet.\n\n",
-            progName, progName, numFileNames, numFileNames - numFilesProcessed);
-  }
+    {
+      fprintf(stderr,
+              "%s: WARNING: some files have not been processed:\n"
+              "%s:    %d specified on command line, %d not processed yet.\n\n",
+              progName, progName, numFileNames, numFileNames - numFilesProcessed);
+    }
 #endif /* !SPEC_CPU */
   setExit(ec);
   exit(exitValue);
@@ -1058,15 +1062,15 @@ static void crcError(void)
 static void compressedStreamEOF(void)
 {
   if (noisy)
-  {
-    fprintf(stderr,
-            "\n%s: Compressed file ends unexpectedly;\n\t"
-            "perhaps it is corrupted?  *Possible* reason follows.\n",
-            progName);
-    perror(progName);
-    showFileNames();
-    cadvise();
-  }
+    {
+      fprintf(stderr,
+              "\n%s: Compressed file ends unexpectedly;\n\t"
+              "perhaps it is corrupted?  *Possible* reason follows.\n",
+              progName);
+      perror(progName);
+      showFileNames();
+      cadvise();
+    }
   cleanUpAndFail(2);
 }
 
@@ -1093,68 +1097,68 @@ static void mySignalCatcher(IntNative n)
 static void mySIGSEGVorSIGBUScatcher(IntNative n)
 {
   if (opMode == OM_Z)
-  {
-    fprintf(
-        stderr,
-        "\n%s: Caught a SIGSEGV or SIGBUS whilst compressing.\n"
-        "\n"
-        "   Possible causes are (most likely first):\n"
-        "   (1) This computer has unreliable memory or cache hardware\n"
-        "       (a surprisingly common problem; try a different machine.)\n"
-        "   (2) A bug in the compiler used to create this executable\n"
-        "       (unlikely, if you didn't compile bzip2 yourself.)\n"
-        "   (3) A real bug in bzip2 -- I hope this should never be the case.\n"
-        "   The user's manual, Section 4.3, has more info on (1) and (2).\n"
+    {
+      fprintf(
+          stderr,
+          "\n%s: Caught a SIGSEGV or SIGBUS whilst compressing.\n"
+          "\n"
+          "   Possible causes are (most likely first):\n"
+          "   (1) This computer has unreliable memory or cache hardware\n"
+          "       (a surprisingly common problem; try a different machine.)\n"
+          "   (2) A bug in the compiler used to create this executable\n"
+          "       (unlikely, if you didn't compile bzip2 yourself.)\n"
+          "   (3) A real bug in bzip2 -- I hope this should never be the case.\n"
+          "   The user's manual, Section 4.3, has more info on (1) and (2).\n"
 #if !defined(SPEC_CPU)
-        "   \n"
-        "   If you suspect this is a bug in bzip2, or are unsure about (1)\n"
-        "   or (2), feel free to report it to me at: jseward@bzip.org.\n"
-        "   Section 4.3 of the user's manual describes the info a useful\n"
-        "   bug report should have.  If the manual is available on your\n"
-        "   system, please try and read it before mailing me.  If you don't\n"
-        "   have the manual or can't be bothered to read it, mail me anyway.\n"
+          "   \n"
+          "   If you suspect this is a bug in bzip2, or are unsure about (1)\n"
+          "   or (2), feel free to report it to me at: jseward@bzip.org.\n"
+          "   Section 4.3 of the user's manual describes the info a useful\n"
+          "   bug report should have.  If the manual is available on your\n"
+          "   system, please try and read it before mailing me.  If you don't\n"
+          "   have the manual or can't be bothered to read it, mail me anyway.\n"
 #endif /* !SPEC_CPU */
-        "\n",
-        progName);
-  }
+          "\n",
+          progName);
+    }
   else
-  {
-    fprintf(
-        stderr,
-        "\n%s: Caught a SIGSEGV or SIGBUS whilst decompressing.\n"
-        "\n"
-        "   Possible causes are (most likely first):\n"
-        "   (1) The compressed data is corrupted, and bzip2's usual checks\n"
-        "       failed to detect this.  Try bzip2 -tvv my_file.bz2.\n"
-        "   (2) This computer has unreliable memory or cache hardware\n"
-        "       (a surprisingly common problem; try a different machine.)\n"
-        "   (3) A bug in the compiler used to create this executable\n"
-        "       (unlikely, if you didn't compile bzip2 yourself.)\n"
-        "   (4) A real bug in bzip2 -- I hope this should never be the case.\n"
-        "   The user's manual, Section 4.3, has more info on (2) and (3).\n"
+    {
+      fprintf(
+          stderr,
+          "\n%s: Caught a SIGSEGV or SIGBUS whilst decompressing.\n"
+          "\n"
+          "   Possible causes are (most likely first):\n"
+          "   (1) The compressed data is corrupted, and bzip2's usual checks\n"
+          "       failed to detect this.  Try bzip2 -tvv my_file.bz2.\n"
+          "   (2) This computer has unreliable memory or cache hardware\n"
+          "       (a surprisingly common problem; try a different machine.)\n"
+          "   (3) A bug in the compiler used to create this executable\n"
+          "       (unlikely, if you didn't compile bzip2 yourself.)\n"
+          "   (4) A real bug in bzip2 -- I hope this should never be the case.\n"
+          "   The user's manual, Section 4.3, has more info on (2) and (3).\n"
 #if !defined(SPEC_CPU)
-        "   \n"
-        "   If you suspect this is a bug in bzip2, or are unsure about (2)\n"
-        "   or (3), feel free to report it to me at: jseward@bzip.org.\n"
-        "   Section 4.3 of the user's manual describes the info a useful\n"
-        "   bug report should have.  If the manual is available on your\n"
-        "   system, please try and read it before mailing me.  If you don't\n"
-        "   have the manual or can't be bothered to read it, mail me anyway.\n"
+          "   \n"
+          "   If you suspect this is a bug in bzip2, or are unsure about (2)\n"
+          "   or (3), feel free to report it to me at: jseward@bzip.org.\n"
+          "   Section 4.3 of the user's manual describes the info a useful\n"
+          "   bug report should have.  If the manual is available on your\n"
+          "   system, please try and read it before mailing me.  If you don't\n"
+          "   have the manual or can't be bothered to read it, mail me anyway.\n"
 #endif /* !SPEC_CPU */
-        "\n",
-        progName);
-  }
+          "\n",
+          progName);
+    }
 
   showFileNames();
   if (opMode == OM_Z)
-  {
-    cleanUpAndFail(3);
-  }
+    {
+      cleanUpAndFail(3);
+    }
   else
-  {
-    cadvise();
-    cleanUpAndFail(2);
-  }
+    {
+      cadvise();
+      cleanUpAndFail(2);
+    }
 }
 
 /*---------------------------------------------*/
@@ -1193,28 +1197,28 @@ static void pad(Char* s)
 {
   Int32 i;
   if ((Int32)strlen(s) >= longestFileName)
-  {
-    return;
-  }
+    {
+      return;
+    }
   for (i = 1; i <= longestFileName - (Int32)strlen(s); i++)
-  {
-    fprintf(stderr, " ");
-  }
+    {
+      fprintf(stderr, " ");
+    }
 }
 
 /*---------------------------------------------*/
 static void copyFileName(Char* to, Char* from)
 {
   if (strlen(from) > FILE_NAME_LEN - 10)
-  {
-    fprintf(stderr,
-            "bzip2: file name\n`%s'\n"
-            "is suspiciously (more than %d chars) long.\n"
-            "Try using a reasonable file name instead.  Sorry! :-)\n",
-            from, FILE_NAME_LEN - 10);
-    setExit(1);
-    exit(exitValue);
-  }
+    {
+      fprintf(stderr,
+              "bzip2: file name\n`%s'\n"
+              "is suspiciously (more than %d chars) long.\n"
+              "Try using a reasonable file name instead.  Sorry! :-)\n",
+              from, FILE_NAME_LEN - 10);
+      setExit(1);
+      exit(exitValue);
+    }
 
   strncpy(to, from, FILE_NAME_LEN - 10);
   to[FILE_NAME_LEN - 10] = '\0';
@@ -1226,9 +1230,9 @@ static Bool fileExists(Char* name)
   FILE* tmp = fopen(name, "rb");
   Bool exists = (tmp != NULL);
   if (tmp != NULL)
-  {
-    fclose(tmp);
-  }
+    {
+      fclose(tmp);
+    }
   return exists;
 }
 
@@ -1249,14 +1253,14 @@ FILE* fopen_output_safely(Char* name, const char* mode)
   IntNative fh;
   fh = open(name, O_WRONLY | O_CREAT | O_EXCL, S_IWUSR | S_IRUSR);
   if (fh == -1)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
   fp = fdopen(fh, mode);
   if (fp == NULL)
-  {
-    close(fh);
-  }
+    {
+      close(fh);
+    }
   return fp;
 #else
   return fopen(name, mode);
@@ -1274,13 +1278,13 @@ static Bool notAStandardFile(Char* name)
 
   i = MY_LSTAT(name, &statBuf);
   if (i != 0)
-  {
-    return True;
-  }
+    {
+      return True;
+    }
   if (MY_S_ISREG(statBuf.st_mode))
-  {
-    return False;
-  }
+    {
+      return False;
+    }
   return True;
 }
 
@@ -1295,9 +1299,9 @@ static Int32 countHardLinks(Char* name)
 
   i = MY_LSTAT(name, &statBuf);
   if (i != 0)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
   return (statBuf.st_nlink - 1);
 }
 
@@ -1368,7 +1372,7 @@ static Bool containsDubiousChars(Char* name)
    * is performed by the shell.
    */
   return False;
-#else  /* ! BZ_UNIX */
+#else /* ! BZ_UNIX */
   /* On non-unix (Win* platforms), wildcard characters are not allowed in
    * filenames.
    */
@@ -1389,22 +1393,22 @@ static Bool hasSuffix(Char* s, Char* suffix)
   Int32 ns = strlen(s);
   Int32 nx = strlen(suffix);
   if (ns < nx)
-  {
-    return False;
-  }
+    {
+      return False;
+    }
   if (strcmp(s + ns - nx, suffix) == 0)
-  {
-    return True;
-  }
+    {
+      return True;
+    }
   return False;
 }
 
 static Bool mapSuffix(Char* name, Char* oldSuffix, Char* newSuffix)
 {
   if (!hasSuffix(name, oldSuffix))
-  {
-    return False;
-  }
+    {
+      return False;
+    }
   name[strlen(name) - strlen(oldSuffix)] = 0;
   strcat(name, newSuffix);
   return True;
@@ -1421,185 +1425,185 @@ static void compress(Char* name)
   deleteOutputOnInterrupt = False;
 
   if (name == NULL && srcMode != SM_I2O)
-  {
-    panic("compress: bad modes\n");
-  }
+    {
+      panic("compress: bad modes\n");
+    }
 
   switch (srcMode)
-  {
-    case SM_I2O:
-      copyFileName(inName, "(stdin)");
-      copyFileName(outName, "(stdout)");
-      break;
-    case SM_F2F:
-      copyFileName(inName, name);
-      copyFileName(outName, name);
-      strcat(outName, ".bz2");
-      break;
-    case SM_F2O:
-      copyFileName(inName, name);
-      copyFileName(outName, "(stdout)");
-      break;
-  }
+    {
+      case SM_I2O:
+        copyFileName(inName, "(stdin)");
+        copyFileName(outName, "(stdout)");
+        break;
+      case SM_F2F:
+        copyFileName(inName, name);
+        copyFileName(outName, name);
+        strcat(outName, ".bz2");
+        break;
+      case SM_F2O:
+        copyFileName(inName, name);
+        copyFileName(outName, "(stdout)");
+        break;
+    }
 
   if (srcMode != SM_I2O && containsDubiousChars(inName))
-  {
-    if (noisy)
-    {
-      fprintf(stderr, "%s: There are no files matching `%s'.\n", progName,
-              inName);
-    }
-    setExit(1);
-    return;
-  }
-  if (srcMode != SM_I2O && !fileExists(inName))
-  {
-    fprintf(stderr, "%s: Can't open input file %s: %s.\n", progName, inName,
-            strerror(errno));
-    setExit(1);
-    return;
-  }
-  for (i = 0; i < BZ_N_SUFFIX_PAIRS; i++)
-  {
-    if (hasSuffix(inName, zSuffix[i]))
     {
       if (noisy)
-      {
-        fprintf(stderr, "%s: Input file %s already has %s suffix.\n", progName,
-                inName, zSuffix[i]);
-      }
+        {
+          fprintf(stderr, "%s: There are no files matching `%s'.\n", progName,
+                  inName);
+        }
       setExit(1);
       return;
     }
-  }
+  if (srcMode != SM_I2O && !fileExists(inName))
+    {
+      fprintf(stderr, "%s: Can't open input file %s: %s.\n", progName, inName,
+              strerror(errno));
+      setExit(1);
+      return;
+    }
+  for (i = 0; i < BZ_N_SUFFIX_PAIRS; i++)
+    {
+      if (hasSuffix(inName, zSuffix[i]))
+        {
+          if (noisy)
+            {
+              fprintf(stderr, "%s: Input file %s already has %s suffix.\n", progName,
+                      inName, zSuffix[i]);
+            }
+          setExit(1);
+          return;
+        }
+    }
   if (srcMode == SM_F2F || srcMode == SM_F2O)
-  {
-    MY_STAT(inName, &statBuf);
-    if (MY_S_ISDIR(statBuf.st_mode))
     {
-      fprintf(stderr, "%s: Input file %s is a directory.\n", progName, inName);
-      setExit(1);
-      return;
+      MY_STAT(inName, &statBuf);
+      if (MY_S_ISDIR(statBuf.st_mode))
+        {
+          fprintf(stderr, "%s: Input file %s is a directory.\n", progName, inName);
+          setExit(1);
+          return;
+        }
     }
-  }
   if (srcMode == SM_F2F && !forceOverwrite && notAStandardFile(inName))
-  {
-    if (noisy)
     {
-      fprintf(stderr, "%s: Input file %s is not a normal file.\n", progName,
-              inName);
-    }
-    setExit(1);
-    return;
-  }
-  if (srcMode == SM_F2F && fileExists(outName))
-  {
-    if (forceOverwrite)
-    {
-      remove(outName);
-    }
-    else
-    {
-      fprintf(stderr, "%s: Output file %s already exists.\n", progName,
-              outName);
+      if (noisy)
+        {
+          fprintf(stderr, "%s: Input file %s is not a normal file.\n", progName,
+                  inName);
+        }
       setExit(1);
       return;
     }
-  }
+  if (srcMode == SM_F2F && fileExists(outName))
+    {
+      if (forceOverwrite)
+        {
+          remove(outName);
+        }
+      else
+        {
+          fprintf(stderr, "%s: Output file %s already exists.\n", progName,
+                  outName);
+          setExit(1);
+          return;
+        }
+    }
   if (srcMode == SM_F2F && !forceOverwrite && (n = countHardLinks(inName)) > 0)
-  {
-    fprintf(stderr, "%s: Input file %s has %d other link%s.\n", progName,
-            inName, n, n > 1 ? "s" : "");
-    setExit(1);
-    return;
-  }
+    {
+      fprintf(stderr, "%s: Input file %s has %d other link%s.\n", progName,
+              inName, n, n > 1 ? "s" : "");
+      setExit(1);
+      return;
+    }
 
   if (srcMode == SM_F2F)
-  {
-    /* Save the file's meta-info before we open it.  Doing it later
+    {
+      /* Save the file's meta-info before we open it.  Doing it later
        means we mess up the access times. */
-    saveInputFileMetaInfo(inName);
-  }
+      saveInputFileMetaInfo(inName);
+    }
 
   switch (srcMode)
-  {
-    case SM_I2O:
-      inStr = stdin;
-      outStr = stdout;
-      if (isatty(fileno(stdout)))
-      {
-        fprintf(stderr, "%s: I won't write compressed data to a terminal.\n",
-                progName);
-        fprintf(stderr, "%s: For help, type: `%s --help'.\n", progName,
-                progName);
-        setExit(1);
-        return;
-      };
-      break;
+    {
+      case SM_I2O:
+        inStr = stdin;
+        outStr = stdout;
+        if (isatty(fileno(stdout)))
+          {
+            fprintf(stderr, "%s: I won't write compressed data to a terminal.\n",
+                    progName);
+            fprintf(stderr, "%s: For help, type: `%s --help'.\n", progName,
+                    progName);
+            setExit(1);
+            return;
+          };
+        break;
 
-    case SM_F2O:
-      inStr = fopen(inName, "rb");
-      outStr = stdout;
-      if (isatty(fileno(stdout)))
-      {
-        fprintf(stderr, "%s: I won't write compressed data to a terminal.\n",
-                progName);
-        fprintf(stderr, "%s: For help, type: `%s --help'.\n", progName,
-                progName);
-        if (inStr != NULL)
-        {
-          fclose(inStr);
-        }
-        setExit(1);
-        return;
-      };
-      if (inStr == NULL)
-      {
-        fprintf(stderr, "%s: Can't open input file %s: %s.\n", progName, inName,
-                strerror(errno));
-        setExit(1);
-        return;
-      };
-      break;
+      case SM_F2O:
+        inStr = fopen(inName, "rb");
+        outStr = stdout;
+        if (isatty(fileno(stdout)))
+          {
+            fprintf(stderr, "%s: I won't write compressed data to a terminal.\n",
+                    progName);
+            fprintf(stderr, "%s: For help, type: `%s --help'.\n", progName,
+                    progName);
+            if (inStr != NULL)
+              {
+                fclose(inStr);
+              }
+            setExit(1);
+            return;
+          };
+        if (inStr == NULL)
+          {
+            fprintf(stderr, "%s: Can't open input file %s: %s.\n", progName, inName,
+                    strerror(errno));
+            setExit(1);
+            return;
+          };
+        break;
 
-    case SM_F2F:
-      inStr = fopen(inName, "rb");
-      outStr = fopen_output_safely(outName, "wb");
-      if (outStr == NULL)
-      {
-        fprintf(stderr, "%s: Can't create output file %s: %s.\n", progName,
-                outName, strerror(errno));
-        if (inStr != NULL)
-        {
-          fclose(inStr);
-        }
-        setExit(1);
-        return;
-      }
-      if (inStr == NULL)
-      {
-        fprintf(stderr, "%s: Can't open input file %s: %s.\n", progName, inName,
-                strerror(errno));
-        if (outStr != NULL)
-        {
-          fclose(outStr);
-        }
-        setExit(1);
-        return;
-      };
-      break;
+      case SM_F2F:
+        inStr = fopen(inName, "rb");
+        outStr = fopen_output_safely(outName, "wb");
+        if (outStr == NULL)
+          {
+            fprintf(stderr, "%s: Can't create output file %s: %s.\n", progName,
+                    outName, strerror(errno));
+            if (inStr != NULL)
+              {
+                fclose(inStr);
+              }
+            setExit(1);
+            return;
+          }
+        if (inStr == NULL)
+          {
+            fprintf(stderr, "%s: Can't open input file %s: %s.\n", progName, inName,
+                    strerror(errno));
+            if (outStr != NULL)
+              {
+                fclose(outStr);
+              }
+            setExit(1);
+            return;
+          };
+        break;
 
-    default:
-      panic("compress: bad srcMode");
-      break;
-  }
+      default:
+        panic("compress: bad srcMode");
+        break;
+    }
 
   if (verbosity >= 1)
-  {
-    fprintf(stderr, "  %s: ", inName);
-    pad(inName);
-    fflush(stderr);
-  }
+    {
+      fprintf(stderr, "  %s: ", inName);
+      pad(inName);
+      fflush(stderr);
+    }
 
   /*--- Now the input and output handles are sane.  Do the Biz. ---*/
   outputHandleJustInCase = outStr;
@@ -1609,15 +1613,15 @@ static void compress(Char* name)
 
   /*--- If there was an I/O error, we won't get here. ---*/
   if (srcMode == SM_F2F)
-  {
-    applySavedMetaInfoToOutputFile(outName);
-    deleteOutputOnInterrupt = False;
-    if (!keepInputFiles)
     {
-      IntNative retVal = remove(inName);
-      ERROR_IF_NOT_ZERO(retVal);
+      applySavedMetaInfoToOutputFile(outName);
+      deleteOutputOnInterrupt = False;
+      if (!keepInputFiles)
+        {
+          IntNative retVal = remove(inName);
+          ERROR_IF_NOT_ZERO(retVal);
+        }
     }
-  }
 
   deleteOutputOnInterrupt = False;
 }
@@ -1635,182 +1639,182 @@ static void uncompress(Char* name)
   deleteOutputOnInterrupt = False;
 
   if (name == NULL && srcMode != SM_I2O)
-  {
-    panic("uncompress: bad modes\n");
-  }
+    {
+      panic("uncompress: bad modes\n");
+    }
 
   cantGuess = False;
   switch (srcMode)
-  {
-    case SM_I2O:
-      copyFileName(inName, "(stdin)");
-      copyFileName(outName, "(stdout)");
-      break;
-    case SM_F2F:
-      copyFileName(inName, name);
-      copyFileName(outName, name);
-      for (i = 0; i < BZ_N_SUFFIX_PAIRS; i++)
-      {
-        if (mapSuffix(outName, zSuffix[i], unzSuffix[i]))
-        {
-          goto zzz;
-        }
-      }
-      cantGuess = True;
-      strcat(outName, ".out");
-      break;
-    case SM_F2O:
-      copyFileName(inName, name);
-      copyFileName(outName, "(stdout)");
-      break;
-  }
+    {
+      case SM_I2O:
+        copyFileName(inName, "(stdin)");
+        copyFileName(outName, "(stdout)");
+        break;
+      case SM_F2F:
+        copyFileName(inName, name);
+        copyFileName(outName, name);
+        for (i = 0; i < BZ_N_SUFFIX_PAIRS; i++)
+          {
+            if (mapSuffix(outName, zSuffix[i], unzSuffix[i]))
+              {
+                goto zzz;
+              }
+          }
+        cantGuess = True;
+        strcat(outName, ".out");
+        break;
+      case SM_F2O:
+        copyFileName(inName, name);
+        copyFileName(outName, "(stdout)");
+        break;
+    }
 
 zzz:
   if (srcMode != SM_I2O && containsDubiousChars(inName))
-  {
-    if (noisy)
     {
-      fprintf(stderr, "%s: There are no files matching `%s'.\n", progName,
-              inName);
+      if (noisy)
+        {
+          fprintf(stderr, "%s: There are no files matching `%s'.\n", progName,
+                  inName);
+        }
+      setExit(1);
+      return;
     }
-    setExit(1);
-    return;
-  }
   if (srcMode != SM_I2O && !fileExists(inName))
-  {
-    fprintf(stderr, "%s: Can't open input file %s: %s.\n", progName, inName,
-            strerror(errno));
-    setExit(1);
-    return;
-  }
+    {
+      fprintf(stderr, "%s: Can't open input file %s: %s.\n", progName, inName,
+              strerror(errno));
+      setExit(1);
+      return;
+    }
   if (srcMode == SM_F2F || srcMode == SM_F2O)
-  {
-    MY_STAT(inName, &statBuf);
-    if (MY_S_ISDIR(statBuf.st_mode))
     {
-      fprintf(stderr, "%s: Input file %s is a directory.\n", progName, inName);
-      setExit(1);
-      return;
+      MY_STAT(inName, &statBuf);
+      if (MY_S_ISDIR(statBuf.st_mode))
+        {
+          fprintf(stderr, "%s: Input file %s is a directory.\n", progName, inName);
+          setExit(1);
+          return;
+        }
     }
-  }
   if (srcMode == SM_F2F && !forceOverwrite && notAStandardFile(inName))
-  {
-    if (noisy)
     {
-      fprintf(stderr, "%s: Input file %s is not a normal file.\n", progName,
-              inName);
-    }
-    setExit(1);
-    return;
-  }
-  if (/* srcMode == SM_F2F implied && */ cantGuess)
-  {
-    if (noisy)
-    {
-      fprintf(stderr, "%s: Can't guess original name for %s -- using %s\n",
-              progName, inName, outName);
-    }
-    /* just a warning, no return */
-  }
-  if (srcMode == SM_F2F && fileExists(outName))
-  {
-    if (forceOverwrite)
-    {
-      remove(outName);
-    }
-    else
-    {
-      fprintf(stderr, "%s: Output file %s already exists.\n", progName,
-              outName);
+      if (noisy)
+        {
+          fprintf(stderr, "%s: Input file %s is not a normal file.\n", progName,
+                  inName);
+        }
       setExit(1);
       return;
     }
-  }
+  if (/* srcMode == SM_F2F implied && */ cantGuess)
+    {
+      if (noisy)
+        {
+          fprintf(stderr, "%s: Can't guess original name for %s -- using %s\n",
+                  progName, inName, outName);
+        }
+      /* just a warning, no return */
+    }
+  if (srcMode == SM_F2F && fileExists(outName))
+    {
+      if (forceOverwrite)
+        {
+          remove(outName);
+        }
+      else
+        {
+          fprintf(stderr, "%s: Output file %s already exists.\n", progName,
+                  outName);
+          setExit(1);
+          return;
+        }
+    }
   if (srcMode == SM_F2F && !forceOverwrite && (n = countHardLinks(inName)) > 0)
-  {
-    fprintf(stderr, "%s: Input file %s has %d other link%s.\n", progName,
-            inName, n, n > 1 ? "s" : "");
-    setExit(1);
-    return;
-  }
+    {
+      fprintf(stderr, "%s: Input file %s has %d other link%s.\n", progName,
+              inName, n, n > 1 ? "s" : "");
+      setExit(1);
+      return;
+    }
 
   if (srcMode == SM_F2F)
-  {
-    /* Save the file's meta-info before we open it.  Doing it later
+    {
+      /* Save the file's meta-info before we open it.  Doing it later
        means we mess up the access times. */
-    saveInputFileMetaInfo(inName);
-  }
+      saveInputFileMetaInfo(inName);
+    }
 
   switch (srcMode)
-  {
-    case SM_I2O:
-      inStr = stdin;
-      outStr = stdout;
-      if (isatty(fileno(stdin)))
-      {
-        fprintf(stderr, "%s: I won't read compressed data from a terminal.\n",
-                progName);
-        fprintf(stderr, "%s: For help, type: `%s --help'.\n", progName,
-                progName);
-        setExit(1);
-        return;
-      };
-      break;
+    {
+      case SM_I2O:
+        inStr = stdin;
+        outStr = stdout;
+        if (isatty(fileno(stdin)))
+          {
+            fprintf(stderr, "%s: I won't read compressed data from a terminal.\n",
+                    progName);
+            fprintf(stderr, "%s: For help, type: `%s --help'.\n", progName,
+                    progName);
+            setExit(1);
+            return;
+          };
+        break;
 
-    case SM_F2O:
-      inStr = fopen(inName, "rb");
-      outStr = stdout;
-      if (inStr == NULL)
-      {
-        fprintf(stderr, "%s: Can't open input file %s:%s.\n", progName, inName,
-                strerror(errno));
-        if (inStr != NULL)
-        {
-          fclose(inStr);
-        }
-        setExit(1);
-        return;
-      };
-      break;
+      case SM_F2O:
+        inStr = fopen(inName, "rb");
+        outStr = stdout;
+        if (inStr == NULL)
+          {
+            fprintf(stderr, "%s: Can't open input file %s:%s.\n", progName, inName,
+                    strerror(errno));
+            if (inStr != NULL)
+              {
+                fclose(inStr);
+              }
+            setExit(1);
+            return;
+          };
+        break;
 
-    case SM_F2F:
-      inStr = fopen(inName, "rb");
-      outStr = fopen_output_safely(outName, "wb");
-      if (outStr == NULL)
-      {
-        fprintf(stderr, "%s: Can't create output file %s: %s.\n", progName,
-                outName, strerror(errno));
-        if (inStr != NULL)
-        {
-          fclose(inStr);
-        }
-        setExit(1);
-        return;
-      }
-      if (inStr == NULL)
-      {
-        fprintf(stderr, "%s: Can't open input file %s: %s.\n", progName, inName,
-                strerror(errno));
-        if (outStr != NULL)
-        {
-          fclose(outStr);
-        }
-        setExit(1);
-        return;
-      };
-      break;
+      case SM_F2F:
+        inStr = fopen(inName, "rb");
+        outStr = fopen_output_safely(outName, "wb");
+        if (outStr == NULL)
+          {
+            fprintf(stderr, "%s: Can't create output file %s: %s.\n", progName,
+                    outName, strerror(errno));
+            if (inStr != NULL)
+              {
+                fclose(inStr);
+              }
+            setExit(1);
+            return;
+          }
+        if (inStr == NULL)
+          {
+            fprintf(stderr, "%s: Can't open input file %s: %s.\n", progName, inName,
+                    strerror(errno));
+            if (outStr != NULL)
+              {
+                fclose(outStr);
+              }
+            setExit(1);
+            return;
+          };
+        break;
 
-    default:
-      panic("uncompress: bad srcMode");
-      break;
-  }
+      default:
+        panic("uncompress: bad srcMode");
+        break;
+    }
 
   if (verbosity >= 1)
-  {
-    fprintf(stderr, "  %s: ", inName);
-    pad(inName);
-    fflush(stderr);
-  }
+    {
+      fprintf(stderr, "  %s: ", inName);
+      pad(inName);
+      fflush(stderr);
+    }
 
   /*--- Now the input and output handles are sane.  Do the Biz. ---*/
   outputHandleJustInCase = outStr;
@@ -1820,49 +1824,49 @@ zzz:
 
   /*--- If there was an I/O error, we won't get here. ---*/
   if (magicNumberOK)
-  {
-    if (srcMode == SM_F2F)
     {
-      applySavedMetaInfoToOutputFile(outName);
-      deleteOutputOnInterrupt = False;
-      if (!keepInputFiles)
-      {
-        IntNative retVal = remove(inName);
-        ERROR_IF_NOT_ZERO(retVal);
-      }
+      if (srcMode == SM_F2F)
+        {
+          applySavedMetaInfoToOutputFile(outName);
+          deleteOutputOnInterrupt = False;
+          if (!keepInputFiles)
+            {
+              IntNative retVal = remove(inName);
+              ERROR_IF_NOT_ZERO(retVal);
+            }
+        }
     }
-  }
   else
-  {
-    unzFailsExist = True;
-    deleteOutputOnInterrupt = False;
-    if (srcMode == SM_F2F)
     {
-      IntNative retVal = remove(outName);
-      ERROR_IF_NOT_ZERO(retVal);
+      unzFailsExist = True;
+      deleteOutputOnInterrupt = False;
+      if (srcMode == SM_F2F)
+        {
+          IntNative retVal = remove(outName);
+          ERROR_IF_NOT_ZERO(retVal);
+        }
     }
-  }
   deleteOutputOnInterrupt = False;
 
   if (magicNumberOK)
-  {
-    if (verbosity >= 1)
     {
-      fprintf(stderr, "done\n");
+      if (verbosity >= 1)
+        {
+          fprintf(stderr, "done\n");
+        }
     }
-  }
   else
-  {
-    setExit(2);
-    if (verbosity >= 1)
     {
-      fprintf(stderr, "not a bzip2 file.\n");
+      setExit(2);
+      if (verbosity >= 1)
+        {
+          fprintf(stderr, "not a bzip2 file.\n");
+        }
+      else
+        {
+          fprintf(stderr, "%s: %s is not a bzip2 file.\n", progName, inName);
+        }
     }
-    else
-    {
-      fprintf(stderr, "%s: %s is not a bzip2 file.\n", progName, inName);
-    }
-  }
 }
 
 /*---------------------------------------------*/
@@ -1875,103 +1879,103 @@ static void testf(Char* name)
   deleteOutputOnInterrupt = False;
 
   if (name == NULL && srcMode != SM_I2O)
-  {
-    panic("testf: bad modes\n");
-  }
+    {
+      panic("testf: bad modes\n");
+    }
 
   copyFileName(outName, "(none)");
   switch (srcMode)
-  {
-    case SM_I2O:
-      copyFileName(inName, "(stdin)");
-      break;
-    case SM_F2F:
-      copyFileName(inName, name);
-      break;
-    case SM_F2O:
-      copyFileName(inName, name);
-      break;
-  }
+    {
+      case SM_I2O:
+        copyFileName(inName, "(stdin)");
+        break;
+      case SM_F2F:
+        copyFileName(inName, name);
+        break;
+      case SM_F2O:
+        copyFileName(inName, name);
+        break;
+    }
 
   if (srcMode != SM_I2O && containsDubiousChars(inName))
-  {
-    if (noisy)
     {
-      fprintf(stderr, "%s: There are no files matching `%s'.\n", progName,
-              inName);
-    }
-    setExit(1);
-    return;
-  }
-  if (srcMode != SM_I2O && !fileExists(inName))
-  {
-    fprintf(stderr, "%s: Can't open input %s: %s.\n", progName, inName,
-            strerror(errno));
-    setExit(1);
-    return;
-  }
-  if (srcMode != SM_I2O)
-  {
-    MY_STAT(inName, &statBuf);
-    if (MY_S_ISDIR(statBuf.st_mode))
-    {
-      fprintf(stderr, "%s: Input file %s is a directory.\n", progName, inName);
+      if (noisy)
+        {
+          fprintf(stderr, "%s: There are no files matching `%s'.\n", progName,
+                  inName);
+        }
       setExit(1);
       return;
     }
-  }
+  if (srcMode != SM_I2O && !fileExists(inName))
+    {
+      fprintf(stderr, "%s: Can't open input %s: %s.\n", progName, inName,
+              strerror(errno));
+      setExit(1);
+      return;
+    }
+  if (srcMode != SM_I2O)
+    {
+      MY_STAT(inName, &statBuf);
+      if (MY_S_ISDIR(statBuf.st_mode))
+        {
+          fprintf(stderr, "%s: Input file %s is a directory.\n", progName, inName);
+          setExit(1);
+          return;
+        }
+    }
 
   switch (srcMode)
-  {
-    case SM_I2O:
-      if (isatty(fileno(stdin)))
-      {
-        fprintf(stderr, "%s: I won't read compressed data from a terminal.\n",
-                progName);
-        fprintf(stderr, "%s: For help, type: `%s --help'.\n", progName,
-                progName);
-        setExit(1);
-        return;
-      };
-      inStr = stdin;
-      break;
+    {
+      case SM_I2O:
+        if (isatty(fileno(stdin)))
+          {
+            fprintf(stderr, "%s: I won't read compressed data from a terminal.\n",
+                    progName);
+            fprintf(stderr, "%s: For help, type: `%s --help'.\n", progName,
+                    progName);
+            setExit(1);
+            return;
+          };
+        inStr = stdin;
+        break;
 
-    case SM_F2O:
-    case SM_F2F:
-      inStr = fopen(inName, "rb");
-      if (inStr == NULL)
-      {
-        fprintf(stderr, "%s: Can't open input file %s:%s.\n", progName, inName,
-                strerror(errno));
-        setExit(1);
-        return;
-      };
-      break;
+      case SM_F2O:
+      case SM_F2F:
+        inStr = fopen(inName, "rb");
+        if (inStr == NULL)
+          {
+            fprintf(stderr, "%s: Can't open input file %s:%s.\n", progName, inName,
+                    strerror(errno));
+            setExit(1);
+            return;
+          };
+        break;
 
-    default:
-      panic("testf: bad srcMode");
-      break;
-  }
+      default:
+        panic("testf: bad srcMode");
+        break;
+    }
 
   if (verbosity >= 1)
-  {
-    fprintf(stderr, "  %s: ", inName);
-    pad(inName);
-    fflush(stderr);
-  }
+    {
+      fprintf(stderr, "  %s: ", inName);
+      pad(inName);
+      fflush(stderr);
+    }
 
   /*--- Now the input handle is sane.  Do the Biz. ---*/
   outputHandleJustInCase = NULL;
   allOK = testStream(inStr);
 
   if (allOK && verbosity >= 1)
-  {
-    fprintf(stderr, "ok\n");
-  }
+    {
+      fprintf(stderr, "ok\n");
+    }
   if (!allOK)
-  {
-    testFailsExist = True;
-  }
+    {
+      testFailsExist = True;
+    }
 }
 
 /*---------------------------------------------*/
@@ -2073,9 +2077,9 @@ static void* myMalloc(Int32 n)
 
   p = malloc((size_t)n);
   if (p == NULL)
-  {
-    outOfMemory();
-  }
+    {
+      outOfMemory();
+    }
   return p;
 }
 
@@ -2094,22 +2098,22 @@ static Cell* mkCell(void)
 static Cell* snocString(Cell* root, Char* name)
 {
   if (root == NULL)
-  {
-    Cell* tmp = mkCell();
-    tmp->name = (Char*)myMalloc(5 + strlen(name));
-    strcpy(tmp->name, name);
-    return tmp;
-  }
-  else
-  {
-    Cell* tmp = root;
-    while (tmp->link != NULL)
     {
-      tmp = tmp->link;
+      Cell* tmp = mkCell();
+      tmp->name = (Char*)myMalloc(5 + strlen(name));
+      strcpy(tmp->name, name);
+      return tmp;
     }
-    tmp->link = snocString(tmp->link, name);
-    return root;
-  }
+  else
+    {
+      Cell* tmp = root;
+      while (tmp->link != NULL)
+        {
+          tmp = tmp->link;
+        }
+      tmp->link = snocString(tmp->link, name);
+      return root;
+    }
 }
 
 /*---------------------------------------------*/
@@ -2120,41 +2124,41 @@ static void addFlagsFromEnvVar(Cell** argList, Char* varName)
 
   envbase = getenv(varName);
   if (envbase != NULL)
-  {
-    p = envbase;
-    i = 0;
-    while (True)
     {
-      if (p[i] == 0)
-      {
-        break;
-      }
-      p += i;
+      p = envbase;
       i = 0;
-      while (isspace((Int32)(p[0])))
-      {
-        p++;
-      }
-      while (p[i] != 0 && !isspace((Int32)(p[i])))
-      {
-        i++;
-      }
-      if (i > 0)
-      {
-        k = i;
-        if (k > FILE_NAME_LEN - 10)
+      while (True)
         {
-          k = FILE_NAME_LEN - 10;
+          if (p[i] == 0)
+            {
+              break;
+            }
+          p += i;
+          i = 0;
+          while (isspace((Int32)(p[0])))
+            {
+              p++;
+            }
+          while (p[i] != 0 && !isspace((Int32)(p[i])))
+            {
+              i++;
+            }
+          if (i > 0)
+            {
+              k = i;
+              if (k > FILE_NAME_LEN - 10)
+                {
+                  k = FILE_NAME_LEN - 10;
+                }
+              for (j = 0; j < k; j++)
+                {
+                  tmpName[j] = p[j];
+                }
+              tmpName[k] = 0;
+              APPEND_FLAG(*argList, tmpName);
+            }
         }
-        for (j = 0; j < k; j++)
-        {
-          tmpName[j] = p[j];
-        }
-        tmpName[k] = 0;
-        APPEND_FLAG(*argList, tmpName);
-      }
     }
-  }
 }
 
 /*---------------------------------------------*/
@@ -2171,9 +2175,9 @@ IntNative main(IntNative argc, Char* argv[])
   /*-- Be really really really paranoid :-) --*/
   if (sizeof(Int32) != 4 || sizeof(UInt32) != 4 || sizeof(Int16) != 2 ||
       sizeof(UInt16) != 2 || sizeof(Char) != 1 || sizeof(UChar) != 1)
-  {
-    configError();
-  }
+    {
+      configError();
+    }
 
   /*-- Initialise --*/
   outputHandleJustInCase = NULL;
@@ -2206,12 +2210,12 @@ IntNative main(IntNative argc, Char* argv[])
   copyFileName(progNameReally, argv[0]);
   progName = &progNameReally[0];
   for (tmp = &progNameReally[0]; *tmp != '\0'; tmp++)
-  {
-    if (*tmp == PATH_SEP)
     {
-      progName = tmp + 1;
+      if (*tmp == PATH_SEP)
+        {
+          progName = tmp + 1;
+        }
     }
-  }
 
   /*-- Copy flags from env var BZIP2, and
        expand filename wildcards in arg list.
@@ -2220,370 +2224,370 @@ IntNative main(IntNative argc, Char* argv[])
   addFlagsFromEnvVar(&argList, "BZIP2");
   addFlagsFromEnvVar(&argList, "BZIP");
   for (i = 1; i <= argc - 1; i++)
-  {
-    APPEND_FILESPEC(argList, argv[i]);
-  }
+    {
+      APPEND_FILESPEC(argList, argv[i]);
+    }
 
   /*-- Find the length of the longest filename --*/
   longestFileName = 7;
   numFileNames = 0;
   decode = True;
   for (aa = argList; aa != NULL; aa = aa->link)
-  {
-    if (ISFLAG("--"))
     {
-      decode = False;
-      continue;
+      if (ISFLAG("--"))
+        {
+          decode = False;
+          continue;
+        }
+      if (aa->name[0] == '-' && decode)
+        {
+          continue;
+        }
+      numFileNames++;
+      if (longestFileName < (Int32)strlen(aa->name))
+        {
+          longestFileName = (Int32)strlen(aa->name);
+        }
     }
-    if (aa->name[0] == '-' && decode)
-    {
-      continue;
-    }
-    numFileNames++;
-    if (longestFileName < (Int32)strlen(aa->name))
-    {
-      longestFileName = (Int32)strlen(aa->name);
-    }
-  }
 
   /*-- Determine source modes; flag handling may change this too. --*/
   if (numFileNames == 0)
-  {
-    srcMode = SM_I2O;
-  }
+    {
+      srcMode = SM_I2O;
+    }
   else
-  {
-    srcMode = SM_F2F;
-  }
+    {
+      srcMode = SM_F2F;
+    }
 
   /*-- Determine what to do (compress/uncompress/test/cat). --*/
   /*-- Note that subsequent flag handling may change this. --*/
   opMode = OM_Z;
 
   if ((strstr(progName, "unzip") != 0) || (strstr(progName, "UNZIP") != 0))
-  {
-    opMode = OM_UNZ;
-  }
-
-  if ((strstr(progName, "z2cat") != 0) || (strstr(progName, "Z2CAT") != 0) ||
-      (strstr(progName, "zcat") != 0) || (strstr(progName, "ZCAT") != 0))
-  {
-    opMode = OM_UNZ;
-    srcMode = (numFileNames == 0) ? SM_I2O : SM_F2O;
-  }
-
-  /*-- Look at the flags. --*/
-  for (aa = argList; aa != NULL; aa = aa->link)
-  {
-    if (ISFLAG("--"))
-    {
-      break;
-    }
-    if (aa->name[0] == '-' && aa->name[1] != '-')
-    {
-      for (j = 1; aa->name[j] != '\0'; j++)
-      {
-        switch (aa->name[j])
-        {
-          case 'c':
-            srcMode = SM_F2O;
-            break;
-          case 'd':
-            opMode = OM_UNZ;
-            break;
-          case 'z':
-            opMode = OM_Z;
-            break;
-          case 'f':
-            forceOverwrite = True;
-            break;
-          case 't':
-            opMode = OM_TEST;
-            break;
-          case 'k':
-            keepInputFiles = True;
-            break;
-          case 's':
-            smallMode = True;
-            break;
-          case 'q':
-            noisy = False;
-            break;
-          case '1':
-            blockSize100k = 1;
-            break;
-          case '2':
-            blockSize100k = 2;
-            break;
-          case '3':
-            blockSize100k = 3;
-            break;
-          case '4':
-            blockSize100k = 4;
-            break;
-          case '5':
-            blockSize100k = 5;
-            break;
-          case '6':
-            blockSize100k = 6;
-            break;
-          case '7':
-            blockSize100k = 7;
-            break;
-          case '8':
-            blockSize100k = 8;
-            break;
-          case '9':
-            blockSize100k = 9;
-            break;
-          case 'V':
-          case 'L':
-            license();
-            break;
-          case 'v':
-            verbosity++;
-            break;
-          case 'h':
-            usage(progName);
-            exit(0);
-            break;
-          default:
-            fprintf(stderr, "%s: Bad flag `%s'\n", progName, aa->name);
-            usage(progName);
-            exit(1);
-            break;
-        }
-      }
-    }
-  }
-
-  /*-- And again ... --*/
-  for (aa = argList; aa != NULL; aa = aa->link)
-  {
-    if (ISFLAG("--"))
-    {
-      break;
-    }
-    if (ISFLAG("--stdout"))
-    {
-      srcMode = SM_F2O;
-    }
-    else if (ISFLAG("--decompress"))
     {
       opMode = OM_UNZ;
     }
-    else if (ISFLAG("--compress"))
+
+  if ((strstr(progName, "z2cat") != 0) || (strstr(progName, "Z2CAT") != 0) ||
+      (strstr(progName, "zcat") != 0) || (strstr(progName, "ZCAT") != 0))
     {
-      opMode = OM_Z;
+      opMode = OM_UNZ;
+      srcMode = (numFileNames == 0) ? SM_I2O : SM_F2O;
     }
-    else if (ISFLAG("--force"))
+
+  /*-- Look at the flags. --*/
+  for (aa = argList; aa != NULL; aa = aa->link)
     {
-      forceOverwrite = True;
+      if (ISFLAG("--"))
+        {
+          break;
+        }
+      if (aa->name[0] == '-' && aa->name[1] != '-')
+        {
+          for (j = 1; aa->name[j] != '\0'; j++)
+            {
+              switch (aa->name[j])
+                {
+                  case 'c':
+                    srcMode = SM_F2O;
+                    break;
+                  case 'd':
+                    opMode = OM_UNZ;
+                    break;
+                  case 'z':
+                    opMode = OM_Z;
+                    break;
+                  case 'f':
+                    forceOverwrite = True;
+                    break;
+                  case 't':
+                    opMode = OM_TEST;
+                    break;
+                  case 'k':
+                    keepInputFiles = True;
+                    break;
+                  case 's':
+                    smallMode = True;
+                    break;
+                  case 'q':
+                    noisy = False;
+                    break;
+                  case '1':
+                    blockSize100k = 1;
+                    break;
+                  case '2':
+                    blockSize100k = 2;
+                    break;
+                  case '3':
+                    blockSize100k = 3;
+                    break;
+                  case '4':
+                    blockSize100k = 4;
+                    break;
+                  case '5':
+                    blockSize100k = 5;
+                    break;
+                  case '6':
+                    blockSize100k = 6;
+                    break;
+                  case '7':
+                    blockSize100k = 7;
+                    break;
+                  case '8':
+                    blockSize100k = 8;
+                    break;
+                  case '9':
+                    blockSize100k = 9;
+                    break;
+                  case 'V':
+                  case 'L':
+                    license();
+                    break;
+                  case 'v':
+                    verbosity++;
+                    break;
+                  case 'h':
+                    usage(progName);
+                    exit(0);
+                    break;
+                  default:
+                    fprintf(stderr, "%s: Bad flag `%s'\n", progName, aa->name);
+                    usage(progName);
+                    exit(1);
+                    break;
+                }
+            }
+        }
     }
-    else if (ISFLAG("--test"))
+
+  /*-- And again ... --*/
+  for (aa = argList; aa != NULL; aa = aa->link)
     {
-      opMode = OM_TEST;
+      if (ISFLAG("--"))
+        {
+          break;
+        }
+      if (ISFLAG("--stdout"))
+        {
+          srcMode = SM_F2O;
+        }
+      else if (ISFLAG("--decompress"))
+        {
+          opMode = OM_UNZ;
+        }
+      else if (ISFLAG("--compress"))
+        {
+          opMode = OM_Z;
+        }
+      else if (ISFLAG("--force"))
+        {
+          forceOverwrite = True;
+        }
+      else if (ISFLAG("--test"))
+        {
+          opMode = OM_TEST;
+        }
+      else if (ISFLAG("--keep"))
+        {
+          keepInputFiles = True;
+        }
+      else if (ISFLAG("--small"))
+        {
+          smallMode = True;
+        }
+      else if (ISFLAG("--quiet"))
+        {
+          noisy = False;
+        }
+      else if (ISFLAG("--version"))
+        {
+          license();
+        }
+      else if (ISFLAG("--license"))
+        {
+          license();
+        }
+      else if (ISFLAG("--exponential"))
+        {
+          workFactor = 1;
+        }
+      else if (ISFLAG("--repetitive-best"))
+        {
+          redundant(aa->name);
+        }
+      else if (ISFLAG("--repetitive-fast"))
+        {
+          redundant(aa->name);
+        }
+      else if (ISFLAG("--fast"))
+        {
+          blockSize100k = 1;
+        }
+      else if (ISFLAG("--best"))
+        {
+          blockSize100k = 9;
+        }
+      else if (ISFLAG("--verbose"))
+        {
+          verbosity++;
+        }
+      else if (ISFLAG("--help"))
+        {
+          usage(progName);
+          exit(0);
+        }
+      else if (strncmp(aa->name, "--", 2) == 0)
+        {
+          fprintf(stderr, "%s: Bad flag `%s'\n", progName, aa->name);
+          usage(progName);
+          exit(1);
+        }
     }
-    else if (ISFLAG("--keep"))
-    {
-      keepInputFiles = True;
-    }
-    else if (ISFLAG("--small"))
-    {
-      smallMode = True;
-    }
-    else if (ISFLAG("--quiet"))
-    {
-      noisy = False;
-    }
-    else if (ISFLAG("--version"))
-    {
-      license();
-    }
-    else if (ISFLAG("--license"))
-    {
-      license();
-    }
-    else if (ISFLAG("--exponential"))
-    {
-      workFactor = 1;
-    }
-    else if (ISFLAG("--repetitive-best"))
-    {
-      redundant(aa->name);
-    }
-    else if (ISFLAG("--repetitive-fast"))
-    {
-      redundant(aa->name);
-    }
-    else if (ISFLAG("--fast"))
-    {
-      blockSize100k = 1;
-    }
-    else if (ISFLAG("--best"))
-    {
-      blockSize100k = 9;
-    }
-    else if (ISFLAG("--verbose"))
-    {
-      verbosity++;
-    }
-    else if (ISFLAG("--help"))
-    {
-      usage(progName);
-      exit(0);
-    }
-    else if (strncmp(aa->name, "--", 2) == 0)
-    {
-      fprintf(stderr, "%s: Bad flag `%s'\n", progName, aa->name);
-      usage(progName);
-      exit(1);
-    }
-  }
 
   if (verbosity > 4)
-  {
-    verbosity = 4;
-  }
+    {
+      verbosity = 4;
+    }
   if (opMode == OM_Z && smallMode && blockSize100k > 2)
-  {
-    blockSize100k = 2;
-  }
+    {
+      blockSize100k = 2;
+    }
 
   if (opMode == OM_TEST && srcMode == SM_F2O)
-  {
-    fprintf(stderr, "%s: -c and -t cannot be used together.\n", progName);
-    exit(1);
-  }
+    {
+      fprintf(stderr, "%s: -c and -t cannot be used together.\n", progName);
+      exit(1);
+    }
 
   if (srcMode == SM_F2O && numFileNames == 0)
-  {
-    srcMode = SM_I2O;
-  }
+    {
+      srcMode = SM_I2O;
+    }
 
   if (opMode != OM_Z)
-  {
-    blockSize100k = 0;
-  }
+    {
+      blockSize100k = 0;
+    }
 
   if (srcMode == SM_F2F)
-  {
-    signal(SIGINT, mySignalCatcher);
-    signal(SIGTERM, mySignalCatcher);
+    {
+      signal(SIGINT, mySignalCatcher);
+      signal(SIGTERM, mySignalCatcher);
 #if BZ_UNIX
-    signal(SIGHUP, mySignalCatcher);
+      signal(SIGHUP, mySignalCatcher);
 #endif
-  }
+    }
 
   if (opMode == OM_Z)
-  {
-    if (srcMode == SM_I2O)
     {
-      compress(NULL);
-    }
-    else
-    {
-      decode = True;
-      for (aa = argList; aa != NULL; aa = aa->link)
-      {
-        if (ISFLAG("--"))
+      if (srcMode == SM_I2O)
         {
-          decode = False;
-          continue;
+          compress(NULL);
         }
-        if (aa->name[0] == '-' && decode)
+      else
         {
-          continue;
+          decode = True;
+          for (aa = argList; aa != NULL; aa = aa->link)
+            {
+              if (ISFLAG("--"))
+                {
+                  decode = False;
+                  continue;
+                }
+              if (aa->name[0] == '-' && decode)
+                {
+                  continue;
+                }
+              numFilesProcessed++;
+              compress(aa->name);
+            }
         }
-        numFilesProcessed++;
-        compress(aa->name);
-      }
     }
-  }
   else
 
       if (opMode == OM_UNZ)
-  {
-    unzFailsExist = False;
-    if (srcMode == SM_I2O)
     {
-      uncompress(NULL);
-    }
-    else
-    {
-      decode = True;
-      for (aa = argList; aa != NULL; aa = aa->link)
-      {
-        if (ISFLAG("--"))
+      unzFailsExist = False;
+      if (srcMode == SM_I2O)
         {
-          decode = False;
-          continue;
+          uncompress(NULL);
         }
-        if (aa->name[0] == '-' && decode)
+      else
         {
-          continue;
+          decode = True;
+          for (aa = argList; aa != NULL; aa = aa->link)
+            {
+              if (ISFLAG("--"))
+                {
+                  decode = False;
+                  continue;
+                }
+              if (aa->name[0] == '-' && decode)
+                {
+                  continue;
+                }
+              numFilesProcessed++;
+              uncompress(aa->name);
+            }
         }
-        numFilesProcessed++;
-        uncompress(aa->name);
-      }
+      if (unzFailsExist)
+        {
+          setExit(2);
+          exit(exitValue);
+        }
     }
-    if (unzFailsExist)
-    {
-      setExit(2);
-      exit(exitValue);
-    }
-  }
 
   else
-  {
-    testFailsExist = False;
-    if (srcMode == SM_I2O)
     {
-      testf(NULL);
-    }
-    else
-    {
-      decode = True;
-      for (aa = argList; aa != NULL; aa = aa->link)
-      {
-        if (ISFLAG("--"))
+      testFailsExist = False;
+      if (srcMode == SM_I2O)
         {
-          decode = False;
-          continue;
+          testf(NULL);
         }
-        if (aa->name[0] == '-' && decode)
+      else
         {
-          continue;
+          decode = True;
+          for (aa = argList; aa != NULL; aa = aa->link)
+            {
+              if (ISFLAG("--"))
+                {
+                  decode = False;
+                  continue;
+                }
+              if (aa->name[0] == '-' && decode)
+                {
+                  continue;
+                }
+              numFilesProcessed++;
+              testf(aa->name);
+            }
         }
-        numFilesProcessed++;
-        testf(aa->name);
-      }
+      if (testFailsExist && noisy)
+        {
+          fprintf(stderr,
+                  "\n"
+                  "You can use the `bzip2recover' program to attempt to recover\n"
+                  "data from undamaged sections of corrupted files.\n\n");
+          setExit(2);
+          exit(exitValue);
+        }
     }
-    if (testFailsExist && noisy)
-    {
-      fprintf(stderr,
-              "\n"
-              "You can use the `bzip2recover' program to attempt to recover\n"
-              "data from undamaged sections of corrupted files.\n\n");
-      setExit(2);
-      exit(exitValue);
-    }
-  }
 
   /* Free the argument list memory to mollify leak detectors
      (eg) Purify, Checker.  Serves no other useful purpose.
   */
   aa = argList;
   while (aa != NULL)
-  {
-    Cell* aa2 = aa->link;
-    if (aa->name != NULL)
     {
-      free(aa->name);
+      Cell* aa2 = aa->link;
+      if (aa->name != NULL)
+        {
+          free(aa->name);
+        }
+      free(aa);
+      aa = aa2;
     }
-    free(aa);
-    aa = aa2;
-  }
 
   return exitValue;
 }

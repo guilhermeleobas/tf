@@ -16,45 +16,45 @@ void shortpath(int numpnodes)
   int i, j, pnode, node, D, nextnode, distance;
 
   for (i = 1; i <= numpnodes; i++)
-  {
-    pnode = numnodes + i;
-    nptr = pnodeArray[i].nodeList;
-
-    root = (TNODEPTR)NULL;
-    for (j = 1; j <= numnodes + numpnodes; j++)
     {
-      if (j == pnode)
-      {
-        tinsert(&root, 0, j);
-        nptr[j].distance = 0;
-        nptr[pnode].from = 0;
-        continue;
-      }
-      nptr[j].distance = VLARGE;
-    }
+      pnode = numnodes + i;
+      nptr = pnodeArray[i].nodeList;
 
-    for (;;)
-    {
-      tpop(&root, &dumnode, &D, &nextnode);
-      if (dumnode == (TNODEPTR)NULL)
-      {
-        break;
-      }
-      gptr = gnodeArray[nextnode];
-      for (; gptr != (GNODEPTR)NULL; gptr = gptr->next)
-      {
-        distance = gptr->length;
-        node = gptr->node;
-        if (nptr[node].distance > D + distance)
+      root = (TNODEPTR)NULL;
+      for (j = 1; j <= numnodes + numpnodes; j++)
         {
-          tdelete(&root, nptr[node].distance, node);
-          tinsert(&root, D + distance, node);
-          nptr[node].distance = D + distance;
-          nptr[node].from = nextnode;
+          if (j == pnode)
+            {
+              tinsert(&root, 0, j);
+              nptr[j].distance = 0;
+              nptr[pnode].from = 0;
+              continue;
+            }
+          nptr[j].distance = VLARGE;
         }
-      }
+
+      for (;;)
+        {
+          tpop(&root, &dumnode, &D, &nextnode);
+          if (dumnode == (TNODEPTR)NULL)
+            {
+              break;
+            }
+          gptr = gnodeArray[nextnode];
+          for (; gptr != (GNODEPTR)NULL; gptr = gptr->next)
+            {
+              distance = gptr->length;
+              node = gptr->node;
+              if (nptr[node].distance > D + distance)
+                {
+                  tdelete(&root, nptr[node].distance, node);
+                  tinsert(&root, D + distance, node);
+                  nptr[node].distance = D + distance;
+                  nptr[node].from = nextnode;
+                }
+            }
+        }
     }
-  }
 
   return;
 }

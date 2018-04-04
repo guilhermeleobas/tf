@@ -21,10 +21,10 @@ copies.  */
 /* Canon Bubble Jet BJ-10e printer driver for GhostScript */
 #define GS_PRN_DEVICE gs_bj10_device
 #define DEVICE_NAME "bj10"
-#define PAGE_WIDTH_10THS 80L   /* 8" */
+#define PAGE_WIDTH_10THS 80L /* 8" */
 #define PAGE_HEIGHT_10THS 105L /* 10.5" */
-#define X_DPI 360              /* pixels per inch */
-#define Y_DPI 360              /* pixels per inch */
+#define X_DPI 360 /* pixels per inch */
+#define Y_DPI 360 /* pixels per inch */
 #define PRN_OPEN gdev_prn_open
 #define PRN_CLOSE gdev_prn_close
 #define PRN_OUTPUT_PAGE bj10_output_page
@@ -68,60 +68,60 @@ int bj10_print_page(gx_device_printer *pdev, FILE *prn_stream)
 
   /* Print lines with 48 pixel height of graphics */
   for (lnum = 0; lnum < pdev->height; lnum += 48)
-  {
-    byte *inp = in;
-    byte *outp = out;
-    byte *in_end = in + line_size;
-    byte *out_beg = out;
-    byte *out_end = out + 6 * LINE_WIDTH;
-    int count;
-
-    mem_copy_scan_lines(&pdev->mem, lnum, inp, line_size * 48);
-
-    while (inp < in_end)
     {
-      int i;
-      for (i = 0; i < 6; i++, outp++)
-        gdev_prn_transpose_8x8(inp + 8 * i * line_size, line_size, outp, 6);
-      inp++;
-      outp += 42;
-    }
+      byte *inp = in;
+      byte *outp = out;
+      byte *in_end = in + line_size;
+      byte *out_beg = out;
+      byte *out_end = out + 6 * LINE_WIDTH;
+      int count;
 
-    /* Remove trailing 0s. */
-    while (out_end - 6 >= out)
-    {
-      if (memcmp(cmp, (char *)out_end - 6, 6) != 0) break;
-      out_end -= 6;
-    }
+      mem_copy_scan_lines(&pdev->mem, lnum, inp, line_size * 48);
 
-    /* Remove leading 0s. */
-    while (out_beg + 18 <= out_end)
-    {
-      if (memcmp(cmp, (char *)out_beg, 18) != 0) break;
-      out_beg += 18;
-    }
+      while (inp < in_end)
+        {
+          int i;
+          for (i = 0; i < 6; i++, outp++)
+            gdev_prn_transpose_8x8(inp + 8 * i * line_size, line_size, outp, 6);
+          inp++;
+          outp += 42;
+        }
 
-    /* Transfer the bits */
-    count = (out_end - out_beg) / 6;
-    if (count > 0)
-    {
-      if (out_beg > out)
-      {
-        putc(033, prn_stream);
-        putc('d', prn_stream); /* displace to right */
-        putc(((out_beg - out) / 18) & 0x0ff, prn_stream);
-        putc(((out_beg - out) / 18) >> 8, prn_stream);
-      }
-      putc(033, prn_stream);
-      putc('*', prn_stream);
-      putc(48, prn_stream);
-      putc(count & 0xff, prn_stream);
-      putc(count >> 8, prn_stream);
-      fwrite((char *)out_beg, 1, 6 * count, prn_stream);
+      /* Remove trailing 0s. */
+      while (out_end - 6 >= out)
+        {
+          if (memcmp(cmp, (char *)out_end - 6, 6) != 0) break;
+          out_end -= 6;
+        }
+
+      /* Remove leading 0s. */
+      while (out_beg + 18 <= out_end)
+        {
+          if (memcmp(cmp, (char *)out_beg, 18) != 0) break;
+          out_beg += 18;
+        }
+
+      /* Transfer the bits */
+      count = (out_end - out_beg) / 6;
+      if (count > 0)
+        {
+          if (out_beg > out)
+            {
+              putc(033, prn_stream);
+              putc('d', prn_stream); /* displace to right */
+              putc(((out_beg - out) / 18) & 0x0ff, prn_stream);
+              putc(((out_beg - out) / 18) >> 8, prn_stream);
+            }
+          putc(033, prn_stream);
+          putc('*', prn_stream);
+          putc(48, prn_stream);
+          putc(count & 0xff, prn_stream);
+          putc(count >> 8, prn_stream);
+          fwrite((char *)out_beg, 1, 6 * count, prn_stream);
+        }
+      putc(015, prn_stream);
+      putc(012, prn_stream);
     }
-    putc(015, prn_stream);
-    putc(012, prn_stream);
-  }
 
   /* Reinitialize the printer ?? */
   putc(014, prn_stream); /* form feed */

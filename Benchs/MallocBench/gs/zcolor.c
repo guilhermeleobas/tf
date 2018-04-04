@@ -44,9 +44,9 @@ int zcurrentgscolor(register ref *op)
   push(1);
   if ((code = make_color(op)) < 0 ||
       (code = gs_currentgscolor(igs, op->value.pcolor)) < 0)
-  {
-    pop(1);
-  }
+    {
+      pop(1);
+    }
   return code;
 }
 
@@ -56,9 +56,9 @@ int zsetgscolor(register ref *op)
   int code;
   check_type(*op, t_color);
   if ((code = gs_setgscolor(igs, op->value.pcolor)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   pop(1);
   return 0;
 }
@@ -81,9 +81,9 @@ int make_color(ref *op)
 {
   gs_color *cp = (gs_color *)alloc(1, gs_color_sizeof, "make_color");
   if (cp == 0)
-  {
-    return e_VMerror;
-  }
+    {
+      return e_VMerror;
+    }
   make_tv(op, t_color, pcolor, cp);
   return 0;
 }

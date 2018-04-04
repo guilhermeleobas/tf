@@ -72,535 +72,537 @@ void uloop(void)
   numberx = rangeLimit;
   numbery = rangeLimit;
   if (count < 1)
-  {
-    fprintf(fpo, "range limiter:%d units either way in x", numberx);
-    fprintf(fpo, "   compared to bdxlength:%d\n", bdxlength);
-    fprintf(fpo, "range limiter:%d units either way in y", numbery);
-    fprintf(fpo, "   compared to bdylength:%d\n", bdylength);
-  }
+    {
+      fprintf(fpo, "range limiter:%d units either way in x", numberx);
+      fprintf(fpo, "   compared to bdxlength:%d\n", bdxlength);
+      fprintf(fpo, "range limiter:%d units either way in y", numbery);
+      fprintf(fpo, "   compared to bdylength:%d\n", bdylength);
+    }
 
   while (attempts < attmax)
-  {
-    do
     {
-      a = (int)((double)choose * ((double)RAND / (double)0x7fffffff)) + 1;
-    } while (a == choose + 1);
-
-    do
-    {
-      b = (int)((double)bigcell * ((double)RAND / (double)0x7fffffff)) + 1;
-    } while (b == toobig);
-
-    if (a == b)
-    {
-      continue;
-    }
-
-    acellptr = cellarray[a];
-    aorient = acellptr->orient;
-
-    if (a > numcells && b <= numcells)
-    {
-      newaor = newOrient(acellptr, 8);
-      if (newaor >= 0)
-      {
-        if (usite0(a, newaor))
+      do
         {
-          flips++;
-          flip0++;
+          a = (int)((double)choose * ((double)RAND / (double)0x7fffffff)) + 1;
         }
-        att0++;
-      }
-    }
-    else if (a <= numcells && b > numcells)
-    {
-      if (acellptr->class != 0)
-      {
-        continue;
-      }
-      axcenter = acellptr->xcenter;
-      aycenter = acellptr->ycenter;
+      while (a == choose + 1);
 
-      ll = (axcenter - numberx < blockl)
-               ? blockl
-               : (axcenter - numberx > blockr ? blockr : axcenter - numberx);
-      rr = (axcenter + numberx > blockr)
-               ? blockr
-               : (axcenter + numberx < blockl ? blockl : axcenter + numberx);
-      bb = (aycenter - numbery < blockb)
-               ? blockb
-               : (aycenter - numbery > blockt ? blockt : aycenter - numbery);
-      tt = (aycenter + numbery > blockt)
-               ? blockt
-               : (aycenter + numbery < blockb ? blockb : aycenter + numbery);
-
-      pickSpot(acellptr, aorient, ll, rr, bb, tt, &xb, &yb);
-
-      if (gridGiven)
-      {
-        termptr = acellptr->config[aorient]->termptr;
-        forceGrid(xb + termptr->xpos, yb + termptr->ypos);
-        xb = newxx - termptr->xpos;
-        yb = newyy - termptr->ypos;
-      }
-
-      if (usite1(a, xb, yb))
-      {
-        flips++;
-        flip1++;
-        att1++;
-        attempts++;
-
-        fixSpot(acellptr, axcenter, aycenter, aorient);
-      }
-      else
-      {
-        attempts++;
-        att1++;
-        newaor = newOrient(acellptr, 4);
-        reject = 1;
-        if (newaor >= 0)
+      do
         {
-          if (usiteo1(a, xb, yb, newaor))
-          {
-            flips++;
-            flipo++;
-            atto++;
-            reject = 0;
-
-            fixSpot(acellptr, axcenter, aycenter, aorient);
-          }
-          else
-          {
-            atto++;
-          }
+          b = (int)((double)bigcell * ((double)RAND / (double)0x7fffffff)) + 1;
         }
-        if (reject)
+      while (b == toobig);
+
+      if (a == b)
+        {
+          continue;
+        }
+
+      acellptr = cellarray[a];
+      aorient = acellptr->orient;
+
+      if (a > numcells && b <= numcells)
         {
           newaor = newOrient(acellptr, 8);
-          reject = 1;
           if (newaor >= 0)
-          {
-            if (usite0(a, newaor))
+            {
+              if (usite0(a, newaor))
+                {
+                  flips++;
+                  flip0++;
+                }
+              att0++;
+            }
+        }
+      else if (a <= numcells && b > numcells)
+        {
+          if (acellptr->class != 0)
+            {
+              continue;
+            }
+          axcenter = acellptr->xcenter;
+          aycenter = acellptr->ycenter;
+
+          ll = (axcenter - numberx < blockl)
+                   ? blockl
+                   : (axcenter - numberx > blockr ? blockr : axcenter - numberx);
+          rr = (axcenter + numberx > blockr)
+                   ? blockr
+                   : (axcenter + numberx < blockl ? blockl : axcenter + numberx);
+          bb = (aycenter - numbery < blockb)
+                   ? blockb
+                   : (aycenter - numbery > blockt ? blockt : aycenter - numbery);
+          tt = (aycenter + numbery > blockt)
+                   ? blockt
+                   : (aycenter + numbery < blockb ? blockb : aycenter + numbery);
+
+          pickSpot(acellptr, aorient, ll, rr, bb, tt, &xb, &yb);
+
+          if (gridGiven)
+            {
+              termptr = acellptr->config[aorient]->termptr;
+              forceGrid(xb + termptr->xpos, yb + termptr->ypos);
+              xb = newxx - termptr->xpos;
+              yb = newyy - termptr->ypos;
+            }
+
+          if (usite1(a, xb, yb))
             {
               flips++;
-              flip0++;
-              att0++;
-              reject = 0;
+              flip1++;
+              att1++;
+              attempts++;
 
               fixSpot(acellptr, axcenter, aycenter, aorient);
             }
-            else
+          else
             {
-              att0++;
+              attempts++;
+              att1++;
+              newaor = newOrient(acellptr, 4);
+              reject = 1;
+              if (newaor >= 0)
+                {
+                  if (usiteo1(a, xb, yb, newaor))
+                    {
+                      flips++;
+                      flipo++;
+                      atto++;
+                      reject = 0;
+
+                      fixSpot(acellptr, axcenter, aycenter, aorient);
+                    }
+                  else
+                    {
+                      atto++;
+                    }
+                }
+              if (reject)
+                {
+                  newaor = newOrient(acellptr, 8);
+                  reject = 1;
+                  if (newaor >= 0)
+                    {
+                      if (usite0(a, newaor))
+                        {
+                          flips++;
+                          flip0++;
+                          att0++;
+                          reject = 0;
+
+                          fixSpot(acellptr, axcenter, aycenter, aorient);
+                        }
+                      else
+                        {
+                          att0++;
+                        }
+                    }
+                }
             }
-          }
-        }
-      }
-      if (acellptr->numUnComTerms != 0)
-      {
-        for (i = 1; i <= acellptr->numgroups; i++)
-        {
-          selectpin(acellptr);
-        }
-      }
-      /*
+          if (acellptr->numUnComTerms != 0)
+            {
+              for (i = 1; i <= acellptr->numgroups; i++)
+                {
+                  selectpin(acellptr);
+                }
+            }
+          /*
        *   The goal here is to generate a new
        *   aspect ratio for the cell if such
        *   a thing is permitted.  First test
        *   for permission.
        */
-      if (acellptr->softflag != 0 && (acellptr->aspUB > 0.01 + acellptr->aspLB))
-      {
-        /*
+          if (acellptr->softflag != 0 && (acellptr->aspUB > 0.01 + acellptr->aspLB))
+            {
+              /*
          *   We have clearance for an aspect
          *   ratio change
          */
-        range = acellptr->aspUB - acellptr->aspLB;
-        newAspect =
-            range * ((double)RAND / (double)0x7fffffff) + acellptr->aspLB;
+              range = acellptr->aspUB - acellptr->aspLB;
+              newAspect =
+                  range * ((double)RAND / (double)0x7fffffff) + acellptr->aspLB;
 
-        xcenter = acellptr->xcenter;
-        ycenter = acellptr->ycenter;
-        lft = xcenter + acellptr->config[acellptr->orient]->left;
-        rte = xcenter + acellptr->config[acellptr->orient]->right;
-        bot = ycenter + acellptr->config[acellptr->orient]->bottom;
-        top = ycenter + acellptr->config[acellptr->orient]->top;
+              xcenter = acellptr->xcenter;
+              ycenter = acellptr->ycenter;
+              lft = xcenter + acellptr->config[acellptr->orient]->left;
+              rte = xcenter + acellptr->config[acellptr->orient]->right;
+              bot = ycenter + acellptr->config[acellptr->orient]->bottom;
+              top = ycenter + acellptr->config[acellptr->orient]->top;
 
-        if (uaspect(a, newAspect))
-        {
-          flips++;
-          flipa++;
+              if (uaspect(a, newAspect))
+                {
+                  flips++;
+                  flipa++;
 
-          fixSpotAsp(acellptr, lft, rte, bot, top);
+                  fixSpotAsp(acellptr, lft, rte, bot, top);
+                }
+              atta++;
+            }
         }
-        atta++;
-      }
-    }
-    else
-    { /*  a & b <= numcells or a & b > numcells  */
-      bcellptr = cellarray[b];
-      borient = bcellptr->orient;
-      if (acellptr->class == -1 || bcellptr->class == -1 ||
-          acellptr->class != bcellptr->class)
-      {
-        continue;
-      }
-      if (gridGiven)
-      {
-        /*
+      else
+        { /*  a & b <= numcells or a & b > numcells  */
+          bcellptr = cellarray[b];
+          borient = bcellptr->orient;
+          if (acellptr->class == -1 || bcellptr->class == -1 ||
+              acellptr->class != bcellptr->class)
+            {
+              continue;
+            }
+          if (gridGiven)
+            {
+              /*
          *   Force pin 1 to lie on the underlying grid, specified
          *   by:  n * (grid) + offset , in each direction.
          */
-        btermptr = bcellptr->config[bcellptr->orient]->termptr;
-        termptr = acellptr->config[aorient]->termptr;
-        forceGrid(bcellptr->xcenter + termptr->xpos,
-                  bcellptr->ycenter + termptr->ypos);
-        ax = newxx - termptr->xpos;
-        ay = newyy - termptr->ypos;
-        forceGrid(acellptr->xcenter + btermptr->xpos,
-                  acellptr->ycenter + btermptr->ypos);
-        bx = newxx - btermptr->xpos;
-        by = newyy - btermptr->ypos;
-      }
-      else
-      {
-        ax = bcellptr->xcenter;
-        ay = bcellptr->ycenter;
-        bx = acellptr->xcenter;
-        by = acellptr->ycenter;
-      }
-      axcenter = bx;
-      aycenter = by;
-      bxcenter = ax;
-      bycenter = ay;
-      /* ****************************************************** */
-      /*  SOMETHING NEW  */
-      tileptr = acellptr->config[aorient];
-      al = ax + tileptr->left;
-      ar = ax + tileptr->right;
-      ab = ay + tileptr->bottom;
-      at = ay + tileptr->top;
-      if (a <= numcells)
-      {
-        al -= wireestx(al, ab, at, tileptr->lweight);
-        ar += wireestx(ar, ab, at, tileptr->rweight);
-        ab -= wireesty(ab, al, ar, tileptr->bweight);
-        at += wireesty(at, al, ar, tileptr->tweight);
-      }
-      tileptr = bcellptr->config[bcellptr->orient];
-      bl = bx + tileptr->left;
-      br = bx + tileptr->right;
-      bb = by + tileptr->bottom;
-      bt = by + tileptr->top;
-      if (b <= numcells)
-      {
-        bl -= wireestx(bl, bb, bt, tileptr->lweight);
-        br += wireestx(br, bb, bt, tileptr->rweight);
-        bb -= wireesty(bb, bl, br, tileptr->bweight);
-        bt += wireesty(bt, bl, br, tileptr->tweight);
-      }
-      min = 1000000;
-      minstep = 0;
-      if (bl >= ar || al >= br || bb >= at || ab >= bt)
-      {
-        if (bl < ar)
-        {
-          if (ar - bl < min)
-          {
-            minstep = 1;
-            min = ar - bl;
-          }
-        }
-        if (al < br)
-        {
-          if (br - al < min)
-          {
-            minstep = 2;
-            min = br - al;
-          }
-        }
-        if (bb < at)
-        {
-          if (at - bb < min)
-          {
-            minstep = 3;
-            min = at - bb;
-          }
-        }
-        if (ab < bt)
-        {
-          if (bt - ab < min)
-          {
-            minstep = 4;
-            min = bt - ab;
-          }
-        }
-      }
-      if (minstep != 0)
-      {
-        delt1 = min / 2;
-        delt2 = min - min / 2;
-        if (minstep == 1)
-        {
-          bx += delt1;
-          ax -= delt2;
-          if (br + delt1 > blockr)
-          {
-            bx -= br + delt1 - blockr;
-            ax -= br + delt1 - blockr;
-          }
-          else if (al - delt2 < blockl)
-          {
-            bx += blockl - (al - delt2);
-            ax += blockl - (al - delt2);
-          }
-        }
-        else if (minstep == 2)
-        {
-          ax += delt1;
-          bx -= delt2;
-          if (ar + delt1 > blockr)
-          {
-            bx -= ar + delt1 - blockr;
-            ax -= ar + delt1 - blockr;
-          }
-          else if (bl - delt2 < blockl)
-          {
-            bx += blockl - (bl - delt2);
-            ax += blockl - (bl - delt2);
-          }
-        }
-        else if (minstep == 3)
-        {
-          by += delt1;
-          ay -= delt2;
-          if (bt + delt1 > blockt)
-          {
-            by -= bt + delt1 - blockt;
-            ay -= bt + delt1 - blockt;
-          }
-          else if (ab - delt2 < blockb)
-          {
-            by += blockb - (ab - delt2);
-            ay += blockb - (ab - delt2);
-          }
-        }
-        else
-        {
-          ay += delt1;
-          by -= delt2;
-          if (at + delt1 > blockt)
-          {
-            by -= at + delt1 - blockt;
-            ay -= at + delt1 - blockt;
-          }
-          else if (bb - delt2 < blockb)
-          {
-            by += blockb - (bb - delt2);
-            ay += blockb - (bb - delt2);
-          }
-        }
-      }
-      /* ****************************************************** */
-      if (usite2(a, b, ax, ay, bx, by))
-      {
-        flips++;
-        flip2++;
-        att2++;
-        attempts++;
-
-        fixSpot(acellptr, axcenter, aycenter, aorient);
-        fixSpot(bcellptr, bxcenter, bycenter, borient);
-      }
-      else
-      {
-        att2++;
-        attempts++;
-        /*
-            try again with opposite orientation types
-        */
-        newaor = newOrient(acellptr, 4);
-        newbor = newOrient(bcellptr, 4);
-        if (newaor >= 0 || newbor >= 0)
-        {
-          if (newaor < 0)
-          {
-            newaor = aorient;
-          }
-          else if (newbor < 0)
-          {
-            newbor = borient;
-          }
-          if (gridGiven)
-          {
-            btermptr = bcellptr->config[newbor]->termptr;
-            termptr = acellptr->config[newaor]->termptr;
-            forceGrid(bcellptr->xcenter + termptr->xpos,
-                      bcellptr->ycenter + termptr->ypos);
-            ax = newxx - termptr->xpos;
-            ay = newyy - termptr->ypos;
-            forceGrid(acellptr->xcenter + btermptr->xpos,
-                      acellptr->ycenter + btermptr->ypos);
-            bx = newxx - btermptr->xpos;
-            by = newyy - btermptr->ypos;
-          }
+              btermptr = bcellptr->config[bcellptr->orient]->termptr;
+              termptr = acellptr->config[aorient]->termptr;
+              forceGrid(bcellptr->xcenter + termptr->xpos,
+                        bcellptr->ycenter + termptr->ypos);
+              ax = newxx - termptr->xpos;
+              ay = newyy - termptr->ypos;
+              forceGrid(acellptr->xcenter + btermptr->xpos,
+                        acellptr->ycenter + btermptr->ypos);
+              bx = newxx - btermptr->xpos;
+              by = newyy - btermptr->ypos;
+            }
           else
-          {
-            ax = bcellptr->xcenter;
-            ay = bcellptr->ycenter;
-            bx = acellptr->xcenter;
-            by = acellptr->ycenter;
-          }
-          /* ************************************************** */
+            {
+              ax = bcellptr->xcenter;
+              ay = bcellptr->ycenter;
+              bx = acellptr->xcenter;
+              by = acellptr->ycenter;
+            }
+          axcenter = bx;
+          aycenter = by;
+          bxcenter = ax;
+          bycenter = ay;
+          /* ****************************************************** */
           /*  SOMETHING NEW  */
-          tileptr = acellptr->config[newaor];
+          tileptr = acellptr->config[aorient];
           al = ax + tileptr->left;
           ar = ax + tileptr->right;
           ab = ay + tileptr->bottom;
           at = ay + tileptr->top;
           if (a <= numcells)
-          {
-            al -= wireestx(al, ab, at, tileptr->lweight);
-            ar += wireestx(ar, ab, at, tileptr->rweight);
-            ab -= wireesty(ab, al, ar, tileptr->bweight);
-            at += wireesty(at, al, ar, tileptr->tweight);
-          }
-          tileptr = bcellptr->config[newbor];
+            {
+              al -= wireestx(al, ab, at, tileptr->lweight);
+              ar += wireestx(ar, ab, at, tileptr->rweight);
+              ab -= wireesty(ab, al, ar, tileptr->bweight);
+              at += wireesty(at, al, ar, tileptr->tweight);
+            }
+          tileptr = bcellptr->config[bcellptr->orient];
           bl = bx + tileptr->left;
           br = bx + tileptr->right;
           bb = by + tileptr->bottom;
           bt = by + tileptr->top;
           if (b <= numcells)
-          {
-            bl -= wireestx(bl, bb, bt, tileptr->lweight);
-            br += wireestx(br, bb, bt, tileptr->rweight);
-            bb -= wireesty(bb, bl, br, tileptr->bweight);
-            bt += wireesty(bt, bl, br, tileptr->tweight);
-          }
+            {
+              bl -= wireestx(bl, bb, bt, tileptr->lweight);
+              br += wireestx(br, bb, bt, tileptr->rweight);
+              bb -= wireesty(bb, bl, br, tileptr->bweight);
+              bt += wireesty(bt, bl, br, tileptr->tweight);
+            }
           min = 1000000;
           minstep = 0;
           if (bl >= ar || al >= br || bb >= at || ab >= bt)
-          {
-            if (bl < ar)
             {
-              if (ar - bl < min)
-              {
-                minstep = 1;
-                min = ar - bl;
-              }
+              if (bl < ar)
+                {
+                  if (ar - bl < min)
+                    {
+                      minstep = 1;
+                      min = ar - bl;
+                    }
+                }
+              if (al < br)
+                {
+                  if (br - al < min)
+                    {
+                      minstep = 2;
+                      min = br - al;
+                    }
+                }
+              if (bb < at)
+                {
+                  if (at - bb < min)
+                    {
+                      minstep = 3;
+                      min = at - bb;
+                    }
+                }
+              if (ab < bt)
+                {
+                  if (bt - ab < min)
+                    {
+                      minstep = 4;
+                      min = bt - ab;
+                    }
+                }
             }
-            if (al < br)
-            {
-              if (br - al < min)
-              {
-                minstep = 2;
-                min = br - al;
-              }
-            }
-            if (bb < at)
-            {
-              if (at - bb < min)
-              {
-                minstep = 3;
-                min = at - bb;
-              }
-            }
-            if (ab < bt)
-            {
-              if (bt - ab < min)
-              {
-                minstep = 4;
-                min = bt - ab;
-              }
-            }
-          }
           if (minstep != 0)
-          {
-            delt1 = min / 2;
-            delt2 = min - min / 2;
-            if (minstep == 1)
             {
-              bx += delt1;
-              ax -= delt2;
-              if (br + delt1 > blockr)
-              {
-                bx -= br + delt1 - blockr;
-                ax -= br + delt1 - blockr;
-              }
-              else if (al - delt2 < blockl)
-              {
-                bx += blockl - (al - delt2);
-                ax += blockl - (al - delt2);
-              }
+              delt1 = min / 2;
+              delt2 = min - min / 2;
+              if (minstep == 1)
+                {
+                  bx += delt1;
+                  ax -= delt2;
+                  if (br + delt1 > blockr)
+                    {
+                      bx -= br + delt1 - blockr;
+                      ax -= br + delt1 - blockr;
+                    }
+                  else if (al - delt2 < blockl)
+                    {
+                      bx += blockl - (al - delt2);
+                      ax += blockl - (al - delt2);
+                    }
+                }
+              else if (minstep == 2)
+                {
+                  ax += delt1;
+                  bx -= delt2;
+                  if (ar + delt1 > blockr)
+                    {
+                      bx -= ar + delt1 - blockr;
+                      ax -= ar + delt1 - blockr;
+                    }
+                  else if (bl - delt2 < blockl)
+                    {
+                      bx += blockl - (bl - delt2);
+                      ax += blockl - (bl - delt2);
+                    }
+                }
+              else if (minstep == 3)
+                {
+                  by += delt1;
+                  ay -= delt2;
+                  if (bt + delt1 > blockt)
+                    {
+                      by -= bt + delt1 - blockt;
+                      ay -= bt + delt1 - blockt;
+                    }
+                  else if (ab - delt2 < blockb)
+                    {
+                      by += blockb - (ab - delt2);
+                      ay += blockb - (ab - delt2);
+                    }
+                }
+              else
+                {
+                  ay += delt1;
+                  by -= delt2;
+                  if (at + delt1 > blockt)
+                    {
+                      by -= at + delt1 - blockt;
+                      ay -= at + delt1 - blockt;
+                    }
+                  else if (bb - delt2 < blockb)
+                    {
+                      by += blockb - (bb - delt2);
+                      ay += blockb - (bb - delt2);
+                    }
+                }
             }
-            else if (minstep == 2)
+          /* ****************************************************** */
+          if (usite2(a, b, ax, ay, bx, by))
             {
-              ax += delt1;
-              bx -= delt2;
-              if (ar + delt1 > blockr)
-              {
-                bx -= ar + delt1 - blockr;
-                ax -= ar + delt1 - blockr;
-              }
-              else if (bl - delt2 < blockl)
-              {
-                bx += blockl - (bl - delt2);
-                ax += blockl - (bl - delt2);
-              }
-            }
-            else if (minstep == 3)
-            {
-              by += delt1;
-              ay -= delt2;
-              if (bt + delt1 > blockt)
-              {
-                by -= bt + delt1 - blockt;
-                ay -= bt + delt1 - blockt;
-              }
-              else if (ab - delt2 < blockb)
-              {
-                by += blockb - (ab - delt2);
-                ay += blockb - (ab - delt2);
-              }
-            }
-            else
-            {
-              ay += delt1;
-              by -= delt2;
-              if (at + delt1 > blockt)
-              {
-                by -= at + delt1 - blockt;
-                ay -= at + delt1 - blockt;
-              }
-              else if (bb - delt2 < blockb)
-              {
-                by += blockb - (bb - delt2);
-                ay += blockb - (bb - delt2);
-              }
-            }
-          }
-          /* ************************************************** */
+              flips++;
+              flip2++;
+              att2++;
+              attempts++;
 
-          if (usiteo2(a, b, ax, ay, bx, by, newaor, newbor))
-          {
-            flips++;
-            flipo2++;
-            atto2++;
-            attempts++;
-
-            fixSpot(acellptr, axcenter, aycenter, aorient);
-            fixSpot(bcellptr, bxcenter, bycenter, borient);
-          }
+              fixSpot(acellptr, axcenter, aycenter, aorient);
+              fixSpot(bcellptr, bxcenter, bycenter, borient);
+            }
           else
-          {
-            atto2++;
-            attempts++;
-          }
+            {
+              att2++;
+              attempts++;
+              /*
+            try again with opposite orientation types
+        */
+              newaor = newOrient(acellptr, 4);
+              newbor = newOrient(bcellptr, 4);
+              if (newaor >= 0 || newbor >= 0)
+                {
+                  if (newaor < 0)
+                    {
+                      newaor = aorient;
+                    }
+                  else if (newbor < 0)
+                    {
+                      newbor = borient;
+                    }
+                  if (gridGiven)
+                    {
+                      btermptr = bcellptr->config[newbor]->termptr;
+                      termptr = acellptr->config[newaor]->termptr;
+                      forceGrid(bcellptr->xcenter + termptr->xpos,
+                                bcellptr->ycenter + termptr->ypos);
+                      ax = newxx - termptr->xpos;
+                      ay = newyy - termptr->ypos;
+                      forceGrid(acellptr->xcenter + btermptr->xpos,
+                                acellptr->ycenter + btermptr->ypos);
+                      bx = newxx - btermptr->xpos;
+                      by = newyy - btermptr->ypos;
+                    }
+                  else
+                    {
+                      ax = bcellptr->xcenter;
+                      ay = bcellptr->ycenter;
+                      bx = acellptr->xcenter;
+                      by = acellptr->ycenter;
+                    }
+                  /* ************************************************** */
+                  /*  SOMETHING NEW  */
+                  tileptr = acellptr->config[newaor];
+                  al = ax + tileptr->left;
+                  ar = ax + tileptr->right;
+                  ab = ay + tileptr->bottom;
+                  at = ay + tileptr->top;
+                  if (a <= numcells)
+                    {
+                      al -= wireestx(al, ab, at, tileptr->lweight);
+                      ar += wireestx(ar, ab, at, tileptr->rweight);
+                      ab -= wireesty(ab, al, ar, tileptr->bweight);
+                      at += wireesty(at, al, ar, tileptr->tweight);
+                    }
+                  tileptr = bcellptr->config[newbor];
+                  bl = bx + tileptr->left;
+                  br = bx + tileptr->right;
+                  bb = by + tileptr->bottom;
+                  bt = by + tileptr->top;
+                  if (b <= numcells)
+                    {
+                      bl -= wireestx(bl, bb, bt, tileptr->lweight);
+                      br += wireestx(br, bb, bt, tileptr->rweight);
+                      bb -= wireesty(bb, bl, br, tileptr->bweight);
+                      bt += wireesty(bt, bl, br, tileptr->tweight);
+                    }
+                  min = 1000000;
+                  minstep = 0;
+                  if (bl >= ar || al >= br || bb >= at || ab >= bt)
+                    {
+                      if (bl < ar)
+                        {
+                          if (ar - bl < min)
+                            {
+                              minstep = 1;
+                              min = ar - bl;
+                            }
+                        }
+                      if (al < br)
+                        {
+                          if (br - al < min)
+                            {
+                              minstep = 2;
+                              min = br - al;
+                            }
+                        }
+                      if (bb < at)
+                        {
+                          if (at - bb < min)
+                            {
+                              minstep = 3;
+                              min = at - bb;
+                            }
+                        }
+                      if (ab < bt)
+                        {
+                          if (bt - ab < min)
+                            {
+                              minstep = 4;
+                              min = bt - ab;
+                            }
+                        }
+                    }
+                  if (minstep != 0)
+                    {
+                      delt1 = min / 2;
+                      delt2 = min - min / 2;
+                      if (minstep == 1)
+                        {
+                          bx += delt1;
+                          ax -= delt2;
+                          if (br + delt1 > blockr)
+                            {
+                              bx -= br + delt1 - blockr;
+                              ax -= br + delt1 - blockr;
+                            }
+                          else if (al - delt2 < blockl)
+                            {
+                              bx += blockl - (al - delt2);
+                              ax += blockl - (al - delt2);
+                            }
+                        }
+                      else if (minstep == 2)
+                        {
+                          ax += delt1;
+                          bx -= delt2;
+                          if (ar + delt1 > blockr)
+                            {
+                              bx -= ar + delt1 - blockr;
+                              ax -= ar + delt1 - blockr;
+                            }
+                          else if (bl - delt2 < blockl)
+                            {
+                              bx += blockl - (bl - delt2);
+                              ax += blockl - (bl - delt2);
+                            }
+                        }
+                      else if (minstep == 3)
+                        {
+                          by += delt1;
+                          ay -= delt2;
+                          if (bt + delt1 > blockt)
+                            {
+                              by -= bt + delt1 - blockt;
+                              ay -= bt + delt1 - blockt;
+                            }
+                          else if (ab - delt2 < blockb)
+                            {
+                              by += blockb - (ab - delt2);
+                              ay += blockb - (ab - delt2);
+                            }
+                        }
+                      else
+                        {
+                          ay += delt1;
+                          by -= delt2;
+                          if (at + delt1 > blockt)
+                            {
+                              by -= at + delt1 - blockt;
+                              ay -= at + delt1 - blockt;
+                            }
+                          else if (bb - delt2 < blockb)
+                            {
+                              by += blockb - (bb - delt2);
+                              ay += blockb - (bb - delt2);
+                            }
+                        }
+                    }
+                  /* ************************************************** */
+
+                  if (usiteo2(a, b, ax, ay, bx, by, newaor, newbor))
+                    {
+                      flips++;
+                      flipo2++;
+                      atto2++;
+                      attempts++;
+
+                      fixSpot(acellptr, axcenter, aycenter, aorient);
+                      fixSpot(bcellptr, bxcenter, bycenter, borient);
+                    }
+                  else
+                    {
+                      atto2++;
+                      attempts++;
+                    }
+                }
+            }
         }
-      }
     }
-  }
   fprintf(fpo, "acceptance breakdown:\n");
   fprintf(fpo, "              single cell: %d / %d\n", flip1, att1);
   fprintf(fpo, "     single w/ orient chg: %d / %d\n", flipo, atto);
@@ -622,14 +624,14 @@ void forceGrid(int x, int y)
 {
   newxx = ((x - gOffsetX) / gridX) * gridX + gOffsetX;
   if (ABS(newxx + gridX - x) < ABS(newxx - x))
-  {
-    newxx += gridX;
-  }
+    {
+      newxx += gridX;
+    }
   newyy = ((y - gOffsetY) / gridY) * gridY + gOffsetY;
   if (ABS(newyy + gridY - y) < ABS(newyy - y))
-  {
-    newyy += gridY;
-  }
+    {
+      newyy += gridY;
+    }
   return;
 }
 
@@ -673,19 +675,19 @@ void pickSpot(CELLBOXPTR cellptr, int orient, int ll, int rr, int bb, int tt,
   yspot = (cellptr->ycenter - spotYhash) / spotSize;
 
   for (;;)
-  {
-    *x = (int)((double)xrange * ((double)RAND / (double)0x7fffffff)) + llspot;
-    *y = (int)((double)yrange * ((double)RAND / (double)0x7fffffff)) + bbspot;
-    if (spots[*x][*y] == 0)
     {
-      break;
+      *x = (int)((double)xrange * ((double)RAND / (double)0x7fffffff)) + llspot;
+      *y = (int)((double)yrange * ((double)RAND / (double)0x7fffffff)) + bbspot;
+      if (spots[*x][*y] == 0)
+        {
+          break;
+        }
+      if (*x >= lspot && *x <= rspot && *y >= bspot && *y <= tspot &&
+          ((ABS(*x - xspot) > 1) || (ABS(*y - yspot) > 1)))
+        {
+          break;
+        }
     }
-    if (*x >= lspot && *x <= rspot && *y >= bspot && *y <= tspot &&
-        ((ABS(*x - xspot) > 1) || (ABS(*y - yspot) > 1)))
-    {
-      break;
-    }
-  }
   /*
    *   Randomly select (*x,*y) location within spot [*x,*y]
    */
@@ -722,13 +724,13 @@ void fixSpot(CELLBOXPTR cellptr, int oldx, int oldy, int oldorient)
   bspot = (b - spotYhash) / spotSize;
   tspot = (t - spotYhash) / spotSize;
   for (x = lspot + 1; x < rspot; x++)
-  {
-    sarray = spots[x] + bspot;
-    for (y = bspot + 1; y < tspot; y++)
     {
-      (*(++sarray))--;
+      sarray = spots[x] + bspot;
+      for (y = bspot + 1; y < tspot; y++)
+        {
+          (*(++sarray))--;
+        }
     }
-  }
 
   tileptr = cellptr->config[cellptr->orient];
   xc = cellptr->xcenter;
@@ -749,13 +751,13 @@ void fixSpot(CELLBOXPTR cellptr, int oldx, int oldy, int oldorient)
   tspot = (t - spotYhash) / spotSize;
 
   for (x = lspot + 1; x < rspot; x++)
-  {
-    sarray = spots[x] + bspot;
-    for (y = bspot + 1; y < tspot; y++)
     {
-      (*(++sarray))++;
+      sarray = spots[x] + bspot;
+      for (y = bspot + 1; y < tspot; y++)
+        {
+          (*(++sarray))++;
+        }
     }
-  }
 
   return;
 }
@@ -781,13 +783,13 @@ void fixSpotAsp(CELLBOXPTR cellptr, int lft, int rte, int bot, int top)
   tspot = (t - spotYhash) / spotSize;
 
   for (x = lspot + 1; x < rspot; x++)
-  {
-    sarray = spots[x] + bspot;
-    for (y = bspot + 1; y < tspot; y++)
     {
-      (*(++sarray))--;
+      sarray = spots[x] + bspot;
+      for (y = bspot + 1; y < tspot; y++)
+        {
+          (*(++sarray))--;
+        }
     }
-  }
 
   tileptr = cellptr->config[cellptr->orient];
   xc = cellptr->xcenter;
@@ -808,13 +810,13 @@ void fixSpotAsp(CELLBOXPTR cellptr, int lft, int rte, int bot, int top)
   tspot = (t - spotYhash) / spotSize;
 
   for (x = lspot + 1; x < rspot; x++)
-  {
-    sarray = spots[x] + bspot;
-    for (y = bspot + 1; y < tspot; y++)
     {
-      (*(++sarray))++;
+      sarray = spots[x] + bspot;
+      for (y = bspot + 1; y < tspot; y++)
+        {
+          (*(++sarray))++;
+        }
     }
-  }
 
   return;
 }

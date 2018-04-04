@@ -73,12 +73,12 @@ int main(int argc, char *argv[])
 
   /* Check usage */
   if (0 && argc < 6)
-  {
-    printf(
-        "Usage: MISR fileout reg_len #_vectors prob #_times [structure] [seed] "
-        "[seed] [seed]\n");
-    return 1;
-  }
+    {
+      printf(
+          "Usage: MISR fileout reg_len #_vectors prob #_times [structure] [seed] "
+          "[seed] [seed]\n");
+      return 1;
+    }
 
   /* input and translate arguments */
   /*sscanf(argv[2], "%lu", &reg_len);
@@ -95,59 +95,59 @@ int main(int argc, char *argv[])
 #endif
 
   if (argc > 6)
-  {
-    strcpy(structure, argv[6]);
-  }
-  else
-  {
-    for (i = 1; i < reg_len; i++)
     {
-      structure[i] = '0';
+      strcpy(structure, argv[6]);
     }
-    structure[0] = '1';
-    structure[reg_len] = 0;
-  }
+  else
+    {
+      for (i = 1; i < reg_len; i++)
+        {
+          structure[i] = '0';
+        }
+      structure[0] = '1';
+      structure[reg_len] = 0;
+    }
   if (argc > 7)
-  {
-    sscanf(argv[7], "%hu", &seed[0]);
-  }
+    {
+      sscanf(argv[7], "%hu", &seed[0]);
+    }
   else
-  {
-    seed[0] = 1;
-  }
+    {
+      seed[0] = 1;
+    }
   if (argc > 8)
-  {
-    sscanf(argv[8], "%hu", &seed[1]);
-  }
+    {
+      sscanf(argv[8], "%hu", &seed[1]);
+    }
   else
-  {
-    seed[1] = 0;
-  }
+    {
+      seed[1] = 0;
+    }
   if (argc > 9)
-  {
-    sscanf(argv[9], "%hu", &seed[2]);
-  }
+    {
+      sscanf(argv[9], "%hu", &seed[2]);
+    }
   else
-  {
-    seed[2] = 0;
-  }
+    {
+      seed[2] = 0;
+    }
 
   /* Check validity of input */
   if (reg_len > MAX_REG_LN)
-  {
-    printf("Register too long; Max. = %d\n", MAX_REG_LN);
-    return 2;
-  }
+    {
+      printf("Register too long; Max. = %d\n", MAX_REG_LN);
+      return 2;
+    }
   if ((prob > 1) || (prob < 0))
-  {
-    printf("Prob. out of range 0=<Prob>=1\n");
-    return 3;
-  }
+    {
+      printf("Prob. out of range 0=<Prob>=1\n");
+      return 3;
+    }
   if (strlen(structure) != reg_len)
-  {
-    printf("Structure does not match Register length:\n");
-    return 4;
-  }
+    {
+      printf("Structure does not match Register length:\n");
+      return 4;
+    }
 
   /*initialize random f'n generator */
   seed48(seed);
@@ -158,22 +158,22 @@ int main(int argc, char *argv[])
   /* simulate both circuits */
   num_true = 0;
   if (num_vect != 0)
-  {
-    for (i = 0; i < num_times; i++)
+    {
+      for (i = 0; i < num_times; i++)
+        {
+          init(&cell_array);
+          num_true += simulate(num_vect, &cell_array, prob, structure);
+        }
+    }
+  else /* ie. infinite case */
     {
       init(&cell_array);
-      num_true += simulate(num_vect, &cell_array, prob, structure);
+      simulate(INF, &cell_array, prob, structure);
+      for (i = 0; i < num_times; i++)
+        {
+          num_true += simulate(1, &cell_array, prob, structure);
+        }
     }
-  }
-  else /* ie. infinite case */
-  {
-    init(&cell_array);
-    simulate(INF, &cell_array, prob, structure);
-    for (i = 0; i < num_times; i++)
-    {
-      num_true += simulate(1, &cell_array, prob, structure);
-    }
-  }
 
   /* output results */
   printf(
@@ -199,14 +199,14 @@ void create_link_list(misr_type *cell_array)
   memset(cell_array, 0, sizeof(*cell_array));
   present = cell_array;
   for (i = 0; i < reg_len + 1; i++)
-  {
-    temp = (misr_type *)malloc(sizeof(misr_type));
-    temp->f_free = 1;
-    temp->faulty = 1;
-    temp->next = NULL;
-    present->next = temp;
-    present = present->next;
-  }
+    {
+      temp = (misr_type *)malloc(sizeof(misr_type));
+      temp->f_free = 1;
+      temp->faulty = 1;
+      temp->next = NULL;
+      present->next = temp;
+      present = present->next;
+    }
 }
 
 /*************************************************************
@@ -217,11 +217,11 @@ void kill_list(misr_type *present)
   misr_type *temp;
 
   while (present)
-  {
-    temp = present->next;
-    free(present);
-    present = temp;
-  }
+    {
+      temp = present->next;
+      free(present);
+      present = temp;
+    }
   return;
 }
 
@@ -231,10 +231,10 @@ make both MISR's identical to start the experiment
 void init(misr_type *present)
 {
   while (present->next != NULL)
-  {
-    present->faulty = present->f_free;
-    present = present->next;
-  }
+    {
+      present->faulty = present->f_free;
+      present = present->next;
+    }
 }
 
 /***********************************************************
@@ -256,72 +256,72 @@ int simulate(int iterations, misr_type *present, double prob, char *structure)
   temp = present;
 
   for (h = 0; h < iterations; h++)
-  {
-    savef_free = 0;
-    savefaulty = 0;
-    for (i = 0; i < quot; i++)
     {
+      savef_free = 0;
+      savefaulty = 0;
+      for (i = 0; i < quot; i++)
+        {
+          randv = lrand48();
+          for (j = 0; j < 31; j++)
+            {
+              if (structure[i * 31 + j] == '1')
+                {
+                  savef_free += temp->f_free;
+                  savefaulty += temp->faulty;
+                }
+              temp->f_free = ((temp->next->f_free + randv) & BIN_MASK);
+              randprob = ((double)(lrand48() % 1000) / 1000);
+              if (prob > randprob)
+                {
+                  randv ^= BIN_MASK;
+                }
+              temp->faulty = ((temp->next->faulty + randv) & BIN_MASK);
+              temp = temp->next;
+              randv >>= 1;
+            }
+        }
       randv = lrand48();
-      for (j = 0; j < 31; j++)
-      {
-        if (structure[i * 31 + j] == '1')
+      for (j = 0; j < rem; j++)
+        {
+          if (structure[quot * 31 + j] == '1')
+            {
+              savef_free += temp->f_free;
+              savefaulty += temp->faulty;
+            }
+          temp->f_free = ((temp->next->f_free + randv) & BIN_MASK);
+          randprob = ((double)(lrand48() % 1000) / 1000);
+          if (prob > randprob)
+            {
+              randv ^= BIN_MASK;
+            }
+          temp->faulty = ((temp->next->faulty + randv) & BIN_MASK);
+          temp = temp->next;
+          randv >>= 1;
+        }
+      randv = lrand48();
+      if (structure[reg_len - 1] == '1')
         {
           savef_free += temp->f_free;
           savefaulty += temp->faulty;
         }
-        temp->f_free = ((temp->next->f_free + randv) & BIN_MASK);
-        randprob = ((double)(lrand48() % 1000) / 1000);
-        if (prob > randprob)
+      temp->f_free = ((savef_free + randv) & BIN_MASK);
+      randprob = ((double)(lrand48() % 10000) / 10000);
+      if (prob > randprob)
         {
           randv ^= BIN_MASK;
         }
-        temp->faulty = ((temp->next->faulty + randv) & BIN_MASK);
-        temp = temp->next;
-        randv >>= 1;
-      }
-    }
-    randv = lrand48();
-    for (j = 0; j < rem; j++)
-    {
-      if (structure[quot * 31 + j] == '1')
-      {
-        savef_free += temp->f_free;
-        savefaulty += temp->faulty;
-      }
-      temp->f_free = ((temp->next->f_free + randv) & BIN_MASK);
-      randprob = ((double)(lrand48() % 1000) / 1000);
-      if (prob > randprob)
-      {
-        randv ^= BIN_MASK;
-      }
-      temp->faulty = ((temp->next->faulty + randv) & BIN_MASK);
-      temp = temp->next;
-      randv >>= 1;
-    }
-    randv = lrand48();
-    if (structure[reg_len - 1] == '1')
-    {
-      savef_free += temp->f_free;
-      savefaulty += temp->faulty;
-    }
-    temp->f_free = ((savef_free + randv) & BIN_MASK);
-    randprob = ((double)(lrand48() % 10000) / 10000);
-    if (prob > randprob)
-    {
-      randv ^= BIN_MASK;
-    }
-    temp->faulty = ((savefaulty + randv) & BIN_MASK);
+      temp->faulty = ((savefaulty + randv) & BIN_MASK);
 
-    temp = present;
-  }
+      temp = present;
+    }
 
   for (i = 0; i < reg_len; i++)
-  {
-    if (temp->f_free != temp->faulty)
     {
-      different = TRUE;
+      if (temp->f_free != temp->faulty)
+        {
+          different = TRUE;
+        }
+      temp = temp->next;
     }
-    temp = temp->next;
-  }
   return different;
 }

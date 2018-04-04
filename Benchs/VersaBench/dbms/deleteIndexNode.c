@@ -20,11 +20,11 @@
 
 #include <assert.h> /* for assert() debug check        */
 #include <stdlib.h> /* for NULL and free() definitions */
-#include "index.h"  /* for IndexNode definitions       */
+#include "index.h" /* for IndexNode definitions       */
 
 void deleteIndexNode(IndexNode* node) /*  node to delete  */
-{                                     /*  beginning of deleteIndexNode()  */
-  IndexEntry* entry;                  /* entry used for looping */
+{ /*  beginning of deleteIndexNode()  */
+  IndexEntry* entry; /* entry used for looping */
 
   assert(node);
 
@@ -33,24 +33,24 @@ void deleteIndexNode(IndexNode* node) /*  node to delete  */
    */
   entry = node->entries;
   while (entry != NULL)
-  {
-    IndexEntry* temp;
+    {
+      IndexEntry* temp;
 
-    /*
+      /*
      *  For each entry, save next entry in list for next
      *  loop, assert that the level of the current node
      *  is a valid value, i.e., >= LEAF level, and delete
      *  entry.  After deletion, setup entry value for
      *  next loop.
      */
-    temp = entry->next;
+      temp = entry->next;
 
-    assert(node->level >= LEAF);
+      assert(node->level >= LEAF);
 
-    deleteIndexEntry(entry, node->level);
+      deleteIndexEntry(entry, node->level);
 
-    entry = temp;
-  } /*  end while ( entry != NULL )  */
+      entry = temp;
+    } /*  end while ( entry != NULL )  */
 
   /*
    *  Delete node

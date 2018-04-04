@@ -22,17 +22,17 @@ int CHAR_TO_DIGIT(char CH, int NUM_BASE)
 {
   int DIGIT = -1;
   if ((CH >= '0') && (CH <= '9'))
-  {
-    DIGIT = (int)(CH - '0');
-  }
+    {
+      DIGIT = (int)(CH - '0');
+    }
   if ((CH >= 'A') && (CH <= 'Z'))
-  {
-    DIGIT = ((int)(CH - 'A')) + 10;
-  }
+    {
+      DIGIT = ((int)(CH - 'A')) + 10;
+    }
   if (DIGIT >= NUM_BASE)
-  {
-    DIGIT = -1;
-  }
+    {
+      DIGIT = -1;
+    }
   return DIGIT;
 }
 
@@ -41,27 +41,27 @@ int CHAR_TO_DIGIT(char CH, int NUM_BASE)
 /* in base BASE (eg. NUM_TO_STR(10,16,3,STR) puts "00A" in STR).             */
 void NUM_TO_STR(int NUM, int BASE, int LEN, char *STR)
 {
-  int I;     /* loop counter                              */
+  int I; /* loop counter                              */
   int DIGIT; /* one digit in base specified of NUM        */
 
   STR[LEN] = '\0';
   for (I = (LEN - 1); I >= 0; I--)
-  {
-    DIGIT = NUM - (NUM / BASE) * BASE;
-    NUM /= BASE;
-    if ((DIGIT >= 0) && (DIGIT <= 9))
     {
-      STR[I] = (char)DIGIT + '0';
+      DIGIT = NUM - (NUM / BASE) * BASE;
+      NUM /= BASE;
+      if ((DIGIT >= 0) && (DIGIT <= 9))
+        {
+          STR[I] = (char)DIGIT + '0';
+        }
+      else
+        {
+          STR[I] = (char)(DIGIT - 10) + 'A';
+        }
     }
-    else
-    {
-      STR[I] = (char)(DIGIT - 10) + 'A';
-    }
-  }
   if (NUM != 0)
-  {
-    (void)printf("NUM_TO_STR called illegally.\n");
-  }
+    {
+      (void)printf("NUM_TO_STR called illegally.\n");
+    }
 }
 
 /* ------------------------------ GET_NUM ---------------------------------- */
@@ -74,30 +74,30 @@ void NUM_TO_STR(int NUM, int BASE, int LEN, char *STR)
 /*   realizes this w/o (with out) looking at the rest of the input.          */
 int GET_NUM(char **CURRENT_CHAR, int BITS, int NUM_BASE, BOOLEAN *ERROR)
 {
-  int CONVERT = 0;      /* CONVERT is the converted integer of the */
-                        /*    string */
+  int CONVERT = 0; /* CONVERT is the converted integer of the */
+  /*    string */
   int MAX_UNSIGNED_INT; /* MAX_UNSIGNED_INT = 2^BITS               */
-                        /*    - Biggest biggest number + 1         */
-                        /*      (w/o sign) that fits               */
-  int DIGIT;            /* One digit of the number.                */
+  /*    - Biggest biggest number + 1         */
+  /*      (w/o sign) that fits               */
+  int DIGIT; /* One digit of the number.                */
 
   MAX_UNSIGNED_INT = (int)pow(2.0, BITS * 1.0);
 
   /* ----------------------------- Get the biggest [legal] number you can */
   while (((DIGIT = CHAR_TO_DIGIT(**CURRENT_CHAR, NUM_BASE)) != -1) &&
          !eoln(**CURRENT_CHAR))
-  {
-    if (CONVERT <= MAX_UNSIGNED_INT)
     {
-      CONVERT = CONVERT * NUM_BASE + DIGIT;
+      if (CONVERT <= MAX_UNSIGNED_INT)
+        {
+          CONVERT = CONVERT * NUM_BASE + DIGIT;
+        }
+      (*CURRENT_CHAR)++;
     }
-    (*CURRENT_CHAR)++;
-  }
 
   if ((CONVERT > (MAX_UNSIGNED_INT - 1)) || (!eoln(**CURRENT_CHAR)))
-  {
-    (*ERROR) = TRUE_1;
-  }
+    {
+      (*ERROR) = TRUE_1;
+    }
 
   return CONVERT;
 }
@@ -112,19 +112,19 @@ void STR_TO_NUM(char *STR, int DIGITS, int BASE, int *NUM, BOOLEAN *ERROR)
 
   (*NUM) = 0;
   for (I = 0; ((I < DIGITS) && !LOCAL_ERROR); I++)
-  {
-    if ((ONE_DIGIT = CHAR_TO_DIGIT(STR[I], BASE)) == -1)
     {
-      LOCAL_ERROR = TRUE_1; /* Not a valid number.             */
+      if ((ONE_DIGIT = CHAR_TO_DIGIT(STR[I], BASE)) == -1)
+        {
+          LOCAL_ERROR = TRUE_1; /* Not a valid number.             */
+        }
+      else
+        {
+          (*NUM) = (*NUM) * BASE + ONE_DIGIT;
+        }
     }
-    else
-    {
-      (*NUM) = (*NUM) * BASE + ONE_DIGIT;
-    }
-  }
 
   if (LOCAL_ERROR)
-  {
-    (*ERROR) = TRUE_1;
-  }
+    {
+      (*ERROR) = TRUE_1;
+    }
 }

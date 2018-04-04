@@ -64,9 +64,9 @@ void YAMLOpen()
   timeinfo = localtime(&rawTime);
 
   if (output != NULL || fileName == NULL || timeStr == NULL || timeinfo == NULL)
-  {
-    return;
-  }
+    {
+      return;
+    }
 
   sprintf(fileName, "PathFinder_%d-%d-%d_%d-%d-%d.yaml",
           timeinfo->tm_year + 1900, timeinfo->tm_mon + 1, timeinfo->tm_mday,
@@ -80,63 +80,63 @@ void YAMLOpen()
 
   output = fopen(fileName, "w");
   if (output != NULL)
-  {
-    YAMLWriteString("Mini-Application Name", "PathFinder");
-    YAMLWriteString("Mini-Application Version", "1.0.0");
-    YAMLWriteString("Run Date/Time", timeStr);
-    YAMLWriteString("Compiler Version", CXXVERSION);
-    YAMLWriteString("Compiler Flags", CXXFLAGS);
+    {
+      YAMLWriteString("Mini-Application Name", "PathFinder");
+      YAMLWriteString("Mini-Application Version", "1.0.0");
+      YAMLWriteString("Run Date/Time", timeStr);
+      YAMLWriteString("Compiler Version", CXXVERSION);
+      YAMLWriteString("Compiler Flags", CXXFLAGS);
 
 #ifdef MPI
-    YAMLWriteString("MPI", "Yes");
+      YAMLWriteString("MPI", "Yes");
 #else
-    YAMLWriteString("MPI", "No");
+      YAMLWriteString("MPI", "No");
 #endif
 #ifdef OPENMP
-    YAMLWriteString("OpenMP", "Yes");
-    YAMLWriteString("Open MP Threads", getenv("OMP_NUM_THREADS"));
+      YAMLWriteString("OpenMP", "Yes");
+      YAMLWriteString("Open MP Threads", getenv("OMP_NUM_THREADS"));
 #else
-    YAMLWriteString("OpenMP", "No");
+      YAMLWriteString("OpenMP", "No");
 #endif
-  }
+    }
 }
 
 void YAMLClose()
 {
   if (output != NULL)
-  {
-    fclose(output);
-  }
+    {
+      fclose(output);
+    }
 }
 
 void YAMLWriteString(char *tag, char *data)
 {
   if (output != NULL)
-  {
-    fprintf(output, "%s: %s\n", tag, data);
-  }
+    {
+      fprintf(output, "%s: %s\n", tag, data);
+    }
 }
 
 void YAMLWriteInt(char *tag, int data)
 {
   if (output != NULL)
-  {
-    fprintf(output, "%s: %i\n", tag, data);
-  }
+    {
+      fprintf(output, "%s: %i\n", tag, data);
+    }
 }
 
 void YAMLWriteDouble(char *tag, double data)
 {
   if (output != NULL)
-  {
-    fprintf(output, "%s: %lf\n", tag, data);
-  }
+    {
+      fprintf(output, "%s: %lf\n", tag, data);
+    }
 }
 
 void YAMLWriteFloat(char *tag, float data)
 {
   if (output != NULL)
-  {
-    fprintf(output, "%s: %f\n", tag, data);
-  }
+    {
+      fprintf(output, "%s: %f\n", tag, data);
+    }
 }

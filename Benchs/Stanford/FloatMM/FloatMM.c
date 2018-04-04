@@ -59,12 +59,12 @@ struct element
 };
 /*    emsgtype = packed array[1..15] of char;
 */
-/* Intmm, Mm */     /*
+/* Intmm, Mm */ /*
     index = 1 .. rowsize;
     intmatrix = array [index,index] of integer;
     realmatrix = array [index,index] of real;
 */
-/* Puzzle */        /*
+/* Puzzle */ /*
        piececlass = 0..classmax;
        piecetype = 0..typemax;
        position = 0..size;
@@ -123,7 +123,7 @@ void Initrand() { seed = 74755L; /* constant to long WR*/ }
 int Rand()
 {
   seed = (seed * 1309L + 13849L) & 65535L; /* constants to long WR*/
-  return ((int)seed);                      /* typecast back to int WR*/
+  return ((int)seed); /* typecast back to int WR*/
 }
 
 /* Multiplies two real matrices. */
@@ -132,13 +132,13 @@ void rInitmatrix(float m[rowsize + 1][rowsize + 1])
 {
   int temp, i, j;
   for (i = 1; i <= rowsize; i++)
-  {
-    for (j = 1; j <= rowsize; j++)
     {
-      temp = Rand();
-      m[i][j] = (float)(temp - (temp / 120) * 120 - 60) / 3;
+      for (j = 1; j <= rowsize; j++)
+        {
+          temp = Rand();
+          m[i][j] = (float)(temp - (temp / 120) * 120 - 60) / 3;
+        }
     }
-  }
 }
 
 void rInnerproduct(float *result, float a[rowsize + 1][rowsize + 1],
@@ -148,9 +148,9 @@ void rInnerproduct(float *result, float a[rowsize + 1][rowsize + 1],
   int i;
   *result = 0.0f;
   for (i = 1; i <= rowsize; i++)
-  {
-    *result = *result + a[row][i] * b[i][column];
-  }
+    {
+      *result = *result + a[row][i] * b[i][column];
+    }
 }
 
 void Mm(int run)
@@ -160,24 +160,24 @@ void Mm(int run)
   rInitmatrix(rma);
   rInitmatrix(rmb);
   for (i = 1; i <= rowsize; i++)
-  {
-    for (j = 1; j <= rowsize; j++)
     {
-      rInnerproduct(&rmr[i][j], rma, rmb, i, j);
+      for (j = 1; j <= rowsize; j++)
+        {
+          rInnerproduct(&rmr[i][j], rma, rmb, i, j);
+        }
     }
-  }
   if (run < rowsize)
-  {
-    printf("%f\n", rmr[run + 1][run + 1]);
-  }
+    {
+      printf("%f\n", rmr[run + 1][run + 1]);
+    }
 }
 
 int main()
 {
   int i;
   for (i = 0; i < 5000; i++)
-  {
-    Mm(i);
-  }
+    {
+      Mm(i);
+    }
   return 0;
 }

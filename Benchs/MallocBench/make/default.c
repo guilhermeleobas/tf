@@ -71,13 +71,13 @@ static char *default_suffix_rules[] = {
     ".s.o",
 #if !defined(M_XENIX) || defined(__GNUC__)
     "$(COMPILE.s) -o $@ $<",
-#else  /* Xenix.  */
+#else /* Xenix.  */
     "$(COMPILE.s) -o$@ $<",
 #endif /* Not Xenix.  */
     ".S.o",
 #if !defined(M_XENIX) || defined(__GNUC__)
     "$(COMPILE.S) -o $@ $<",
-#else  /* Xenix.  */
+#else /* Xenix.  */
     "$(COMPILE.S) -o$@ $<",
 #endif /* Not Xenix.  */
     ".c.o", "$(COMPILE.c) $< $(OUTPUT_OPTION)", ".cc.o",
@@ -172,7 +172,7 @@ static char *default_variables[] = {
     "$(CC) $(ASFLAGS) $(CPPFLAGS) $(TARGET_MACH) -c",
 #if !defined(M_XENIX) || defined(__GNUC__)
     "PREPROCESS.S", "$(CC) -E $(CPPFLAGS)",
-#else  /* Xenix.  */
+#else /* Xenix.  */
     "PREPROCESS.S", "$(CC) -EP $(CPPFLAGS)",
 #endif /* Not Xenix.  */
     "PREPROCESS.F", "$(FC) $(FFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -F",
@@ -182,7 +182,7 @@ static char *default_variables[] = {
 #ifndef NO_MINUS_C_MINUS_O
 #if !defined(M_XENIX) || defined(__GNUC__)
     "OUTPUT_OPTION", "-o $@",
-#else  /* Xenix.  */
+#else /* Xenix.  */
     "OUTPUT_OPTION", "-Fo$@",
 #endif /* Not Xenix.  */
 #endif
@@ -196,16 +196,16 @@ void set_default_suffixes()
   suffix_file = enter_file(".SUFFIXES");
 
   if (no_builtin_rules_flag)
-  {
-    (void)define_variable("SUFFIXES", 8, "", o_default, 0);
-  }
+    {
+      (void)define_variable("SUFFIXES", 8, "", o_default, 0);
+    }
   else
-  {
-    char *p = default_suffixes;
-    suffix_file->deps = (struct dep *)multi_glob(
-        parse_file_seq(&p, '\0', sizeof(struct dep)), sizeof(struct dep));
-    (void)define_variable("SUFFIXES", 8, default_suffixes, o_default, 0);
-  }
+    {
+      char *p = default_suffixes;
+      suffix_file->deps = (struct dep *)multi_glob(
+          parse_file_seq(&p, '\0', sizeof(struct dep)), sizeof(struct dep));
+      (void)define_variable("SUFFIXES", 8, default_suffixes, o_default, 0);
+    }
 }
 
 /* Install the default pattern rules and enter
@@ -217,32 +217,32 @@ void install_default_implicit_rules()
   register char **s;
 
   if (no_builtin_rules_flag)
-  {
-    return;
-  }
+    {
+      return;
+    }
 
   for (p = default_pattern_rules; p->target != 0; ++p)
-  {
-    install_pattern_rule(p, 0);
-  }
+    {
+      install_pattern_rule(p, 0);
+    }
 
   for (p = default_terminal_rules; p->target != 0; ++p)
-  {
-    install_pattern_rule(p, 1);
-  }
+    {
+      install_pattern_rule(p, 1);
+    }
 
   for (s = default_suffix_rules; *s != 0; s += 2)
-  {
-    register struct file *f = enter_file(s[0]);
-    /* Don't clobber cmds given in a makefile if there were any.  */
-    if (f->cmds == 0)
     {
-      f->cmds = (struct commands *)xmalloc(sizeof(struct commands));
-      f->cmds->filename = 0;
-      f->cmds->commands = s[1];
-      f->cmds->command_lines = 0;
+      register struct file *f = enter_file(s[0]);
+      /* Don't clobber cmds given in a makefile if there were any.  */
+      if (f->cmds == 0)
+        {
+          f->cmds = (struct commands *)xmalloc(sizeof(struct commands));
+          f->cmds->filename = 0;
+          f->cmds->commands = s[1];
+          f->cmds->command_lines = 0;
+        }
     }
-  }
 }
 
 void define_default_variables()
@@ -250,7 +250,7 @@ void define_default_variables()
   register char **s;
 
   for (s = default_variables; *s != 0; s += 2)
-  {
-    (void)define_variable(s[0], strlen(s[0]), s[1], o_default, 1);
-  }
+    {
+      (void)define_variable(s[0], strlen(s[0]), s[1], o_default, 1);
+    }
 }

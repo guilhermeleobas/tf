@@ -28,11 +28,11 @@
  *	Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include <assert.h>             /* for assert()                   */
-#include "dataManagement.h"     /* for primitive type definitions */
-#include "errorMessage.h"       /* for errorMessage() definition  */
+#include <assert.h> /* for assert()                   */
+#include "dataManagement.h" /* for primitive type definitions */
+#include "errorMessage.h" /* for errorMessage() definition  */
 #include "getNextCommandCode.h" /* for CommandType enumeration    */
-#include "metrics.h"            /* for Metrics definition         */
+#include "metrics.h" /* for Metrics definition         */
 
 /*
  *  Function prototypes
@@ -40,8 +40,8 @@
 extern Time getTime(void);
 
 void updateMetricsData(Metrics *metrics) /* metrics struct to update */
-{                                        /*  begin updateMetricsData()   */
-  Time temp;                    /*  variable used to find current time  */
+{ /*  begin updateMetricsData()   */
+  Time temp; /*  variable used to find current time  */
   CommandMetric *commandMetric; /*  command metric to update            */
 
   static Char name[] = "updateMetricsData";
@@ -60,22 +60,22 @@ void updateMetricsData(Metrics *metrics) /* metrics struct to update */
    *  without updating any of the other command metric structures.
    */
   if (metrics->lastCommand == INSERT)
-  {
-    commandMetric = &(metrics->insertCommandMetric);
-  } /*  end of command == INSERT        */
+    {
+      commandMetric = &(metrics->insertCommandMetric);
+    } /*  end of command == INSERT        */
   else if (metrics->lastCommand == QUERY)
-  {
-    commandMetric = &(metrics->queryCommandMetric);
-  } /*  end of command == QUERY         */
+    {
+      commandMetric = &(metrics->queryCommandMetric);
+    } /*  end of command == QUERY         */
   else if (metrics->lastCommand == DELETE)
-  {
-    commandMetric = &(metrics->deleteCommandMetric);
-  } /*  end of command == DELETE        */
+    {
+      commandMetric = &(metrics->deleteCommandMetric);
+    } /*  end of command == DELETE        */
   else
-  {
-    metrics->lastCommand = INVALID;
-    return;
-  } /*  end of inappropriate command    */
+    {
+      metrics->lastCommand = INVALID;
+      return;
+    } /*  end of inappropriate command    */
 
   /*
    *  Get the current time and update the command metric.  The first step is
@@ -93,28 +93,28 @@ void updateMetricsData(Metrics *metrics) /* metrics struct to update */
   temp = getTime() - commandMetric->lastTimeMark;
 
   if (temp < 0)
-  {
-    errorMessage("lastTimeMark doesn't seem to be set", REPLACE);
-    errorMessage(name, PREPEND);
-    flushErrorMessage();
-  } /*  end of validity check on time */
+    {
+      errorMessage("lastTimeMark doesn't seem to be set", REPLACE);
+      errorMessage(name, PREPEND);
+      flushErrorMessage();
+    } /*  end of validity check on time */
   else
-  {
-    if (temp < commandMetric->best)
     {
-      commandMetric->best = temp;
-    } /*  end of temp < best */
+      if (temp < commandMetric->best)
+        {
+          commandMetric->best = temp;
+        } /*  end of temp < best */
 
-    if (temp > commandMetric->worst)
-    {
-      commandMetric->worst = temp;
-    } /*  end of temp > worst */
+      if (temp > commandMetric->worst)
+        {
+          commandMetric->worst = temp;
+        } /*  end of temp > worst */
 
-    commandMetric->sum += (Double)temp;
-    commandMetric->sumSquares += ((Double)temp * (Double)temp);
+      commandMetric->sum += (Double)temp;
+      commandMetric->sumSquares += ((Double)temp * (Double)temp);
 
-    commandMetric->numOfCommands++;
-  } /*  end of update of command metric */
+      commandMetric->numOfCommands++;
+    } /*  end of update of command metric */
 
   /*
    *  Set lastCommand field to INVALID to prevent any erroneous update repeats

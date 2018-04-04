@@ -58,7 +58,11 @@ int NNTOT;
 int NUMPATS;
 
 /* Typedefs */
-typedef enum { WFALSE, WTRUE } wbool;
+typedef enum
+{
+  WFALSE,
+  WTRUE
+} wbool;
 typedef float real;
 
 /* Global variables */
@@ -112,19 +116,19 @@ int main(int c, char *v[])
   fprintf(stderr, "Compiler switches: %s\n", CFLAGS);
 
   if (c != 2)
-  {
-    fprintf(stderr, "Wrong number of arguments, 1 needed, %d specified.\n",
-            c - 1);
-    fprintf(stderr, "USAGE: %s <datafile>\n", v[0]);
-    exit(1);
-  }
+    {
+      fprintf(stderr, "Wrong number of arguments, 1 needed, %d specified.\n",
+              c - 1);
+      fprintf(stderr, "USAGE: %s <datafile>\n", v[0]);
+      exit(1);
+    }
 
   fp = fopen(v[1], "r");
   if (fp == NULL)
-  {
-    fprintf(stderr, "ABORT: Could not read datafile %s\n", v[1]);
-    exit(1);
-  }
+    {
+      fprintf(stderr, "ABORT: Could not read datafile %s\n", v[1]);
+      exit(1);
+    }
 
   /* Size of NeuralNet specifed in datafile. */
   fgets(indata, 99, fp);
@@ -142,46 +146,46 @@ int main(int c, char *v[])
   vnames = (char *)malloc(sizeof(char) * NUMPATS);
   stored = (int *)malloc(sizeof(int) * NUMPATS);
   if (!vnames || !stored)
-  {
-    fprintf(stderr, "ABORT: Out of memory\n");
-    exit(1);
-  }
-
-  Tmatrix = (real **)malloc(sizeof(real *) * NNTOT);
-  if (!Tmatrix)
-  {
-    fprintf(stderr, "ABORT: Out of memory\n");
-    exit(1);
-  }
-  for (i = 0; i < NNTOT; i++)
-  {
-    Tmatrix[i] = (real *)malloc(sizeof(real) * NNTOT);
-    if (!Tmatrix[i])
     {
       fprintf(stderr, "ABORT: Out of memory\n");
       exit(1);
     }
-  }
+
+  Tmatrix = (real **)malloc(sizeof(real *) * NNTOT);
+  if (!Tmatrix)
+    {
+      fprintf(stderr, "ABORT: Out of memory\n");
+      exit(1);
+    }
+  for (i = 0; i < NNTOT; i++)
+    {
+      Tmatrix[i] = (real *)malloc(sizeof(real) * NNTOT);
+      if (!Tmatrix[i])
+        {
+          fprintf(stderr, "ABORT: Out of memory\n");
+          exit(1);
+        }
+    }
 
   vectors = (int **)malloc(sizeof(int *) * NUMPATS);
   newvectors = (int **)malloc(sizeof(int *) * NUMPATS);
   generators = (int **)malloc(sizeof(int *) * NUMPATS);
   if (!vectors || !newvectors || !generators)
-  {
-    fprintf(stderr, "ABORT: Out of memory\n");
-    exit(1);
-  }
-  for (i = 0; i < NUMPATS; i++)
-  {
-    vectors[i] = (int *)malloc(sizeof(int) * NNTOT);
-    newvectors[i] = (int *)malloc(sizeof(int) * NNTOT);
-    generators[i] = (int *)malloc(sizeof(int) * NNTOT);
-    if (!vectors[i] || !newvectors[i] || !generators[i])
     {
       fprintf(stderr, "ABORT: Out of memory\n");
       exit(1);
     }
-  }
+  for (i = 0; i < NUMPATS; i++)
+    {
+      vectors[i] = (int *)malloc(sizeof(int) * NNTOT);
+      newvectors[i] = (int *)malloc(sizeof(int) * NNTOT);
+      generators[i] = (int *)malloc(sizeof(int) * NNTOT);
+      if (!vectors[i] || !newvectors[i] || !generators[i])
+        {
+          fprintf(stderr, "ABORT: Out of memory\n");
+          exit(1);
+        }
+    }
 
   /* Do some operations (This is for FreeBench) */
   readvector(fp); /* read from file */
@@ -288,19 +292,19 @@ static void checkham()
 
   /* printf("\nHamming distances for original vectors:\n"); */
   for (vec = 0; vec < NUMPATS; vec++)
-  {
-    for (comp = (vec + 1); comp < NUMPATS; comp++)
     {
-      if ((hd = hamming(vectors[vec], vectors[comp], MODE_NORMAL)) < 2)
-        /* printf ("[!!%c-%c->%d!!] ", vnames[vec], vnames[comp], hd); */ hamwarn++;
-      else
-        /* printf ("%c-%c->%d ",vnames[vec], vnames[comp], hd) */;
-      if ((hd = hamming(vectors[vec], vectors[comp], MODE_COMPLEMENT)) < 2)
-        /* printf ("[!!%c-%c'->%d!!] ", vnames[vec], vnames[comp], hd); */ hamwarn++;
-      else
-        /* printf ("%c-%c'->%d ",vnames[vec], vnames[comp], hd)*/;
+      for (comp = (vec + 1); comp < NUMPATS; comp++)
+        {
+          if ((hd = hamming(vectors[vec], vectors[comp], MODE_NORMAL)) < 2)
+            /* printf ("[!!%c-%c->%d!!] ", vnames[vec], vnames[comp], hd); */ hamwarn++;
+          else
+            /* printf ("%c-%c->%d ",vnames[vec], vnames[comp], hd) */;
+          if ((hd = hamming(vectors[vec], vectors[comp], MODE_COMPLEMENT)) < 2)
+            /* printf ("[!!%c-%c'->%d!!] ", vnames[vec], vnames[comp], hd); */ hamwarn++;
+          else
+            /* printf ("%c-%c'->%d ",vnames[vec], vnames[comp], hd)*/;
+        } /* for */
     } /* for */
-  }   /* for */
   /* printf("\n"); */
   if (hamwarn)
     printf(
@@ -323,26 +327,26 @@ static void generateT(int mode)
     for (col = 0; col < NNTOT; col++) Tmatrix[row][col] = 0.0;
 
   for (vec = 0; vec < 10; vec++)
-  {
-    for (row = 0; row < NNTOT; row++)
     {
-      for (col = 0; col < NNTOT; col++)
-      {
-        if (row == col)
-          Tmatrix[row][col] = 0.0;
-        else
-          Tmatrix[row][col] += vectors[vec][row] * vectors[vec][col];
-      } /* for */
-    }   /* for */
-    if (mode == MODE_TRACE)
-    {
-      storecheck();
-      printf("\nc-cont, b-break: ");
-      option = getchar();
-      getchar();
-    } /* if */
-    if (option == 'b') break;
-  } /* for */
+      for (row = 0; row < NNTOT; row++)
+        {
+          for (col = 0; col < NNTOT; col++)
+            {
+              if (row == col)
+                Tmatrix[row][col] = 0.0;
+              else
+                Tmatrix[row][col] += vectors[vec][row] * vectors[vec][col];
+            } /* for */
+        } /* for */
+      if (mode == MODE_TRACE)
+        {
+          storecheck();
+          printf("\nc-cont, b-break: ");
+          option = getchar();
+          getchar();
+        } /* if */
+      if (option == 'b') break;
+    } /* for */
 
 } /* generateT */
 
@@ -356,10 +360,10 @@ static void delta(real n)
 
   tempvecC = (real *)malloc(NNTOT * sizeof(real));
   if (!tempvecC)
-  {
-    fprintf(stderr, "ABORT: Out of memory\n");
-    exit(1);
-  }
+    {
+      fprintf(stderr, "ABORT: Out of memory\n");
+      exit(1);
+    }
   /* Set learning rate
   if (nn==-1.0) {
     printf("\nChoose value n: ");
@@ -368,34 +372,35 @@ static void delta(real n)
   */
 
   do
-  {
-    status = WTRUE;
-    for (vec = 0; vec < NUMPATS; ++vec)
     {
-      if (nmode == MODE_BIN)
-        run(vectors[vec], newvectors[vec]);
-      else
-        runcont(vectors[vec], newvectors[vec]);
-
-      for (neuron = 0; neuron < NNTOT; ++neuron)
-        if ((tempvecC[neuron] =
-                 (real)(vectors[vec][neuron] - newvectors[vec][neuron]) * n) !=
-            0.0)
-          status = WFALSE;
-
-      for (row = 0; row < NNTOT; ++row)
-      {
-        for (col = 0; col < NNTOT; ++col)
+      status = WTRUE;
+      for (vec = 0; vec < NUMPATS; ++vec)
         {
-          if (row == col)
-            Tmatrix[row][col] = 0.0;
+          if (nmode == MODE_BIN)
+            run(vectors[vec], newvectors[vec]);
           else
-            Tmatrix[row][col] += tempvecC[row] * (real)(vectors[vec][col]);
-        } /* for */
-      }   /* for */
+            runcont(vectors[vec], newvectors[vec]);
 
-    } /* for */
-  } while (!status);
+          for (neuron = 0; neuron < NNTOT; ++neuron)
+            if ((tempvecC[neuron] =
+                     (real)(vectors[vec][neuron] - newvectors[vec][neuron]) * n) !=
+                0.0)
+              status = WFALSE;
+
+          for (row = 0; row < NNTOT; ++row)
+            {
+              for (col = 0; col < NNTOT; ++col)
+                {
+                  if (row == col)
+                    Tmatrix[row][col] = 0.0;
+                  else
+                    Tmatrix[row][col] += tempvecC[row] * (real)(vectors[vec][col]);
+                } /* for */
+            } /* for */
+
+        } /* for */
+    }
+  while (!status);
 
 } /* delta */
 
@@ -413,35 +418,35 @@ static int run(signed int *source, signed int *dest)
   tempvecB = (int *)malloc(NNTOT * sizeof(int));
 
   if (!tempvecA || !tempvecB)
-  {
-    fprintf(stderr, "ABORT: Out of memory\n");
-    exit(1);
-  }
+    {
+      fprintf(stderr, "ABORT: Out of memory\n");
+      exit(1);
+    }
 
   for (neuron = 0; neuron < NNTOT; neuron++) tempvecA[neuron] = source[neuron];
 
   while ((!stable) && (max < 500))
-  {
-    for (row = 0; row < NNTOT; row++)
     {
-      thesum = 0;
+      for (row = 0; row < NNTOT; row++)
+        {
+          thesum = 0;
+          for (neuron = 0; neuron < NNTOT; neuron++)
+            thesum += Tmatrix[row][neuron] * tempvecA[neuron];
+          tempvecB[row] = (thesum >= 0) ? 1 : -1;
+        } /* for */
       for (neuron = 0; neuron < NNTOT; neuron++)
-        thesum += Tmatrix[row][neuron] * tempvecA[neuron];
-      tempvecB[row] = (thesum >= 0) ? 1 : -1;
-    } /* for */
-    for (neuron = 0; neuron < NNTOT; neuron++)
-      if (tempvecA[neuron] == 0) tempvecA[neuron] = tempvecB[neuron];
-    if (hamming(tempvecB, tempvecA, MODE_NORMAL) == 0)
-      stable = WTRUE;
-    else
-    {
-      neuron = 0;
-      while ((neuron < NNTOT) && (tempvecB[neuron] == tempvecA[neuron]))
-        neuron++;
-      tempvecA[neuron] = tempvecB[neuron];
-    } /* else */
-    max++;
-  } /* while */
+        if (tempvecA[neuron] == 0) tempvecA[neuron] = tempvecB[neuron];
+      if (hamming(tempvecB, tempvecA, MODE_NORMAL) == 0)
+        stable = WTRUE;
+      else
+        {
+          neuron = 0;
+          while ((neuron < NNTOT) && (tempvecB[neuron] == tempvecA[neuron]))
+            neuron++;
+          tempvecA[neuron] = tempvecB[neuron];
+        } /* else */
+      max++;
+    } /* while */
 
   if (max == 500)
     printf("Warning! No stable state reached after 500 iterations, aborting!");
@@ -463,26 +468,26 @@ static void readvector(FILE *fp)
 
   srow = (char *)malloc((NNWIDTH + 2) * sizeof(char));
   if (!srow)
-  {
-    fprintf(stderr, "ABORT: Out of memory\n");
-    exit(1);
-  }
+    {
+      fprintf(stderr, "ABORT: Out of memory\n");
+      exit(1);
+    }
 
   for (vec = 0; vec < NUMPATS; vec++)
-  {
-    vpos = 0;
-    fscanf(fp, "%s", srow);
-    vnames[vec] = srow[0];
-    for (row = 0; row < NNHEIGHT; row++)
     {
+      vpos = 0;
       fscanf(fp, "%s", srow);
-      for (column = 0; column < NNWIDTH; column++)
-      {
-        vectors[vec][vpos] = (srow[column] == 'X') ? 1 : -1;
-        vpos++;
-      } /* for */
-    }   /* for */
-  }     /* for */
+      vnames[vec] = srow[0];
+      for (row = 0; row < NNHEIGHT; row++)
+        {
+          fscanf(fp, "%s", srow);
+          for (column = 0; column < NNWIDTH; column++)
+            {
+              vectors[vec][vpos] = (srow[column] == 'X') ? 1 : -1;
+              vpos++;
+            } /* for */
+        } /* for */
+    } /* for */
   fclose(fp);
 
   printf("Vectors read from file!\n");
@@ -503,10 +508,10 @@ static void storecheck()
 
   iter = (int *)malloc((NUMPATS) * sizeof(int));
   if (!iter)
-  {
-    fprintf(stderr, "ABORT: Out of memory\n");
-    exit(1);
-  }
+    {
+      fprintf(stderr, "ABORT: Out of memory\n");
+      exit(1);
+    }
 
   for (vec = 0; vec < NUMPATS; vec++)
     if (nmode == MODE_BIN)
@@ -518,18 +523,18 @@ static void storecheck()
      printvec(newvectors); */
 
   for (vec = 0; vec < NUMPATS; vec++)
-  {
-    if ((hd = hamming(vectors[vec], newvectors[vec], MODE_NORMAL)) == 0)
     {
-      stored[vec] = 1;
-      printf("Pattern %d stored.\n", vec);
-    }
-    else
-    {
-      stored[vec] = 0;
-      printf("Pattern %d: hamming distance=%-.2d.\n", vec, hd);
-    }
-  } /* for */
+      if ((hd = hamming(vectors[vec], newvectors[vec], MODE_NORMAL)) == 0)
+        {
+          stored[vec] = 1;
+          printf("Pattern %d stored.\n", vec);
+        }
+      else
+        {
+          stored[vec] = 0;
+          printf("Pattern %d: hamming distance=%-.2d.\n", vec, hd);
+        }
+    } /* for */
 
   /*
   printf("\nNumber of iterations used:\n");
@@ -549,20 +554,20 @@ static void printvec(int vecs[][])
   int row, vec, neuron;
 
   for (row = 0; row < NNHEIGHT; row++)
-  {
-    for (vec = 0; vec < NUMPATS; vec++)
     {
-      for (neuron = 0; neuron < NNWIDTH; neuron++)
-      {
-        if (vecs[vec][row * NNWIDTH + neuron] == 1)
-          putchar('X');
-        else
-          putchar('.');
-      } /* for */
-      printf("  ");
+      for (vec = 0; vec < NUMPATS; vec++)
+        {
+          for (neuron = 0; neuron < NNWIDTH; neuron++)
+            {
+              if (vecs[vec][row * NNWIDTH + neuron] == 1)
+                putchar('X');
+              else
+                putchar('.');
+            } /* for */
+          printf("  ");
+        } /* for */
+      putchar('\n');
     } /* for */
-    putchar('\n');
-  } /* for */
   putchar('\n');
 } /* printvec */
 #endif
@@ -576,10 +581,10 @@ static void printT()
   printf("The T-matrix:\n");
 
   for (row = 0; row < NNTOT; row++)
-  {
-    for (col = 0; col < NNTOT; col++) printf("%.1f ", Tmatrix[row][col]);
-    putchar('\n');
-  } /* for */
+    {
+      for (col = 0; col < NNTOT; col++) printf("%.1f ", Tmatrix[row][col]);
+      putchar('\n');
+    } /* for */
 
   putchar('\n');
 } /* printT */
@@ -611,10 +616,10 @@ static void unlearn(int seed, int iter)
 
   tempvec = (real *)malloc((NNTOT) * sizeof(real));
   if (!tempvec)
-  {
-    fprintf(stderr, "ABORT: Out of memory\n");
-    exit(1);
-  }
+    {
+      fprintf(stderr, "ABORT: Out of memory\n");
+      exit(1);
+    }
 
   /*
   printf("\nRandom seed: ");
@@ -628,20 +633,20 @@ static void unlearn(int seed, int iter)
   mysrand(seed);
 
   for (vecs = 0; vecs < iter; vecs++)
-  {
-    for (neuron = 0; neuron < NNTOT; neuron++)
-      tempvec[neuron] = (myrand() >= 0.5) ? 1 : -1;
-    for (row = 0; row < NNTOT; row++)
     {
-      for (col = 0; col < NNTOT; col++)
-      {
-        if (row == col)
-          Tmatrix[row][col] = 0.0;
-        else
-          Tmatrix[row][col] += 0.01 * tempvec[row] * tempvec[col];
-      } /* for */
-    }   /* for */
-  }     /* for */
+      for (neuron = 0; neuron < NNTOT; neuron++)
+        tempvec[neuron] = (myrand() >= 0.5) ? 1 : -1;
+      for (row = 0; row < NNTOT; row++)
+        {
+          for (col = 0; col < NNTOT; col++)
+            {
+              if (row == col)
+                Tmatrix[row][col] = 0.0;
+              else
+                Tmatrix[row][col] += 0.01 * tempvec[row] * tempvec[col];
+            } /* for */
+        } /* for */
+    } /* for */
 
 } /* unlearn */
 
@@ -659,36 +664,37 @@ static void makegenerators(int n)
   probe = (int *)malloc((NNTOT) * sizeof(int));
   dest = (int *)malloc((NNTOT) * sizeof(int));
   if (!probe || !dest)
-  {
-    fprintf(stderr, "ABORT: Out of memory\n");
-    exit(1);
-  }
+    {
+      fprintf(stderr, "ABORT: Out of memory\n");
+      exit(1);
+    }
 
   for (vec = 0; vec < NUMPATS; vec++)
     for (neuron = 0; neuron < NNTOT; neuron++) generators[vec][neuron] = 0;
 
   for (vec = 0; vec < NUMPATS; vec++)
-  {
-    if (hamming(vectors[vec], newvectors[vec], MODE_NORMAL) == 0)
     {
-      generator = 0;
-      for (neuron = 0; neuron < NNTOT; neuron++) probe[neuron] = 0;
-      do
-      {
-        probe[generator] = newvectors[vec][generator];
-        if (nmode == MODE_BIN)
-          run(probe, dest);
-        else
-          runcont(probe, dest);
-        generator++;
-      } while ((hamming(dest, newvectors[vec], MODE_NORMAL) != 0) &&
-               (generator < NNTOT));
-      for (neuron = 0; neuron < NNTOT; neuron++)
-        generators[vec][neuron] = probe[neuron];
-      count++;
-      if (count >= n) break;
-    } /* if */
-  }   /* for */
+      if (hamming(vectors[vec], newvectors[vec], MODE_NORMAL) == 0)
+        {
+          generator = 0;
+          for (neuron = 0; neuron < NNTOT; neuron++) probe[neuron] = 0;
+          do
+            {
+              probe[generator] = newvectors[vec][generator];
+              if (nmode == MODE_BIN)
+                run(probe, dest);
+              else
+                runcont(probe, dest);
+              generator++;
+            }
+          while ((hamming(dest, newvectors[vec], MODE_NORMAL) != 0) &&
+                 (generator < NNTOT));
+          for (neuron = 0; neuron < NNTOT; neuron++)
+            generators[vec][neuron] = probe[neuron];
+          count++;
+          if (count >= n) break;
+        } /* if */
+    } /* for */
 } /* generators */
 
 /* Proves that the generators works by computing the original vector from the
@@ -702,18 +708,18 @@ static void usegenerators(int n)
     for (neuron = 0; neuron < NNTOT; neuron++) genvec[vec][neuron] = 0;
 
   for (vec = 0; vec < NUMPATS; vec++)
-  {
-    if (generators[vec][0] != 0)
     {
-      printV(vec, generators[vec]);
-      if (nmode == MODE_BIN)
-        run(generators[vec], genvec[vec]);
-      else
-        runcont(generators[vec], genvec[vec]);
-    } /* if */
-    if (stored[vec]) count++;
-    if (count >= n) break;
-  }
+      if (generators[vec][0] != 0)
+        {
+          printV(vec, generators[vec]);
+          if (nmode == MODE_BIN)
+            run(generators[vec], genvec[vec]);
+          else
+            runcont(generators[vec], genvec[vec]);
+        } /* if */
+      if (stored[vec]) count++;
+      if (count >= n) break;
+    }
   printf("\nThe vectors recreated using the generators:\n");
   printvec(genvec);
   putchar('\n');
@@ -735,56 +741,56 @@ static int runcont(signed int source[], signed int dest[])
   tempvecA = (real *)malloc((NNTOT) * sizeof(real));
   tempvecC = (signed int *)malloc((NNTOT) * sizeof(signed int));
   if (!tempvecA || !tempvecC)
-  {
-    fprintf(stderr, "ABORT: Out of memory\n");
-    exit(1);
-  }
+    {
+      fprintf(stderr, "ABORT: Out of memory\n");
+      exit(1);
+    }
 
   for (neuron = 0; neuron < NNTOT; neuron++)
     tempvecA[neuron] = dest[neuron] = source[neuron];
 
   while ((!stable) && (max < 500))
-  {
-    maxcont = 0;
-    for (row = 0; row < NNTOT; row++)
     {
-      thesum = 0.0;
-      for (neuron = 0; neuron < NNTOT; neuron++)
-        thesum += Tmatrix[row][neuron] * source[neuron];
-      tempvecA[row] =
-          (1.0 - myexp(-1.0 * thesum)) / (1.0 + myexp(-1.0 * thesum));
-    } /* for */
-    while ((!threshold) && (maxcont < 50))
-    {
-      threshold = WTRUE;
+      maxcont = 0;
       for (row = 0; row < NNTOT; row++)
-      {
-        if (fabs(tempvecA[row]) < 0.7)
         {
           thesum = 0.0;
           for (neuron = 0; neuron < NNTOT; neuron++)
-            thesum += Tmatrix[row][neuron] * tempvecA[neuron];
-          if ((tempvecA[row] = (1.0 - myexp(-1.0 * thesum)) /
-                               (1.0 + myexp(-1.0 * thesum))) < 0.7)
-            threshold = WFALSE;
-        } /* if */
-      }
-      maxcont++;
-    } /* while */
-    for (neuron = 0; neuron < NNTOT; neuron++)
-      tempvecC[neuron] = (tempvecA[neuron] > 0) ? 1 : -1;
-    if (hamming(dest, tempvecC, MODE_NORMAL) == 0)
-      stable = WTRUE;
-    else
-    {
-      neuron = 0;
-      while ((neuron < NNTOT) && (dest[neuron] == tempvecC[neuron])) neuron++;
-      dest[neuron] = tempvecC[neuron];
+            thesum += Tmatrix[row][neuron] * source[neuron];
+          tempvecA[row] =
+              (1.0 - myexp(-1.0 * thesum)) / (1.0 + myexp(-1.0 * thesum));
+        } /* for */
+      while ((!threshold) && (maxcont < 50))
+        {
+          threshold = WTRUE;
+          for (row = 0; row < NNTOT; row++)
+            {
+              if (fabs(tempvecA[row]) < 0.7)
+                {
+                  thesum = 0.0;
+                  for (neuron = 0; neuron < NNTOT; neuron++)
+                    thesum += Tmatrix[row][neuron] * tempvecA[neuron];
+                  if ((tempvecA[row] = (1.0 - myexp(-1.0 * thesum)) /
+                                       (1.0 + myexp(-1.0 * thesum))) < 0.7)
+                    threshold = WFALSE;
+                } /* if */
+            }
+          maxcont++;
+        } /* while */
       for (neuron = 0; neuron < NNTOT; neuron++)
-        tempvecA[neuron] = dest[neuron];
-    } /* else */
-    max++;
-  } /* while */
+        tempvecC[neuron] = (tempvecA[neuron] > 0) ? 1 : -1;
+      if (hamming(dest, tempvecC, MODE_NORMAL) == 0)
+        stable = WTRUE;
+      else
+        {
+          neuron = 0;
+          while ((neuron < NNTOT) && (dest[neuron] == tempvecC[neuron])) neuron++;
+          dest[neuron] = tempvecC[neuron];
+          for (neuron = 0; neuron < NNTOT; neuron++)
+            tempvecA[neuron] = dest[neuron];
+        } /* else */
+      max++;
+    } /* while */
 
   if (max == 500)
     printf("Warning! No stable state reached after 500 iterations!");

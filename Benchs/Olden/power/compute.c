@@ -42,14 +42,14 @@ void Compute_Tree(Root r)
   tmp.P = 0.0;
   tmp.Q = 0.0;
   for (i = 0; i < NUM_FEEDERS; i++)
-  {
-    l = r->feeders[i];
-    theta_R = r->theta_R;
-    theta_I = r->theta_I;
-    a = Compute_Lateral(l, theta_R, theta_I, theta_R, theta_I);
-    tmp.P += a.P;
-    tmp.Q += a.Q;
-  }
+    {
+      l = r->feeders[i];
+      theta_R = r->theta_R;
+      theta_I = r->theta_I;
+      a = Compute_Lateral(l, theta_R, theta_I, theta_R, theta_I);
+      tmp.P += a.P;
+      tmp.Q += a.Q;
+    }
   r->D.P = tmp.P;
   r->D.Q = tmp.Q;
 }
@@ -69,23 +69,23 @@ Demand Compute_Lateral(Lateral l, double theta_R, double theta_I, double pi_R,
 
   next = l->next_lateral;
   if (next != NULL)
-  {
-    a1 = Compute_Lateral(next, theta_R, theta_I, new_pi_R, new_pi_I);
-  }
+    {
+      a1 = Compute_Lateral(next, theta_R, theta_I, new_pi_R, new_pi_I);
+    }
 
   br = l->branch;
   a2 = Compute_Branch(br, theta_R, theta_I, new_pi_R, new_pi_I);
 
   if (next != NULL)
-  {
-    l->D.P = a1.P + a2.P;
-    l->D.Q = a1.Q + a2.Q;
-  }
+    {
+      l->D.P = a1.P + a2.P;
+      l->D.Q = a1.Q + a2.Q;
+    }
   else
-  {
-    l->D.P = a2.P;
-    l->D.Q = a2.Q;
-  }
+    {
+      l->D.P = a2.P;
+      l->D.Q = a2.Q;
+    }
 
   /* compute P,Q */
   a = l->R * l->R + l->X * l->X;
@@ -120,31 +120,31 @@ Demand Compute_Branch(Branch br, double theta_R, double theta_I, double pi_R,
 
   next = br->next_branch;
   if (next != NULL)
-  {
-    a1 = Compute_Branch(next, theta_R, theta_I, new_pi_R, new_pi_I);
-  }
+    {
+      a1 = Compute_Branch(next, theta_R, theta_I, new_pi_R, new_pi_I);
+    }
 
   /* Initialize tmp */
   tmp.P = 0.0;
   tmp.Q = 0.0;
 
   for (i = 0; i < LEAVES_PER_BRANCH; i++)
-  {
-    l = br->leaves[i];
-    a2 = Compute_Leaf(l, new_pi_R, new_pi_I);
-    tmp.P += a2.P;
-    tmp.Q += a2.Q;
-  }
+    {
+      l = br->leaves[i];
+      a2 = Compute_Leaf(l, new_pi_R, new_pi_I);
+      tmp.P += a2.P;
+      tmp.Q += a2.Q;
+    }
   if (next != NULL)
-  {
-    br->D.P = a1.P + tmp.P;
-    br->D.Q = a1.Q + tmp.Q;
-  }
+    {
+      br->D.P = a1.P + tmp.P;
+      br->D.Q = a1.Q + tmp.Q;
+    }
   else
-  {
-    br->D.P = tmp.P;
-    br->D.Q = tmp.Q;
-  }
+    {
+      br->D.P = tmp.P;
+      br->D.Q = tmp.Q;
+    }
 
   /* compute P,Q */
   a = br->R * br->R + br->X * br->X;
@@ -171,10 +171,10 @@ Demand Compute_Leaf(Leaf l, double pi_R, double pi_I)
   optimize_node(pi_R, pi_I);
 
   if (P < 0.0)
-  {
-    P = 0.0;
-    Q = 0.0;
-  }
+    {
+      P = 0.0;
+      Q = 0.0;
+    }
   l->D.P = P;
   l->D.Q = Q;
   return l->D;
@@ -198,65 +198,65 @@ void optimize_node(double pi_R, double pi_I)
   double max_dist;
 
   do
-  {
-    /* Move onto h=0 line */
-    h = find_h();
-    if (fabs(h) > H_EPSILON)
     {
-      magnitude = find_gradient_h(grad_h);
-      total = h / magnitude;
-      P -= total * grad_h[0];
-      Q -= total * grad_h[1];
-    }
+      /* Move onto h=0 line */
+      h = find_h();
+      if (fabs(h) > H_EPSILON)
+        {
+          magnitude = find_gradient_h(grad_h);
+          total = h / magnitude;
+          P -= total * grad_h[0];
+          Q -= total * grad_h[1];
+        }
 
-    /* Check that g is still valid */
-    g = find_g();
-    if (g > G_EPSILON)
-    {
-      magnitude = find_gradient_g(grad_g);
+      /* Check that g is still valid */
+      g = find_g();
+      if (g > G_EPSILON)
+        {
+          magnitude = find_gradient_g(grad_g);
+          find_gradient_h(grad_h);
+          magnitude *= make_orthogonal(grad_g, grad_h);
+          total = g / magnitude;
+          P -= total * grad_g[0];
+          Q -= total * grad_g[1];
+        }
+
+      /* Maximize benefit */
+      magnitude = find_gradient_f(pi_R, pi_I, grad_f);
+      find_dd_grad_f(pi_R, pi_I, dd_grad_f);
+      total = 0.0;
+      for (i = 0; i < 2; i++)
+        {
+          total += grad_f[i] * dd_grad_f[i];
+        }
+      magnitude /= fabs(total);
       find_gradient_h(grad_h);
-      magnitude *= make_orthogonal(grad_g, grad_h);
-      total = g / magnitude;
-      P -= total * grad_g[0];
-      Q -= total * grad_g[1];
-    }
+      magnitude *= make_orthogonal(grad_f, grad_h);
+      find_gradient_g(grad_g);
+      total = 0.0;
+      for (i = 0; i < 2; i++)
+        {
+          total += grad_f[i] * grad_g[i];
+        }
+      if (total > 0)
+        {
+          max_dist = -find_g() / total;
+          if (magnitude > max_dist)
+            {
+              magnitude = max_dist;
+            }
+        }
+      P += magnitude * grad_f[0];
+      Q += magnitude * grad_f[1];
 
-    /* Maximize benefit */
-    magnitude = find_gradient_f(pi_R, pi_I, grad_f);
-    find_dd_grad_f(pi_R, pi_I, dd_grad_f);
-    total = 0.0;
-    for (i = 0; i < 2; i++)
-    {
-      total += grad_f[i] * dd_grad_f[i];
+      h = find_h();
+      g = find_g();
+      find_gradient_f(pi_R, pi_I, grad_f);
+      find_gradient_h(grad_h);
     }
-    magnitude /= fabs(total);
-    find_gradient_h(grad_h);
-    magnitude *= make_orthogonal(grad_f, grad_h);
-    find_gradient_g(grad_g);
-    total = 0.0;
-    for (i = 0; i < 2; i++)
-    {
-      total += grad_f[i] * grad_g[i];
-    }
-    if (total > 0)
-    {
-      max_dist = -find_g() / total;
-      if (magnitude > max_dist)
-      {
-        magnitude = max_dist;
-      }
-    }
-    P += magnitude * grad_f[0];
-    Q += magnitude * grad_f[1];
-
-    h = find_h();
-    g = find_g();
-    find_gradient_f(pi_R, pi_I, grad_f);
-    find_gradient_h(grad_h);
-
-  } while (fabs(h) > H_EPSILON || g > G_EPSILON ||
-           (fabs(g) > G_EPSILON &&
-            fabs(grad_f[0] * grad_h[1] - grad_f[1] * grad_h[0]) > F_EPSILON));
+  while (fabs(h) > H_EPSILON || g > G_EPSILON ||
+         (fabs(g) > G_EPSILON &&
+          fabs(grad_f[0] * grad_h[1] - grad_f[1] * grad_h[0]) > F_EPSILON));
 }
 
 double find_g() { return (P * P + Q * Q - 0.8); }
@@ -269,14 +269,14 @@ double find_gradient_f(double pi_R, double pi_I, double* gradient)
   gradient[0] = 1 / (1 + P) - pi_R;
   gradient[1] = 1 / (1 + Q) - pi_I;
   for (i = 0; i < 2; i++)
-  {
-    magnitude += gradient[i] * gradient[i];
-  }
+    {
+      magnitude += gradient[i] * gradient[i];
+    }
   magnitude = sqrt(magnitude);
   for (i = 0; i < 2; i++)
-  {
-    gradient[i] /= magnitude;
-  }
+    {
+      gradient[i] /= magnitude;
+    }
 
   return magnitude;
 }
@@ -289,14 +289,14 @@ double find_gradient_g(double* gradient)
   gradient[0] = 2 * P;
   gradient[1] = 2 * Q;
   for (i = 0; i < 2; i++)
-  {
-    magnitude += gradient[i] * gradient[i];
-  }
+    {
+      magnitude += gradient[i] * gradient[i];
+    }
   magnitude = sqrt(magnitude);
   for (i = 0; i < 2; i++)
-  {
-    gradient[i] /= magnitude;
-  }
+    {
+      gradient[i] /= magnitude;
+    }
 
   return magnitude;
 }
@@ -309,14 +309,14 @@ double find_gradient_h(double* gradient)
   gradient[0] = 1.0;
   gradient[1] = -5.0;
   for (i = 0; i < 2; i++)
-  {
-    magnitude += gradient[i] * gradient[i];
-  }
+    {
+      magnitude += gradient[i] * gradient[i];
+    }
   magnitude = sqrt(magnitude);
   for (i = 0; i < 2; i++)
-  {
-    gradient[i] /= magnitude;
-  }
+    {
+      gradient[i] /= magnitude;
+    }
 
   return magnitude;
 }
@@ -342,24 +342,24 @@ double make_orthogonal(double* v_mod, double* v_static)
   double length = 0.0;
 
   for (i = 0; i < 2; i++)
-  {
-    total += v_mod[i] * v_static[i];
-  }
+    {
+      total += v_mod[i] * v_static[i];
+    }
   for (i = 0; i < 2; i++)
-  {
-    v_mod[i] -= total * v_static[i];
-    length += v_mod[i] * v_mod[i];
-  }
+    {
+      v_mod[i] -= total * v_static[i];
+      length += v_mod[i] * v_mod[i];
+    }
   length = sqrt(length);
   for (i = 0; i < 2; i++)
-  {
-    v_mod[i] /= length;
-  }
+    {
+      v_mod[i] /= length;
+    }
 
   if (1 - total * total < 0)
-  { /* Roundoff error--vectors are parallel */
-    return 0;
-  }
+    { /* Roundoff error--vectors are parallel */
+      return 0;
+    }
 
   return sqrt(1 - total * total);
 }

@@ -22,7 +22,7 @@ extern void *malloc JPP((size_t size));
 extern void free JPP((void *ptr));
 #endif
 
-#ifndef SEEK_SET   /* pre-ANSI systems may not define this; */
+#ifndef SEEK_SET /* pre-ANSI systems may not define this; */
 #define SEEK_SET 0 /* if not, assume 0 is correct */
 #endif
 
@@ -70,7 +70,7 @@ jpeg_free_large(j_common_ptr cinfo, void FAR *object, size_t sizeofobject)
  * a slop factor of 5% or so.
  */
 
-#ifndef DEFAULT_MAX_MEM          /* so can override from makefile */
+#ifndef DEFAULT_MAX_MEM /* so can override from makefile */
 #define DEFAULT_MAX_MEM 1000000L /* default: one megabyte */
 #endif
 
@@ -93,13 +93,13 @@ read_backing_store(j_common_ptr cinfo, backing_store_ptr info,
                    void FAR *buffer_address, long file_offset, long byte_count)
 {
   if (fseek(info->temp_file, file_offset, SEEK_SET))
-  {
-    ERREXIT(cinfo, JERR_TFILE_SEEK);
-  }
+    {
+      ERREXIT(cinfo, JERR_TFILE_SEEK);
+    }
   if (JFREAD(info->temp_file, buffer_address, byte_count) != (size_t)byte_count)
-  {
-    ERREXIT(cinfo, JERR_TFILE_READ);
-  }
+    {
+      ERREXIT(cinfo, JERR_TFILE_READ);
+    }
 }
 
 METHODDEF(void)
@@ -107,14 +107,14 @@ write_backing_store(j_common_ptr cinfo, backing_store_ptr info,
                     void FAR *buffer_address, long file_offset, long byte_count)
 {
   if (fseek(info->temp_file, file_offset, SEEK_SET))
-  {
-    ERREXIT(cinfo, JERR_TFILE_SEEK);
-  }
+    {
+      ERREXIT(cinfo, JERR_TFILE_SEEK);
+    }
   if (JFWRITE(info->temp_file, buffer_address, byte_count) !=
       (size_t)byte_count)
-  {
-    ERREXIT(cinfo, JERR_TFILE_WRITE);
-  }
+    {
+      ERREXIT(cinfo, JERR_TFILE_WRITE);
+    }
 }
 
 METHODDEF(void)
@@ -139,9 +139,9 @@ jpeg_open_backing_store(j_common_ptr cinfo, backing_store_ptr info,
                         long total_bytes_needed)
 {
   if ((info->temp_file = tmpfile()) == NULL)
-  {
-    ERREXITS(cinfo, JERR_TFILE_CREATE, "");
-  }
+    {
+      ERREXITS(cinfo, JERR_TFILE_CREATE, "");
+    }
   info->read_backing_store = read_backing_store;
   info->write_backing_store = write_backing_store;
   info->close_backing_store = close_backing_store;
@@ -159,4 +159,6 @@ jpeg_mem_init(j_common_ptr cinfo)
 }
 
 GLOBAL(void)
-jpeg_mem_term(j_common_ptr cinfo) { /* no work */ }
+jpeg_mem_term(j_common_ptr cinfo)
+{ /* no work */
+}

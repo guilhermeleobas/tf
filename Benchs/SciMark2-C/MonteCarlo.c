@@ -46,15 +46,15 @@ double MonteCarlo_integrate(int Num_samples)
   int count;
 
   for (count = 0; count < Num_samples; count++)
-  {
-    double x = Random_nextDouble(R);
-    double y = Random_nextDouble(R);
-
-    if (x * x + y * y <= 1.0)
     {
-      under_curve++;
+      double x = Random_nextDouble(R);
+      double y = Random_nextDouble(R);
+
+      if (x * x + y * y <= 1.0)
+        {
+          under_curve++;
+        }
     }
-  }
 
   Random_delete(R);
 

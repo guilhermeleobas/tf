@@ -37,11 +37,11 @@ char *get_next_packet(int packet_number)
 
   packet_length = (packet_lengths[packet_number]);
   if (packet_length < 40)
-  {
-    /* Should never happen */
-    fprintf(stderr, "Packet not large enough, increasing the size\n");
-    packet_length = 40;
-  }
+    {
+      /* Should never happen */
+      fprintf(stderr, "Packet not large enough, increasing the size\n");
+      packet_length = 40;
+    }
 
 #ifdef CONSTANT_PACKET
   /* Packets are stored in a continuous chunk in the memory, just change the
@@ -51,10 +51,10 @@ char *get_next_packet(int packet_number)
 #else
   /* Have to call malloc to create packet memory */
   if ((packet = (char *)malloc(packet_length)) == NULL)
-  {
-    fprintf(stderr, "Not enough space to create packet data \n");
-    exit(1);
-  }
+    {
+      fprintf(stderr, "Not enough space to create packet data \n");
+      exit(1);
+    }
 
   /* Copy the header information */
   memcpy((void *)packet, (void *)headers[packet_number], HEADER_SIZE);

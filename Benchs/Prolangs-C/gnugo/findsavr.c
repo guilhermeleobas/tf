@@ -54,32 +54,32 @@ int findsaver(int *i, int *j, int *val)
   *j = -1;
   *val = -1;
   for (minlib = 1; minlib < 4; minlib++)
-  {
-    /* count piece with minimum liberty */
-    for (m = 0; m < 19; m++)
     {
-      for (n = 0; n < 19; n++)
-      {
-        if ((p[m][n] == mymove) && (l[m][n] == minlib))
-        /* find move to save pieces */
+      /* count piece with minimum liberty */
+      for (m = 0; m < 19; m++)
         {
-          initmark();
-          if (findnextmove(m, n, &ti, &tj, &tval, minlib) && (tval > *val))
-          {
-            *val = tval;
-            *i = ti;
-            *j = tj;
-          }
+          for (n = 0; n < 19; n++)
+            {
+              if ((p[m][n] == mymove) && (l[m][n] == minlib))
+                /* find move to save pieces */
+                {
+                  initmark();
+                  if (findnextmove(m, n, &ti, &tj, &tval, minlib) && (tval > *val))
+                    {
+                      *val = tval;
+                      *i = ti;
+                      *j = tj;
+                    }
+                }
+            }
         }
-      }
     }
-  }
   if (*val > 0)
-  { /* find move */
-    return 1;
-  }
+    { /* find move */
+      return 1;
+    }
   else
-  { /* move not found */
-    return 0;
-  }
+    { /* move not found */
+      return 0;
+    }
 } /* findsaver */

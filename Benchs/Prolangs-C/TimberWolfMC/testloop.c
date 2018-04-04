@@ -30,24 +30,24 @@ int testloop(int trials)
   /* numberx = (int) ( 0.1667 * (double) bdxlength * log10( 0.10 * T ));*/
   numberx = (int)(pow(4.0, log10(T)) / 1024.0 * (double)bdxlength);
   if (numberx < 3)
-  {
-    numberx = 3;
-  }
+    {
+      numberx = 3;
+    }
   else if (numberx > bdxlength)
-  {
-    numberx = bdxlength;
-  }
+    {
+      numberx = bdxlength;
+    }
 
   /* numbery = (int) ( 0.1667 * (double) bdylength * log10( 0.10 * T ));*/
   numbery = (int)(pow(4.0, log10(T)) / 1024.0 * (double)bdylength);
   if (numbery < 3)
-  {
-    numbery = 3;
-  }
+    {
+      numbery = 3;
+    }
   else if (numbery > bdylength)
-  {
-    numbery = bdylength;
-  }
+    {
+      numbery = bdylength;
+    }
   scalex = numberx / 3;
   scaley = numbery / 3;
   fprintf(fpo, "range limiter:%d units either way in x", numberx);
@@ -57,186 +57,188 @@ int testloop(int trials)
   fprintf(fpo, "scalex:%d  scaley:%d\n", scalex, scaley);
 
   while (attempts < trials)
-  {
-    do
     {
-      a = (int)((double)numcells * ((double)RAND / (double)0x7fffffff)) + 1;
-    } while (a == numcells + 1);
-
-    do
-    {
-      b = (int)((double)bigcell * ((double)RAND / (double)0x7fffffff)) + 1;
-    } while (b == toobig);
-
-    if (a == b)
-    {
-      continue;
-    }
-
-    acellptr = cellarray[a];
-    aorient = acellptr->orient;
-
-    if (b > numcells)
-    {
-      if (acellptr->class != 0)
-      {
-        continue;
-      }
-      axcenter = acellptr->xcenter;
-      aycenter = acellptr->ycenter;
-
-      ll = (blockl > axcenter - numberx)
-               ? (blockl - axcenter) / scalex
-               : ((blockr <= axcenter - numberx) ? (blockr - axcenter) / scalex
-                                                 : (-numberx / scalex));
-      rr = (blockr < axcenter + numberx)
-               ? (blockr - axcenter) / scalex
-               : ((blockl >= axcenter + numberx) ? (blockl - axcenter) / scalex
-                                                 : (numberx / scalex));
-      bb = (blockb > aycenter - numbery)
-               ? (blockb - aycenter) / scaley
-               : ((blockt <= aycenter - numbery) ? (blockt - aycenter) / scaley
-                                                 : (-numbery / scaley));
-      tt = (blockt < aycenter + numbery)
-               ? (blockt - aycenter) / scaley
-               : ((blockb >= aycenter + numbery) ? (blockb - aycenter) / scaley
-                                                 : (numbery / scaley));
-      xb = (int)((double)(rr - ll + 1) * ((double)RAND / (double)0x7fffffff)) +
-           ll;
-      yb = (int)((double)(tt - bb + 1) * ((double)RAND / (double)0x7fffffff)) +
-           bb;
-      if (xb == 0 && yb == 0)
-      {
-        continue;
-      }
-      xb = axcenter + scalex * xb;
-      yb = aycenter + scaley * yb;
-
-      if (gridGiven)
-      {
-        termptr = acellptr->config[aorient]->termptr;
-        forceGrid(xb + termptr->xpos, yb + termptr->ypos);
-        xb = newxx - termptr->xpos;
-        yb = newyy - termptr->ypos;
-      }
-
-      if (usite1(a, xb, yb))
-      {
-        attempts++;
-        totFunc += (double)funccost;
-      }
-      else
-      {
-        newaor = newOrient(acellptr, 4);
-        reject = 1;
-        if (newaor >= 0)
+      do
         {
-          if (usiteo1(a, xb, yb, newaor))
-          {
-            attempts++;
-            totFunc += (double)funccost;
-            reject = 0;
-          }
+          a = (int)((double)numcells * ((double)RAND / (double)0x7fffffff)) + 1;
         }
-        if (reject)
+      while (a == numcells + 1);
+
+      do
         {
-          newaor = newOrient(acellptr, 8);
-          if (newaor >= 0)
-          {
-            if (usite0(a, newaor))
+          b = (int)((double)bigcell * ((double)RAND / (double)0x7fffffff)) + 1;
+        }
+      while (b == toobig);
+
+      if (a == b)
+        {
+          continue;
+        }
+
+      acellptr = cellarray[a];
+      aorient = acellptr->orient;
+
+      if (b > numcells)
+        {
+          if (acellptr->class != 0)
+            {
+              continue;
+            }
+          axcenter = acellptr->xcenter;
+          aycenter = acellptr->ycenter;
+
+          ll = (blockl > axcenter - numberx)
+                   ? (blockl - axcenter) / scalex
+                   : ((blockr <= axcenter - numberx) ? (blockr - axcenter) / scalex
+                                                     : (-numberx / scalex));
+          rr = (blockr < axcenter + numberx)
+                   ? (blockr - axcenter) / scalex
+                   : ((blockl >= axcenter + numberx) ? (blockl - axcenter) / scalex
+                                                     : (numberx / scalex));
+          bb = (blockb > aycenter - numbery)
+                   ? (blockb - aycenter) / scaley
+                   : ((blockt <= aycenter - numbery) ? (blockt - aycenter) / scaley
+                                                     : (-numbery / scaley));
+          tt = (blockt < aycenter + numbery)
+                   ? (blockt - aycenter) / scaley
+                   : ((blockb >= aycenter + numbery) ? (blockb - aycenter) / scaley
+                                                     : (numbery / scaley));
+          xb = (int)((double)(rr - ll + 1) * ((double)RAND / (double)0x7fffffff)) +
+               ll;
+          yb = (int)((double)(tt - bb + 1) * ((double)RAND / (double)0x7fffffff)) +
+               bb;
+          if (xb == 0 && yb == 0)
+            {
+              continue;
+            }
+          xb = axcenter + scalex * xb;
+          yb = aycenter + scaley * yb;
+
+          if (gridGiven)
+            {
+              termptr = acellptr->config[aorient]->termptr;
+              forceGrid(xb + termptr->xpos, yb + termptr->ypos);
+              xb = newxx - termptr->xpos;
+              yb = newyy - termptr->ypos;
+            }
+
+          if (usite1(a, xb, yb))
             {
               attempts++;
               totFunc += (double)funccost;
-              reject = 0;
             }
-          }
+          else
+            {
+              newaor = newOrient(acellptr, 4);
+              reject = 1;
+              if (newaor >= 0)
+                {
+                  if (usiteo1(a, xb, yb, newaor))
+                    {
+                      attempts++;
+                      totFunc += (double)funccost;
+                      reject = 0;
+                    }
+                }
+              if (reject)
+                {
+                  newaor = newOrient(acellptr, 8);
+                  if (newaor >= 0)
+                    {
+                      if (usite0(a, newaor))
+                        {
+                          attempts++;
+                          totFunc += (double)funccost;
+                          reject = 0;
+                        }
+                    }
+                }
+            }
         }
-      }
-    }
-    else
-    { /*   b <= numcells   */
-      bcellptr = cellarray[b];
-      if (acellptr->class == -1 || bcellptr->class == -1 ||
-          acellptr->class != bcellptr->class)
-      {
-        continue;
-      }
-      if (gridGiven)
-      {
-        /*
+      else
+        { /*   b <= numcells   */
+          bcellptr = cellarray[b];
+          if (acellptr->class == -1 || bcellptr->class == -1 ||
+              acellptr->class != bcellptr->class)
+            {
+              continue;
+            }
+          if (gridGiven)
+            {
+              /*
          *   Force pin 1 to lie on the underlying grid, specified
          *   by:  n * (grid) + offset , in each direction.
          */
-        btermptr = bcellptr->config[bcellptr->orient]->termptr;
-        termptr = acellptr->config[aorient]->termptr;
-        forceGrid(bcellptr->xcenter + termptr->xpos,
-                  bcellptr->ycenter + termptr->ypos);
-        ax = newxx - termptr->xpos;
-        ay = newyy - termptr->ypos;
-        forceGrid(acellptr->xcenter + btermptr->xpos,
-                  acellptr->ycenter + btermptr->ypos);
-        bx = newxx - btermptr->xpos;
-        by = newyy - btermptr->ypos;
-      }
-      else
-      {
-        ax = bcellptr->xcenter;
-        ay = bcellptr->ycenter;
-        bx = acellptr->xcenter;
-        by = acellptr->ycenter;
-      }
+              btermptr = bcellptr->config[bcellptr->orient]->termptr;
+              termptr = acellptr->config[aorient]->termptr;
+              forceGrid(bcellptr->xcenter + termptr->xpos,
+                        bcellptr->ycenter + termptr->ypos);
+              ax = newxx - termptr->xpos;
+              ay = newyy - termptr->ypos;
+              forceGrid(acellptr->xcenter + btermptr->xpos,
+                        acellptr->ycenter + btermptr->ypos);
+              bx = newxx - btermptr->xpos;
+              by = newyy - btermptr->ypos;
+            }
+          else
+            {
+              ax = bcellptr->xcenter;
+              ay = bcellptr->ycenter;
+              bx = acellptr->xcenter;
+              by = acellptr->ycenter;
+            }
 
-      if (usite2(a, b, ax, ay, bx, by))
-      {
-        attempts++;
-        totFunc += (double)funccost;
-      }
-      else
-      {
-        /*
+          if (usite2(a, b, ax, ay, bx, by))
+            {
+              attempts++;
+              totFunc += (double)funccost;
+            }
+          else
+            {
+              /*
             try again with opposite orientation types
         */
-        newaor = newOrient(acellptr, 4);
-        borient = cellarray[b]->orient;
-        newbor = newOrient(cellarray[b], 4);
-        if (newaor >= 0 || newbor >= 0)
-        {
-          if (newaor < 0)
-          {
-            newaor = aorient;
-          }
-          else if (newbor < 0)
-          {
-            newbor = borient;
-          }
-          if (gridGiven)
-          {
-            btermptr = bcellptr->config[newbor]->termptr;
-            termptr = acellptr->config[newaor]->termptr;
-            forceGrid(bcellptr->xcenter + termptr->xpos,
-                      bcellptr->ycenter + termptr->ypos);
-            ax = newxx - termptr->xpos;
-            ay = newyy - termptr->ypos;
-            forceGrid(acellptr->xcenter + btermptr->xpos,
-                      acellptr->ycenter + btermptr->ypos);
-            bx = newxx - btermptr->xpos;
-            by = newyy - btermptr->ypos;
-          }
-          else
-          {
-            ax = bcellptr->xcenter;
-            ay = bcellptr->ycenter;
-            bx = acellptr->xcenter;
-            by = acellptr->ycenter;
-          }
-          if (usiteo2(a, b, ax, ay, bx, by, newaor, newbor))
-          {
-            attempts++;
-            totFunc += (double)funccost;
-          }
+              newaor = newOrient(acellptr, 4);
+              borient = cellarray[b]->orient;
+              newbor = newOrient(cellarray[b], 4);
+              if (newaor >= 0 || newbor >= 0)
+                {
+                  if (newaor < 0)
+                    {
+                      newaor = aorient;
+                    }
+                  else if (newbor < 0)
+                    {
+                      newbor = borient;
+                    }
+                  if (gridGiven)
+                    {
+                      btermptr = bcellptr->config[newbor]->termptr;
+                      termptr = acellptr->config[newaor]->termptr;
+                      forceGrid(bcellptr->xcenter + termptr->xpos,
+                                bcellptr->ycenter + termptr->ypos);
+                      ax = newxx - termptr->xpos;
+                      ay = newyy - termptr->ypos;
+                      forceGrid(acellptr->xcenter + btermptr->xpos,
+                                acellptr->ycenter + btermptr->ypos);
+                      bx = newxx - btermptr->xpos;
+                      by = newyy - btermptr->ypos;
+                    }
+                  else
+                    {
+                      ax = bcellptr->xcenter;
+                      ay = bcellptr->ycenter;
+                      bx = acellptr->xcenter;
+                      by = acellptr->ycenter;
+                    }
+                  if (usiteo2(a, b, ax, ay, bx, by, newaor, newbor))
+                    {
+                      attempts++;
+                      totFunc += (double)funccost;
+                    }
+                }
+            }
         }
-      }
     }
-  }
   return (attempts);
 }

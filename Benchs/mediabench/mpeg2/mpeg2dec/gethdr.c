@@ -86,34 +86,34 @@ int Get_Hdr()
   unsigned int code;
 
   for (;;)
-  {
-    /* look for next_start_code */
-    next_start_code();
-    code = Get_Bits32();
-
-    switch (code)
     {
-      case SEQUENCE_HEADER_CODE:
-        sequence_header();
-        break;
-      case GROUP_START_CODE:
-        group_of_pictures_header();
-        break;
-      case PICTURE_START_CODE:
-        picture_header();
-        return 1;
-        break;
-      case SEQUENCE_END_CODE:
-        return 0;
-        break;
-      default:
-        if (!Quiet_Flag)
+      /* look for next_start_code */
+      next_start_code();
+      code = Get_Bits32();
+
+      switch (code)
         {
-          fprintf(stderr, "Unexpected next_start_code %08x (ignored)\n", code);
+          case SEQUENCE_HEADER_CODE:
+            sequence_header();
+            break;
+          case GROUP_START_CODE:
+            group_of_pictures_header();
+            break;
+          case PICTURE_START_CODE:
+            picture_header();
+            return 1;
+            break;
+          case SEQUENCE_END_CODE:
+            return 0;
+            break;
+          default:
+            if (!Quiet_Flag)
+              {
+                fprintf(stderr, "Unexpected next_start_code %08x (ignored)\n", code);
+              }
+            break;
         }
-        break;
     }
-  }
 }
 
 /* align to start of next next_start_code */
@@ -123,9 +123,9 @@ void next_start_code()
   /* byte align */
   Flush_Buffer(ld->Incnt & 7);
   while (Show_Bits(24) != 0x01L)
-  {
-    Flush_Buffer(8);
-  }
+    {
+      Flush_Buffer(8);
+    }
 }
 
 /* decode sequence header */
@@ -146,63 +146,63 @@ static void sequence_header()
   constrained_parameters_flag = Get_Bits(1);
 
   if ((ld->load_intra_quantizer_matrix = Get_Bits(1)))
-  {
-    for (i = 0; i < 64; i++)
     {
-      ld->intra_quantizer_matrix[scan[ZIG_ZAG][i]] = Get_Bits(8);
+      for (i = 0; i < 64; i++)
+        {
+          ld->intra_quantizer_matrix[scan[ZIG_ZAG][i]] = Get_Bits(8);
+        }
     }
-  }
   else
-  {
-    for (i = 0; i < 64; i++)
     {
-      ld->intra_quantizer_matrix[i] = default_intra_quantizer_matrix[i];
+      for (i = 0; i < 64; i++)
+        {
+          ld->intra_quantizer_matrix[i] = default_intra_quantizer_matrix[i];
+        }
     }
-  }
 
   if ((ld->load_non_intra_quantizer_matrix = Get_Bits(1)))
-  {
-    for (i = 0; i < 64; i++)
     {
-      ld->non_intra_quantizer_matrix[scan[ZIG_ZAG][i]] = Get_Bits(8);
+      for (i = 0; i < 64; i++)
+        {
+          ld->non_intra_quantizer_matrix[scan[ZIG_ZAG][i]] = Get_Bits(8);
+        }
     }
-  }
   else
-  {
-    for (i = 0; i < 64; i++)
     {
-      ld->non_intra_quantizer_matrix[i] = 16;
+      for (i = 0; i < 64; i++)
+        {
+          ld->non_intra_quantizer_matrix[i] = 16;
+        }
     }
-  }
 
   /* copy luminance to chrominance matrices */
   for (i = 0; i < 64; i++)
-  {
-    ld->chroma_intra_quantizer_matrix[i] = ld->intra_quantizer_matrix[i];
+    {
+      ld->chroma_intra_quantizer_matrix[i] = ld->intra_quantizer_matrix[i];
 
-    ld->chroma_non_intra_quantizer_matrix[i] =
-        ld->non_intra_quantizer_matrix[i];
-  }
+      ld->chroma_non_intra_quantizer_matrix[i] =
+          ld->non_intra_quantizer_matrix[i];
+    }
 
 #ifdef VERBOSE
   if (Verbose_Flag > NO_LAYER)
-  {
-    printf("sequence header (byte %d)\n", (pos >> 3) - 4);
-    if (Verbose_Flag > SEQUENCE_LAYER)
     {
-      printf("  horizontal_size=%d\n", horizontal_size);
-      printf("  vertical_size=%d\n", vertical_size);
-      printf("  aspect_ratio_information=%d\n", aspect_ratio_information);
-      printf("  frame_rate_code=%d", frame_rate_code);
-      printf("  bit_rate_value=%d\n", bit_rate_value);
-      printf("  vbv_buffer_size=%d\n", vbv_buffer_size);
-      printf("  constrained_parameters_flag=%d\n", constrained_parameters_flag);
-      printf("  load_intra_quantizer_matrix=%d\n",
-             ld->load_intra_quantizer_matrix);
-      printf("  load_non_intra_quantizer_matrix=%d\n",
-             ld->load_non_intra_quantizer_matrix);
+      printf("sequence header (byte %d)\n", (pos >> 3) - 4);
+      if (Verbose_Flag > SEQUENCE_LAYER)
+        {
+          printf("  horizontal_size=%d\n", horizontal_size);
+          printf("  vertical_size=%d\n", vertical_size);
+          printf("  aspect_ratio_information=%d\n", aspect_ratio_information);
+          printf("  frame_rate_code=%d", frame_rate_code);
+          printf("  bit_rate_value=%d\n", bit_rate_value);
+          printf("  vbv_buffer_size=%d\n", vbv_buffer_size);
+          printf("  constrained_parameters_flag=%d\n", constrained_parameters_flag);
+          printf("  load_intra_quantizer_matrix=%d\n",
+                 ld->load_intra_quantizer_matrix);
+          printf("  load_non_intra_quantizer_matrix=%d\n",
+                 ld->load_non_intra_quantizer_matrix);
+        }
     }
-  }
 #endif /* VERBOSE */
 
 #ifdef VERIFY
@@ -219,10 +219,10 @@ static void group_of_pictures_header()
   int pos;
 
   if (ld == &base)
-  {
-    Temporal_Reference_Base = True_Framenum_max + 1; /* *CH* */
-    Temporal_Reference_GOP_Reset = 1;
-  }
+    {
+      Temporal_Reference_Base = True_Framenum_max + 1; /* *CH* */
+      Temporal_Reference_GOP_Reset = 1;
+    }
   pos = ld->Bitcnt;
   drop_flag = Get_Bits(1);
   hour = Get_Bits(5);
@@ -235,16 +235,16 @@ static void group_of_pictures_header()
 
 #ifdef VERBOSE
   if (Verbose_Flag > NO_LAYER)
-  {
-    printf("group of pictures (byte %d)\n", (pos >> 3) - 4);
-    if (Verbose_Flag > SEQUENCE_LAYER)
     {
-      printf("  drop_flag=%d\n", drop_flag);
-      printf("  timecode %d:%02d:%02d:%02d\n", hour, minute, sec, frame);
-      printf("  closed_gop=%d\n", closed_gop);
-      printf("  broken_link=%d\n", broken_link);
+      printf("group of pictures (byte %d)\n", (pos >> 3) - 4);
+      if (Verbose_Flag > SEQUENCE_LAYER)
+        {
+          printf("  drop_flag=%d\n", drop_flag);
+          printf("  timecode %d:%02d:%02d:%02d\n", hour, minute, sec, frame);
+          printf("  closed_gop=%d\n", closed_gop);
+          printf("  broken_link=%d\n", broken_link);
+        }
     }
-  }
 #endif /* VERBOSE */
 
 #ifdef VERIFY
@@ -271,37 +271,37 @@ static void picture_header()
   vbv_delay = Get_Bits(16);
 
   if (picture_coding_type == P_TYPE || picture_coding_type == B_TYPE)
-  {
-    full_pel_forward_vector = Get_Bits(1);
-    forward_f_code = Get_Bits(3);
-  }
+    {
+      full_pel_forward_vector = Get_Bits(1);
+      forward_f_code = Get_Bits(3);
+    }
   if (picture_coding_type == B_TYPE)
-  {
-    full_pel_backward_vector = Get_Bits(1);
-    backward_f_code = Get_Bits(3);
-  }
+    {
+      full_pel_backward_vector = Get_Bits(1);
+      backward_f_code = Get_Bits(3);
+    }
 
 #ifdef VERBOSE
   if (Verbose_Flag > NO_LAYER)
-  {
-    printf("picture header (byte %d)\n", (pos >> 3) - 4);
-    if (Verbose_Flag > SEQUENCE_LAYER)
     {
-      printf("  temporal_reference=%d\n", temporal_reference);
-      printf("  picture_coding_type=%d\n", picture_coding_type);
-      printf("  vbv_delay=%d\n", vbv_delay);
-      if (picture_coding_type == P_TYPE || picture_coding_type == B_TYPE)
-      {
-        printf("  full_pel_forward_vector=%d\n", full_pel_forward_vector);
-        printf("  forward_f_code =%d\n", forward_f_code);
-      }
-      if (picture_coding_type == B_TYPE)
-      {
-        printf("  full_pel_backward_vector=%d\n", full_pel_backward_vector);
-        printf("  backward_f_code =%d\n", backward_f_code);
-      }
+      printf("picture header (byte %d)\n", (pos >> 3) - 4);
+      if (Verbose_Flag > SEQUENCE_LAYER)
+        {
+          printf("  temporal_reference=%d\n", temporal_reference);
+          printf("  picture_coding_type=%d\n", picture_coding_type);
+          printf("  vbv_delay=%d\n", vbv_delay);
+          if (picture_coding_type == P_TYPE || picture_coding_type == B_TYPE)
+            {
+              printf("  full_pel_forward_vector=%d\n", full_pel_forward_vector);
+              printf("  forward_f_code =%d\n", forward_f_code);
+            }
+          if (picture_coding_type == B_TYPE)
+            {
+              printf("  full_pel_backward_vector=%d\n", full_pel_backward_vector);
+              printf("  backward_f_code =%d\n", backward_f_code);
+            }
+        }
     }
-  }
 #endif /* VERBOSE */
 
 #ifdef VERIFY
@@ -334,9 +334,9 @@ int slice_header()
       (ld->MPEG2_Flag && vertical_size > 2800) ? Get_Bits(3) : 0;
 
   if (ld->scalable_mode == SC_DP)
-  {
-    ld->priority_breakpoint = Get_Bits(7);
-  }
+    {
+      ld->priority_breakpoint = Get_Bits(7);
+    }
 
   quantizer_scale_code = Get_Bits(5);
   ld->quantizer_scale =
@@ -348,40 +348,40 @@ int slice_header()
   /* slice_id introduced in March 1995 as part of the video corridendum
      (after the IS was drafted in November 1994) */
   if (Get_Bits(1))
-  {
-    ld->intra_slice = Get_Bits(1);
+    {
+      ld->intra_slice = Get_Bits(1);
 
-    slice_picture_id_enable = Get_Bits(1);
-    slice_picture_id = Get_Bits(6);
+      slice_picture_id_enable = Get_Bits(1);
+      slice_picture_id = Get_Bits(6);
 
-    extra_information_slice = extra_bit_information();
-  }
+      extra_information_slice = extra_bit_information();
+    }
   else
-  {
-    ld->intra_slice = 0;
-  }
+    {
+      ld->intra_slice = 0;
+    }
 
 #ifdef VERBOSE
   if (Verbose_Flag > PICTURE_LAYER)
-  {
-    printf("slice header (byte %d)\n", (pos >> 3) - 4);
-    if (Verbose_Flag > SLICE_LAYER)
     {
-      if (ld->MPEG2_Flag && vertical_size > 2800)
-        printf("  slice_vertical_position_extension=%d\n",
-               slice_vertical_position_extension);
+      printf("slice header (byte %d)\n", (pos >> 3) - 4);
+      if (Verbose_Flag > SLICE_LAYER)
+        {
+          if (ld->MPEG2_Flag && vertical_size > 2800)
+            printf("  slice_vertical_position_extension=%d\n",
+                   slice_vertical_position_extension);
 
-      if (ld->scalable_mode == SC_DP)
-        printf("  priority_breakpoint=%d\n", ld->priority_breakpoint);
+          if (ld->scalable_mode == SC_DP)
+            printf("  priority_breakpoint=%d\n", ld->priority_breakpoint);
 
-      printf("  quantizer_scale_code=%d\n", quantizer_scale_code);
+          printf("  quantizer_scale_code=%d\n", quantizer_scale_code);
 
-      printf("  slice_picture_id_enable = %d\n", slice_picture_id_enable);
+          printf("  slice_picture_id_enable = %d\n", slice_picture_id_enable);
 
-      if (slice_picture_id_enable)
-        printf("  slice_picture_id = %d\n", slice_picture_id);
+          if (slice_picture_id_enable)
+            printf("  slice_picture_id = %d\n", slice_picture_id);
+        }
     }
-  }
 #endif /* VERBOSE */
 
 #ifdef VERIFY
@@ -401,55 +401,55 @@ static void extension_and_user_data()
 
   while ((code = Show_Bits(32)) == EXTENSION_START_CODE ||
          code == USER_DATA_START_CODE)
-  {
-    if (code == EXTENSION_START_CODE)
     {
-      Flush_Buffer32();
-      ext_ID = Get_Bits(4);
-      switch (ext_ID)
-      {
-        case SEQUENCE_EXTENSION_ID:
-          sequence_extension();
-          break;
-        case SEQUENCE_DISPLAY_EXTENSION_ID:
-          sequence_display_extension();
-          break;
-        case QUANT_MATRIX_EXTENSION_ID:
-          quant_matrix_extension();
-          break;
-        case SEQUENCE_SCALABLE_EXTENSION_ID:
-          sequence_scalable_extension();
-          break;
-        case PICTURE_DISPLAY_EXTENSION_ID:
-          picture_display_extension();
-          break;
-        case PICTURE_CODING_EXTENSION_ID:
-          picture_coding_extension();
-          break;
-        case PICTURE_SPATIAL_SCALABLE_EXTENSION_ID:
-          picture_spatial_scalable_extension();
-          break;
-        case PICTURE_TEMPORAL_SCALABLE_EXTENSION_ID:
-          picture_temporal_scalable_extension();
-          break;
-        case COPYRIGHT_EXTENSION_ID:
-          copyright_extension();
-          break;
-        default:
-          fprintf(stderr, "reserved extension start code ID %d\n", ext_ID);
-          break;
-      }
-      next_start_code();
-    }
-    else
-    {
+      if (code == EXTENSION_START_CODE)
+        {
+          Flush_Buffer32();
+          ext_ID = Get_Bits(4);
+          switch (ext_ID)
+            {
+              case SEQUENCE_EXTENSION_ID:
+                sequence_extension();
+                break;
+              case SEQUENCE_DISPLAY_EXTENSION_ID:
+                sequence_display_extension();
+                break;
+              case QUANT_MATRIX_EXTENSION_ID:
+                quant_matrix_extension();
+                break;
+              case SEQUENCE_SCALABLE_EXTENSION_ID:
+                sequence_scalable_extension();
+                break;
+              case PICTURE_DISPLAY_EXTENSION_ID:
+                picture_display_extension();
+                break;
+              case PICTURE_CODING_EXTENSION_ID:
+                picture_coding_extension();
+                break;
+              case PICTURE_SPATIAL_SCALABLE_EXTENSION_ID:
+                picture_spatial_scalable_extension();
+                break;
+              case PICTURE_TEMPORAL_SCALABLE_EXTENSION_ID:
+                picture_temporal_scalable_extension();
+                break;
+              case COPYRIGHT_EXTENSION_ID:
+                copyright_extension();
+                break;
+              default:
+                fprintf(stderr, "reserved extension start code ID %d\n", ext_ID);
+                break;
+            }
+          next_start_code();
+        }
+      else
+        {
 #ifdef VERBOSE
-      if (Verbose_Flag > NO_LAYER) printf("user data\n");
+          if (Verbose_Flag > NO_LAYER) printf("user data\n");
 #endif /* VERBOSE */
-      Flush_Buffer32();
-      user_data();
+          Flush_Buffer32();
+          user_data();
+        }
     }
-  }
 }
 
 /* decode sequence extension */
@@ -471,7 +471,7 @@ static void sequence_extension()
   ld->MPEG2_Flag = 1;
 
   ld->scalable_mode =
-      SC_NONE;  /* unless overwritten by sequence_scalable_extension() */
+      SC_NONE; /* unless overwritten by sequence_scalable_extension() */
   layer_id = 0; /* unless overwritten by sequence_scalable_extension() */
 
   profile_and_level_indication = Get_Bits(8);
@@ -491,20 +491,20 @@ static void sequence_extension()
 
   /* special case for 422 profile & level must be made */
   if ((profile_and_level_indication >> 7) & 1)
-  { /* escape bit of profile_and_level_indication set */
+    { /* escape bit of profile_and_level_indication set */
 
-    /* 4:2:2 Profile @ Main Level */
-    if ((profile_and_level_indication & 15) == 5)
-    {
-      profile = PROFILE_422;
-      level = MAIN_LEVEL;
+      /* 4:2:2 Profile @ Main Level */
+      if ((profile_and_level_indication & 15) == 5)
+        {
+          profile = PROFILE_422;
+          level = MAIN_LEVEL;
+        }
     }
-  }
   else
-  {
-    profile = profile_and_level_indication >> 4; /* Profile is upper nibble */
-    level = profile_and_level_indication & 0xF;  /* Level is lower nibble */
-  }
+    {
+      profile = profile_and_level_indication >> 4; /* Profile is upper nibble */
+      level = profile_and_level_indication & 0xF; /* Level is lower nibble */
+    }
 
   horizontal_size =
       (horizontal_size_extension << 12) | (horizontal_size & 0x0fff);
@@ -522,30 +522,30 @@ static void sequence_extension()
 
 #ifdef VERBOSE
   if (Verbose_Flag > NO_LAYER)
-  {
-    printf("sequence extension (byte %d)\n", (pos >> 3) - 4);
-
-    if (Verbose_Flag > SEQUENCE_LAYER)
     {
-      printf("  profile_and_level_indication=%d\n",
-             profile_and_level_indication);
+      printf("sequence extension (byte %d)\n", (pos >> 3) - 4);
 
-      if (profile_and_level_indication < 128)
-      {
-        printf("    profile=%d, level=%d\n", profile, level);
-      }
+      if (Verbose_Flag > SEQUENCE_LAYER)
+        {
+          printf("  profile_and_level_indication=%d\n",
+                 profile_and_level_indication);
 
-      printf("  progressive_sequence=%d\n", progressive_sequence);
-      printf("  chroma_format=%d\n", chroma_format);
-      printf("  horizontal_size_extension=%d\n", horizontal_size_extension);
-      printf("  vertical_size_extension=%d\n", vertical_size_extension);
-      printf("  bit_rate_extension=%d\n", bit_rate_extension);
-      printf("  vbv_buffer_size_extension=%d\n", vbv_buffer_size_extension);
-      printf("  low_delay=%d\n", low_delay);
-      printf("  frame_rate_extension_n=%d\n", frame_rate_extension_n);
-      printf("  frame_rate_extension_d=%d\n", frame_rate_extension_d);
+          if (profile_and_level_indication < 128)
+            {
+              printf("    profile=%d, level=%d\n", profile, level);
+            }
+
+          printf("  progressive_sequence=%d\n", progressive_sequence);
+          printf("  chroma_format=%d\n", chroma_format);
+          printf("  horizontal_size_extension=%d\n", horizontal_size_extension);
+          printf("  vertical_size_extension=%d\n", vertical_size_extension);
+          printf("  bit_rate_extension=%d\n", bit_rate_extension);
+          printf("  vbv_buffer_size_extension=%d\n", vbv_buffer_size_extension);
+          printf("  low_delay=%d\n", low_delay);
+          printf("  frame_rate_extension_n=%d\n", frame_rate_extension_n);
+          printf("  frame_rate_extension_d=%d\n", frame_rate_extension_d);
+        }
     }
-  }
 #endif /* VERBOSE */
 
 #ifdef VERIFY
@@ -564,11 +564,11 @@ static void sequence_display_extension()
   color_description = Get_Bits(1);
 
   if (color_description)
-  {
-    color_primaries = Get_Bits(8);
-    transfer_characteristics = Get_Bits(8);
-    matrix_coefficients = Get_Bits(8);
-  }
+    {
+      color_primaries = Get_Bits(8);
+      transfer_characteristics = Get_Bits(8);
+      matrix_coefficients = Get_Bits(8);
+    }
 
   display_horizontal_size = Get_Bits(14);
   marker_bit("sequence_display_extension");
@@ -576,23 +576,23 @@ static void sequence_display_extension()
 
 #ifdef VERBOSE
   if (Verbose_Flag > NO_LAYER)
-  {
-    printf("sequence display extension (byte %d)\n", (pos >> 3) - 4);
-    if (Verbose_Flag > SEQUENCE_LAYER)
     {
-      printf("  video_format=%d\n", video_format);
-      printf("  color_description=%d\n", color_description);
+      printf("sequence display extension (byte %d)\n", (pos >> 3) - 4);
+      if (Verbose_Flag > SEQUENCE_LAYER)
+        {
+          printf("  video_format=%d\n", video_format);
+          printf("  color_description=%d\n", color_description);
 
-      if (color_description)
-      {
-        printf("    color_primaries=%d\n", color_primaries);
-        printf("    transfer_characteristics=%d\n", transfer_characteristics);
-        printf("    matrix_coefficients=%d\n", matrix_coefficients);
-      }
-      printf("  display_horizontal_size=%d\n", display_horizontal_size);
-      printf("  display_vertical_size=%d\n", display_vertical_size);
+          if (color_description)
+            {
+              printf("    color_primaries=%d\n", color_primaries);
+              printf("    transfer_characteristics=%d\n", transfer_characteristics);
+              printf("    matrix_coefficients=%d\n", matrix_coefficients);
+            }
+          printf("  display_horizontal_size=%d\n", display_horizontal_size);
+          printf("  display_vertical_size=%d\n", display_vertical_size);
+        }
     }
-  }
 #endif /* VERBOSE */
 
 #ifdef VERIFY
@@ -610,52 +610,52 @@ static void quant_matrix_extension()
   pos = ld->Bitcnt;
 
   if ((ld->load_intra_quantizer_matrix = Get_Bits(1)))
-  {
-    for (i = 0; i < 64; i++)
     {
-      ld->chroma_intra_quantizer_matrix[scan[ZIG_ZAG][i]] =
-          ld->intra_quantizer_matrix[scan[ZIG_ZAG][i]] = Get_Bits(8);
+      for (i = 0; i < 64; i++)
+        {
+          ld->chroma_intra_quantizer_matrix[scan[ZIG_ZAG][i]] =
+              ld->intra_quantizer_matrix[scan[ZIG_ZAG][i]] = Get_Bits(8);
+        }
     }
-  }
 
   if ((ld->load_non_intra_quantizer_matrix = Get_Bits(1)))
-  {
-    for (i = 0; i < 64; i++)
     {
-      ld->chroma_non_intra_quantizer_matrix[scan[ZIG_ZAG][i]] =
-          ld->non_intra_quantizer_matrix[scan[ZIG_ZAG][i]] = Get_Bits(8);
+      for (i = 0; i < 64; i++)
+        {
+          ld->chroma_non_intra_quantizer_matrix[scan[ZIG_ZAG][i]] =
+              ld->non_intra_quantizer_matrix[scan[ZIG_ZAG][i]] = Get_Bits(8);
+        }
     }
-  }
 
   if ((ld->load_chroma_intra_quantizer_matrix = Get_Bits(1)))
-  {
-    for (i = 0; i < 64; i++)
     {
-      ld->chroma_intra_quantizer_matrix[scan[ZIG_ZAG][i]] = Get_Bits(8);
+      for (i = 0; i < 64; i++)
+        {
+          ld->chroma_intra_quantizer_matrix[scan[ZIG_ZAG][i]] = Get_Bits(8);
+        }
     }
-  }
 
   if ((ld->load_chroma_non_intra_quantizer_matrix = Get_Bits(1)))
-  {
-    for (i = 0; i < 64; i++)
     {
-      ld->chroma_non_intra_quantizer_matrix[scan[ZIG_ZAG][i]] = Get_Bits(8);
+      for (i = 0; i < 64; i++)
+        {
+          ld->chroma_non_intra_quantizer_matrix[scan[ZIG_ZAG][i]] = Get_Bits(8);
+        }
     }
-  }
 
 #ifdef VERBOSE
   if (Verbose_Flag > NO_LAYER)
-  {
-    printf("quant matrix extension (byte %d)\n", (pos >> 3) - 4);
-    printf("  load_intra_quantizer_matrix=%d\n",
-           ld->load_intra_quantizer_matrix);
-    printf("  load_non_intra_quantizer_matrix=%d\n",
-           ld->load_non_intra_quantizer_matrix);
-    printf("  load_chroma_intra_quantizer_matrix=%d\n",
-           ld->load_chroma_intra_quantizer_matrix);
-    printf("  load_chroma_non_intra_quantizer_matrix=%d\n",
-           ld->load_chroma_non_intra_quantizer_matrix);
-  }
+    {
+      printf("quant matrix extension (byte %d)\n", (pos >> 3) - 4);
+      printf("  load_intra_quantizer_matrix=%d\n",
+             ld->load_intra_quantizer_matrix);
+      printf("  load_non_intra_quantizer_matrix=%d\n",
+             ld->load_non_intra_quantizer_matrix);
+      printf("  load_chroma_intra_quantizer_matrix=%d\n",
+             ld->load_chroma_intra_quantizer_matrix);
+      printf("  load_chroma_non_intra_quantizer_matrix=%d\n",
+             ld->load_chroma_non_intra_quantizer_matrix);
+    }
 #endif /* VERBOSE */
 
 #ifdef VERIFY
@@ -678,46 +678,46 @@ static void sequence_scalable_extension()
   layer_id = Get_Bits(4);
 
   if (ld->scalable_mode == SC_SPAT)
-  {
-    lower_layer_prediction_horizontal_size = Get_Bits(14);
-    marker_bit("sequence_scalable_extension()");
-    lower_layer_prediction_vertical_size = Get_Bits(14);
-    horizontal_subsampling_factor_m = Get_Bits(5);
-    horizontal_subsampling_factor_n = Get_Bits(5);
-    vertical_subsampling_factor_m = Get_Bits(5);
-    vertical_subsampling_factor_n = Get_Bits(5);
-  }
+    {
+      lower_layer_prediction_horizontal_size = Get_Bits(14);
+      marker_bit("sequence_scalable_extension()");
+      lower_layer_prediction_vertical_size = Get_Bits(14);
+      horizontal_subsampling_factor_m = Get_Bits(5);
+      horizontal_subsampling_factor_n = Get_Bits(5);
+      vertical_subsampling_factor_m = Get_Bits(5);
+      vertical_subsampling_factor_n = Get_Bits(5);
+    }
 
   if (ld->scalable_mode == SC_TEMP)
-  {
-    Error("temporal scalability not implemented\n");
-  }
+    {
+      Error("temporal scalability not implemented\n");
+    }
 
 #ifdef VERBOSE
   if (Verbose_Flag > NO_LAYER)
-  {
-    printf("sequence scalable extension (byte %d)\n", (pos >> 3) - 4);
-    if (Verbose_Flag > SEQUENCE_LAYER)
     {
-      printf("  scalable_mode=%d\n", ld->scalable_mode - 1);
-      printf("  layer_id=%d\n", layer_id);
-      if (ld->scalable_mode == SC_SPAT)
-      {
-        printf("    lower_layer_prediction_horiontal_size=%d\n",
-               lower_layer_prediction_horizontal_size);
-        printf("    lower_layer_prediction_vertical_size=%d\n",
-               lower_layer_prediction_vertical_size);
-        printf("    horizontal_subsampling_factor_m=%d\n",
-               horizontal_subsampling_factor_m);
-        printf("    horizontal_subsampling_factor_n=%d\n",
-               horizontal_subsampling_factor_n);
-        printf("    vertical_subsampling_factor_m=%d\n",
-               vertical_subsampling_factor_m);
-        printf("    vertical_subsampling_factor_n=%d\n",
-               vertical_subsampling_factor_n);
-      }
+      printf("sequence scalable extension (byte %d)\n", (pos >> 3) - 4);
+      if (Verbose_Flag > SEQUENCE_LAYER)
+        {
+          printf("  scalable_mode=%d\n", ld->scalable_mode - 1);
+          printf("  layer_id=%d\n", layer_id);
+          if (ld->scalable_mode == SC_SPAT)
+            {
+              printf("    lower_layer_prediction_horiontal_size=%d\n",
+                     lower_layer_prediction_horizontal_size);
+              printf("    lower_layer_prediction_vertical_size=%d\n",
+                     lower_layer_prediction_vertical_size);
+              printf("    horizontal_subsampling_factor_m=%d\n",
+                     horizontal_subsampling_factor_m);
+              printf("    horizontal_subsampling_factor_n=%d\n",
+                     horizontal_subsampling_factor_n);
+              printf("    vertical_subsampling_factor_m=%d\n",
+                     vertical_subsampling_factor_m);
+              printf("    vertical_subsampling_factor_n=%d\n",
+                     vertical_subsampling_factor_n);
+            }
+        }
     }
-  }
 #endif /* VERBOSE */
 
 #ifdef VERIFY
@@ -739,67 +739,67 @@ static void picture_display_extension()
 
   /* derive number_of_frame_center_offsets */
   if (progressive_sequence)
-  {
-    if (repeat_first_field)
-    {
-      if (top_field_first)
-      {
-        number_of_frame_center_offsets = 3;
-      }
-      else
-      {
-        number_of_frame_center_offsets = 2;
-      }
-    }
-    else
-    {
-      number_of_frame_center_offsets = 1;
-    }
-  }
-  else
-  {
-    if (picture_structure != FRAME_PICTURE)
-    {
-      number_of_frame_center_offsets = 1;
-    }
-    else
     {
       if (repeat_first_field)
-      {
-        number_of_frame_center_offsets = 3;
-      }
+        {
+          if (top_field_first)
+            {
+              number_of_frame_center_offsets = 3;
+            }
+          else
+            {
+              number_of_frame_center_offsets = 2;
+            }
+        }
       else
-      {
-        number_of_frame_center_offsets = 2;
-      }
+        {
+          number_of_frame_center_offsets = 1;
+        }
     }
-  }
+  else
+    {
+      if (picture_structure != FRAME_PICTURE)
+        {
+          number_of_frame_center_offsets = 1;
+        }
+      else
+        {
+          if (repeat_first_field)
+            {
+              number_of_frame_center_offsets = 3;
+            }
+          else
+            {
+              number_of_frame_center_offsets = 2;
+            }
+        }
+    }
 
   /* now parse */
   for (i = 0; i < number_of_frame_center_offsets; i++)
-  {
-    frame_center_horizontal_offset[i] = Get_Bits(16);
-    marker_bit("picture_display_extension, first marker bit");
+    {
+      frame_center_horizontal_offset[i] = Get_Bits(16);
+      marker_bit("picture_display_extension, first marker bit");
 
-    frame_center_vertical_offset[i] = Get_Bits(16);
-    marker_bit("picture_display_extension, second marker bit");
-  }
+      frame_center_vertical_offset[i] = Get_Bits(16);
+      marker_bit("picture_display_extension, second marker bit");
+    }
 
 #ifdef VERBOSE
   if (Verbose_Flag > NO_LAYER)
-  {
-    printf("picture display extension (byte %d)\n", (pos >> 3) - 4);
-    if (Verbose_Flag > SEQUENCE_LAYER)
     {
-      for (i = 0; i < number_of_frame_center_offsets; i++)
-      {
-        printf("  frame_center_horizontal_offset[%d]=%d\n", i,
-               frame_center_horizontal_offset[i]);
-        printf("  frame_center_vertical_offset[%d]=%d\n", i,
-               frame_center_vertical_offset[i]);
-      }
+      printf("picture display extension (byte %d)\n", (pos >> 3) - 4);
+      if (Verbose_Flag > SEQUENCE_LAYER)
+        {
+          for (i = 0; i < number_of_frame_center_offsets; i++)
+            {
+              printf("  frame_center_horizontal_offset[%d]=%d\n", i,
+                     frame_center_horizontal_offset[i]);
+              printf("  frame_center_vertical_offset[%d]=%d\n", i,
+                     frame_center_vertical_offset[i]);
+            }
+        }
     }
-  }
 #endif /* VERBOSE */
 
 #ifdef VERIFY
@@ -833,47 +833,47 @@ static void picture_coding_extension()
   composite_display_flag = Get_Bits(1);
 
   if (composite_display_flag)
-  {
-    v_axis = Get_Bits(1);
-    field_sequence = Get_Bits(3);
-    sub_carrier = Get_Bits(1);
-    burst_amplitude = Get_Bits(7);
-    sub_carrier_phase = Get_Bits(8);
-  }
+    {
+      v_axis = Get_Bits(1);
+      field_sequence = Get_Bits(3);
+      sub_carrier = Get_Bits(1);
+      burst_amplitude = Get_Bits(7);
+      sub_carrier_phase = Get_Bits(8);
+    }
 
 #ifdef VERBOSE
   if (Verbose_Flag > NO_LAYER)
-  {
-    printf("picture coding extension (byte %d)\n", (pos >> 3) - 4);
-    if (Verbose_Flag > SEQUENCE_LAYER)
     {
-      printf("  forward horizontal f_code=%d\n", f_code[0][0]);
-      printf("  forward vertical f_code=%d\n", f_code[0][1]);
-      printf("  backward horizontal f_code=%d\n", f_code[1][0]);
-      printf("  backward_vertical f_code=%d\n", f_code[1][1]);
-      printf("  intra_dc_precision=%d\n", intra_dc_precision);
-      printf("  picture_structure=%d\n", picture_structure);
-      printf("  top_field_first=%d\n", top_field_first);
-      printf("  frame_pred_frame_dct=%d\n", frame_pred_frame_dct);
-      printf("  concealment_motion_vectors=%d\n", concealment_motion_vectors);
-      printf("  q_scale_type=%d\n", ld->q_scale_type);
-      printf("  intra_vlc_format=%d\n", intra_vlc_format);
-      printf("  alternate_scan=%d\n", ld->alternate_scan);
-      printf("  repeat_first_field=%d\n", repeat_first_field);
-      printf("  chroma_420_type=%d\n", chroma_420_type);
-      printf("  progressive_frame=%d\n", progressive_frame);
-      printf("  composite_display_flag=%d\n", composite_display_flag);
+      printf("picture coding extension (byte %d)\n", (pos >> 3) - 4);
+      if (Verbose_Flag > SEQUENCE_LAYER)
+        {
+          printf("  forward horizontal f_code=%d\n", f_code[0][0]);
+          printf("  forward vertical f_code=%d\n", f_code[0][1]);
+          printf("  backward horizontal f_code=%d\n", f_code[1][0]);
+          printf("  backward_vertical f_code=%d\n", f_code[1][1]);
+          printf("  intra_dc_precision=%d\n", intra_dc_precision);
+          printf("  picture_structure=%d\n", picture_structure);
+          printf("  top_field_first=%d\n", top_field_first);
+          printf("  frame_pred_frame_dct=%d\n", frame_pred_frame_dct);
+          printf("  concealment_motion_vectors=%d\n", concealment_motion_vectors);
+          printf("  q_scale_type=%d\n", ld->q_scale_type);
+          printf("  intra_vlc_format=%d\n", intra_vlc_format);
+          printf("  alternate_scan=%d\n", ld->alternate_scan);
+          printf("  repeat_first_field=%d\n", repeat_first_field);
+          printf("  chroma_420_type=%d\n", chroma_420_type);
+          printf("  progressive_frame=%d\n", progressive_frame);
+          printf("  composite_display_flag=%d\n", composite_display_flag);
 
-      if (composite_display_flag)
-      {
-        printf("    v_axis=%d\n", v_axis);
-        printf("    field_sequence=%d\n", field_sequence);
-        printf("    sub_carrier=%d\n", sub_carrier);
-        printf("    burst_amplitude=%d\n", burst_amplitude);
-        printf("    sub_carrier_phase=%d\n", sub_carrier_phase);
-      }
+          if (composite_display_flag)
+            {
+              printf("    v_axis=%d\n", v_axis);
+              printf("    field_sequence=%d\n", field_sequence);
+              printf("    sub_carrier=%d\n", sub_carrier);
+              printf("    burst_amplitude=%d\n", burst_amplitude);
+              printf("    sub_carrier_phase=%d\n", sub_carrier_phase);
+            }
+        }
     }
-  }
 #endif /* VERBOSE */
 
 #ifdef VERIFY
@@ -895,38 +895,38 @@ static void picture_spatial_scalable_extension()
   marker_bit("picture_spatial_scalable_extension(), first marker bit");
   lower_layer_horizontal_offset = Get_Bits(15);
   if (lower_layer_horizontal_offset >= 16384)
-  {
-    lower_layer_horizontal_offset -= 32768;
-  }
+    {
+      lower_layer_horizontal_offset -= 32768;
+    }
   marker_bit("picture_spatial_scalable_extension(), second marker bit");
   lower_layer_vertical_offset = Get_Bits(15);
   if (lower_layer_vertical_offset >= 16384)
-  {
-    lower_layer_vertical_offset -= 32768;
-  }
+    {
+      lower_layer_vertical_offset -= 32768;
+    }
   spatial_temporal_weight_code_table_index = Get_Bits(2);
   lower_layer_progressive_frame = Get_Bits(1);
   lower_layer_deinterlaced_field_select = Get_Bits(1);
 
 #ifdef VERBOSE
   if (Verbose_Flag > NO_LAYER)
-  {
-    printf("picture spatial scalable extension (byte %d)\n", (pos >> 3) - 4);
-    if (Verbose_Flag > SEQUENCE_LAYER)
     {
-      printf("  lower_layer_temporal_reference=%d\n",
-             lower_layer_temporal_reference);
-      printf("  lower_layer_horizontal_offset=%d\n",
-             lower_layer_horizontal_offset);
-      printf("  lower_layer_vertical_offset=%d\n", lower_layer_vertical_offset);
-      printf("  spatial_temporal_weight_code_table_index=%d\n",
-             spatial_temporal_weight_code_table_index);
-      printf("  lower_layer_progressive_frame=%d\n",
-             lower_layer_progressive_frame);
-      printf("  lower_layer_deinterlaced_field_select=%d\n",
-             lower_layer_deinterlaced_field_select);
+      printf("picture spatial scalable extension (byte %d)\n", (pos >> 3) - 4);
+      if (Verbose_Flag > SEQUENCE_LAYER)
+        {
+          printf("  lower_layer_temporal_reference=%d\n",
+                 lower_layer_temporal_reference);
+          printf("  lower_layer_horizontal_offset=%d\n",
+                 lower_layer_horizontal_offset);
+          printf("  lower_layer_vertical_offset=%d\n", lower_layer_vertical_offset);
+          printf("  spatial_temporal_weight_code_table_index=%d\n",
+                 spatial_temporal_weight_code_table_index);
+          printf("  lower_layer_progressive_frame=%d\n",
+                 lower_layer_progressive_frame);
+          printf("  lower_layer_deinterlaced_field_select=%d\n",
+                 lower_layer_deinterlaced_field_select);
+        }
     }
-  }
 #endif /* VERBOSE */
 
 #ifdef VERIFY
@@ -955,10 +955,10 @@ static int extra_bit_information()
   int Byte_Count = 0;
 
   while (Get_Bits1())
-  {
-    Flush_Buffer(8);
-    Byte_Count++;
-  }
+    {
+      Flush_Buffer(8);
+      Byte_Count++;
+    }
 
   return (Byte_Count);
 }
@@ -1010,22 +1010,22 @@ static void copyright_extension()
   copyright_number_3 = Get_Bits(22);
 
   if (Verbose_Flag > NO_LAYER)
-  {
-    printf("copyright_extension (byte %d)\n", (pos >> 3) - 4);
-    if (Verbose_Flag > SEQUENCE_LAYER)
     {
-      printf("  copyright_flag =%d\n", copyright_flag);
+      printf("copyright_extension (byte %d)\n", (pos >> 3) - 4);
+      if (Verbose_Flag > SEQUENCE_LAYER)
+        {
+          printf("  copyright_flag =%d\n", copyright_flag);
 
-      printf("  copyright_identifier=%d\n", copyright_identifier);
+          printf("  copyright_identifier=%d\n", copyright_identifier);
 
-      printf("  original_or_copy = %d (original=1, copy=0)\n",
-             original_or_copy);
+          printf("  original_or_copy = %d (original=1, copy=0)\n",
+                 original_or_copy);
 
-      printf("  copyright_number_1=%d\n", copyright_number_1);
-      printf("  copyright_number_2=%d\n", copyright_number_2);
-      printf("  copyright_number_3=%d\n", copyright_number_3);
+          printf("  copyright_number_1=%d\n", copyright_number_1);
+          printf("  copyright_number_2=%d\n", copyright_number_2);
+          printf("  copyright_number_3=%d\n", copyright_number_3);
+        }
     }
-  }
 
 #ifdef VERIFY
   verify_copyright_extension++;
@@ -1039,41 +1039,41 @@ static void Update_Temporal_Reference_Tacking_Data()
   static int temporal_reference_old = 0;
 
   if (ld == &base) /* *CH* */
-  {
-    if (picture_coding_type != B_TYPE &&
-        temporal_reference != temporal_reference_old)
-    /* check first field of */
     {
-      /* non-B-frame */
-      if (temporal_reference_wrap)
-      { /* wrap occured at previous I- or P-frame */
-        /* now all intervening B-frames which could
+      if (picture_coding_type != B_TYPE &&
+          temporal_reference != temporal_reference_old)
+        /* check first field of */
+        {
+          /* non-B-frame */
+          if (temporal_reference_wrap)
+            { /* wrap occured at previous I- or P-frame */
+              /* now all intervening B-frames which could
            still have high temporal_reference values are done  */
-        Temporal_Reference_Base += 1024;
-        temporal_reference_wrap = 0;
-      }
+              Temporal_Reference_Base += 1024;
+              temporal_reference_wrap = 0;
+            }
 
-      /* distinguish from a reset */
-      if (temporal_reference < temporal_reference_old &&
-          !Temporal_Reference_GOP_Reset)
-      {
-        temporal_reference_wrap =
-            1; /* we must have just passed a GOP-Header! */
-      }
+          /* distinguish from a reset */
+          if (temporal_reference < temporal_reference_old &&
+              !Temporal_Reference_GOP_Reset)
+            {
+              temporal_reference_wrap =
+                  1; /* we must have just passed a GOP-Header! */
+            }
 
-      temporal_reference_old = temporal_reference;
-      Temporal_Reference_GOP_Reset = 0;
+          temporal_reference_old = temporal_reference;
+          Temporal_Reference_GOP_Reset = 0;
+        }
+
+      True_Framenum = Temporal_Reference_Base + temporal_reference;
+
+      /* temporary wrap of TR at 1024 for M frames */
+      if (temporal_reference_wrap && temporal_reference <= temporal_reference_old)
+        {
+          True_Framenum += 1024;
+        }
+
+      True_Framenum_max =
+          (True_Framenum > True_Framenum_max) ? True_Framenum : True_Framenum_max;
     }
-
-    True_Framenum = Temporal_Reference_Base + temporal_reference;
-
-    /* temporary wrap of TR at 1024 for M frames */
-    if (temporal_reference_wrap && temporal_reference <= temporal_reference_old)
-    {
-      True_Framenum += 1024;
-    }
-
-    True_Framenum_max =
-        (True_Framenum > True_Framenum_max) ? True_Framenum : True_Framenum_max;
-  }
 }

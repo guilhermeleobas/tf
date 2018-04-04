@@ -31,10 +31,10 @@ void Option(int argc, char *argv[])
    * Check arguments.
    */
   if (argc != 2)
-  {
-    printf("\nUsage: yacr2 <filename>\n\n");
-    exit(1);
-  }
+    {
+      printf("\nUsage: yacr2 <filename>\n\n");
+      exit(1);
+    }
 
   /*
    * Specified options.

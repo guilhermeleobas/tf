@@ -28,10 +28,10 @@ CHpoints *create_point(point p)
 {
   CHpoints *new_point;
   if (!(new_point = (CHpoints *)malloc(sizeof(CHpoints))))
-  {
-    printf("Can't create point\n");
-    exit(0);
-  }
+    {
+      printf("Can't create point\n");
+      exit(0);
+    }
   new_point->prev = NULL;
   new_point->next = NULL;
   new_point->node = p;
@@ -50,19 +50,19 @@ void point_list_insert(CHpoints **PL, point p)
   CHno++; /* increase the number of CHnodes by one */
   temp = create_point(p);
   if ((*PL) == NULL)
-  {
-    temp->prev = temp;
-    temp->next = temp;
-    *PL = temp;
-  }
+    {
+      temp->prev = temp;
+      temp->next = temp;
+      *PL = temp;
+    }
   else
-  {
-    temp->next = *PL;
-    (*PL)->prev->next = temp;
-    temp->prev = (*PL)->prev;
-    (*PL)->prev = temp;
-    (*PL) = temp;
-  }
+    {
+      temp->next = *PL;
+      (*PL)->prev->next = temp;
+      temp->prev = (*PL)->prev;
+      (*PL)->prev = temp;
+      (*PL) = temp;
+    }
 }
 
 /* ********************************************************************* */
@@ -91,13 +91,13 @@ double angle(CHpoints *p1, CHpoints *p2, CHpoints *p3)
   lb2 = (b.x * b.x + b.y * b.y);
   v = (dot_product * dot_product) / (la2 * lb2);
   if (dot_product < 0)
-  {
-    return -v;
-  }
+    {
+      return -v;
+    }
   else
-  {
-    return v;
-  }
+    {
+      return v;
+    }
 }
 
 /* ********************************************************************* */
@@ -110,9 +110,9 @@ void number_points(CHpoints *PL)
 
   temp = PL->next;
   while (temp != PL)
-  {
-    temp = temp->next;
-  }
+    {
+      temp = temp->next;
+    }
 }
 
 /* ********************************************************************* */
@@ -130,28 +130,28 @@ CHpoints *remove_points(CHpoints *PL)
   temp = PL->next;
 
   while ((temp != PL) && (temp->next != temp))
-  {
-    a = temp->prev->node;
-    b = temp->node;
-    c = temp->next->node;
+    {
+      a = temp->prev->node;
+      b = temp->node;
+      c = temp->next->node;
 
-    if (((b.y - c.y) * (b.x - a.x) + (c.x - b.x) * (b.y - a.y) == 0) &&
-        (((a.x < b.x) && (b.x < c.x)) || ((a.x > b.x) && (b.x > c.x)) ||
-         ((a.x == b.x) && (a.x == c.x) && (a.y < b.y) && (b.y < c.y)) ||
-         ((a.x == b.x) && (a.x == c.x) && (a.y > b.y) && (b.y > c.y))))
-    {
-      rem = temp;
-      temp->next->prev = temp->prev;
-      temp->prev->next = temp->next;
-      temp = temp->next;
-      free(rem);
-      CHno--; /* Decrease the number of CHnodes by one */
+      if (((b.y - c.y) * (b.x - a.x) + (c.x - b.x) * (b.y - a.y) == 0) &&
+          (((a.x < b.x) && (b.x < c.x)) || ((a.x > b.x) && (b.x > c.x)) ||
+           ((a.x == b.x) && (a.x == c.x) && (a.y < b.y) && (b.y < c.y)) ||
+           ((a.x == b.x) && (a.x == c.x) && (a.y > b.y) && (b.y > c.y))))
+        {
+          rem = temp;
+          temp->next->prev = temp->prev;
+          temp->prev->next = temp->next;
+          temp = temp->next;
+          free(rem);
+          CHno--; /* Decrease the number of CHnodes by one */
+        }
+      else
+        {
+          temp = temp->next;
+        }
     }
-    else
-    {
-      temp = temp->next;
-    }
-  }
   a = temp->prev->node;
   b = temp->node;
   c = temp->next->node;
@@ -160,13 +160,13 @@ CHpoints *remove_points(CHpoints *PL)
       (((a.x < b.x) && (b.x < c.x)) || ((a.x > b.x) && (b.x > c.x)) ||
        ((a.x == b.x) && (a.x == c.x) && (a.y < b.y) && (b.y < c.y)) ||
        ((a.x == b.x) && (a.x == c.x) && (a.y > b.y) && (b.y > c.y))))
-  {
-    rem = temp;
-    temp->next->prev = temp->prev;
-    temp->prev->next = temp->next;
-    temp = temp->next;
-    free(rem);
-    CHno--; /* Decrease the number of CHnodes by one */
-  }
+    {
+      rem = temp;
+      temp->next->prev = temp->prev;
+      temp->prev->next = temp->next;
+      temp = temp->next;
+      free(rem);
+      CHno--; /* Decrease the number of CHnodes by one */
+    }
   return temp;
 }

@@ -136,28 +136,28 @@ long int arg;
 #endif
   register int desc = open(archive, O_RDONLY, 0);
   if (desc < 0)
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
 #ifdef SARMAG
   {
     char buf[SARMAG];
     register int nread = read(desc, buf, SARMAG);
     if (nread != SARMAG || bcmp(buf, ARMAG, SARMAG))
-    {
-      (void)close(desc);
-      return -2;
-    }
+      {
+        (void)close(desc);
+        return -2;
+      }
   }
 #else
 #ifdef AIAMAG
   {
     register int nread = read(desc, &fl_header, FL_HSZ);
     if (nread != FL_HSZ || bcmp(fl_header.fl_magic, AIAMAG, SAIAMAG))
-    {
-      (void)close(desc);
-      return -2;
-    }
+      {
+        (void)close(desc);
+        return -2;
+      }
   }
 #else
   {
@@ -168,10 +168,10 @@ long int arg;
 #endif
     register int nread = read(desc, &buf, sizeof(buf));
     if (nread != sizeof(buf) || buf != ARMAG)
-    {
-      (void)close(desc);
-      return -2;
-    }
+      {
+        (void)close(desc);
+        return -2;
+      }
   }
 #endif
 #endif
@@ -197,140 +197,140 @@ long int arg;
 #endif
 
     while (1)
-    {
-      register int nread;
-      struct ar_hdr member_header;
-#ifdef AIAMAG
-      char name[AR_NAMELEN + 1];
-      int name_len;
-      long int dateval;
-      int uidval, gidval;
-      long int data_offset;
-#else
-      char name[sizeof member_header.ar_name + 1];
-#endif
-      long int eltsize;
-      int eltmode;
-      long int fnval;
-
-      if (lseek(desc, member_offset, 0) < 0)
       {
-        (void)close(desc);
-        return -2;
-      }
+        register int nread;
+        struct ar_hdr member_header;
+#ifdef AIAMAG
+        char name[AR_NAMELEN + 1];
+        int name_len;
+        long int dateval;
+        int uidval, gidval;
+        long int data_offset;
+#else
+        char name[sizeof member_header.ar_name + 1];
+#endif
+        long int eltsize;
+        int eltmode;
+        long int fnval;
+
+        if (lseek(desc, member_offset, 0) < 0)
+          {
+            (void)close(desc);
+            return -2;
+          }
 
 #ifdef AIAMAG
 #define AR_MEMHDR (sizeof(member_header) - sizeof(member_header._ar_name))
-      nread = read(desc, (char *)&member_header, AR_MEMHDR);
+        nread = read(desc, (char *)&member_header, AR_MEMHDR);
 
-      if (nread != AR_MEMHDR)
-      {
-        (void)close(desc);
-        return -2;
-      }
+        if (nread != AR_MEMHDR)
+          {
+            (void)close(desc);
+            return -2;
+          }
 
-      sscanf(member_header.ar_namlen, "%4d", &name_len);
-      nread = read(desc, name, name_len);
+        sscanf(member_header.ar_namlen, "%4d", &name_len);
+        nread = read(desc, name, name_len);
 
-      if (nread != name_len)
-      {
-        (void)close(desc);
-        return -2;
-      }
+        if (nread != name_len)
+          {
+            (void)close(desc);
+            return -2;
+          }
 
-      name[name_len] = 0;
+        name[name_len] = 0;
 
-      sscanf(member_header.ar_date, "%12ld", &dateval);
-      sscanf(member_header.ar_uid, "%12d", &uidval);
-      sscanf(member_header.ar_gid, "%12d", &gidval);
-      sscanf(member_header.ar_mode, "%12o", &eltmode);
-      sscanf(member_header.ar_size, "%12ld", &eltsize);
+        sscanf(member_header.ar_date, "%12ld", &dateval);
+        sscanf(member_header.ar_uid, "%12d", &uidval);
+        sscanf(member_header.ar_gid, "%12d", &gidval);
+        sscanf(member_header.ar_mode, "%12o", &eltmode);
+        sscanf(member_header.ar_size, "%12ld", &eltsize);
 
-      if ((data_offset = member_offset + AR_MEMHDR + name_len + 2) % 2)
-        ++data_offset;
+        if ((data_offset = member_offset + AR_MEMHDR + name_len + 2) % 2)
+          ++data_offset;
 
-      fnval = (*function)(desc, name, member_offset, data_offset, eltsize,
-                          dateval, uidval, gidval, eltmode, arg);
+        fnval = (*function)(desc, name, member_offset, data_offset, eltsize,
+                            dateval, uidval, gidval, eltmode, arg);
 
 #else
-      nread = read(desc, (char *)&member_header, sizeof(struct ar_hdr));
-      if (nread == 0)
-      {
-        /* No data left means end of file; that is OK.  */
-        break;
-      }
+        nread = read(desc, (char *)&member_header, sizeof(struct ar_hdr));
+        if (nread == 0)
+          {
+            /* No data left means end of file; that is OK.  */
+            break;
+          }
 
-      if (nread != sizeof(member_header)
+        if (nread != sizeof(member_header)
 #ifdef ARFMAG
-          || bcmp(member_header.ar_fmag, ARFMAG, 2)
+            || bcmp(member_header.ar_fmag, ARFMAG, 2)
 #endif
-              )
-      {
-        (void)close(desc);
-        return -2;
-      }
+        )
+          {
+            (void)close(desc);
+            return -2;
+          }
 
-      bcopy(member_header.ar_name, name, sizeof member_header.ar_name);
-      {
-        register char *p = name + sizeof member_header.ar_name;
-        while (p > name && *--p == ' ')
+        bcopy(member_header.ar_name, name, sizeof member_header.ar_name);
         {
-          *p = '\0';
-        }
-        #ifdef AR_TRAILING_SLASH if (*p == '/') *p = '\0';
+          register char *p = name + sizeof member_header.ar_name;
+          while (p > name && *--p == ' ')
+            {
+              *p = '\0';
+            }
+#ifdef AR_TRAILING_SLASH if (*p == '/') *p = '\0';
 #endif
-    }
+        }
 
 #ifndef M_XENIX
-    sscanf(member_header.ar_mode, "%o", &eltmode);
-    eltsize = atol(member_header.ar_size);
-#else  /* Xenix.  */
-      eltmode = (unsigned short int)member_header.ar_mode;
-      eltsize = member_header.ar_size;
+        sscanf(member_header.ar_mode, "%o", &eltmode);
+        eltsize = atol(member_header.ar_size);
+#else /* Xenix.  */
+        eltmode = (unsigned short int)member_header.ar_mode;
+        eltsize = member_header.ar_size;
 #endif /* Not Xenix.  */
 
-    fnval = (*function)(desc, name, member_offset,
-                        member_offset + sizeof(member_header), eltsize,
+        fnval = (*function)(desc, name, member_offset,
+                            member_offset + sizeof(member_header), eltsize,
 #ifndef M_XENIX
-                        atol(member_header.ar_date), atoi(member_header.ar_uid),
-                        atoi(member_header.ar_gid),
-#else  /* Xenix.  */
-                          member_header.ar_date, member_header.ar_uid,
-                          member_header.ar_gid,
+                            atol(member_header.ar_date), atoi(member_header.ar_uid),
+                            atoi(member_header.ar_gid),
+#else /* Xenix.  */
+                            member_header.ar_date, member_header.ar_uid,
+                            member_header.ar_gid,
 #endif /* Not Xenix.  */
-                        eltmode, arg);
+                            eltmode, arg);
 
 #endif /* Not AIAMAG */
 
-    if (fnval)
-    {
-      (void)close(desc);
-      return fnval;
-    }
+        if (fnval)
+          {
+            (void)close(desc);
+            return fnval;
+          }
 
 #ifdef AIAMAG
-    if (member_offset == last_member_offset) /* end of chain? */
-      break;
+        if (member_offset == last_member_offset) /* end of chain? */
+          break;
 
-    sscanf(member_header.ar_nxtmem, "%12ld", &member_offset);
+        sscanf(member_header.ar_nxtmem, "%12ld", &member_offset);
 
-    if (lseek(desc, member_offset, 0) != member_offset)
-    {
-      (void)close(desc);
-      return -2;
-    }
+        if (lseek(desc, member_offset, 0) != member_offset)
+          {
+            (void)close(desc);
+            return -2;
+          }
 #else
-      member_offset += sizeof(member_header) + eltsize;
-      if (member_offset & 1)
-      {
-        member_offset++;
-      }
+        member_offset += sizeof(member_header) + eltsize;
+        if (member_offset & 1)
+          {
+            member_offset++;
+          }
 #endif
+      }
   }
-}
 
-close(desc);
-return 0;
+  close(desc);
+  return 0;
 }
 
 /* Return nonzero iff NAME matches MEM.  If NAME is longer than
@@ -342,31 +342,31 @@ int ar_name_equal(name, mem) char *name, *mem;
 
   p = rindex(name, '/');
   if (p != 0)
-  {
-    name = p + 1;
-  }
+    {
+      name = p + 1;
+    }
 
 #ifndef APOLLO
 
   if (!strncmp(name, mem, AR_NAMELEN))
-  {
-    return 1;
-  }
-
-  if (!strncmp(name, mem, AR_NAMELEN - 2))
-  {
-    unsigned int namelen, memlen;
-
-    namelen = strlen(name);
-    memlen = strlen(mem);
-
-    if (memlen == AR_NAMELEN && mem[AR_NAMELEN - 2] == '.' &&
-        mem[AR_NAMELEN - 1] == 'o' && name[namelen - 2] == '.' &&
-        name[namelen - 1] == 'o')
     {
       return 1;
     }
-  }
+
+  if (!strncmp(name, mem, AR_NAMELEN - 2))
+    {
+      unsigned int namelen, memlen;
+
+      namelen = strlen(name);
+      memlen = strlen(mem);
+
+      if (memlen == AR_NAMELEN && mem[AR_NAMELEN - 2] == '.' &&
+          mem[AR_NAMELEN - 1] == 'o' && name[namelen - 2] == '.' &&
+          name[namelen - 1] == 'o')
+        {
+          return 1;
+        }
+    }
   return 0;
 
 #else /* APOLLO.  */
@@ -383,9 +383,9 @@ int uid, gid, mode;
 char *name;
 {
   if (!ar_name_equal(name, mem))
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
   return hdrpos;
 }
 
@@ -405,45 +405,45 @@ int ar_member_touch(arname, memname) char *arname, *memname;
   struct stat statbuf;
 
   if (pos < 0)
-  {
-    return (int)pos;
-  }
+    {
+      return (int)pos;
+    }
   if (!pos)
-  {
-    return 1;
-  }
+    {
+      return 1;
+    }
 
   fd = open(arname, O_RDWR, 0666);
   if (fd < 0)
-  {
-    return -3;
-  }
+    {
+      return -3;
+    }
   /* Read in this member's header */
   if (lseek(fd, pos, 0) < 0)
-  {
-    goto lose;
-  }
+    {
+      goto lose;
+    }
   if (sizeof ar_hdr != read(fd, (char *)&ar_hdr, sizeof ar_hdr))
-  {
-    goto lose;
-  }
+    {
+      goto lose;
+    }
   /* Write back the header, thus touching the archive file.  */
   if (lseek(fd, pos, 0) < 0)
-  {
-    goto lose;
-  }
+    {
+      goto lose;
+    }
   if (sizeof ar_hdr != write(fd, (char *)&ar_hdr, sizeof ar_hdr))
-  {
-    goto lose;
-  }
+    {
+      goto lose;
+    }
   /* The file's mtime is the time we we want.  */
   fstat(fd, &statbuf);
 #if defined(ARFMAG) || defined(AIAMAG)
   /* Advance member's time to that time */
   for (i = 0; i < sizeof ar_hdr.ar_date; i++)
-  {
-    ar_hdr.ar_date[i] = ' ';
-  }
+    {
+      ar_hdr.ar_date[i] = ' ';
+    }
   sprintf(ar_hdr.ar_date, "%ld", (long int)statbuf.st_mtime);
 #ifdef AIAMAG
   ar_hdr.ar_date[strlen(ar_hdr.ar_date)] = ' ';
@@ -453,13 +453,13 @@ int ar_member_touch(arname, memname) char *arname, *memname;
 #endif
   /* Write back this member's header */
   if (lseek(fd, pos, 0) < 0)
-  {
-    goto lose;
-  }
+    {
+      goto lose;
+    }
   if (sizeof ar_hdr != write(fd, (char *)&ar_hdr, sizeof ar_hdr))
-  {
-    goto lose;
-  }
+    {
+      goto lose;
+    }
   close(fd);
   return 0;
 

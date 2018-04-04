@@ -28,11 +28,11 @@ copies.  */
 #include "gschar.h"
 #include "gstype1.h"
 #include "gxdevice.h" /* for gxfont.h */
-#include "gxfixed.h"  /* for gstype1.h, gxfont1.h */
+#include "gxfixed.h" /* for gstype1.h, gxfont1.h */
 #include "gxfont.h"
 #include "gxfont1.h"
 #include "gxmatrix.h" /* for font.h */
-#include "gzpath.h"   /* for type1addpath: see below */
+#include "gzpath.h" /* for type1addpath: see below */
 #include "gzstate.h"
 #include "oper.h"
 #include "state.h"
@@ -70,15 +70,15 @@ int zshow(register ref *op)
 {
   int code = setup_show(op, finish_show);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   if ((code = gs_show_n_init(senum, igs, (char *)op->value.bytes, op->size)) <
       0)
-  {
-    free_show();
-    return code;
-  }
+    {
+      free_show();
+      return code;
+    }
   pop(1);
   op--;
   return show_continue(op);
@@ -91,15 +91,15 @@ int zashow(register ref *op)
   float axy[2];
   if ((code = num_params(op - 1, 2, axy)) < 0 ||
       (code = setup_show(op, finish_show)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   if ((code = gs_ashow_n_init(senum, igs, axy[0], axy[1],
                               (char *)op->value.bytes, op->size)) < 0)
-  {
-    free_show();
-    return code;
-  }
+    {
+      free_show();
+      return code;
+    }
   pop(3);
   op -= 3;
   return show_continue(op);
@@ -112,21 +112,21 @@ int zwidthshow(register ref *op)
   float cxy[2];
   check_type(op[-1], t_integer);
   if ((ulong)(op[-1].value.intval) > 255)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   if ((code = num_params(op - 2, 2, cxy)) < 0 ||
       (code = setup_show(op, finish_show)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   if ((code = gs_widthshow_n_init(senum, igs, cxy[0], cxy[1],
                                   (char)op[-1].value.intval,
                                   (char *)op->value.bytes, op->size)) < 0)
-  {
-    free_show();
-    return code;
-  }
+    {
+      free_show();
+      return code;
+    }
   pop(4);
   op -= 4;
   return show_continue(op);
@@ -139,22 +139,22 @@ int zawidthshow(register ref *op)
   float cxy[2], axy[2];
   check_type(op[-3], t_integer);
   if ((ulong)(op[-3].value.intval) > 255)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   if ((code = num_params(op - 4, 2, cxy)) < 0 ||
       (code = num_params(op - 1, 2, axy)) < 0 ||
       (code = setup_show(op, finish_show)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   if ((code = gs_awidthshow_n_init(senum, igs, cxy[0], cxy[1],
                                    (char)op[-3].value.intval, axy[0], axy[1],
                                    (char *)op->value.bytes, op->size)) < 0)
-  {
-    free_show();
-    return code;
-  }
+    {
+      free_show();
+      return code;
+    }
   pop(6);
   op -= 6;
   return show_continue(op);
@@ -166,15 +166,15 @@ int zkshow(register ref *op)
   int code;
   check_proc(op[-1]);
   if ((code = setup_show(op, finish_show)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   if ((code = gs_kshow_n_init(senum, igs, (char *)op->value.bytes, op->size)) <
       0)
-  {
-    free_show();
-    return code;
-  }
+    {
+      free_show();
+      return code;
+    }
   sslot = op[-1]; /* save kerning proc */
   pop(2);
   op -= 2;
@@ -190,15 +190,15 @@ int zstringwidth(register ref *op)
 {
   int code = setup_show(op, finish_stringwidth);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   if ((code = gs_stringwidth_n_init(senum, igs, (char *)op->value.bytes,
                                     op->size)) < 0)
-  {
-    free_show();
-    return code;
-  }
+    {
+      free_show();
+      return code;
+    }
   pop(1);
   op--;
   return show_continue(op);
@@ -223,15 +223,15 @@ int zcharpath(register ref *op)
   check_type(*op, t_boolean);
   code = setup_show(op - 1, finish_show);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   if ((code = gs_charpath_n_init(senum, igs, (char *)op[-1].value.bytes,
                                  op[-1].size, op->value.index)) < 0)
-  {
-    free_show();
-    return code;
-  }
+    {
+      free_show();
+      return code;
+    }
   pop(2);
   op -= 2;
   return show_continue(op);
@@ -245,26 +245,26 @@ int zsetcachedevice(register ref *op)
   gs_show_enum *penum = find_show();
   int code = num_params(op, 6, wbox);
   if (penum == 0)
-  {
-    return e_undefined;
-  }
+    {
+      return e_undefined;
+    }
   if (code < 0)
-  { /* P*stScr*pt implementations apparently allow the */
-    /* bounding box to be specified as a 4-element array. */
-    /* Check for this here. */
-    check_array(*op);
-    if (op->size != 4 || num_params(op - 1, 2, wbox) < 0 ||
-        num_params(op->value.refs + 3, 4, wbox + 2) < 0)
+    { /* P*stScr*pt implementations apparently allow the */
+      /* bounding box to be specified as a 4-element array. */
+      /* Check for this here. */
+      check_array(*op);
+      if (op->size != 4 || num_params(op - 1, 2, wbox) < 0 ||
+          num_params(op->value.refs + 3, 4, wbox + 2) < 0)
+        {
+          return code;
+        }
+      npop = 3;
+    }
+  if ((code = gs_setcachedevice(penum, wbox[0], wbox[1], wbox[2], wbox[3],
+                                wbox[4], wbox[5])) < 0)
     {
       return code;
     }
-    npop = 3;
-  }
-  if ((code = gs_setcachedevice(penum, wbox[0], wbox[1], wbox[2], wbox[3],
-                                wbox[4], wbox[5])) < 0)
-  {
-    return code;
-  }
   pop(npop);
   return 0;
 }
@@ -276,13 +276,13 @@ int zsetcharwidth(register ref *op)
   gs_show_enum *penum = find_show();
   int code = num_params(op, 2, width);
   if (penum == 0)
-  {
-    return e_undefined;
-  }
+    {
+      return e_undefined;
+    }
   if (code < 0 || (code = gs_setcharwidth(penum, width[0], width[1])) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   pop(2);
   return 0;
 }
@@ -308,105 +308,105 @@ int ztype1addpath(register ref *op)
   z1_data zdata;
   byte *charstring = 0;
   if (penum == 0)
-  {
-    return e_undefined;
-  }
+    {
+      return e_undefined;
+    }
   check_type(*op, t_string);
   tdata = pfdata->type1_data;
   zdata.pfdata = pfdata;
   zdata.osptr = zdata.ostack;
   tdata.proc_data = (char *)&zdata;
   if (op->size <= tdata.lenIV)
-  { /* String is empty, or too short.  Just ignore it. */
-    pop(1);
-    return 0;
-  }
+    { /* String is empty, or too short.  Just ignore it. */
+      pop(1);
+      return 0;
+    }
   pis = (gs_type1_state *)alloc(1, gs_type1_state_sizeof, "type1addpath");
   if (pis == 0)
-  {
-    return e_VMerror;
-  }
+    {
+      return e_VMerror;
+    }
   code = gs_type1_init(pis, penum, gs_show_in_charpath(penum),
                        pfont->paint_type, op->value.bytes, &tdata);
   if (code < 0)
-  {
-    alloc_free((char *)pis, 1, gs_type1_state_sizeof, "type1addpath");
-    return code;
-  }
+    {
+      alloc_free((char *)pis, 1, gs_type1_state_sizeof, "type1addpath");
+      return code;
+    }
 more:
   code = gs_type1_interpret(pis, charstring);
   charstring = 0;
   if (code > 0) /* seac or callothersubr */
-  {
-    if (code & 1) /* seac */
     {
-      ref *pcstr;
-      code >>= 1;
-      /* The restriction on seac seems to imply that */
-      /* Adobe interpreters do something special about */
-      /* StandardEncoding, but it seems just as easy for us */
-      /* not to do anything special.... */
-      if (code >= pfdata->Encoding.size)
-      {
-        return e_rangecheck;
-      }
-      if (dict_find(&pfdata->CharStrings, pfdata->Encoding.value.refs + code,
-                    &pcstr) <= 0)
-      {
-        return e_undefined;
-      }
-      if (r_type(pcstr) != t_string)
-      {
-        return e_invalidfont;
-      }
-      charstring = pcstr->value.bytes;
-      goto more;
+      if (code & 1) /* seac */
+        {
+          ref *pcstr;
+          code >>= 1;
+          /* The restriction on seac seems to imply that */
+          /* Adobe interpreters do something special about */
+          /* StandardEncoding, but it seems just as easy for us */
+          /* not to do anything special.... */
+          if (code >= pfdata->Encoding.size)
+            {
+              return e_rangecheck;
+            }
+          if (dict_find(&pfdata->CharStrings, pfdata->Encoding.value.refs + code,
+                        &pcstr) <= 0)
+            {
+              return e_undefined;
+            }
+          if (r_type(pcstr) != t_string)
+            {
+              return e_invalidfont;
+            }
+          charstring = pcstr->value.bytes;
+          goto more;
+        }
+      else /* callothersubr */
+        { /* We aren't prepared to call the interpreter here, */
+          /* so we fake the Flex feature. */
+          gx_path *ppath = igs->path;
+          gs_type1_pop(pis, &discard); /* pop # of args */
+          switch ((code >> 1) - 1)
+            {
+              case 0:
+                /* We have to do something really sleazy here, */
+                /* namely, make it look as though the rmovetos */
+                /* never really happened, because we don't want */
+                /* to interrupt the current subpath. */
+                gx_path_current_point(ppath, &ept);
+                gx_path_add_point(ppath, spt.x, spt.y);
+                ppath->subpath_open = flex_path_was_open;
+                /* ^--- sleaze */
+                gx_path_add_line(ppath, ept.x, ept.y);
+                /* Transfer endpoint coordinates to 'ostack' */
+                gs_type1_pop(pis, &zdata.ostack[0]);
+                gs_type1_pop(pis, &zdata.ostack[1]);
+                gs_type1_pop(pis, &discard);
+                zdata.osptr = &zdata.ostack[2];
+                goto more;
+              case 1:
+                gx_path_current_point(ppath, &spt);
+                flex_path_was_open = ppath->subpath_open;
+                /* ^--- more sleaze */
+                goto more;
+              case 2:
+                goto more;
+              case 3:
+                gs_type1_pop(pis, &discard); /* pop subr# */
+                zdata.ostack[0] = int2fixed(3);
+                zdata.osptr = &zdata.ostack[1];
+                goto more;
+            }
+          /* Unrecognized othersubr */
+          code = e_rangecheck;
+        }
     }
-    else /* callothersubr */
-    {    /* We aren't prepared to call the interpreter here, */
-      /* so we fake the Flex feature. */
-      gx_path *ppath = igs->path;
-      gs_type1_pop(pis, &discard); /* pop # of args */
-      switch ((code >> 1) - 1)
-      {
-        case 0:
-          /* We have to do something really sleazy here, */
-          /* namely, make it look as though the rmovetos */
-          /* never really happened, because we don't want */
-          /* to interrupt the current subpath. */
-          gx_path_current_point(ppath, &ept);
-          gx_path_add_point(ppath, spt.x, spt.y);
-          ppath->subpath_open = flex_path_was_open;
-          /* ^--- sleaze */
-          gx_path_add_line(ppath, ept.x, ept.y);
-          /* Transfer endpoint coordinates to 'ostack' */
-          gs_type1_pop(pis, &zdata.ostack[0]);
-          gs_type1_pop(pis, &zdata.ostack[1]);
-          gs_type1_pop(pis, &discard);
-          zdata.osptr = &zdata.ostack[2];
-          goto more;
-        case 1:
-          gx_path_current_point(ppath, &spt);
-          flex_path_was_open = ppath->subpath_open;
-          /* ^--- more sleaze */
-          goto more;
-        case 2:
-          goto more;
-        case 3:
-          gs_type1_pop(pis, &discard); /* pop subr# */
-          zdata.ostack[0] = int2fixed(3);
-          zdata.osptr = &zdata.ostack[1];
-          goto more;
-      }
-      /* Unrecognized othersubr */
-      code = e_rangecheck;
-    }
-  }
   alloc_free((char *)pis, 1, gs_type1_state_sizeof, "type1addpath");
   if (code >= 0)
-  {
-    pop(1);
-  }
+    {
+      pop(1);
+    }
   return code;
 }
 
@@ -419,17 +419,17 @@ int ztype1imagepath(register ref *op)
   check_type(op[-6], t_integer);
   check_type(op[-5], t_integer);
   if ((code = num_params(op - 1, 4, woxy)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   check_write_type(*op, t_string);
   code = gs_type1imagepath(igs, op[-7].value.bytes, (int)op[-6].value.intval,
                            (int)op[-5].value.intval, woxy[0], woxy[1], woxy[2],
                            woxy[3], op->value.bytes, op->size);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   op[-7] = *op;
   op[-7].size = code;
   pop(7);
@@ -443,9 +443,9 @@ int z1_subr_proc(gs_type1_data *pdata, int index, byte **pstr)
   font_data *pfdata = ((z1_data *)(pdata->proc_data))->pfdata;
   ref *psubr;
   if (index < 0 || index >= pfdata->Subrs.size)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   psubr = pfdata->Subrs.value.refs + index;
   check_type(*psubr, t_string);
   *pstr = psubr->value.bytes;
@@ -490,9 +490,9 @@ int setup_show(ref *op, op_proc_p endproc /* end procedure */)
   check_estack(snumpush + 2);
   if ((penum = (gs_show_enum *)alloc(1, gs_show_enum_sizeof, "setup_show")) ==
       0)
-  {
-    return e_VMerror;
-  }
+    {
+      return e_VMerror;
+    }
   mark_estack(es_show);
   push_op_estack(endproc);
   ++esp;
@@ -509,35 +509,35 @@ int show_continue(register ref *op)
   gs_show_enum *penum = senum;
   int code = gs_show_next(penum);
   switch (code)
-  {
-    case 0: /* all done */
-      code = (*seproc.value.opproc)(op);
-      free_show();
-      return (code >= 0 ? o_check_estack : code);
-    case gs_show_kern:
     {
-      ref *pslot = &sslot;
-      push(2);
-      make_int(op - 1, gs_kshow_previous_char(penum));
-      make_int(op, gs_kshow_next_char(penum));
-      push_op_estack(show_continue); /* continue after kerning */
-      *++esp = *pslot;               /* kerning procedure */
+      case 0: /* all done */
+        code = (*seproc.value.opproc)(op);
+        free_show();
+        return (code >= 0 ? o_check_estack : code);
+      case gs_show_kern:
+        {
+          ref *pslot = &sslot;
+          push(2);
+          make_int(op - 1, gs_kshow_previous_char(penum));
+          make_int(op, gs_kshow_next_char(penum));
+          push_op_estack(show_continue); /* continue after kerning */
+          *++esp = *pslot; /* kerning procedure */
+        }
+        return o_check_estack;
+      case gs_show_render:
+        {
+          font_data *pfont = (font_data *)gs_currentfont(igs)->client_data;
+          push(2);
+          op[-1] = pfont->dict; /* push the font */
+          make_int(op, gs_show_current_char(penum));
+          push_op_estack(show_continue);
+          *++esp = pfont->BuildChar;
+        }
+        return o_check_estack;
+      default: /* error */
+        free_show();
+        return code;
     }
-      return o_check_estack;
-    case gs_show_render:
-    {
-      font_data *pfont = (font_data *)gs_currentfont(igs)->client_data;
-      push(2);
-      op[-1] = pfont->dict; /* push the font */
-      make_int(op, gs_show_current_char(penum));
-      push_op_estack(show_continue);
-      *++esp = pfont->BuildChar;
-    }
-      return o_check_estack;
-    default: /* error */
-      free_show();
-      return code;
-  }
 }
 
 /* Find the current show enumerator on the e-stack. */
@@ -546,12 +546,12 @@ gs_show_enum *find_show()
 {
   ref *ep = esp;
   while (!(r_type(ep) == t_null && ep->value.index == es_show))
-  {
-    if (--ep < estack)
     {
-      return 0; /* no mark */
+      if (--ep < estack)
+        {
+          return 0; /* no mark */
+        }
     }
-  }
   return (gs_show_enum *)ep[snumpush - 1].value.bytes;
 }
 

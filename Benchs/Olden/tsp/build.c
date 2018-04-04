@@ -51,13 +51,13 @@ static double median(double min, double max, int n)
 
   t = drand48(); /* in [0.0,1.0) */
   if (t > 0.5)
-  {
-    retval = log(1.0 - (2.0 * (M_E12 - 1) * (t - 0.5) / M_E12)) / 12.0;
-  }
+    {
+      retval = log(1.0 - (2.0 * (M_E12 - 1) * (t - 0.5) / M_E12)) / 12.0;
+    }
   else
-  {
-    retval = -log(1.0 - (2.0 * (M_E12 - 1) * t / M_E12)) / 12.0;
-  }
+    {
+      retval = -log(1.0 - (2.0 * (M_E12 - 1) * t / M_E12)) / 12.0;
+    }
   /* We now have something distributed on (-1.0,1.0) */
   retval = (retval + 1.0) * (max - min) / 2.0;
   retval = retval + min;
@@ -90,41 +90,41 @@ Tree build_tree(int n, int dir, int lo, int num_proc, double min_x,
   t = (Tree)ALLOC(lo, sizeof(*t));
 
   if (dir)
-  {
-    dir = !dir;
-    med = median(min_x, max_x, n);
+    {
+      dir = !dir;
+      med = median(min_x, max_x, n);
 #ifndef FUTURES
-    t->left = build_tree(n / 2, dir, lo + num_proc / 2, num_proc / 2, min_x,
-                         med, min_y, max_y);
-    t->right =
-        build_tree(n / 2, dir, lo, num_proc / 2, med, max_x, min_y, max_y);
+      t->left = build_tree(n / 2, dir, lo + num_proc / 2, num_proc / 2, min_x,
+                           med, min_y, max_y);
+      t->right =
+          build_tree(n / 2, dir, lo, num_proc / 2, med, max_x, min_y, max_y);
 #else
-    FUTURE(n / 2, dir, lo + num_proc / 2, num_proc / 2, min_x, med, min_y,
-           max_y, build_tree, &fc);
-    t->right =
-        build_tree(n / 2, dir, lo, num_proc / 2, med, max_x, min_y, max_y);
+      FUTURE(n / 2, dir, lo + num_proc / 2, num_proc / 2, min_x, med, min_y,
+             max_y, build_tree, &fc);
+      t->right =
+          build_tree(n / 2, dir, lo, num_proc / 2, med, max_x, min_y, max_y);
 #endif
-    t->x = med;
-    t->y = uniform(min_y, max_y);
-  }
+      t->x = med;
+      t->y = uniform(min_y, max_y);
+    }
   else
-  {
-    dir = !dir;
-    med = median(min_y, max_y, n);
+    {
+      dir = !dir;
+      med = median(min_y, max_y, n);
 #ifndef FUTURES
-    t->left = build_tree(n / 2, dir, lo + num_proc / 2, num_proc / 2, min_x,
-                         max_x, min_y, med);
-    t->right =
-        build_tree(n / 2, dir, lo, num_proc / 2, min_x, max_x, med, max_y);
+      t->left = build_tree(n / 2, dir, lo + num_proc / 2, num_proc / 2, min_x,
+                           max_x, min_y, med);
+      t->right =
+          build_tree(n / 2, dir, lo, num_proc / 2, min_x, max_x, med, max_y);
 #else
-    FUTURE(n / 2, dir, lo + num_proc / 2, num_proc / 2, min_x, max_x, min_y,
-           med, build_tree, &fc);
-    t->right =
-        build_tree(n / 2, dir, lo, num_proc / 2, min_x, max_x, med, max_y);
+      FUTURE(n / 2, dir, lo + num_proc / 2, num_proc / 2, min_x, max_x, min_y,
+             med, build_tree, &fc);
+      t->right =
+          build_tree(n / 2, dir, lo, num_proc / 2, min_x, max_x, med, max_y);
 #endif
-    t->y = med;
-    t->x = uniform(min_x, max_x);
-  }
+      t->y = med;
+      t->x = uniform(min_x, max_x);
+    }
   t->sz = n;
   t->next = NULL;
   t->prev = NULL;

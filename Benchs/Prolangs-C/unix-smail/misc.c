@@ -19,27 +19,27 @@ static char *sccsid = "@(#)misc.c	2.5 (smail) 9/15/87";
 #include <time.h>
 #endif
 
-extern int exitstat;          /* set if a forked mailer fails */
-extern enum edebug debug;     /* how verbose we are 		*/
-extern enum ehandle handle;   /* what we handle		*/
-extern char *uuxargs;         /* arguments given to uux       */
-extern int queuecost;         /* threshold for queueing mail  */
-extern int maxnoqueue;        /* max number of uucico's       */
+extern int exitstat; /* set if a forked mailer fails */
+extern enum edebug debug; /* how verbose we are 		*/
+extern enum ehandle handle; /* what we handle		*/
+extern char *uuxargs; /* arguments given to uux       */
+extern int queuecost; /* threshold for queueing mail  */
+extern int maxnoqueue; /* max number of uucico's       */
 extern enum erouting routing; /* when to route addresses	*/
-extern char hostdomain[];     /* */
-extern char hostname[];       /* */
-extern char hostuucp[];       /* */
-extern char *pathfile;        /* location of path database	*/
-extern char *spoolfile;       /* file name of spooled message */
-extern FILE *spoolfp;         /* file ptr  to spooled message */
-extern int spoolmaster;       /* set if creator of spoolfile  */
+extern char hostdomain[]; /* */
+extern char hostname[]; /* */
+extern char hostuucp[]; /* */
+extern char *pathfile; /* location of path database	*/
+extern char *spoolfile; /* file name of spooled message */
+extern FILE *spoolfp; /* file ptr  to spooled message */
+extern int spoolmaster; /* set if creator of spoolfile  */
 
 extern struct tm *localtime();
 
 struct tm *gmt, *loc; /* GMT and local time structure	*/
-time_t now;           /* current system time		*/
-char nows[50];        /* time in ctime format		*/
-char arpanows[50];    /* time in arpa format		*/
+time_t now; /* current system time		*/
+char nows[50]; /* time in ctime format		*/
+char arpanows[50]; /* time in arpa format		*/
 
 int strcmpic();
 
@@ -59,10 +59,10 @@ void log(char *command, char *from, long size)
   (void)umask(cmask);
 
   if (fd != NULL)
-  {
-    (void)fprintf(fd, "%s\t%ld\t%s\t%s\n", logtime, size, from, command);
-    (void)fclose(fd);
-  }
+    {
+      (void)fprintf(fd, "%s\t%ld\t%s\t%s\n", logtime, size, from, command);
+      (void)fclose(fd);
+    }
 }
 #endif
 
@@ -82,14 +82,14 @@ FILE *record(char *command, char *from, long size)
   (void)umask(cmask);
 
   if (fd != NULL)
-  {
-    (void)fprintf(fd, "%s: %s, from %s, %ld bytes\n", logtime, command, from,
-                  size);
-  }
+    {
+      (void)fprintf(fd, "%s: %s, from %s, %ld bytes\n", logtime, command, from,
+                    size);
+    }
   while (fgets(buf, sizeof(buf), spoolfp) != NULL)
-  {
-    (void)fputs(buf, fd);
-  }
+    {
+      (void)fputs(buf, fd);
+    }
   (void)fclose(fd);
 }
 #endif
@@ -152,7 +152,7 @@ char *arpadate(register char *ud)
   extern char *timezone();
 #endif
 
-/*
+  /*
 **  Get current time.
 **	This will be used if a null argument is passed and
 **	to resolve the timezone.
@@ -161,9 +161,9 @@ char *arpadate(register char *ud)
 #ifndef BSD
   (void)time(&t);
   if (ud == NULL)
-  {
-    ud = ctime(&t);
-  }
+    {
+      ud = ctime(&t);
+    }
 #else
   /* V7 or 4BSD */
   ftime(&t);
@@ -178,13 +178,13 @@ char *arpadate(register char *ud)
 
   p = &ud[8]; /* 16 */
   if (*p == ' ')
-  {
-    p++;
-  }
+    {
+      p++;
+    }
   else
-  {
-    *q++ = *p++;
-  }
+    {
+      *q++ = *p++;
+    }
   *q++ = *p++;
   *q++ = ' ';
 
@@ -201,9 +201,9 @@ char *arpadate(register char *ud)
 
   p = &ud[11]; /* 01:03:52 */
   for (i = 8; i > 0; i--)
-  {
-    *q++ = *p++;
-  }
+    {
+      *q++ = *p++;
+    }
 
 /* -PST or -PDT */
 #ifndef BSD
@@ -212,30 +212,30 @@ char *arpadate(register char *ud)
   p = timezone(t.timezone, localtime(&t.time)->tm_isdst);
 #endif
   if (p[3] != '\0')
-  {
-    /* hours from GMT */
-    p += 3;
-    *q++ = *p++;
-    if (p[1] == ':')
     {
-      *q++ = '0';
-    }
-    else
-    {
+      /* hours from GMT */
+      p += 3;
+      *q++ = *p++;
+      if (p[1] == ':')
+        {
+          *q++ = '0';
+        }
+      else
+        {
+          *q++ = *p++;
+        }
+      *q++ = *p++;
+      p++; /* skip ``:'' */
+      *q++ = *p++;
       *q++ = *p++;
     }
-    *q++ = *p++;
-    p++; /* skip ``:'' */
-    *q++ = *p++;
-    *q++ = *p++;
-  }
   else
-  {
-    *q++ = ' ';
-    *q++ = *p++;
-    *q++ = *p++;
-    *q++ = *p++;
-  }
+    {
+      *q++ = ' ';
+      *q++ = *p++;
+      *q++ = *p++;
+      *q++ = *p++;
+    }
 
   p = &ud[0]; /* Mon */
   *q++ = ' ';
@@ -261,13 +261,13 @@ char *postmaster(char *user)
   static char *pm = "postmaster";
 
   if (strcmpic(user, pm) == 0)
-  {
-    return (pm);
-  }
+    {
+      return (pm);
+    }
   else
-  {
-    return (user);
-  }
+    {
+      return (user);
+    }
 }
 
 /*
@@ -276,13 +276,13 @@ char *postmaster(char *user)
 int isuucp(char *str)
 {
   if (strcmpic(str, "UUCP") == 0)
-  {
-    return (1);
-  }
+    {
+      return (1);
+    }
   else
-  {
-    return (0);
-  }
+    {
+      return (0);
+    }
 }
 
 /*
@@ -292,25 +292,25 @@ int isuucp(char *str)
 char *sform(enum eform form)
 {
   if (form == ERROR)
-  {
-    return ("ERROR");
-  }
+    {
+      return ("ERROR");
+    }
   if (form == LOCAL)
-  {
-    return ("LOCAL");
-  }
+    {
+      return ("LOCAL");
+    }
   if (form == DOMAIN)
-  {
-    return ("DOMAIN");
-  }
+    {
+      return ("DOMAIN");
+    }
   if (form == UUCP)
-  {
-    return ("UUCP");
-  }
+    {
+      return ("UUCP");
+    }
   if (form == ROUTE)
-  {
-    return ("ROUTE");
-  }
+    {
+      return ("ROUTE");
+    }
   return ("UNKNOWN");
 }
 
@@ -338,12 +338,12 @@ void getmynames(void)
 #endif
 #ifdef UNAME
   if (!*hostname)
-  {
-    struct utsname site;
+    {
+      struct utsname site;
 
-    if (uname(&site) < 0) error(EX_SOFTWARE, "uname() call failed", 0);
-    (void)strcpy(hostname, site.nodename);
-  }
+      if (uname(&site) < 0) error(EX_SOFTWARE, "uname() call failed", 0);
+      (void)strcpy(hostname, site.nodename);
+    }
 #endif
   if (!*hostname) error(EX_SOFTWARE, "can't determine hostname.\n", 0);
 #ifdef HOSTDOMAIN
@@ -351,14 +351,14 @@ void getmynames(void)
 #endif
 #ifdef MYDOM
   if (!*hostdomain)
-  {
-    (void)strcat(strcpy(hostdomain, hostname), MYDOM);
-  }
+    {
+      (void)strcat(strcpy(hostdomain, hostname), MYDOM);
+    }
 #endif
   if (!*hostdomain)
-  {
-    (void)strcpy(hostdomain, hostname);
-  }
+    {
+      (void)strcpy(hostdomain, hostname);
+    }
 
   (void)strcat(strcpy(hostuucp, hostname), ".UUCP");
 }

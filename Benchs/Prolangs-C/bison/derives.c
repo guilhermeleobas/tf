@@ -46,28 +46,28 @@ void set_derives(void)
 
   p = delts;
   for (i = nrules; i > 0; i--)
-  {
-    lhs = rlhs[i];
-    p->next = dset[lhs];
-    p->value = i;
-    dset[lhs] = p;
-    p++;
-  }
+    {
+      lhs = rlhs[i];
+      p->next = dset[lhs];
+      p->value = i;
+      dset[lhs] = p;
+      p++;
+    }
 
   derives = NEW2(nvars, short *) - ntokens;
   q = NEW2(nvars + nrules, short);
 
   for (i = ntokens; i < nsyms; i++)
-  {
-    derives[i] = q;
-    p = dset[i];
-    while (p)
     {
-      *q++ = p->value;
-      p = p->next;
+      derives[i] = q;
+      p = dset[i];
+      while (p)
+        {
+          *q++ = p->value;
+          p = p->next;
+        }
+      *q++ = -1;
     }
-    *q++ = -1;
-  }
 
 #ifdef DEBUG
   print_derives();
@@ -95,14 +95,14 @@ void print_derives(void)
   printf("\n\n\nDERIVES\n\n");
 
   for (i = ntokens; i < nsyms; i++)
-  {
-    printf("%s derives", tags[i]);
-    for (sp = derives[i]; *sp > 0; sp++)
     {
-      printf("  %d", *sp);
+      printf("%s derives", tags[i]);
+      for (sp = derives[i]; *sp > 0; sp++)
+        {
+          printf("  %d", *sp);
+        }
+      putchar('\n');
     }
-    putchar('\n');
-  }
 
   putchar('\n');
 }

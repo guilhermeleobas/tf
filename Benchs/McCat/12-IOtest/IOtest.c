@@ -32,10 +32,10 @@ void initarray(void)
   unsigned long i;
   i = 0;
   while (i < IOTEST_SIZE)
-  {
-    testarray[i] = i % 255;
-    i++;
-  }
+    {
+      testarray[i] = i % 255;
+      i++;
+    }
 }
 
 char_t array(unsigned long i) { return testarray[i]; }
@@ -50,10 +50,10 @@ void loop(void (*init)(void *), void (*step)(void *), void *result)
   init(result);
 
   while (i < IOTEST_SIZE)
-  {
-    step(result);
-    i++;
-  }
+    {
+      step(result);
+      i++;
+    }
 }
 
 extern void testA(void), testB(void), testC(void);

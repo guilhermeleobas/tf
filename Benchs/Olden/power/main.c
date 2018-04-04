@@ -35,12 +35,12 @@ double map_Q[36] = {
     1768.846590190, 1706.229490046, 1637.253873079, 1569.637451623,
     1504.419525242, 1441.477913810, 1380.700660446, 1321.980440476,
     1265.218982201, 1210.322424636, 1157.203306183, 1105.780028163,
-    1055.974296746, 1007.714103979, 960.930643875,  915.558722782,
-    871.538200178,  828.810882006,  787.322098340,  747.020941334,
-    707.858376214,  669.787829741,  632.765987756,  596.751545633,
-    561.704466609,  527.587580585,  494.365739051,  462.004890691,
-    430.472546686,  399.738429196,  369.773787595,  340.550287137,
-    312.041496095,  284.222260660,  257.068973074,  230.557938283};
+    1055.974296746, 1007.714103979, 960.930643875, 915.558722782,
+    871.538200178, 828.810882006, 787.322098340, 747.020941334,
+    707.858376214, 669.787829741, 632.765987756, 596.751545633,
+    561.704466609, 527.587580585, 494.365739051, 462.004890691,
+    430.472546686, 399.738429196, 369.773787595, 340.550287137,
+    312.041496095, 284.222260660, 257.068973074, 230.557938283};
 
 #define MIN_THETA_I 0.13
 #define PER_INDEX_I 0.002
@@ -67,50 +67,50 @@ int main(int argc, char *argv[])
   r->theta_I = 0.14;
 
   while (!finished)
-  {
-    Compute_Tree(r);
-    printf("TR=%4.2f, TI=%4.2f, P0=%4.2f, Q0=%4.2f\n", r->theta_R, r->theta_I,
-           r->D.P, r->D.Q);
-    if (fabs(r->D.P / 10000.0 - r->theta_R) < ROOT_EPSILON &&
-        fabs(r->D.Q / 10000.0 - r->theta_I) < ROOT_EPSILON)
     {
-      finished = 1;
-    }
-    else
-    {
-      i = (int)((r->theta_R - MIN_THETA_R) / PER_INDEX_R);
-      if (i < 0)
-      {
-        i = 0;
-      }
-      if (i > 35)
-      {
-        i = 35;
-      }
-      d_theta_R = -(r->theta_R - r->D.P / 10000.0) /
-                  (1 - (map_P[i + 1] - map_P[i]) / (PER_INDEX_R * 10000.0));
+      Compute_Tree(r);
+      printf("TR=%4.2f, TI=%4.2f, P0=%4.2f, Q0=%4.2f\n", r->theta_R, r->theta_I,
+             r->D.P, r->D.Q);
+      if (fabs(r->D.P / 10000.0 - r->theta_R) < ROOT_EPSILON &&
+          fabs(r->D.Q / 10000.0 - r->theta_I) < ROOT_EPSILON)
+        {
+          finished = 1;
+        }
+      else
+        {
+          i = (int)((r->theta_R - MIN_THETA_R) / PER_INDEX_R);
+          if (i < 0)
+            {
+              i = 0;
+            }
+          if (i > 35)
+            {
+              i = 35;
+            }
+          d_theta_R = -(r->theta_R - r->D.P / 10000.0) /
+                      (1 - (map_P[i + 1] - map_P[i]) / (PER_INDEX_R * 10000.0));
 
-      i = (int)((r->theta_I - MIN_THETA_I) / PER_INDEX_I);
-      if (i < 0)
-      {
-        i = 0;
-      }
-      if (i > 35)
-      {
-        i = 35;
-      }
-      d_theta_I = -(r->theta_I - r->D.Q / 10000.0) /
-                  (1 - (map_Q[i + 1] - map_Q[i]) / (PER_INDEX_I * 10000.0));
+          i = (int)((r->theta_I - MIN_THETA_I) / PER_INDEX_I);
+          if (i < 0)
+            {
+              i = 0;
+            }
+          if (i > 35)
+            {
+              i = 35;
+            }
+          d_theta_I = -(r->theta_I - r->D.Q / 10000.0) /
+                      (1 - (map_Q[i + 1] - map_Q[i]) / (PER_INDEX_I * 10000.0));
 
-      printf("D TR-%4.2f, TI=%4.2f\n", d_theta_R, d_theta_I);
-      r->last.P = r->D.P;
-      r->last.Q = r->D.Q;
-      r->last_theta_R = r->theta_R;
-      r->last_theta_I = r->theta_I;
-      r->theta_R = r->theta_R + d_theta_R;
-      r->theta_I = r->theta_I + d_theta_I;
-    }
-  } /* while */
+          printf("D TR-%4.2f, TI=%4.2f\n", d_theta_R, d_theta_I);
+          r->last.P = r->D.P;
+          r->last.Q = r->D.Q;
+          r->last_theta_R = r->theta_R;
+          r->last_theta_I = r->theta_I;
+          r->theta_R = r->theta_R + d_theta_R;
+          r->theta_I = r->theta_I + d_theta_I;
+        }
+    } /* while */
 
   return 0;
 }

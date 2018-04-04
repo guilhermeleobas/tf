@@ -39,11 +39,11 @@
  */
 
 #include "getInitCommand.h" /* for getInitCommand() return codes        */
-#include <assert.h>         /* for assert()                             */
-#include <stdio.h>          /* for FILE definition                      */
+#include <assert.h> /* for assert()                             */
+#include <stdio.h> /* for FILE definition                      */
 #include "dataManagement.h" /* for primitive data types                 */
-#include "errorMessage.h"   /* for errorMessage() definition            */
-#include "getInt.h"         /* for getInt() and return code definitions */
+#include "errorMessage.h" /* for errorMessage() definition            */
+#include "getInt.h" /* for getInt() and return code definitions */
 
 /*
  *  Function prototypes
@@ -51,9 +51,9 @@
 extern void clearLine(FILE *file);
 
 Int getInitCommand(FILE *file, /*  file for reading    */
-                   Int *fan)   /*  output fan read     */
-{                              /*  begin getInitCommand()  */
-  Int returnCode;              /* return code value from getInt() */
+                   Int *fan) /*  output fan read     */
+{ /*  begin getInitCommand()  */
+  Int returnCode; /* return code value from getInt() */
 
   static Char name[] = "getInitCommand";
 
@@ -65,36 +65,36 @@ Int getInitCommand(FILE *file, /*  file for reading    */
    */
   returnCode = getInt(file, fan);
   if (returnCode == GET_INT_SUCCESS)
-  {
-    if (*fan < MINIMUM_FAN_SIZE)
+    {
+      if (*fan < MINIMUM_FAN_SIZE)
+        {
+          errorMessage("invalid fan specified", REPLACE);
+          errorMessage(name, PREPEND);
+          returnCode = GET_INIT_INVALID_FAN;
+        } /*  end of if ( *fan < MINIMUM_FAN_SIZE )   */
+      else
+        {
+          returnCode = GET_INIT_SUCCESS;
+        } /*  end of if ( *fan >= MINIMUM_FAN_SIZE )  */
+    } /*  end of if returnCode == SUCCESS )   */
+  else if (returnCode == GET_INT_EOI)
+    {
+      errorMessage("improper format - early EOI", REPLACE);
+      errorMessage(name, PREPEND);
+      returnCode = GET_INIT_EARLY_EOI;
+    } /*  end of if ( returnCode == GET_INT_EOI ) */
+  else if (returnCode == GET_INT_RANGE_EXCEEDED)
     {
       errorMessage("invalid fan specified", REPLACE);
       errorMessage(name, PREPEND);
       returnCode = GET_INIT_INVALID_FAN;
-    } /*  end of if ( *fan < MINIMUM_FAN_SIZE )   */
-    else
-    {
-      returnCode = GET_INIT_SUCCESS;
-    } /*  end of if ( *fan >= MINIMUM_FAN_SIZE )  */
-  }   /*  end of if returnCode == SUCCESS )   */
-  else if (returnCode == GET_INT_EOI)
-  {
-    errorMessage("improper format - early EOI", REPLACE);
-    errorMessage(name, PREPEND);
-    returnCode = GET_INIT_EARLY_EOI;
-  } /*  end of if ( returnCode == GET_INT_EOI ) */
-  else if (returnCode == GET_INT_RANGE_EXCEEDED)
-  {
-    errorMessage("invalid fan specified", REPLACE);
-    errorMessage(name, PREPEND);
-    returnCode = GET_INIT_INVALID_FAN;
-  } /*  end of if ( returnCode == GET_INT_GET_STRING_FAILURE ) */
+    } /*  end of if ( returnCode == GET_INT_GET_STRING_FAILURE ) */
   else if (returnCode == GET_INT_BAD_CONVERSION)
-  {
-    errorMessage("improper format - fan must be an integer", REPLACE);
-    errorMessage(name, PREPEND);
-    returnCode = GET_INIT_IO_ERROR;
-  } /*  end of if ( returnCode == GET_INT_GET_STRING_FAILURE ) */
+    {
+      errorMessage("improper format - fan must be an integer", REPLACE);
+      errorMessage(name, PREPEND);
+      returnCode = GET_INIT_IO_ERROR;
+    } /*  end of if ( returnCode == GET_INT_GET_STRING_FAILURE ) */
 
   return (returnCode);
 } /*  end of getInitCommand() */

@@ -11,8 +11,8 @@
  *
  *****************************************************************************/
 
-#include "smg.h"
 #include "headers.h"
+#include "smg.h"
 
 /*--------------------------------------------------------------------------
  * hypre_SMG2CreateRAPOp
@@ -48,54 +48,54 @@ hypre_StructMatrix *hypre_SMG2CreateRAPOp(hypre_StructMatrix *R,
    *-----------------------------------------------------------------------*/
 
   if (!hypre_StructMatrixSymmetric(A))
-  {
-    /*--------------------------------------------------------------------
+    {
+      /*--------------------------------------------------------------------
      * 5 or 9 point fine grid stencil produces 9 point RAP
      *--------------------------------------------------------------------*/
-    RAP_stencil_size = 9;
-    RAP_stencil_shape = hypre_CTAlloc(hypre_Index, RAP_stencil_size);
-    for (j = -1; j < 2; j++)
-    {
-      for (i = -1; i < 2; i++)
-      {
-        /*--------------------------------------------------------------
+      RAP_stencil_size = 9;
+      RAP_stencil_shape = hypre_CTAlloc(hypre_Index, RAP_stencil_size);
+      for (j = -1; j < 2; j++)
+        {
+          for (i = -1; i < 2; i++)
+            {
+              /*--------------------------------------------------------------
          * Storage for 9 elements (c,w,e,n,s,sw,se,nw,se)
          *--------------------------------------------------------------*/
-        hypre_SetIndex(RAP_stencil_shape[stencil_rank], i, j, 0);
-        stencil_rank++;
-      }
+              hypre_SetIndex(RAP_stencil_shape[stencil_rank], i, j, 0);
+              stencil_rank++;
+            }
+        }
     }
-  }
 
   /*-----------------------------------------------------------------------
    * symmetric case
    *-----------------------------------------------------------------------*/
 
   else
-  {
-    /*--------------------------------------------------------------------
+    {
+      /*--------------------------------------------------------------------
      * 5 or 9 point fine grid stencil produces 9 point RAP
      * Only store the lower triangular part + diagonal = 5 entries,
      * lower triangular means the lower triangular part on the matrix
      * in the standard lexicalgraphic ordering.
      *--------------------------------------------------------------------*/
-    RAP_stencil_size = 5;
-    RAP_stencil_shape = hypre_CTAlloc(hypre_Index, RAP_stencil_size);
-    for (j = -1; j < 1; j++)
-    {
-      for (i = -1; i < 2; i++)
-      {
-        /*--------------------------------------------------------------
+      RAP_stencil_size = 5;
+      RAP_stencil_shape = hypre_CTAlloc(hypre_Index, RAP_stencil_size);
+      for (j = -1; j < 1; j++)
+        {
+          for (i = -1; i < 2; i++)
+            {
+              /*--------------------------------------------------------------
          * Store 5 elements in (c,w,s,sw,se)
          *--------------------------------------------------------------*/
-        if (i + j <= 0)
-        {
-          hypre_SetIndex(RAP_stencil_shape[stencil_rank], i, j, 0);
-          stencil_rank++;
+              if (i + j <= 0)
+                {
+                  hypre_SetIndex(RAP_stencil_shape[stencil_rank], i, j, 0);
+                  stencil_rank++;
+                }
+            }
         }
-      }
     }
-  }
 
   RAP_stencil = hypre_StructStencilCreate(RAP_stencil_dim, RAP_stencil_size,
                                           RAP_stencil_shape);
@@ -114,10 +114,10 @@ hypre_StructMatrix *hypre_SMG2CreateRAPOp(hypre_StructMatrix *R,
    * Set number of ghost points
    *-----------------------------------------------------------------------*/
   if (hypre_StructMatrixSymmetric(A))
-  {
-    RAP_num_ghost[1] = 0;
-    RAP_num_ghost[3] = 0;
-  }
+    {
+      RAP_num_ghost[1] = 0;
+      RAP_num_ghost[3] = 0;
+    }
   hypre_StructMatrixSetNumGhost(RAP, RAP_num_ghost);
 
   return RAP;
@@ -207,9 +207,9 @@ int hypre_SMG2BuildRAPSym(hypre_StructMatrix *A, hypre_StructMatrix *PT,
   hypre_ForBoxI(ci, cgrid_boxes)
   {
     while (fgrid_ids[fi] != cgrid_ids[ci])
-    {
-      fi++;
-    }
+      {
+        fi++;
+      }
 
     cgrid_box = hypre_BoxArrayBox(cgrid_boxes, ci);
 
@@ -280,16 +280,16 @@ int hypre_SMG2BuildRAPSym(hypre_StructMatrix *A, hypre_StructMatrix *PT,
      *-----------------------------------------------------------------*/
 
     if (fine_stencil_size > 5)
-    {
-      hypre_SetIndex(index, -1, -1, 0);
-      a_csw = hypre_StructMatrixExtractPointerByIndex(A, fi, index);
+      {
+        hypre_SetIndex(index, -1, -1, 0);
+        a_csw = hypre_StructMatrixExtractPointerByIndex(A, fi, index);
 
-      hypre_SetIndex(index, 1, -1, 0);
-      a_cse = hypre_StructMatrixExtractPointerByIndex(A, fi, index);
+        hypre_SetIndex(index, 1, -1, 0);
+        a_cse = hypre_StructMatrixExtractPointerByIndex(A, fi, index);
 
-      hypre_SetIndex(index, -1, 1, 0);
-      a_cnw = hypre_StructMatrixExtractPointerByIndex(A, fi, index);
-    }
+        hypre_SetIndex(index, -1, 1, 0);
+        a_cnw = hypre_StructMatrixExtractPointerByIndex(A, fi, index);
+      }
 
     /*-----------------------------------------------------------------
      * Extract pointers for coarse grid operator - always 9-point:
@@ -334,100 +334,100 @@ int hypre_SMG2BuildRAPSym(hypre_StructMatrix *A, hypre_StructMatrix *PT,
      *-----------------------------------------------------------------*/
 
     switch (fine_stencil_size)
-    {
-      /*--------------------------------------------------------------
+      {
+          /*--------------------------------------------------------------
        * Loop for symmetric 5-point fine grid operator; produces a
        * symmetric 9-point coarse grid operator. We calculate only the
        * lower triangular stencil entries: (southwest, south, southeast,
        * west, and center).
        *--------------------------------------------------------------*/
 
-      case 5:
+        case 5:
 
-        hypre_BoxGetSize(cgrid_box, loop_size);
-        hypre_BoxLoop4Begin(loop_size, PT_dbox, cstart, stridec, iP, R_dbox,
-                            cstart, stridec, iR, A_dbox, fstart, stridef, iA,
-                            RAP_dbox, cstart, stridec, iAc);
+          hypre_BoxGetSize(cgrid_box, loop_size);
+          hypre_BoxLoop4Begin(loop_size, PT_dbox, cstart, stridec, iP, R_dbox,
+                              cstart, stridec, iR, A_dbox, fstart, stridef, iA,
+                              RAP_dbox, cstart, stridec, iAc);
 #define HYPRE_BOX_SMP_PRIVATE \
   loopk, loopi, loopj, iP, iR, iA, iAc, iAm1, iAp1, iP1
 #include "hypre_box_smp_forloop.h"
-        hypre_BoxLoop4For(loopi, loopj, loopk, iP, iR, iA, iAc)
-        {
-          iAm1 = iA - yOffsetA;
-          iAp1 = iA + yOffsetA;
+          hypre_BoxLoop4For(loopi, loopj, loopk, iP, iR, iA, iAc)
+          {
+            iAm1 = iA - yOffsetA;
+            iAp1 = iA + yOffsetA;
 
-          iP1 = iP - yOffsetP - xOffsetP;
-          rap_csw[iAc] = rb[iR] * a_cw[iAm1] * pa[iP1];
+            iP1 = iP - yOffsetP - xOffsetP;
+            rap_csw[iAc] = rb[iR] * a_cw[iAm1] * pa[iP1];
 
-          iP1 = iP - yOffsetP;
-          rap_cs[iAc] = rb[iR] * a_cc[iAm1] * pa[iP1] + rb[iR] * a_cs[iAm1] +
-                        a_cs[iA] * pa[iP1];
+            iP1 = iP - yOffsetP;
+            rap_cs[iAc] = rb[iR] * a_cc[iAm1] * pa[iP1] + rb[iR] * a_cs[iAm1] +
+                          a_cs[iA] * pa[iP1];
 
-          iP1 = iP - yOffsetP + xOffsetP;
-          rap_cse[iAc] = rb[iR] * a_ce[iAm1] * pa[iP1];
+            iP1 = iP - yOffsetP + xOffsetP;
+            rap_cse[iAc] = rb[iR] * a_ce[iAm1] * pa[iP1];
 
-          iP1 = iP - xOffsetP;
-          rap_cw[iAc] = a_cw[iA] + rb[iR] * a_cw[iAm1] * pb[iP1] +
-                        ra[iR] * a_cw[iAp1] * pa[iP1];
+            iP1 = iP - xOffsetP;
+            rap_cw[iAc] = a_cw[iA] + rb[iR] * a_cw[iAm1] * pb[iP1] +
+                          ra[iR] * a_cw[iAp1] * pa[iP1];
 
-          rap_cc[iAc] = a_cc[iA] + rb[iR] * a_cc[iAm1] * pb[iP] +
-                        ra[iR] * a_cc[iAp1] * pa[iP] + rb[iR] * a_cn[iAm1] +
-                        ra[iR] * a_cs[iAp1] + a_cs[iA] * pb[iP] +
-                        a_cn[iA] * pa[iP];
-        }
-        hypre_BoxLoop4End(iP, iR, iA, iAc);
+            rap_cc[iAc] = a_cc[iA] + rb[iR] * a_cc[iAm1] * pb[iP] +
+                          ra[iR] * a_cc[iAp1] * pa[iP] + rb[iR] * a_cn[iAm1] +
+                          ra[iR] * a_cs[iAp1] + a_cs[iA] * pb[iP] +
+                          a_cn[iA] * pa[iP];
+          }
+          hypre_BoxLoop4End(iP, iR, iA, iAc);
 
-        break;
+          break;
 
-      /*--------------------------------------------------------------
+          /*--------------------------------------------------------------
        * Loop for symmetric 9-point fine grid operator; produces a
        * symmetric 9-point coarse grid operator. We calculate only the
        * lower triangular stencil entries: (southwest, south, southeast,
        * west, and center).
        *--------------------------------------------------------------*/
 
-      default:
+        default:
 
-        hypre_BoxGetSize(cgrid_box, loop_size);
-        hypre_BoxLoop4Begin(loop_size, PT_dbox, cstart, stridec, iP, R_dbox,
-                            cstart, stridec, iR, A_dbox, fstart, stridef, iA,
-                            RAP_dbox, cstart, stridec, iAc);
+          hypre_BoxGetSize(cgrid_box, loop_size);
+          hypre_BoxLoop4Begin(loop_size, PT_dbox, cstart, stridec, iP, R_dbox,
+                              cstart, stridec, iR, A_dbox, fstart, stridef, iA,
+                              RAP_dbox, cstart, stridec, iAc);
 #define HYPRE_BOX_SMP_PRIVATE \
   loopk, loopi, loopj, iP, iR, iA, iAc, iAm1, iAp1, iP1
 #include "hypre_box_smp_forloop.h"
-        hypre_BoxLoop4For(loopi, loopj, loopk, iP, iR, iA, iAc)
-        {
-          iAm1 = iA - yOffsetA;
-          iAp1 = iA + yOffsetA;
+          hypre_BoxLoop4For(loopi, loopj, loopk, iP, iR, iA, iAc)
+          {
+            iAm1 = iA - yOffsetA;
+            iAp1 = iA + yOffsetA;
 
-          iP1 = iP - yOffsetP - xOffsetP;
-          rap_csw[iAc] = rb[iR] * a_cw[iAm1] * pa[iP1] + rb[iR] * a_csw[iAm1] +
-                         a_csw[iA] * pa[iP1];
+            iP1 = iP - yOffsetP - xOffsetP;
+            rap_csw[iAc] = rb[iR] * a_cw[iAm1] * pa[iP1] + rb[iR] * a_csw[iAm1] +
+                           a_csw[iA] * pa[iP1];
 
-          iP1 = iP - yOffsetP;
-          rap_cs[iAc] = rb[iR] * a_cc[iAm1] * pa[iP1] + rb[iR] * a_cs[iAm1] +
-                        a_cs[iA] * pa[iP1];
+            iP1 = iP - yOffsetP;
+            rap_cs[iAc] = rb[iR] * a_cc[iAm1] * pa[iP1] + rb[iR] * a_cs[iAm1] +
+                          a_cs[iA] * pa[iP1];
 
-          iP1 = iP - yOffsetP + xOffsetP;
-          rap_cse[iAc] = rb[iR] * a_ce[iAm1] * pa[iP1] + rb[iR] * a_cse[iAm1] +
-                         a_cse[iA] * pa[iP1];
+            iP1 = iP - yOffsetP + xOffsetP;
+            rap_cse[iAc] = rb[iR] * a_ce[iAm1] * pa[iP1] + rb[iR] * a_cse[iAm1] +
+                           a_cse[iA] * pa[iP1];
 
-          iP1 = iP - xOffsetP;
-          rap_cw[iAc] = a_cw[iA] + rb[iR] * a_cw[iAm1] * pb[iP1] +
-                        ra[iR] * a_cw[iAp1] * pa[iP1] + rb[iR] * a_cnw[iAm1] +
-                        ra[iR] * a_csw[iAp1] + a_csw[iA] * pb[iP1] +
-                        a_cnw[iA] * pa[iP1];
+            iP1 = iP - xOffsetP;
+            rap_cw[iAc] = a_cw[iA] + rb[iR] * a_cw[iAm1] * pb[iP1] +
+                          ra[iR] * a_cw[iAp1] * pa[iP1] + rb[iR] * a_cnw[iAm1] +
+                          ra[iR] * a_csw[iAp1] + a_csw[iA] * pb[iP1] +
+                          a_cnw[iA] * pa[iP1];
 
-          rap_cc[iAc] = a_cc[iA] + rb[iR] * a_cc[iAm1] * pb[iP] +
-                        ra[iR] * a_cc[iAp1] * pa[iP] + rb[iR] * a_cn[iAm1] +
-                        ra[iR] * a_cs[iAp1] + a_cs[iA] * pb[iP] +
-                        a_cn[iA] * pa[iP];
-        }
-        hypre_BoxLoop4End(iP, iR, iA, iAc);
+            rap_cc[iAc] = a_cc[iA] + rb[iR] * a_cc[iAm1] * pb[iP] +
+                          ra[iR] * a_cc[iAp1] * pa[iP] + rb[iR] * a_cn[iAm1] +
+                          ra[iR] * a_cs[iAp1] + a_cs[iA] * pb[iP] +
+                          a_cn[iA] * pa[iP];
+          }
+          hypre_BoxLoop4End(iP, iR, iA, iAc);
 
-        break;
+          break;
 
-    } /* end switch statement */
+      } /* end switch statement */
 
   } /* end ForBoxI */
 
@@ -504,9 +504,9 @@ int hypre_SMG2BuildRAPNoSym(hypre_StructMatrix *A, hypre_StructMatrix *PT,
   hypre_ForBoxI(ci, cgrid_boxes)
   {
     while (fgrid_ids[fi] != cgrid_ids[ci])
-    {
-      fi++;
-    }
+      {
+        fi++;
+      }
 
     cgrid_box = hypre_BoxArrayBox(cgrid_boxes, ci);
 
@@ -574,16 +574,16 @@ int hypre_SMG2BuildRAPNoSym(hypre_StructMatrix *A, hypre_StructMatrix *PT,
      *-----------------------------------------------------------------*/
 
     if (fine_stencil_size > 5)
-    {
-      hypre_SetIndex(index, 1, -1, 0);
-      a_cse = hypre_StructMatrixExtractPointerByIndex(A, fi, index);
+      {
+        hypre_SetIndex(index, 1, -1, 0);
+        a_cse = hypre_StructMatrixExtractPointerByIndex(A, fi, index);
 
-      hypre_SetIndex(index, -1, 1, 0);
-      a_cnw = hypre_StructMatrixExtractPointerByIndex(A, fi, index);
+        hypre_SetIndex(index, -1, 1, 0);
+        a_cnw = hypre_StructMatrixExtractPointerByIndex(A, fi, index);
 
-      hypre_SetIndex(index, 1, 1, 0);
-      a_cne = hypre_StructMatrixExtractPointerByIndex(A, fi, index);
-    }
+        hypre_SetIndex(index, 1, 1, 0);
+        a_cne = hypre_StructMatrixExtractPointerByIndex(A, fi, index);
+      }
 
     /*-----------------------------------------------------------------
      * Extract pointers for coarse grid operator - always 9-point:
@@ -625,88 +625,88 @@ int hypre_SMG2BuildRAPNoSym(hypre_StructMatrix *A, hypre_StructMatrix *PT,
      *-----------------------------------------------------------------*/
 
     switch (fine_stencil_size)
-    {
-      /*--------------------------------------------------------------
+      {
+          /*--------------------------------------------------------------
        * Loop for 5-point fine grid operator; produces upper triangular
        * part of 9-point coarse grid operator - excludes diagonal.
        * stencil entries: (northeast, north, northwest, and east)
        *--------------------------------------------------------------*/
 
-      case 5:
+        case 5:
 
-        hypre_BoxGetSize(cgrid_box, loop_size);
-        hypre_BoxLoop4Begin(loop_size, PT_dbox, cstart, stridec, iP, R_dbox,
-                            cstart, stridec, iR, A_dbox, fstart, stridef, iA,
-                            RAP_dbox, cstart, stridec, iAc);
+          hypre_BoxGetSize(cgrid_box, loop_size);
+          hypre_BoxLoop4Begin(loop_size, PT_dbox, cstart, stridec, iP, R_dbox,
+                              cstart, stridec, iR, A_dbox, fstart, stridef, iA,
+                              RAP_dbox, cstart, stridec, iAc);
 #define HYPRE_BOX_SMP_PRIVATE \
   loopk, loopi, loopj, iP, iR, iA, iAc, iAm1, iAp1, iP1
 #include "hypre_box_smp_forloop.h"
-        hypre_BoxLoop4For(loopi, loopj, loopk, iP, iR, iA, iAc)
-        {
-          iAm1 = iA - yOffsetA;
-          iAp1 = iA + yOffsetA;
+          hypre_BoxLoop4For(loopi, loopj, loopk, iP, iR, iA, iAc)
+          {
+            iAm1 = iA - yOffsetA;
+            iAp1 = iA + yOffsetA;
 
-          iP1 = iP + yOffsetP + xOffsetP;
-          rap_cne[iAc] = ra[iR] * a_ce[iAp1] * pb[iP1];
+            iP1 = iP + yOffsetP + xOffsetP;
+            rap_cne[iAc] = ra[iR] * a_ce[iAp1] * pb[iP1];
 
-          iP1 = iP + yOffsetP;
-          rap_cn[iAc] = ra[iR] * a_cc[iAp1] * pb[iP1] + ra[iR] * a_cn[iAp1] +
-                        a_cn[iA] * pb[iP1];
+            iP1 = iP + yOffsetP;
+            rap_cn[iAc] = ra[iR] * a_cc[iAp1] * pb[iP1] + ra[iR] * a_cn[iAp1] +
+                          a_cn[iA] * pb[iP1];
 
-          iP1 = iP + yOffsetP - xOffsetP;
-          rap_cnw[iAc] = ra[iR] * a_cw[iAp1] * pb[iP1];
+            iP1 = iP + yOffsetP - xOffsetP;
+            rap_cnw[iAc] = ra[iR] * a_cw[iAp1] * pb[iP1];
 
-          iP1 = iP + xOffsetP;
-          rap_ce[iAc] = a_ce[iA] + rb[iR] * a_ce[iAm1] * pb[iP1] +
-                        ra[iR] * a_ce[iAp1] * pa[iP1];
-        }
-        hypre_BoxLoop4End(iP, iR, iA, iAc);
+            iP1 = iP + xOffsetP;
+            rap_ce[iAc] = a_ce[iA] + rb[iR] * a_ce[iAm1] * pb[iP1] +
+                          ra[iR] * a_ce[iAp1] * pa[iP1];
+          }
+          hypre_BoxLoop4End(iP, iR, iA, iAc);
 
-        break;
+          break;
 
-      /*--------------------------------------------------------------
+          /*--------------------------------------------------------------
        * Loop for 9-point fine grid operator; produces upper triangular
        * part of 9-point coarse grid operator - excludes diagonal.
        * stencil entries: (northeast, north, northwest, and east)
        *--------------------------------------------------------------*/
 
-      default:
+        default:
 
-        hypre_BoxGetSize(cgrid_box, loop_size);
-        hypre_BoxLoop4Begin(loop_size, PT_dbox, cstart, stridec, iP, R_dbox,
-                            cstart, stridec, iR, A_dbox, fstart, stridef, iA,
-                            RAP_dbox, cstart, stridec, iAc);
+          hypre_BoxGetSize(cgrid_box, loop_size);
+          hypre_BoxLoop4Begin(loop_size, PT_dbox, cstart, stridec, iP, R_dbox,
+                              cstart, stridec, iR, A_dbox, fstart, stridef, iA,
+                              RAP_dbox, cstart, stridec, iAc);
 #define HYPRE_BOX_SMP_PRIVATE \
   loopk, loopi, loopj, iP, iR, iA, iAc, iAm1, iAp1, iP1
 #include "hypre_box_smp_forloop.h"
-        hypre_BoxLoop4For(loopi, loopj, loopk, iP, iR, iA, iAc)
-        {
-          iAm1 = iA - yOffsetA;
-          iAp1 = iA + yOffsetA;
+          hypre_BoxLoop4For(loopi, loopj, loopk, iP, iR, iA, iAc)
+          {
+            iAm1 = iA - yOffsetA;
+            iAp1 = iA + yOffsetA;
 
-          iP1 = iP + yOffsetP + xOffsetP;
-          rap_cne[iAc] = ra[iR] * a_ce[iAp1] * pb[iP1] + ra[iR] * a_cne[iAp1] +
-                         a_cne[iA] * pb[iP1];
+            iP1 = iP + yOffsetP + xOffsetP;
+            rap_cne[iAc] = ra[iR] * a_ce[iAp1] * pb[iP1] + ra[iR] * a_cne[iAp1] +
+                           a_cne[iA] * pb[iP1];
 
-          iP1 = iP + yOffsetP;
-          rap_cn[iAc] = ra[iR] * a_cc[iAp1] * pb[iP1] + ra[iR] * a_cn[iAp1] +
-                        a_cn[iA] * pb[iP1];
+            iP1 = iP + yOffsetP;
+            rap_cn[iAc] = ra[iR] * a_cc[iAp1] * pb[iP1] + ra[iR] * a_cn[iAp1] +
+                          a_cn[iA] * pb[iP1];
 
-          iP1 = iP + yOffsetP - xOffsetP;
-          rap_cnw[iAc] = ra[iR] * a_cw[iAp1] * pb[iP1] + ra[iR] * a_cnw[iAp1] +
-                         a_cnw[iA] * pb[iP1];
+            iP1 = iP + yOffsetP - xOffsetP;
+            rap_cnw[iAc] = ra[iR] * a_cw[iAp1] * pb[iP1] + ra[iR] * a_cnw[iAp1] +
+                           a_cnw[iA] * pb[iP1];
 
-          iP1 = iP + xOffsetP;
-          rap_ce[iAc] = a_ce[iA] + rb[iR] * a_ce[iAm1] * pb[iP1] +
-                        ra[iR] * a_ce[iAp1] * pa[iP1] + rb[iR] * a_cne[iAm1] +
-                        ra[iR] * a_cse[iAp1] + a_cse[iA] * pb[iP1] +
-                        a_cne[iA] * pa[iP1];
-        }
-        hypre_BoxLoop4End(iP, iR, iA, iAc);
+            iP1 = iP + xOffsetP;
+            rap_ce[iAc] = a_ce[iA] + rb[iR] * a_ce[iAm1] * pb[iP1] +
+                          ra[iR] * a_ce[iAp1] * pa[iP1] + rb[iR] * a_cne[iAm1] +
+                          ra[iR] * a_cse[iAp1] + a_cse[iA] * pb[iP1] +
+                          a_cne[iA] * pa[iP1];
+          }
+          hypre_BoxLoop4End(iP, iR, iA, iAc);
 
-        break;
+          break;
 
-    } /* end switch statement */
+      } /* end switch statement */
 
   } /* end ForBoxI */
 
@@ -754,64 +754,64 @@ int hypre_SMG2RAPPeriodicSym(hypre_StructMatrix *RAP, hypre_Index cindex,
   cgrid_boxes = hypre_StructGridBoxes(cgrid);
 
   if (hypre_IndexY(hypre_StructGridPeriodic(cgrid)) == 1)
-  {
-    hypre_StructMatrixAssemble(RAP);
-    hypre_ForBoxI(ci, cgrid_boxes)
     {
-      cgrid_box = hypre_BoxArrayBox(cgrid_boxes, ci);
+      hypre_StructMatrixAssemble(RAP);
+      hypre_ForBoxI(ci, cgrid_boxes)
+      {
+        cgrid_box = hypre_BoxArrayBox(cgrid_boxes, ci);
 
-      cstart = hypre_BoxIMin(cgrid_box);
+        cstart = hypre_BoxIMin(cgrid_box);
 
-      RAP_dbox = hypre_BoxArrayBox(hypre_StructMatrixDataSpace(RAP), ci);
+        RAP_dbox = hypre_BoxArrayBox(hypre_StructMatrixDataSpace(RAP), ci);
 
-      hypre_SetIndex(index, 1, 0, 0);
-      xOffset = hypre_BoxOffsetDistance(RAP_dbox, index);
+        hypre_SetIndex(index, 1, 0, 0);
+        xOffset = hypre_BoxOffsetDistance(RAP_dbox, index);
 
-      /*-----------------------------------------------------------------
+        /*-----------------------------------------------------------------
        * Extract pointers for coarse grid operator - always 9-point:
        *-----------------------------------------------------------------*/
-      hypre_SetIndex(index, 0, 0, 0);
-      rap_cc = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
+        hypre_SetIndex(index, 0, 0, 0);
+        rap_cc = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
 
-      hypre_SetIndex(index, -1, 0, 0);
-      rap_cw = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
+        hypre_SetIndex(index, -1, 0, 0);
+        rap_cw = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
 
-      hypre_SetIndex(index, 0, -1, 0);
-      rap_cs = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
+        hypre_SetIndex(index, 0, -1, 0);
+        rap_cs = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
 
-      hypre_SetIndex(index, -1, -1, 0);
-      rap_csw = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
+        hypre_SetIndex(index, -1, -1, 0);
+        rap_csw = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
 
-      hypre_SetIndex(index, 1, -1, 0);
-      rap_cse = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
+        hypre_SetIndex(index, 1, -1, 0);
+        rap_cse = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
 
-      hypre_BoxGetSize(cgrid_box, loop_size);
+        hypre_BoxGetSize(cgrid_box, loop_size);
 
-      hypre_BoxLoop1Begin(loop_size, RAP_dbox, cstart, stridec, iAc);
+        hypre_BoxLoop1Begin(loop_size, RAP_dbox, cstart, stridec, iAc);
 #define HYPRE_BOX_SMP_PRIVATE loopk, loopi, loopj, iAc, iAcm1
 #include "hypre_box_smp_forloop.h"
-      hypre_BoxLoop1For(loopi, loopj, loopk, iAc)
-      {
-        iAcm1 = iAc - xOffset;
+        hypre_BoxLoop1For(loopi, loopj, loopk, iAc)
+        {
+          iAcm1 = iAc - xOffset;
 
-        rap_cw[iAc] += (rap_cse[iAcm1] + rap_csw[iAc]);
-        rap_cc[iAc] += (2.0 * rap_cs[iAc]);
-      }
-      hypre_BoxLoop1End(iAc);
+          rap_cw[iAc] += (rap_cse[iAcm1] + rap_csw[iAc]);
+          rap_cc[iAc] += (2.0 * rap_cs[iAc]);
+        }
+        hypre_BoxLoop1End(iAc);
 
-      hypre_BoxLoop1Begin(loop_size, RAP_dbox, cstart, stridec, iAc);
+        hypre_BoxLoop1Begin(loop_size, RAP_dbox, cstart, stridec, iAc);
 #define HYPRE_BOX_SMP_PRIVATE loopk, loopi, loopj, iAc
 #include "hypre_box_smp_forloop.h"
-      hypre_BoxLoop1For(loopi, loopj, loopk, iAc)
-      {
-        rap_csw[iAc] = zero;
-        rap_cs[iAc] = zero;
-        rap_cse[iAc] = zero;
-      }
-      hypre_BoxLoop1End(iAc);
+        hypre_BoxLoop1For(loopi, loopj, loopk, iAc)
+        {
+          rap_csw[iAc] = zero;
+          rap_cs[iAc] = zero;
+          rap_cse[iAc] = zero;
+        }
+        hypre_BoxLoop1End(iAc);
 
-    } /* end ForBoxI */
-  }
+      } /* end ForBoxI */
+    }
   return ierr;
 }
 
@@ -855,67 +855,67 @@ int hypre_SMG2RAPPeriodicNoSym(hypre_StructMatrix *RAP, hypre_Index cindex,
   cgrid_boxes = hypre_StructGridBoxes(cgrid);
 
   if (hypre_IndexY(hypre_StructGridPeriodic(cgrid)) == 1)
-  {
-    hypre_ForBoxI(ci, cgrid_boxes)
     {
-      cgrid_box = hypre_BoxArrayBox(cgrid_boxes, ci);
+      hypre_ForBoxI(ci, cgrid_boxes)
+      {
+        cgrid_box = hypre_BoxArrayBox(cgrid_boxes, ci);
 
-      cstart = hypre_BoxIMin(cgrid_box);
+        cstart = hypre_BoxIMin(cgrid_box);
 
-      RAP_dbox = hypre_BoxArrayBox(hypre_StructMatrixDataSpace(RAP), ci);
+        RAP_dbox = hypre_BoxArrayBox(hypre_StructMatrixDataSpace(RAP), ci);
 
-      /*-----------------------------------------------------------------
+        /*-----------------------------------------------------------------
        * Extract pointers for coarse grid operator - always 9-point:
        *-----------------------------------------------------------------*/
-      hypre_SetIndex(index, 0, 0, 0);
-      rap_cc = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
+        hypre_SetIndex(index, 0, 0, 0);
+        rap_cc = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
 
-      hypre_SetIndex(index, -1, 0, 0);
-      rap_cw = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
+        hypre_SetIndex(index, -1, 0, 0);
+        rap_cw = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
 
-      hypre_SetIndex(index, 0, -1, 0);
-      rap_cs = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
+        hypre_SetIndex(index, 0, -1, 0);
+        rap_cs = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
 
-      hypre_SetIndex(index, -1, -1, 0);
-      rap_csw = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
+        hypre_SetIndex(index, -1, -1, 0);
+        rap_csw = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
 
-      hypre_SetIndex(index, 1, -1, 0);
-      rap_cse = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
+        hypre_SetIndex(index, 1, -1, 0);
+        rap_cse = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
 
-      hypre_SetIndex(index, 1, 0, 0);
-      rap_ce = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
+        hypre_SetIndex(index, 1, 0, 0);
+        rap_ce = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
 
-      hypre_SetIndex(index, 0, 1, 0);
-      rap_cn = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
+        hypre_SetIndex(index, 0, 1, 0);
+        rap_cn = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
 
-      hypre_SetIndex(index, 1, 1, 0);
-      rap_cne = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
+        hypre_SetIndex(index, 1, 1, 0);
+        rap_cne = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
 
-      hypre_SetIndex(index, -1, 1, 0);
-      rap_cnw = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
+        hypre_SetIndex(index, -1, 1, 0);
+        rap_cnw = hypre_StructMatrixExtractPointerByIndex(RAP, ci, index);
 
-      hypre_BoxGetSize(cgrid_box, loop_size);
+        hypre_BoxGetSize(cgrid_box, loop_size);
 
-      hypre_BoxLoop1Begin(loop_size, RAP_dbox, cstart, stridec, iAc);
+        hypre_BoxLoop1Begin(loop_size, RAP_dbox, cstart, stridec, iAc);
 #define HYPRE_BOX_SMP_PRIVATE loopk, loopi, loopj, iAc
 #include "hypre_box_smp_forloop.h"
-      hypre_BoxLoop1For(loopi, loopj, loopk, iAc)
-      {
-        rap_cw[iAc] += (rap_cnw[iAc] + rap_csw[iAc]);
-        rap_cnw[iAc] = zero;
-        rap_csw[iAc] = zero;
+        hypre_BoxLoop1For(loopi, loopj, loopk, iAc)
+        {
+          rap_cw[iAc] += (rap_cnw[iAc] + rap_csw[iAc]);
+          rap_cnw[iAc] = zero;
+          rap_csw[iAc] = zero;
 
-        rap_cc[iAc] += (rap_cn[iAc] + rap_cs[iAc]);
-        rap_cn[iAc] = zero;
-        rap_cs[iAc] = zero;
+          rap_cc[iAc] += (rap_cn[iAc] + rap_cs[iAc]);
+          rap_cn[iAc] = zero;
+          rap_cs[iAc] = zero;
 
-        rap_ce[iAc] += (rap_cne[iAc] + rap_cse[iAc]);
-        rap_cne[iAc] = zero;
-        rap_cse[iAc] = zero;
-      }
-      hypre_BoxLoop1End(iAc);
+          rap_ce[iAc] += (rap_cne[iAc] + rap_cse[iAc]);
+          rap_cne[iAc] = zero;
+          rap_cse[iAc] = zero;
+        }
+        hypre_BoxLoop1End(iAc);
 
-    } /* end ForBoxI */
-  }
+      } /* end ForBoxI */
+    }
   return ierr;
 }

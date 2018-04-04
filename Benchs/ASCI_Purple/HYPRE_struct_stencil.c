@@ -44,9 +44,9 @@ int HYPRE_StructStencilSetElement(HYPRE_StructStencil stencil,
   shape = hypre_StructStencilShape(stencil);
   hypre_ClearIndex(shape[element_index]);
   for (d = 0; d < hypre_StructStencilDim(stencil); d++)
-  {
-    hypre_IndexD(shape[element_index], d) = offset[d];
-  }
+    {
+      hypre_IndexD(shape[element_index], d) = offset[d];
+    }
 
   return ierr;
 }

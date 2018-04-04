@@ -14,11 +14,11 @@ unsigned int bstr_i(char *cptr)
   unsigned int i, j = 0;
 
   while (cptr && *cptr && strchr("01", *cptr))
-  {
-    i = *cptr++ - '0';
-    j <<= 1;
-    j |= (i & 0x01);
-  }
+    {
+      i = *cptr++ - '0';
+      j <<= 1;
+      j |= (i & 0x01);
+    }
   return (j);
 }
 
@@ -32,10 +32,10 @@ int main(int argc, char *argv[])
   unsigned int x;
 
   while (--argc)
-  {
-    x = bstr_i(arg = *++argv);
-    printf("Binary %s = %d = %04Xh\n", arg, x, x);
-  }
+    {
+      x = bstr_i(arg = *++argv);
+      printf("Binary %s = %d = %04Xh\n", arg, x, x);
+    }
   return EXIT_SUCCESS;
 }
 

@@ -88,15 +88,15 @@ void BF_FlushBitstream(BF_FrameData *frameInfo, BF_FrameResults *results)
   /*    int elements, forwardFrameLength, forwardSILength; */
 
   if (elements)
-  {
-    int bitsRemaining = forwardFrameLength - forwardSILength;
-    int wordsRemaining = bitsRemaining / 32;
-    while (wordsRemaining--)
     {
-      WriteMainDataBits(0, 32, results);
+      int bitsRemaining = forwardFrameLength - forwardSILength;
+      int wordsRemaining = bitsRemaining / 32;
+      while (wordsRemaining--)
+        {
+          WriteMainDataBits(0, 32, results);
+        }
+      WriteMainDataBits(0, (bitsRemaining % 32), results);
     }
-    WriteMainDataBits(0, (bitsRemaining % 32), results);
-  }
 
   results->mainDataLength = forwardFrameLength - forwardSILength;
   results->SILength = forwardSILength;
@@ -119,9 +119,9 @@ int BF_PartLength(BF_BitstreamPart *part)
   int bits = 0;
 
   for (i = 0; i < part->nrEntries; i++, ep++)
-  {
-    bits += ep->length;
-  }
+    {
+      bits += ep->length;
+    }
   return bits;
 }
 
@@ -157,10 +157,10 @@ static int writePartMainData(BF_BitstreamPart *part, BF_FrameResults *results)
 
   ep = part->element;
   for (i = 0; i < part->nrEntries; i++, ep++)
-  {
-    WriteMainDataBits(ep->value, ep->length, results);
-    bits += ep->length;
-  }
+    {
+      WriteMainDataBits(ep->value, ep->length, results);
+      bits += ep->length;
+    }
   return bits;
 }
 
@@ -174,10 +174,10 @@ static int writePartSideInfo(BF_BitstreamPart *part, BF_FrameResults *results)
 
   ep = part->element;
   for (i = 0; i < part->nrEntries; i++, ep++)
-  {
-    putMyBits(ep->value, ep->length);
-    bits += ep->length;
-  }
+    {
+      putMyBits(ep->value, ep->length);
+      bits += ep->length;
+    }
   return bits;
 }
 
@@ -189,14 +189,14 @@ static int main_data(BF_FrameData *fi, BF_FrameResults *results)
   results->mainDataLength = 0;
 
   for (gr = 0; gr < fi->nGranules; gr++)
-  {
-    for (ch = 0; ch < fi->nChannels; ch++)
     {
-      bits += (*wp)(fi->scaleFactors[gr][ch], results);
-      bits += (*wp)(fi->codedData[gr][ch], results);
-      bits += (*wp)(fi->userSpectrum[gr][ch], results);
+      for (ch = 0; ch < fi->nChannels; ch++)
+        {
+          bits += (*wp)(fi->scaleFactors[gr][ch], results);
+          bits += (*wp)(fi->codedData[gr][ch], results);
+          bits += (*wp)(fi->userSpectrum[gr][ch], results);
+        }
     }
-  }
   bits += (*wp)(fi->userFrameData, results);
   return bits;
 }
@@ -211,27 +211,27 @@ static void WriteMainDataBits(u_int val, u_int nbits, BF_FrameResults *results)
 {
   assert(nbits <= 32);
   if (nbits == 0)
-  {
-    return;
-  }
+    {
+      return;
+    }
   if (BitCount == ThisFrameSize)
-  {
-    BitCount = write_side_info();
-    BitsRemaining = ThisFrameSize - BitCount;
-  }
+    {
+      BitCount = write_side_info();
+      BitsRemaining = ThisFrameSize - BitCount;
+    }
   if (nbits > (u_int)BitsRemaining)
-  {
-    unsigned extra = val >> (nbits - BitsRemaining);
-    nbits -= BitsRemaining;
-    putMyBits(extra, BitsRemaining);
-    BitCount = write_side_info();
-    BitsRemaining = ThisFrameSize - BitCount;
-    putMyBits(val, nbits);
-  }
+    {
+      unsigned extra = val >> (nbits - BitsRemaining);
+      nbits -= BitsRemaining;
+      putMyBits(extra, BitsRemaining);
+      BitCount = write_side_info();
+      BitsRemaining = ThisFrameSize - BitCount;
+      putMyBits(val, nbits);
+    }
   else
-  {
-    putMyBits(val, nbits);
-  }
+    {
+      putMyBits(val, nbits);
+    }
   BitCount += nbits;
   BitsRemaining -= nbits;
   assert(BitCount <= ThisFrameSize);
@@ -252,17 +252,17 @@ static int write_side_info(void)
   bits += (*wp)(si->frameSIPH->part, NULL);
 
   for (ch = 0; ch < si->nChannels; ch++)
-  {
-    bits += (*wp)(si->channelSIPH[ch]->part, NULL);
-  }
+    {
+      bits += (*wp)(si->channelSIPH[ch]->part, NULL);
+    }
 
   for (gr = 0; gr < si->nGranules; gr++)
-  {
-    for (ch = 0; ch < si->nChannels; ch++)
     {
-      bits += (*wp)(si->spectrumSIPH[gr][ch]->part, NULL);
+      for (ch = 0; ch < si->nChannels; ch++)
+        {
+          bits += (*wp)(si->spectrumSIPH[gr][ch]->part, NULL);
+        }
     }
-  }
   return bits;
 }
 
@@ -286,11 +286,11 @@ static int side_queue_elements(int *frameLength, int *SILength)
   *SILength = 0;
 
   for (l = side_queue_head; l; l = l->next)
-  {
-    elements++;
-    *frameLength += l->side_info.frameLength;
-    *SILength += l->side_info.SILength;
-  }
+    {
+      elements++;
+      *frameLength += l->side_info.frameLength;
+      *SILength += l->side_info.SILength;
+    }
   return elements;
 }
 
@@ -303,41 +303,41 @@ static int store_side_info(BF_FrameData *info)
   int bits = 0;
 
   if (f == NULL)
-  { /* must allocate another */
+    { /* must allocate another */
 #ifdef DEBUG
-    static int n_si = 0;
-    n_si += 1;
-    fprintf(stderr, "allocating side_info_link number %d\n", n_si);
+      static int n_si = 0;
+      n_si += 1;
+      fprintf(stderr, "allocating side_info_link number %d\n", n_si);
 #endif
-    l = (side_info_link *)calloc(1, sizeof(side_info_link));
-    if (l == NULL)
-    {
-      fprintf(stderr, "cannot allocate side_info_link");
-      exit(1);
-    }
-    l->next = NULL;
-    l->side_info.headerPH = BF_newPartHolder(info->header->nrEntries);
-    l->side_info.frameSIPH = BF_newPartHolder(info->frameSI->nrEntries);
-    for (ch = 0; ch < info->nChannels; ch++)
-    {
-      l->side_info.channelSIPH[ch] =
-          BF_newPartHolder(info->channelSI[ch]->nrEntries);
-    }
-    for (gr = 0; gr < info->nGranules; gr++)
-    {
+      l = (side_info_link *)calloc(1, sizeof(side_info_link));
+      if (l == NULL)
+        {
+          fprintf(stderr, "cannot allocate side_info_link");
+          exit(1);
+        }
+      l->next = NULL;
+      l->side_info.headerPH = BF_newPartHolder(info->header->nrEntries);
+      l->side_info.frameSIPH = BF_newPartHolder(info->frameSI->nrEntries);
       for (ch = 0; ch < info->nChannels; ch++)
-      {
-        l->side_info.spectrumSIPH[gr][ch] =
-            BF_newPartHolder(info->spectrumSI[gr][ch]->nrEntries);
-      }
+        {
+          l->side_info.channelSIPH[ch] =
+              BF_newPartHolder(info->channelSI[ch]->nrEntries);
+        }
+      for (gr = 0; gr < info->nGranules; gr++)
+        {
+          for (ch = 0; ch < info->nChannels; ch++)
+            {
+              l->side_info.spectrumSIPH[gr][ch] =
+                  BF_newPartHolder(info->spectrumSI[gr][ch]->nrEntries);
+            }
+        }
     }
-  }
   else
-  { /* remove from the free list */
-    side_queue_free = f->next;
-    f->next = NULL;
-    l = f;
-  }
+    { /* remove from the free list */
+      side_queue_free = f->next;
+      f->next = NULL;
+      l = f;
+    }
   /* copy data */
   l->side_info.frameLength = info->frameLength;
   l->side_info.nGranules = info->nGranules;
@@ -351,36 +351,36 @@ static int store_side_info(BF_FrameData *info)
   bits += BF_PartLength(info->frameSI);
 
   for (ch = 0; ch < info->nChannels; ch++)
-  {
-    l->side_info.channelSIPH[ch] = BF_LoadHolderFromBitstreamPart(
-        l->side_info.channelSIPH[ch], info->channelSI[ch]);
-    bits += BF_PartLength(info->channelSI[ch]);
-  }
+    {
+      l->side_info.channelSIPH[ch] = BF_LoadHolderFromBitstreamPart(
+          l->side_info.channelSIPH[ch], info->channelSI[ch]);
+      bits += BF_PartLength(info->channelSI[ch]);
+    }
 
   for (gr = 0; gr < info->nGranules; gr++)
-  {
-    for (ch = 0; ch < info->nChannels; ch++)
     {
-      l->side_info.spectrumSIPH[gr][ch] = BF_LoadHolderFromBitstreamPart(
-          l->side_info.spectrumSIPH[gr][ch], info->spectrumSI[gr][ch]);
-      bits += BF_PartLength(info->spectrumSI[gr][ch]);
+      for (ch = 0; ch < info->nChannels; ch++)
+        {
+          l->side_info.spectrumSIPH[gr][ch] = BF_LoadHolderFromBitstreamPart(
+              l->side_info.spectrumSIPH[gr][ch], info->spectrumSI[gr][ch]);
+          bits += BF_PartLength(info->spectrumSI[gr][ch]);
+        }
     }
-  }
   l->side_info.SILength = bits;
   /* place at end of queue */
   f = side_queue_head;
   if (f == NULL)
-  { /* empty queue */
-    side_queue_head = l;
-  }
-  else
-  { /* find last element */
-    while (f->next)
-    {
-      f = f->next;
+    { /* empty queue */
+      side_queue_head = l;
     }
-    f->next = l;
-  }
+  else
+    { /* find last element */
+      while (f->next)
+        {
+          f = f->next;
+        }
+      f->next = l;
+    }
   return bits;
 }
 
@@ -415,17 +415,17 @@ static void free_side_queues(void)
   side_info_link *l, *next;
 
   for (l = side_queue_head; l; l = next)
-  {
-    next = l->next;
-    free_side_info_link(l);
-  }
+    {
+      next = l->next;
+      free_side_info_link(l);
+    }
   side_queue_head = NULL;
 
   for (l = side_queue_free; l; l = next)
-  {
-    next = l->next;
-    free_side_info_link(l);
-  }
+    {
+      next = l->next;
+      free_side_info_link(l);
+    }
   side_queue_free = NULL;
 }
 
@@ -437,19 +437,19 @@ static void free_side_info_link(side_info_link *l)
   l->side_info.frameSIPH = BF_freePartHolder(l->side_info.frameSIPH);
 
   for (ch = 0; ch < l->side_info.nChannels; ch++)
-  {
-    l->side_info.channelSIPH[ch] =
-        BF_freePartHolder(l->side_info.channelSIPH[ch]);
-  }
+    {
+      l->side_info.channelSIPH[ch] =
+          BF_freePartHolder(l->side_info.channelSIPH[ch]);
+    }
 
   for (gr = 0; gr < l->side_info.nGranules; gr++)
-  {
-    for (ch = 0; ch < l->side_info.nChannels; ch++)
     {
-      l->side_info.spectrumSIPH[gr][ch] =
-          BF_freePartHolder(l->side_info.spectrumSIPH[gr][ch]);
+      for (ch = 0; ch < l->side_info.nChannels; ch++)
+        {
+          l->side_info.spectrumSIPH[gr][ch] =
+              BF_freePartHolder(l->side_info.spectrumSIPH[gr][ch]);
+        }
     }
-  }
 
   free(l);
 }
@@ -466,9 +466,9 @@ BF_PartHolder *BF_newPartHolder(int max_elements)
   newPH->part->element =
       (BF_BitstreamElement *)calloc(max_elements, sizeof(BF_BitstreamElement));
   if (max_elements > 0)
-  {
-    assert(newPH->part->element);
-  }
+    {
+      assert(newPH->part->element);
+    }
   newPH->part->nrEntries = 0;
   return newPH;
 }
@@ -487,10 +487,10 @@ BF_PartHolder *BF_LoadHolderFromBitstreamPart(BF_PartHolder *theHolder,
 
   theHolder->part->nrEntries = 0;
   for (i = 0; i < thePart->nrEntries; i++)
-  {
-    pElem = &(thePart->element[i]);
-    theHolder = BF_addElement(theHolder, pElem);
-  }
+    {
+      pElem = &(thePart->element[i]);
+      theHolder = BF_addElement(theHolder, pElem);
+    }
   return theHolder;
 }
 
@@ -516,9 +516,9 @@ BF_PartHolder *BF_resizePartHolder(BF_PartHolder *oldPH, int max_elements)
       (oldPH->max_elements > max_elements) ? max_elements : oldPH->max_elements;
   newPH->part->nrEntries = elems;
   for (i = 0; i < elems; i++)
-  {
-    newPH->part->element[i] = oldPH->part->element[i];
-  }
+    {
+      newPH->part->element[i] = oldPH->part->element[i];
+    }
 
   /* free old holder */
   BF_freePartHolder(oldPH);
@@ -548,9 +548,9 @@ BF_PartHolder *BF_addElement(BF_PartHolder *thePH,
 
   /* grow if necessary */
   if (needed_entries > thePH->max_elements)
-  {
-    retPH = BF_resizePartHolder(thePH, needed_entries + extraPad);
-  }
+    {
+      retPH = BF_resizePartHolder(thePH, needed_entries + extraPad);
+    }
 
   /* copy the data */
   retPH->part->element[retPH->part->nrEntries++] = *theElement;
@@ -567,11 +567,11 @@ BF_PartHolder *BF_addEntry(BF_PartHolder *thePH, u_int value, u_int length)
   myElement.length = length;
 
   if (length)
-  {
-    return BF_addElement(thePH, &myElement);
-  }
+    {
+      return BF_addElement(thePH, &myElement);
+    }
   else
-  {
-    return thePH;
-  }
+    {
+      return thePH;
+    }
 }

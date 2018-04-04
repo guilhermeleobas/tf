@@ -59,12 +59,12 @@ struct element
 };
 /*    emsgtype = packed array[1..15] of char;
 */
-/* Intmm, Mm */     /*
+/* Intmm, Mm */ /*
     index = 1 .. rowsize;
     intmatrix = array [index,index] of integer;
     realmatrix = array [index,index] of real;
 */
-/* Puzzle */        /*
+/* Puzzle */ /*
        piececlass = 0..classmax;
        piecetype = 0..typemax;
        position = 0..size;
@@ -123,7 +123,7 @@ void Initrand() { seed = 74755L; /* constant to long WR*/ }
 int Rand()
 {
   seed = (seed * 1309L + 13849L) & 65535L; /* constants to long WR*/
-  return ((int)seed);                      /* typecast back to int WR*/
+  return ((int)seed); /* typecast back to int WR*/
 }
 
 /* The eight queens problem, solved 50 times. */
@@ -144,31 +144,31 @@ void Try(int i, int *q, int a[], int b[], int c[], int x[])
   j = 0;
   *q = false;
   while ((!*q) && (j != 8))
-  {
-    j = j + 1;
-    *q = false;
-    if (b[j] && a[i + j] && c[i - j + 7])
     {
-      x[i] = j;
-      b[j] = false;
-      a[i + j] = false;
-      c[i - j + 7] = false;
-      if (i < 8)
-      {
-        Try(i + 1, q, a, b, c, x);
-        if (!*q)
+      j = j + 1;
+      *q = false;
+      if (b[j] && a[i + j] && c[i - j + 7])
         {
-          b[j] = true;
-          a[i + j] = true;
-          c[i - j + 7] = true;
+          x[i] = j;
+          b[j] = false;
+          a[i + j] = false;
+          c[i - j + 7] = false;
+          if (i < 8)
+            {
+              Try(i + 1, q, a, b, c, x);
+              if (!*q)
+                {
+                  b[j] = true;
+                  a[i + j] = true;
+                  c[i - j + 7] = true;
+                }
+            }
+          else
+            {
+              *q = true;
+            }
         }
-      }
-      else
-      {
-        *q = true;
-      }
     }
-  }
 }
 
 void Doit()
@@ -177,36 +177,36 @@ void Doit()
   int a[9], b[17], c[15], x[9];
   i = 0 - 7;
   while (i <= 16)
-  {
-    if ((i >= 1) && (i <= 8))
     {
-      a[i] = true;
+      if ((i >= 1) && (i <= 8))
+        {
+          a[i] = true;
+        }
+      if (i >= 2)
+        {
+          b[i] = true;
+        }
+      if (i <= 7)
+        {
+          c[i + 7] = true;
+        }
+      i = i + 1;
     }
-    if (i >= 2)
-    {
-      b[i] = true;
-    }
-    if (i <= 7)
-    {
-      c[i + 7] = true;
-    }
-    i = i + 1;
-  }
 
   Try(1, &q, b, a, c, x);
   if (!q)
-  {
-    printf(" Error in Queens.\n");
-  }
+    {
+      printf(" Error in Queens.\n");
+    }
 }
 
 void Queens(int run)
 {
   int i;
   for (i = 1; i <= 50; i++)
-  {
-    Doit();
-  }
+    {
+      Doit();
+    }
   printf("%d\n", run + 1);
 }
 
@@ -214,8 +214,8 @@ int main()
 {
   int i;
   for (i = 0; i < 100; i++)
-  {
-    Queens(i);
-  }
+    {
+      Queens(i);
+    }
   return 0;
 }

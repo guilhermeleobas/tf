@@ -75,82 +75,82 @@ int sequence_framenum;
 
   /* we don't substitute at the first picture of a sequence */
   if ((sequence_framenum != 0) || (Second_Field))
-  {
-    /* only at the start of the frame */
-    if ((picture_structure == FRAME_PICTURE) || (!Second_Field))
     {
-      if (picture_coding_type == P_TYPE)
-      {
-        /* the most recently decoded reference frame needs substituting */
-        substitute_display_framenum = bitstream_framenum - 1;
+      /* only at the start of the frame */
+      if ((picture_structure == FRAME_PICTURE) || (!Second_Field))
+        {
+          if (picture_coding_type == P_TYPE)
+            {
+              /* the most recently decoded reference frame needs substituting */
+              substitute_display_framenum = bitstream_framenum - 1;
 
-        Read_Frame(Substitute_Picture_Filename, forward_reference_frame,
-                   substitute_display_framenum);
-      }
-      /* only the first B frame in a consequitve set of B pictures
+              Read_Frame(Substitute_Picture_Filename, forward_reference_frame,
+                         substitute_display_framenum);
+            }
+          /* only the first B frame in a consequitve set of B pictures
          loads a substitute backward_reference_frame since all subsequent
          B frames predict from the same reference pictures */
-      else if ((picture_coding_type == B_TYPE) && (bgate != 1))
-      {
-        substitute_display_framenum =
-            (previous_temporal_reference - temporal_reference) +
-            bitstream_framenum - 1;
+          else if ((picture_coding_type == B_TYPE) && (bgate != 1))
+            {
+              substitute_display_framenum =
+                  (previous_temporal_reference - temporal_reference) +
+                  bitstream_framenum - 1;
 
-        Read_Frame(Substitute_Picture_Filename, backward_reference_frame,
-                   substitute_display_framenum);
-      }
-    } /* P fields can predict from the two most recently decoded fields, even
+              Read_Frame(Substitute_Picture_Filename, backward_reference_frame,
+                         substitute_display_framenum);
+            }
+        } /* P fields can predict from the two most recently decoded fields, even
          from the first field of the same frame being decoded */
-    else if (Second_Field && (picture_coding_type == P_TYPE))
-    {
-      /* our favourite case: the IP field picture pair */
-      if ((previous_picture_coding_type == I_TYPE) &&
-          (picture_coding_type == P_TYPE))
-      {
-        substitute_display_framenum = bitstream_framenum;
-      }
-      else /* our more generic P field picture pair */
-      {
-        substitute_display_framenum =
-            (temporal_reference - previous_anchor_temporal_reference) +
-            bitstream_framenum - 1;
-      }
+      else if (Second_Field && (picture_coding_type == P_TYPE))
+        {
+          /* our favourite case: the IP field picture pair */
+          if ((previous_picture_coding_type == I_TYPE) &&
+              (picture_coding_type == P_TYPE))
+            {
+              substitute_display_framenum = bitstream_framenum;
+            }
+          else /* our more generic P field picture pair */
+            {
+              substitute_display_framenum =
+                  (temporal_reference - previous_anchor_temporal_reference) +
+                  bitstream_framenum - 1;
+            }
 
-      Read_Frame(Substitute_Picture_Filename, current_frame,
-                 substitute_display_framenum);
-    }
+          Read_Frame(Substitute_Picture_Filename, current_frame,
+                     substitute_display_framenum);
+        }
 #ifdef DEBUG
-    else if ((picture_coding_type != B_TYPE) || (picture_coding_type != D_TYPE))
-    {
-      printf("NO SUBS FOR THIS PICTURE\n");
-    }
+      else if ((picture_coding_type != B_TYPE) || (picture_coding_type != D_TYPE))
+        {
+          printf("NO SUBS FOR THIS PICTURE\n");
+        }
 #endif
-  }
+    }
 
   /* set b gate so we don't redundantly load next time around */
   if (picture_coding_type == B_TYPE)
-  {
-    bgate = 1;
-  }
+    {
+      bgate = 1;
+    }
   else
-  {
-    bgate = 0;
-  }
+    {
+      bgate = 0;
+    }
 
   /* update general tracking variables */
   if ((picture_structure == FRAME_PICTURE) || (!Second_Field))
-  {
-    previous_temporal_reference = temporal_reference;
-    previous_bitstream_framenum = bitstream_framenum;
-  }
+    {
+      previous_temporal_reference = temporal_reference;
+      previous_bitstream_framenum = bitstream_framenum;
+    }
 
   /* update reference frame tracking variables */
   if ((picture_coding_type != B_TYPE) &&
       ((picture_structure == FRAME_PICTURE) || Second_Field))
-  {
-    previous_anchor_temporal_reference = temporal_reference;
-    previous_anchor_bitstream_framenum = bitstream_framenum;
-  }
+    {
+      previous_anchor_temporal_reference = temporal_reference;
+      previous_anchor_bitstream_framenum = bitstream_framenum;
+    }
 
   previous_picture_coding_type = picture_coding_type;
 }
@@ -166,40 +166,40 @@ int framenum;
   int field_mode;
 
   if (framenum < 0)
-  {
-    printf("ERROR: framenum (%d) is less than zero\n", framenum);
-  }
+    {
+      printf("ERROR: framenum (%d) is less than zero\n", framenum);
+    }
 
   if (Big_Picture_Flag)
-  {
-    rerr = Extract_Components(fname, substitute_frame, framenum);
-  }
+    {
+      rerr = Extract_Components(fname, substitute_frame, framenum);
+    }
   else
-  {
-    rerr = Read_Components(fname, substitute_frame, framenum);
-  }
+    {
+      rerr = Read_Components(fname, substitute_frame, framenum);
+    }
 
   if (rerr != 0)
-  {
-    printf("was unable to substitute frame\n");
-  }
+    {
+      printf("was unable to substitute frame\n");
+    }
 
   /* now copy to the appropriate buffer */
   /* first field (which we are attempting to substitute) must be
      of opposite field parity to the current one */
   if ((Second_Field) && (picture_coding_type == P_TYPE))
-  {
-    parity = (picture_structure == TOP_FIELD ? 1 : 0);
-    field_mode = (picture_structure == FRAME_PICTURE ? 0 : 1);
-  }
+    {
+      parity = (picture_structure == TOP_FIELD ? 1 : 0);
+      field_mode = (picture_structure == FRAME_PICTURE ? 0 : 1);
+    }
   else
-  {
-    /* Like frame structued pictures, B pictures only substitute an entire frame
+    {
+      /* Like frame structued pictures, B pictures only substitute an entire frame
        since both fields always predict from the same frame (with respect
        to forward/backwards directions) */
-    parity = 0;
-    field_mode = 0;
-  }
+      parity = 0;
+      field_mode = 0;
+    }
 
   Copy_Frame(substitute_frame[0], frame[0], Coded_Picture_Width,
              Coded_Picture_Height, parity, field_mode);
@@ -257,18 +257,18 @@ int Height;
 #endif
 
   if ((!((Infile = open(Filename, O_RDONLY | O_BINARY))) < 0))
-  {
-    printf("ERROR: unable to open reference filename (%s)\n", Filename);
-    return (-1);
-  }
+    {
+      printf("ERROR: unable to open reference filename (%s)\n", Filename);
+      return (-1);
+    }
 
   Bytes_Read = read(Infile, Frame, Size);
 
   if (Bytes_Read != Size)
-  {
-    printf("was able to read only %d bytes of %d of file %s\n", Bytes_Read,
-           Size, Filename);
-  }
+    {
+      printf("was able to read only %d bytes of %d of file %s\n", Bytes_Read,
+             Size, Filename);
+    }
 
   close(Infile);
   return (0);
@@ -290,30 +290,30 @@ int framenum;
   int size, offset;
 
   if (!(fd = fopen(filename, "rb")))
-  {
-    sprintf(Error_Text, "Couldn't open %s\n", filename);
-    return (-1);
-  }
+    {
+      sprintf(Error_Text, "Couldn't open %s\n", filename);
+      return (-1);
+    }
 
   /* compute size of each frame (in bytes) */
   size = (Coded_Picture_Width * Coded_Picture_Height);
 
   if (chroma_format == CHROMA444)
-  {
-    size = (size * 3);
-  }
+    {
+      size = (size * 3);
+    }
   else if (chroma_format == CHROMA422)
-  {
-    size = (size * 2);
-  }
+    {
+      size = (size * 2);
+    }
   else if (chroma_format == CHROMA420)
-  {
-    size = ((size * 3) >> 1);
-  }
+    {
+      size = ((size * 3) >> 1);
+    }
   else
-  {
-    printf("ERROR: chroma_format (%d) not recognized\n", chroma_format);
-  }
+    {
+      printf("ERROR: chroma_format (%d) not recognized\n", chroma_format);
+    }
 
   /* compute distance into "big" file */
   offset = size * framenum;
@@ -330,21 +330,21 @@ int framenum;
 
   /* Y  */
   for (line = 0; line < Coded_Picture_Height; line++)
-  {
-    fread(frame[0] + (line * Coded_Picture_Width), 1, Coded_Picture_Width, fd);
-  }
+    {
+      fread(frame[0] + (line * Coded_Picture_Width), 1, Coded_Picture_Width, fd);
+    }
 
   /* Cb */
   for (line = 0; line < Chroma_Height; line++)
-  {
-    fread(frame[1] + (line * Chroma_Width), 1, Chroma_Width, fd);
-  }
+    {
+      fread(frame[1] + (line * Chroma_Width), 1, Chroma_Width, fd);
+    }
 
   /* Cr */
   for (line = 0; line < Chroma_Height; line++)
-  {
-    fread(frame[2] + (line * Chroma_Width), 1, Chroma_Width, fd);
-  }
+    {
+      fread(frame[2] + (line * Chroma_Width), 1, Chroma_Width, fd);
+    }
 
   fclose(fd);
   return (0);
@@ -355,7 +355,7 @@ static void Copy_Frame(src, dst, width, height, parity,
 unsigned char *dst;
 int width;
 int height;
-int parity;     /* field parity (top or bottom) to overwrite */
+int parity; /* field parity (top or bottom) to overwrite */
 int field_mode; /* 0 = frame, 1 = field                      */
 {
   int row, col;
@@ -370,27 +370,27 @@ int field_mode; /* 0 = frame, 1 = field                      */
 #endif /* DEBUG */
 
   if (field_mode)
-  {
-    incr = 2;
-
-    if (parity == 0)
     {
-      s += width;
+      incr = 2;
+
+      if (parity == 0)
+        {
+          s += width;
+        }
     }
-  }
   else
-  {
-    incr = 1;
-  }
+    {
+      incr = 1;
+    }
 
   for (row = 0; row < height; row += incr)
-  {
-    for (col = 0; col < width; col++)
     {
-      dst[d + col] = src[s + col];
-    }
+      for (col = 0; col < width; col++)
+        {
+          dst[d + col] = src[s + col];
+        }
 
-    d += (width * incr);
-    s += (width * incr);
-  }
+      d += (width * incr);
+      s += (width * incr);
+    }
 }

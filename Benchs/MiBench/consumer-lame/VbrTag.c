@@ -29,7 +29,8 @@
 #endif
 
 int SizeOfEmptyFrame[2][2] = {
-    {32, 17}, {17, 9},
+    {32, 17},
+    {17, 9},
 };
 
 static u_char pbtStreamBuffer[216];
@@ -53,24 +54,24 @@ void AddVbrFrame(int nStreamPos)
 {
   /* Simple exponential growing buffer */
   if (pVbrFrames == NULL || nVbrFrameBufferSize == 0)
-  {
-    /* Start with 100 frames */
-    nVbrFrameBufferSize = 100;
+    {
+      /* Start with 100 frames */
+      nVbrFrameBufferSize = 100;
 
-    /* Allocate them */
-    pVbrFrames = (int *)malloc((size_t)(nVbrFrameBufferSize * sizeof(int)));
-  }
+      /* Allocate them */
+      pVbrFrames = (int *)malloc((size_t)(nVbrFrameBufferSize * sizeof(int)));
+    }
 
   /* Is buffer big enough to store this new frame */
   if (nVbrNumFrames == nVbrFrameBufferSize)
-  {
-    /* Guess not, double th e buffer size */
-    nVbrFrameBufferSize *= 2;
+    {
+      /* Guess not, double th e buffer size */
+      nVbrFrameBufferSize *= 2;
 
-    /* Allocate new buffer */
-    pVbrFrames =
-        (int *)realloc(pVbrFrames, (size_t)(nVbrFrameBufferSize * sizeof(int)));
-  }
+      /* Allocate new buffer */
+      pVbrFrames =
+          (int *)realloc(pVbrFrames, (size_t)(nVbrFrameBufferSize * sizeof(int)));
+    }
 
   /* Store values */
   pVbrFrames[nVbrNumFrames++] = nStreamPos;
@@ -115,46 +116,46 @@ int CheckVbrTag(unsigned char *buf)
 
   /*  determine offset of header */
   if (h_id)
-  {
-    /* mpeg1 */
-    if (h_mode != 3)
     {
-      buf += (32 + 4);
+      /* mpeg1 */
+      if (h_mode != 3)
+        {
+          buf += (32 + 4);
+        }
+      else
+        {
+          buf += (17 + 4);
+        }
     }
-    else
-    {
-      buf += (17 + 4);
-    }
-  }
   else
-  {
-    /* mpeg2 */
-    if (h_mode != 3)
     {
-      buf += (17 + 4);
+      /* mpeg2 */
+      if (h_mode != 3)
+        {
+          buf += (17 + 4);
+        }
+      else
+        {
+          buf += (9 + 4);
+        }
     }
-    else
-    {
-      buf += (9 + 4);
-    }
-  }
 
   if (buf[0] != VBRTag[0])
-  {
-    return 0; /* fail */
-  }
+    {
+      return 0; /* fail */
+    }
   if (buf[1] != VBRTag[1])
-  {
-    return 0; /* header not found*/
-  }
+    {
+      return 0; /* header not found*/
+    }
   if (buf[2] != VBRTag[2])
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
   if (buf[3] != VBRTag[3])
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
   return 1;
 }
 
@@ -174,46 +175,46 @@ int GetVbrTag(VBRTAGDATA *pTagData, unsigned char *buf)
 
   /*  determine offset of header */
   if (h_id)
-  {
-    /* mpeg1 */
-    if (h_mode != 3)
     {
-      buf += (32 + 4);
+      /* mpeg1 */
+      if (h_mode != 3)
+        {
+          buf += (32 + 4);
+        }
+      else
+        {
+          buf += (17 + 4);
+        }
     }
-    else
-    {
-      buf += (17 + 4);
-    }
-  }
   else
-  {
-    /* mpeg2 */
-    if (h_mode != 3)
     {
-      buf += (17 + 4);
+      /* mpeg2 */
+      if (h_mode != 3)
+        {
+          buf += (17 + 4);
+        }
+      else
+        {
+          buf += (9 + 4);
+        }
     }
-    else
-    {
-      buf += (9 + 4);
-    }
-  }
 
   if (buf[0] != VBRTag[0])
-  {
-    return 0; /* fail */
-  }
+    {
+      return 0; /* fail */
+    }
   if (buf[1] != VBRTag[1])
-  {
-    return 0; /* header not found*/
-  }
+    {
+      return 0; /* header not found*/
+    }
   if (buf[2] != VBRTag[2])
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
   if (buf[3] != VBRTag[3])
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
 
   buf += 4;
 
@@ -222,44 +223,44 @@ int GetVbrTag(VBRTAGDATA *pTagData, unsigned char *buf)
   pTagData->samprate = sr_table[h_sr_index];
 
   if (h_id == 0)
-  {
-    pTagData->samprate >>= 1;
-  }
+    {
+      pTagData->samprate >>= 1;
+    }
 
   head_flags = pTagData->flags = ExtractI4(buf);
   buf += 4; /* get flags */
 
   if (head_flags & FRAMES_FLAG)
-  {
-    pTagData->frames = ExtractI4(buf);
-    buf += 4;
-  }
+    {
+      pTagData->frames = ExtractI4(buf);
+      buf += 4;
+    }
 
   if (head_flags & BYTES_FLAG)
-  {
-    pTagData->bytes = ExtractI4(buf);
-    buf += 4;
-  }
+    {
+      pTagData->bytes = ExtractI4(buf);
+      buf += 4;
+    }
 
   if (head_flags & TOC_FLAG)
-  {
-    if (pTagData->toc != NULL)
     {
-      for (i = 0; i < NUMTOCENTRIES; i++)
-      {
-        pTagData->toc[i] = buf[i];
-      }
+      if (pTagData->toc != NULL)
+        {
+          for (i = 0; i < NUMTOCENTRIES; i++)
+            {
+              pTagData->toc[i] = buf[i];
+            }
+        }
+      buf += NUMTOCENTRIES;
     }
-    buf += NUMTOCENTRIES;
-  }
 
   pTagData->vbr_scale = -1;
 
   if (head_flags & VBR_SCALE_FLAG)
-  {
-    pTagData->vbr_scale = ExtractI4(buf);
-    buf += 4;
-  }
+    {
+      pTagData->vbr_scale = ExtractI4(buf);
+      buf += 4;
+    }
 
 #ifdef DEBUG_VBRTAG
   printf("\n\n********************* VBR TAG INFO *****************\n");
@@ -270,13 +271,13 @@ int GetVbrTag(VBRTAGDATA *pTagData, unsigned char *buf)
   printf("VBR Scale   :%d\n", pTagData->vbr_scale);
   printf("toc:\n");
   if (pTagData->toc != NULL)
-  {
-    for (i = 0; i < NUMTOCENTRIES; i++)
     {
-      if ((i % 10) == 0) printf("\n");
-      printf(" %3d", (int)(pTagData->toc[i]));
+      for (i = 0; i < NUMTOCENTRIES; i++)
+        {
+          if ((i % 10) == 0) printf("\n");
+          printf(" %3d", (int)(pTagData->toc[i]));
+        }
     }
-  }
   printf("\n***************** END OF VBR TAG INFO ***************\n");
 #endif
   return 1; /* success */
@@ -308,19 +309,19 @@ int InitVbrTag(Bit_stream_struc *pBs, int nVersion, int nMode, int SampIndex)
 
   /* Set TOC values to 255 */
   for (i = 0; i < NUMTOCENTRIES; i++)
-  {
-    g_Position[i] = -1;
-  }
+    {
+      g_Position[i] = -1;
+    }
 
   /* Reserve the proper amount of bytes */
   if (nMode == 3)
-  {
-    nZeroStreamSize = SizeOfEmptyFrame[nVersion][1] + 4;
-  }
+    {
+      nZeroStreamSize = SizeOfEmptyFrame[nVersion][1] + 4;
+    }
   else
-  {
-    nZeroStreamSize = SizeOfEmptyFrame[nVersion][0] + 4;
-  }
+    {
+      nZeroStreamSize = SizeOfEmptyFrame[nVersion][0] + 4;
+    }
 
   /*
   // Xing VBR pretends to be a 48kbs layer III frame.  (at 44.1kHz).
@@ -343,27 +344,27 @@ int InitVbrTag(Bit_stream_struc *pBs, int nVersion, int nMode, int SampIndex)
     /* static int framesize[3]={156,144,216}; */ /* 48kbs framesize */
 
     if (SampIndex > 2)
-    {
-      fprintf(stderr, "illegal sampling frequency index\n");
-      exit(-1);
-    }
+      {
+        fprintf(stderr, "illegal sampling frequency index\n");
+        exit(-1);
+      }
     TotalFrameSize = framesize[SampIndex];
     tot = (nZeroStreamSize + VBRHEADERSIZE);
     tot += 20; /* extra 20 bytes for LAME & version string */
 
     if (TotalFrameSize < tot)
-    {
-      fprintf(stderr, "Xing VBR header problem...use -t\n");
-      exit(-1);
-    }
+      {
+        fprintf(stderr, "Xing VBR header problem...use -t\n");
+        exit(-1);
+      }
   }
 
   /* Put empty bytes into the bitstream */
   for (i = 0; i < TotalFrameSize; i++)
-  {
-    /* Write a byte to the bitstream */
-    putbits(pBs, 0, 8);
-  }
+    {
+      /* Write a byte to the bitstream */
+      putbits(pBs, 0, 8);
+    }
 
   /* Success */
   return 0;
@@ -389,18 +390,18 @@ int PutVbrTag(char *lpszFileName, int nVbrScale, int nVersion)
   char str1[80];
 
   if (nVbrNumFrames == 0 || pVbrFrames == NULL)
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
 
   /* Open the bitstream again */
   fpStream = fopen(lpszFileName, "rb+");
 
   /* Assert stream is valid */
   if (fpStream == NULL)
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
 
   /* Clear stream buffer */
   memset(pbtStreamBuffer, 0x00, sizeof(pbtStreamBuffer));
@@ -413,9 +414,9 @@ int PutVbrTag(char *lpszFileName, int nVbrScale, int nVersion)
 
   /* Abort if file has zero length. Yes, it can happen :) */
   if (lFileSize == 0)
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
 
   /* Seek to first real frame */
   fseek(fpStream, (long)TotalFrameSize, SEEK_SET);
@@ -428,17 +429,17 @@ int PutVbrTag(char *lpszFileName, int nVbrScale, int nVersion)
   /* from first valid frame */
   pbtStreamBuffer[0] = (u_char)0xff;
   if (nVersion == 0)
-  {
-    pbtStreamBuffer[1] = (u_char)0xfb;
-    abyte = pbtStreamBuffer[2] & (char)0x0c;
-    pbtStreamBuffer[2] = (char)0x50 | abyte; /* 64kbs MPEG1 frame */
-  }
+    {
+      pbtStreamBuffer[1] = (u_char)0xfb;
+      abyte = pbtStreamBuffer[2] & (char)0x0c;
+      pbtStreamBuffer[2] = (char)0x50 | abyte; /* 64kbs MPEG1 frame */
+    }
   else
-  {
-    pbtStreamBuffer[1] = (u_char)0xf3;
-    abyte = pbtStreamBuffer[2] & (char)0x0c;
-    pbtStreamBuffer[2] = (char)0x80 | abyte; /* 64kbs MPEG2 frame */
-  }
+    {
+      pbtStreamBuffer[1] = (u_char)0xf3;
+      abyte = pbtStreamBuffer[2] & (char)0x0c;
+      pbtStreamBuffer[2] = (char)0x80 | abyte; /* 64kbs MPEG2 frame */
+    }
 
   /*Seek to the beginning of the stream */
   fseek(fpStream, 0, SEEK_SET);
@@ -447,23 +448,23 @@ int PutVbrTag(char *lpszFileName, int nVbrScale, int nVersion)
   memset(btToc, 0, sizeof(btToc));
 
   for (i = 1; i < NUMTOCENTRIES; i++) /* Don't touch zero point... */
-  {
-    /* Calculate frame from given percentage */
-    int frameNum = (int)(floor(0.01 * i * nVbrNumFrames));
-
-    /*  Calculate relative file postion, normalized to 0..256!(?) */
-    float fRelStreamPos =
-        (float)256.0 * (float)pVbrFrames[frameNum] / (float)lFileSize;
-
-    /* Just to be safe */
-    if (fRelStreamPos > 255)
     {
-      fRelStreamPos = 255;
-    }
+      /* Calculate frame from given percentage */
+      int frameNum = (int)(floor(0.01 * i * nVbrNumFrames));
 
-    /* Assign toc entry value */
-    btToc[i] = (u_char)fRelStreamPos;
-  }
+      /*  Calculate relative file postion, normalized to 0..256!(?) */
+      float fRelStreamPos =
+          (float)256.0 * (float)pVbrFrames[frameNum] / (float)lFileSize;
+
+      /* Just to be safe */
+      if (fRelStreamPos > 255)
+        {
+          fRelStreamPos = 255;
+        }
+
+      /* Assign toc entry value */
+      btToc[i] = (u_char)fRelStreamPos;
+    }
 
   /* Start writing the tag after the zero frame */
   nStreamIndex = nZeroStreamSize;
@@ -509,9 +510,9 @@ int PutVbrTag(char *lpszFileName, int nVbrScale, int nVersion)
 
   /* Put it all to disk again */
   if (fwrite(pbtStreamBuffer, TotalFrameSize, 1, fpStream) != 1)
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
   fclose(fpStream);
 
   /* Save to delete the frame buffer */
@@ -529,28 +530,28 @@ int SeekPoint(unsigned char TOC[NUMTOCENTRIES], int file_bytes, float percent)
   float fa, fb, fx;
 
   if (percent < (float)0.0)
-  {
-    percent = (float)0.0;
-  }
+    {
+      percent = (float)0.0;
+    }
   if (percent > (float)100.0)
-  {
-    percent = (float)100.0;
-  }
+    {
+      percent = (float)100.0;
+    }
 
   a = (int)percent;
   if (a > 99)
-  {
-    a = 99;
-  }
+    {
+      a = 99;
+    }
   fa = TOC[a];
   if (a < 99)
-  {
-    fb = TOC[a + 1];
-  }
+    {
+      fb = TOC[a + 1];
+    }
   else
-  {
-    fb = (float)256.0;
-  }
+    {
+      fb = (float)256.0;
+    }
 
   fx = fa + (fb - fa) * (percent - a);
 

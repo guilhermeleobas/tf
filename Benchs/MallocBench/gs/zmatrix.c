@@ -43,9 +43,9 @@ void zmatrix_init()
   ref *mp = (ref *)&gs_identity_matrix;
   int i;
   for (i = 0; i < 6; i++, mp++)
-  {
-    make_real(mp, mp->value.realval);
-  }
+    {
+      make_real(mp, mp->value.realval);
+    }
 }
 
 /* currentmatrix */
@@ -53,9 +53,9 @@ int zcurrentmatrix(register ref *op)
 {
   int code = write_matrix(op);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   gs_currentmatrix(igs, (gs_matrix *)(op->value.refs));
   return 0;
 }
@@ -66,13 +66,13 @@ int zsetmatrix(register ref *op)
   gs_matrix mat;
   int code = read_matrix(op, &mat);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   if ((code = gs_setmatrix(igs, &mat)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   pop(1);
   return 0;
 }
@@ -83,27 +83,27 @@ int ztranslate(register ref *op)
   int code = write_matrix(op);
   float trans[2];
   if (code < 0) /* no matrix operand */
-  {
-    if ((code = num_params(op, 2, trans)) < 0)
     {
-      return code;
+      if ((code = num_params(op, 2, trans)) < 0)
+        {
+          return code;
+        }
+      code = gs_translate(igs, trans[0], trans[1]);
     }
-    code = gs_translate(igs, trans[0], trans[1]);
-  }
   else /* matrix operand */
-  {
-    gs_matrix *pmat = (gs_matrix *)op->value.refs;
-    if ((code = num_params(op - 1, 2, trans)) < 0)
     {
-      return code;
+      gs_matrix *pmat = (gs_matrix *)op->value.refs;
+      if ((code = num_params(op - 1, 2, trans)) < 0)
+        {
+          return code;
+        }
+      code = gs_make_translation(trans[0], trans[1], pmat);
+      op[-2] = *op;
     }
-    code = gs_make_translation(trans[0], trans[1], pmat);
-    op[-2] = *op;
-  }
   if (code >= 0)
-  {
-    pop(2);
-  }
+    {
+      pop(2);
+    }
   return code;
 }
 
@@ -113,27 +113,27 @@ int zscale(register ref *op)
   float scale[2];
   int code = write_matrix(op);
   if (code < 0) /* no matrix operand */
-  {
-    if ((code = num_params(op, 2, scale)) < 0)
     {
-      return code;
+      if ((code = num_params(op, 2, scale)) < 0)
+        {
+          return code;
+        }
+      code = gs_scale(igs, scale[0], scale[1]);
     }
-    code = gs_scale(igs, scale[0], scale[1]);
-  }
   else /* matrix operand */
-  {
-    gs_matrix *pmat = (gs_matrix *)op->value.refs;
-    if ((code = num_params(op - 1, 2, scale)) < 0)
     {
-      return code;
+      gs_matrix *pmat = (gs_matrix *)op->value.refs;
+      if ((code = num_params(op - 1, 2, scale)) < 0)
+        {
+          return code;
+        }
+      code = gs_make_scaling(scale[0], scale[1], pmat);
+      op[-2] = *op;
     }
-    code = gs_make_scaling(scale[0], scale[1], pmat);
-    op[-2] = *op;
-  }
   if (code >= 0)
-  {
-    pop(2);
-  }
+    {
+      pop(2);
+    }
   return code;
 }
 
@@ -143,27 +143,27 @@ int zrotate(register ref *op)
   int code = write_matrix(op);
   float ang;
   if (code < 0) /* no matrix operand */
-  {
-    if ((code = num_params(op, 1, &ang)) < 0)
     {
-      return code;
+      if ((code = num_params(op, 1, &ang)) < 0)
+        {
+          return code;
+        }
+      code = gs_rotate(igs, ang);
     }
-    code = gs_rotate(igs, ang);
-  }
   else /* matrix operand */
-  {
-    gs_matrix *pmat = (gs_matrix *)op->value.refs;
-    if ((code = num_params(op - 1, 1, &ang)) < 0)
     {
-      return code;
+      gs_matrix *pmat = (gs_matrix *)op->value.refs;
+      if ((code = num_params(op - 1, 1, &ang)) < 0)
+        {
+          return code;
+        }
+      code = gs_make_rotation(ang, pmat);
+      op[-1] = *op;
     }
-    code = gs_make_rotation(ang, pmat);
-    op[-1] = *op;
-  }
   if (code >= 0)
-  {
-    pop(1);
-  }
+    {
+      pop(1);
+    }
   return code;
 }
 
@@ -173,14 +173,14 @@ int zconcat(register ref *op)
   gs_matrix mat;
   int code = read_matrix(op, &mat);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   code = gs_concat(igs, &mat);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   pop(1);
   return 0;
 }
@@ -193,9 +193,9 @@ int zconcatmatrix(register ref *op)
   if ((code = read_matrix(op - 2, &m1)) < 0 ||
       (code = read_matrix(op - 1, &m2)) < 0 || (code = write_matrix(op)) < 0 ||
       (code = gs_matrix_multiply(&m1, &m2, (gs_matrix *)(op->value.refs))) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   op[-2] = *op;
   pop(2);
   return code;
@@ -237,46 +237,46 @@ int common_transform(register ref *op,
   int code;
   /* Optimize for the non-matrix case */
   switch (r_type(op))
-  {
-    case t_real:
-      opxy[1] = op->value.realval;
-      break;
-    case t_integer:
-      opxy[1] = op->value.intval;
-      break;
-    case t_array:
-    case t_packedarray: /* might be a matrix */
     {
-      gs_matrix mat;
-      gs_matrix *pmat = &mat;
-      if ((code = read_matrix(op, pmat)) < 0 ||
-          (code = num_params(op - 1, 2, opxy)) < 0 ||
-          (code = (*matproc)(opxy[0], opxy[1], pmat, &pt)) < 0)
-      {
-        return code;
-      }
-      op--;
-      pop(1);
-      goto out;
+      case t_real:
+        opxy[1] = op->value.realval;
+        break;
+      case t_integer:
+        opxy[1] = op->value.intval;
+        break;
+      case t_array:
+      case t_packedarray: /* might be a matrix */
+        {
+          gs_matrix mat;
+          gs_matrix *pmat = &mat;
+          if ((code = read_matrix(op, pmat)) < 0 ||
+              (code = num_params(op - 1, 2, opxy)) < 0 ||
+              (code = (*matproc)(opxy[0], opxy[1], pmat, &pt)) < 0)
+            {
+              return code;
+            }
+          op--;
+          pop(1);
+          goto out;
+        }
+      default:
+        return e_typecheck;
     }
-    default:
-      return e_typecheck;
-  }
   switch (r_type(op - 1))
-  {
-    case t_real:
-      opxy[0] = (op - 1)->value.realval;
-      break;
-    case t_integer:
-      opxy[0] = (op - 1)->value.intval;
-      break;
-    default:
-      return e_typecheck;
-  }
+    {
+      case t_real:
+        opxy[0] = (op - 1)->value.realval;
+        break;
+      case t_integer:
+        opxy[0] = (op - 1)->value.intval;
+        break;
+      default:
+        return e_typecheck;
+    }
   if ((code = (*ptproc)(igs, opxy[0], opxy[1], &pt)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
 out:
   make_real(op - 1, pt.x);
   make_real(op, pt.y);
@@ -290,9 +290,9 @@ int zinvertmatrix(register ref *op)
   int code;
   if ((code = read_matrix(op - 1, &m)) < 0 || (code = write_matrix(op)) < 0 ||
       (code = gs_matrix_invert(&m, (gs_matrix *)op->value.refs)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   op[-1] = *op;
   pop(1);
   return code;

@@ -26,11 +26,11 @@ void bhmi_cleanup(void);
 
 #define LARGE 32767 /* flag for last character match    */
 
-static int patlen;              /* # chars in pattern               */
+static int patlen; /* # chars in pattern               */
 static int skip[UCHAR_MAX + 1]; /* skip-ahead count for test chars  */
-static int skip2;               /* skip-ahead after non-match with
+static int skip2; /* skip-ahead after non-match with
                                 ** matching final character         */
-static uchar *pat = NULL;       /* uppercase copy of pattern        */
+static uchar *pat = NULL; /* uppercase copy of pattern        */
 
 /*
 ** bmhi_init() is called prior to bmhi_search() to calculate the
@@ -47,40 +47,40 @@ void bmhi_init(const char *pattern)
 
   pat = realloc((void *)pat, patlen);
   if (!pat)
-  {
-    exit(1);
-  }
+    {
+      exit(1);
+    }
   else
-  {
-    atexit(bhmi_cleanup);
-  }
+    {
+      atexit(bhmi_cleanup);
+    }
   for (i = 0; i < patlen; i++)
-  {
-    pat[i] = toupper(pattern[i]);
-  }
+    {
+      pat[i] = toupper(pattern[i]);
+    }
 
   /* initialize skip array */
 
   for (i = 0; i <= UCHAR_MAX; ++i)
-  { /* rdg 10/93 */
-    skip[i] = patlen;
-  }
+    { /* rdg 10/93 */
+      skip[i] = patlen;
+    }
   for (i = 0; i < patlen - 1; ++i)
-  {
-    skip[pat[i]] = patlen - i - 1;
-    skip[tolower(pat[i])] = patlen - i - 1;
-  }
+    {
+      skip[pat[i]] = patlen - i - 1;
+      skip[tolower(pat[i])] = patlen - i - 1;
+    }
   lastpatchar = pat[patlen - 1];
   skip[lastpatchar] = LARGE;
   skip[tolower(lastpatchar)] = LARGE;
   skip2 = patlen; /* Horspool's fixed second shift */
   for (i = 0; i < patlen - 1; ++i)
-  {
-    if (pat[i] == lastpatchar)
     {
-      skip2 = patlen - i - 1;
+      if (pat[i] == lastpatchar)
+        {
+          skip2 = patlen - i - 1;
+        }
     }
-  }
 }
 
 char *bmhi_search(const char *string, const int stringlen)
@@ -90,36 +90,36 @@ char *bmhi_search(const char *string, const int stringlen)
 
   i = patlen - 1 - stringlen;
   if (i >= 0)
-  {
-    return NULL;
-  }
-  string += stringlen;
-  for (;;)
-  {
-    while ((i += skip[((uchar *)string)[i]]) < 0)
-    {
-      ; /* mighty fast inner loop */
-    }
-    if (i < (LARGE - stringlen))
     {
       return NULL;
     }
-    i -= LARGE;
-    j = patlen - 1;
-    s = (char *)string + (i - j);
-    while (--j >= 0 && toupper(s[j]) == pat[j])
+  string += stringlen;
+  for (;;)
     {
-      ;
+      while ((i += skip[((uchar *)string)[i]]) < 0)
+        {
+          ; /* mighty fast inner loop */
+        }
+      if (i < (LARGE - stringlen))
+        {
+          return NULL;
+        }
+      i -= LARGE;
+      j = patlen - 1;
+      s = (char *)string + (i - j);
+      while (--j >= 0 && toupper(s[j]) == pat[j])
+        {
+          ;
+        }
+      if (j < 0)
+        { /* rdg 10/93 */
+          return s; /* rdg 10/93 */
+        }
+      if ((i += skip2) >= 0)
+        { /* rdg 10/93 */
+          return NULL; /* rdg 10/93 */
+        }
     }
-    if (j < 0)
-    {           /* rdg 10/93 */
-      return s; /* rdg 10/93 */
-    }
-    if ((i += skip2) >= 0)
-    {              /* rdg 10/93 */
-      return NULL; /* rdg 10/93 */
-    }
-  }
 }
 
 void bhmi_cleanup(void) { free(pat); }

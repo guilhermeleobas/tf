@@ -101,44 +101,44 @@ int main(int argc, char *argv[])
 
   printf("This benchmark modified to not use hard coded pool allocation!\n");
   while (arg < argc)
-  {
-    if ((argv[arg][0] != '-') || (argv[arg][2] != 0))
     {
-      printf("parse error in %s\n", argv[arg]);
-      usage(argv[0]);
-      return (-1);
+      if ((argv[arg][0] != '-') || (argv[arg][2] != 0))
+        {
+          printf("parse error in %s\n", argv[arg]);
+          usage(argv[0]);
+          return (-1);
+        }
+      c = argv[arg][1];
+      arg++;
+      switch (c)
+        {
+          case 'd':
+            dirty = 1;
+            break;
+          case 'g':
+            growth_rate = atof(argv[arg++]);
+            break;
+          case 'i':
+            max_iterations = atoi(argv[arg++]);
+            break;
+          case 'l':
+            initial_length = atoi(argv[arg++]);
+            break;
+          case 'n':
+            num_lists = atoi(argv[arg++]);
+            break;
+          case 's':
+            element_size = atoi(argv[arg++]);
+            break;
+          case 't':
+            tail = 1;
+            break;
+          default:
+            printf("unrecognized option: %c\n", c);
+            usage(argv[0]);
+            return (-1);
+        }
     }
-    c = argv[arg][1];
-    arg++;
-    switch (c)
-    {
-      case 'd':
-        dirty = 1;
-        break;
-      case 'g':
-        growth_rate = atof(argv[arg++]);
-        break;
-      case 'i':
-        max_iterations = atoi(argv[arg++]);
-        break;
-      case 'l':
-        initial_length = atoi(argv[arg++]);
-        break;
-      case 'n':
-        num_lists = atoi(argv[arg++]);
-        break;
-      case 's':
-        element_size = atoi(argv[arg++]);
-        break;
-      case 't':
-        tail = 1;
-        break;
-      default:
-        printf("unrecognized option: %c\n", c);
-        usage(argv[0]);
-        return (-1);
-    }
-  }
 
   assert(element_size > sizeof(struct element));
   assert(initial_length > 0);
@@ -148,71 +148,71 @@ int main(int argc, char *argv[])
   assert(lists != 0);
 
   for (i = 0; i < num_lists; i++)
-  {
-    lists[i] = NULL;
-  }
+    {
+      lists[i] = NULL;
+    }
 
   for (i = 0; i < initial_length; i++)
-  {
-    for (j = 0; j < num_lists; j++)
     {
-      struct element *e = allocate();
-      e->next = lists[j];
-      e->count = 0;
-      lists[j] = e;
+      for (j = 0; j < num_lists; j++)
+        {
+          struct element *e = allocate();
+          e->next = lists[j];
+          e->count = 0;
+          lists[j] = e;
+        }
     }
-  }
 
   /* iterate */
   for (i = 0; i < max_iterations; i++)
-  {
-    if ((i % 1000) == 0)
     {
-      printf("%d\n", i);
-    }
-    /* traverse lists */
-    for (j = 0; j < num_lists; j++)
-    {
-      struct element *trav = lists[j];
-      while (trav != NULL)
-      {
-        accumulate += trav->count;
-        if (dirty)
+      if ((i % 1000) == 0)
         {
-          trav->count++;
+          printf("%d\n", i);
         }
-        trav = trav->next;
-      }
-    }
+      /* traverse lists */
+      for (j = 0; j < num_lists; j++)
+        {
+          struct element *trav = lists[j];
+          while (trav != NULL)
+            {
+              accumulate += trav->count;
+              if (dirty)
+                {
+                  trav->count++;
+                }
+              trav = trav->next;
+            }
+        }
 
-    /* grow lists */
-    growth += growth_rate;
-    j = growth;
-    growth -= j;
-    for (; j > 0; j--)
-    {
-      for (k = 0; k < num_lists; k++)
-      {
-        struct element *e = allocate();
-        e->count = k + j;
-        if (tail)
+      /* grow lists */
+      growth += growth_rate;
+      j = growth;
+      growth -= j;
+      for (; j > 0; j--)
         {
-          struct element *trav = lists[k];
-          while (trav->next != NULL)
-          {
-            trav = trav->next;
-          }
-          trav->next = e;
-          e->next = NULL;
+          for (k = 0; k < num_lists; k++)
+            {
+              struct element *e = allocate();
+              e->count = k + j;
+              if (tail)
+                {
+                  struct element *trav = lists[k];
+                  while (trav->next != NULL)
+                    {
+                      trav = trav->next;
+                    }
+                  trav->next = e;
+                  e->next = NULL;
+                }
+              else
+                {
+                  e->next = lists[k];
+                  lists[k] = e;
+                }
+            }
         }
-        else
-        {
-          e->next = lists[k];
-          lists[k] = e;
-        }
-      }
     }
-  }
   printf("output = %d\n", accumulate);
 
   printf("num allocated %d\n", num_allocated);

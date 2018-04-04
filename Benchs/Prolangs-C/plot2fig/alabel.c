@@ -43,56 +43,56 @@ int alabel(int x_justify, int y_justify, char *s)
 
   draw_line();
   switch (x_justify)
-  {
-    case 'l':
-      x_justification = 0;
-      break;
-    case 'c':
-      x_justification = 1;
-      break;
-    case 'r':
-      x_justification = 2;
-      break;
-  }
+    {
+      case 'l':
+        x_justification = 0;
+        break;
+      case 'c':
+        x_justification = 1;
+        break;
+      case 'r':
+        x_justification = 2;
+        break;
+    }
   switch (y_justify)
-  {
-    case 't':
-      y_offset = 1.1;
-      break;
-    case 'c':
-      y_offset = 0.5;
-      break;
-    case 'b':
-      y_offset = 0.0;
-      break;
-  }
+    {
+      case 't':
+        y_offset = 1.1;
+        break;
+      case 'c':
+        y_offset = 0.5;
+        break;
+      case 'b':
+        y_offset = 0.0;
+        break;
+    }
 
   /* ignore leading white space */
   p = s;
   while (isspace(*p))
-  {
-    p++;
-  }
+    {
+      p++;
+    }
 
   /* only output the string if it contains non-whitespace characters. */
   if (strlen(p))
-  {
-    printf("%d %d %d %d %d %d %d %.3f %d %d %d %d %d %s\1\n",
-           4,               /* text object */
-           x_justification, /* horzontal justification */
-           font_id,         /* font */
-           font_size,       /* point size */
-           0,               /* pen */
-           0,               /* color */
-           0,               /* depth */
-           text_rotation,   /* angle of rotation (float) */
-           0,               /* flags */
-           8,               /* height (pixels) */
-           8,               /* length (pixels) */
-           (int)((last_x - x_input_min) / x_scale + x_output_min),
-           (int)((last_y - y_input_min) / y_scale + y_output_min +
-                 font_size * y_offset * 72 / 80),
-           p);
-  }
+    {
+      printf("%d %d %d %d %d %d %d %.3f %d %d %d %d %d %s\1\n",
+             4, /* text object */
+             x_justification, /* horzontal justification */
+             font_id, /* font */
+             font_size, /* point size */
+             0, /* pen */
+             0, /* color */
+             0, /* depth */
+             text_rotation, /* angle of rotation (float) */
+             0, /* flags */
+             8, /* height (pixels) */
+             8, /* length (pixels) */
+             (int)((last_x - x_input_min) / x_scale + x_output_min),
+             (int)((last_y - y_input_min) / y_scale + y_output_min +
+                   font_size * y_offset * 72 / 80),
+             p);
+    }
   return 0;
 }

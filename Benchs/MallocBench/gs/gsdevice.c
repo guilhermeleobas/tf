@@ -23,11 +23,11 @@ copies.  */
 #include "gx.h"
 #include "gxbitmap.h"
 #include "gxdevmem.h"
-#include "gxfixed.h"  /* ditto */
+#include "gxfixed.h" /* ditto */
 #include "gxmatrix.h" /* for gzstate.h */
 #include "gzdevice.h"
 #include "gzstate.h"
-#include "math_.h"   /* for fabs */
+#include "math_.h" /* for fabs */
 #include "memory_.h" /* for memcpy */
 
 /* Import the device list from gdevs.c */
@@ -52,13 +52,13 @@ dev_proc_tile_trapezoid(null_tile_trapezoid);
 
 private
 gx_device_procs null_procs = {
-    gx_default_open_device,   gx_default_get_initial_matrix,
-    gx_default_sync_output,   gx_default_output_page,
-    gx_default_close_device,  gx_default_map_rgb_color,
+    gx_default_open_device, gx_default_get_initial_matrix,
+    gx_default_sync_output, gx_default_output_page,
+    gx_default_close_device, gx_default_map_rgb_color,
     gx_default_map_color_rgb, null_fill_rectangle,
-    null_tile_rectangle,      null_copy_mono,
-    null_copy_color,          null_draw_line,
-    null_fill_trapezoid,      null_tile_trapezoid};
+    null_tile_rectangle, null_copy_mono,
+    null_copy_color, null_draw_line,
+    null_fill_trapezoid, null_tile_trapezoid};
 private
 gx_device null_device = {sizeof(device),
                          &null_procs,
@@ -95,18 +95,18 @@ int gs_copyscanlines(gx_device *dev, int start_y, byte *data, uint size,
 {
   int count;
   if (!gs_device_is_memory(dev))
-  {
-    return_error(gs_error_undefined);
-  }
+    {
+      return_error(gs_error_undefined);
+    }
   count = mem_copy_scan_lines((gx_device_memory *)dev, start_y, data, size);
   if (plines_copied != NULL)
-  {
-    *plines_copied = count;
-  }
+    {
+      *plines_copied = count;
+    }
   if (pbytes_copied != NULL)
-  {
-    *pbytes_copied = count * mem_bytes_per_scan_line((gx_device_memory *)dev);
-  }
+    {
+      *pbytes_copied = count * mem_bytes_per_scan_line((gx_device_memory *)dev);
+    }
   return 0;
 }
 
@@ -127,12 +127,12 @@ gx_device *gs_getdevice(int index)
 {
   int i;
   for (i = 0; gx_device_list[i] != 0; i++)
-  {
-    if (i == index)
     {
-      return gx_device_list[i];
+      if (i == index)
+        {
+          return gx_device_list[i];
+        }
     }
-  }
   return 0; /* index out of range */
 }
 
@@ -143,13 +143,13 @@ int gs_makedevice(gx_device **pnew_dev, gx_device *dev, gs_matrix *pmat,
   register gx_device *new_dev;
   new_dev = (gx_device *)(*palloc)(1, dev->params_size, "gs_makedevice");
   if (new_dev == 0)
-  {
-    return_error(gs_error_VMerror);
-  }
+    {
+      return_error(gs_error_VMerror);
+    }
   if (width <= 0 || height <= 0)
-  {
-    return_error(gs_error_rangecheck);
-  }
+    {
+      return_error(gs_error_rangecheck);
+    }
   memcpy(new_dev, dev, dev->params_size);
   new_dev->width = width;
   new_dev->height = height;
@@ -176,85 +176,85 @@ int gs_makeimagedevice(gx_device **pnew_dev, gs_matrix *pmat, uint width,
   byte palette[256 * 3];
   int has_color;
   if (width <= 0 || height <= 0)
-  {
-    return_error(gs_error_rangecheck);
-  }
+    {
+      return_error(gs_error_rangecheck);
+    }
   /************** TEMPORARY LIMITATION: **************/
   /*** only 1-, 8-, 24-, and 32-bit are supported. ***/
   switch (num_colors)
-  {
-    case 2:
-      bits_per_pixel = 1;
-      old_dev = &mem_mono_device;
-      break;
-    case 4:  /*** bits_per_pixel = 2; break; ***/
-    case 16: /*** bits_per_pixel = 4; break; ***/
-      return_error(gs_error_rangecheck);
-    case 256:
-      bits_per_pixel = 8;
-      break;
-    case -24:
-      bits_per_pixel = 24;
-      old_dev = &mem_true24_color_device;
-      palette_size = 0;
-      break;
-    case -32:
-      bits_per_pixel = 32;
-      old_dev = &mem_true32_color_device;
-      palette_size = 0;
-      break;
-    default:
-      return_error(gs_error_rangecheck);
-  }
+    {
+      case 2:
+        bits_per_pixel = 1;
+        old_dev = &mem_mono_device;
+        break;
+      case 4: /*** bits_per_pixel = 2; break; ***/
+      case 16: /*** bits_per_pixel = 4; break; ***/
+        return_error(gs_error_rangecheck);
+      case 256:
+        bits_per_pixel = 8;
+        break;
+      case -24:
+        bits_per_pixel = 24;
+        old_dev = &mem_true24_color_device;
+        palette_size = 0;
+        break;
+      case -32:
+        bits_per_pixel = 32;
+        old_dev = &mem_true32_color_device;
+        palette_size = 0;
+        break;
+      default:
+        return_error(gs_error_rangecheck);
+    }
   pcount = palette_size * 3;
   /* Check to make sure the palette contains white and black. */
   if (bits_per_pixel <= 8)
-  {
-    float *p;
-    byte *q;
-    int i;
-    has_color = 0;
-    for (i = 0, p = colors, q = palette; i < pcount; i++, p++, q++)
     {
-      if (*p < -0.001 || *p > 1.001)
-      {
-        return_error(gs_error_rangecheck);
-      }
-      *q = (*p * 255) + 0.5;
-      if (i % 3 == 2)
-      {
-        if (*q == q[-1] && *q == q[-2])
+      float *p;
+      byte *q;
+      int i;
+      has_color = 0;
+      for (i = 0, p = colors, q = palette; i < pcount; i++, p++, q++)
         {
-          if (*q == 0)
-          {
-            black = i - 2;
-          }
-          else if (*q == 255)
-          {
-            white = i - 2;
-          }
+          if (*p < -0.001 || *p > 1.001)
+            {
+              return_error(gs_error_rangecheck);
+            }
+          *q = (*p * 255) + 0.5;
+          if (i % 3 == 2)
+            {
+              if (*q == q[-1] && *q == q[-2])
+                {
+                  if (*q == 0)
+                    {
+                      black = i - 2;
+                    }
+                  else if (*q == 255)
+                    {
+                      white = i - 2;
+                    }
+                }
+              else
+                {
+                  has_color = 1;
+                }
+            }
         }
-        else
+      if (white < 0 || black < 0)
         {
-          has_color = 1;
+          return_error(gs_error_rangecheck);
         }
-      }
     }
-    if (white < 0 || black < 0)
-    {
-      return_error(gs_error_rangecheck);
-    }
-  }
   else
-  {
-    has_color = 1;
-  }
+    {
+      has_color = 1;
+    }
   new_dev = (gx_device_memory *)(*palloc)(1, old_dev->params_size,
                                           "gs_makeimagedevice(device)");
   if (new_dev == 0)
-  {
-    return_error(gs_error_VMerror);
-  }
+    {
+      return_error(gs_error_VMerror);
+    }
   *new_dev = *old_dev;
   new_dev->initial_matrix = *pmat;
   new_dev->width = width;
@@ -263,15 +263,15 @@ int gs_makeimagedevice(gx_device **pnew_dev, gs_matrix *pmat, uint width,
   new_dev->bits_per_color_pixel = bits_per_pixel;
   bitmap_size = gx_device_memory_bitmap_size(new_dev);
   if (bitmap_size > max_uint)
-  { /* can't allocate it! */
-    return_error(gs_error_limitcheck);
-  }
+    { /* can't allocate it! */
+      return_error(gs_error_limitcheck);
+    }
   bits = (byte *)(*palloc)(1, (uint)bitmap_size + pcount,
                            "gs_makeimagedevice(bits)");
   if (bits == 0)
-  {
-    return_error(gs_error_VMerror);
-  }
+    {
+      return_error(gs_error_VMerror);
+    }
   new_dev->base = bits;
   new_dev->invert = (black == 0 ? 0 : -1);
   new_dev->palette_size = palette_size;
@@ -290,30 +290,30 @@ int gs_setdevice(gs_state *pgs, gx_device *dev)
   int code;
   /* Initialize the device */
   if (!was_open)
-  {
-    code = (*dev->procs->open_device)(dev);
-    if (code < 0)
     {
-      return code;
+      code = (*dev->procs->open_device)(dev);
+      if (code < 0)
+        {
+          return code;
+        }
+      dev->is_open = 1;
     }
-    dev->is_open = 1;
-  }
   /* Compute device white and black codes */
   pdev->black = (*dev->procs->map_rgb_color)(dev, 0, 0, 0);
   pdev->white = (*dev->procs->map_rgb_color)(
       dev, dev->max_rgb_value, dev->max_rgb_value, dev->max_rgb_value);
   pdev->info = dev;
   if ((code = gs_initmatrix(pgs)) < 0 || (code = gs_initclip(pgs)) < 0)
-  {
-    return code;
-  }
-  if (!was_open)
-  {
-    if ((code = gs_erasepage(pgs)) < 0)
     {
       return code;
     }
-  }
+  if (!was_open)
+    {
+      if ((code = gs_erasepage(pgs)) < 0)
+        {
+          return code;
+        }
+    }
   return 0;
 }
 
@@ -454,10 +454,10 @@ dev_proc_tile_trapezoid(trace_tile_trapezoid);
 
 private
 gx_device_procs trace_procs = {
-    trace_open_device,    trace_get_initial_matrix, trace_sync_output,
-    trace_output_page,    trace_close_device,       trace_map_rgb_color,
-    trace_map_color_rgb,  trace_fill_rectangle,     trace_tile_rectangle,
-    trace_copy_mono,      trace_copy_color,         trace_draw_line,
+    trace_open_device, trace_get_initial_matrix, trace_sync_output,
+    trace_output_page, trace_close_device, trace_map_rgb_color,
+    trace_map_color_rgb, trace_fill_rectangle, trace_tile_rectangle,
+    trace_copy_mono, trace_copy_color, trace_draw_line,
     trace_fill_trapezoid, trace_tile_trapezoid};
 
 /* Find the real procedures for a traced device */
@@ -467,14 +467,14 @@ gx_device_procs *trace_find_procs(gx_device *tdev)
   gx_device_procs *tprocs = tdev->procs;
   register trace_record *tp = trace_list;
   while (tp != NULL)
-  {
-    if (tp->tprocs == tprocs)
     {
-      trace_cache_device = tdev;
-      return (trace_cache_procs = &tp->procs);
+      if (tp->tprocs == tprocs)
+        {
+          trace_cache_device = tdev;
+          return (trace_cache_procs = &tp->procs);
+        }
+      tp = tp->next;
     }
-    tp = tp->next;
-  }
   dprintf("Traced procedures not found!\n");
   exit(1);
 }
@@ -591,12 +591,12 @@ int trace_tile_rectangle(gx_device *dev, gx_bitmap *tile, int x, int y, int w,
 {
   int result = (*rprocs->tile_rectangle)(dev, tile, x, y, w, h, zero, one);
   if (gs_debug['v'])
-  {
-    trace_print_tile(tile);
-    printf("\t  T(tile_rectangle)(dev, &tile, %d, %d, %d, %d, %ld, %ld);\n\t}",
-           x, y, w, h, (long)zero, (long)one);
-    trace_print_code(result);
-  }
+    {
+      trace_print_tile(tile);
+      printf("\t  T(tile_rectangle)(dev, &tile, %d, %d, %d, %d, %ld, %ld);\n\t}",
+             x, y, w, h, (long)zero, (long)one);
+      trace_print_code(result);
+    }
   return result;
 }
 private
@@ -653,12 +653,12 @@ int trace_tile_trapezoid(gx_device *dev, gx_bitmap *tile, int x0, int y0,
   int result = (*rprocs->tile_trapezoid)(dev, tile, x0, y0, w0, x1, y1, w1,
                                          color0, color1);
   if (gs_debug['v'])
-  {
-    trace_print_tile(tile);
-    printf("[v]\ttile_trapezoid(dev, %d, %d, %d, %d, %d, %d, %ld, %ld)", x0, y0,
-           w0, x1, y1, w1, (long)color0, (long)color1);
-    trace_print_code(result);
-  }
+    {
+      trace_print_tile(tile);
+      printf("[v]\ttile_trapezoid(dev, %d, %d, %d, %d, %d, %d, %ld, %ld)", x0, y0,
+             w0, x1, y1, w1, (long)color0, (long)color1);
+      trace_print_code(result);
+    }
   return result;
 }
 

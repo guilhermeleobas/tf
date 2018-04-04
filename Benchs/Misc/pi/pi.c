@@ -37,8 +37,8 @@ int main(int argc, char *argv[])
 #endif
 
   for (j = 1; j <= itot; j++)
-  {
-    /*
+    {
+      /*
     c   X and Y are two uniform random numbers between 0 and 1.
     c   They are computed using two linear congruential generators.
     c   A mix of integer and real arithmetic is used to simulate a
@@ -47,19 +47,19 @@ int main(int argc, char *argv[])
     c   mantissa.
     */
 
-    iprod = 27611 * ixran;
-    ixran = iprod - 74383 * (long int)(iprod / 74383);
-    x = (float)ixran / 74383.0;
-    prod = ymult * yran;
-    yran = (prod - ymod * (long int)(prod / ymod));
-    y = yran / ymod;
-    z = x * x + y * y;
-    myadd(&ztot, &z);
-    if (z <= 1.0)
-    {
-      low = low + 1;
+      iprod = 27611 * ixran;
+      ixran = iprod - 74383 * (long int)(iprod / 74383);
+      x = (float)ixran / 74383.0;
+      prod = ymult * yran;
+      yran = (prod - ymod * (long int)(prod / ymod));
+      y = yran / ymod;
+      z = x * x + y * y;
+      myadd(&ztot, &z);
+      if (z <= 1.0)
+        {
+          low = low + 1;
+        }
     }
-  }
   printf(" x = %9.6f    y = %12.2f  low = %8d j = %7d\n", x, y, (int)low,
          (int)j);
   pi = 4.0 * (float)low / (float)itot;

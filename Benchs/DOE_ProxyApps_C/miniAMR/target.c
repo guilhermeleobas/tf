@@ -42,50 +42,50 @@ int reduce_blocks()
 
   zero_refine();
   if (target_active)
-  {
-    num_comb = (global_active - num_pes * target_active + 3) / 7;
-  }
+    {
+      num_comb = (global_active - num_pes * target_active + 3) / 7;
+    }
   else
-  {
-    num_comb = (global_active - num_pes * target_active) / 7;
-  }
+    {
+      num_comb = (global_active - num_pes * target_active) / 7;
+    }
 
   for (comb = 0, l = num_refine - 1; comb < num_comb; l--)
-  {
-    for (p = 0; p < max_active_parent; p++)
     {
-      if ((pp = &parents[p])->number >= 0)
-      {
-        if (pp->level == l)
+      for (p = 0; p < max_active_parent; p++)
         {
-          num_parents++;
-        }
-      }
-    }
-
-    for (p = 0; p < max_active_parent && comb < num_comb; p++)
-    {
-      if ((pp = &parents[p])->number >= 0)
-      {
-        if (pp->level == l)
-        {
-          pp->refine = -1;
-          comb++;
-          for (c = 0; c < 8; c++)
-          {
-            if (pp->child_node[c] == my_pe && pp->child[c] >= 0)
+          if ((pp = &parents[p])->number >= 0)
             {
-              blocks[pp->child[c]].refine = -1;
+              if (pp->level == l)
+                {
+                  num_parents++;
+                }
             }
-          }
         }
-      }
-    }
 
-    t2 = timer() - t2;
-    consolidate_blocks();
-    t3 += timer() - t2;
-  }
+      for (p = 0; p < max_active_parent && comb < num_comb; p++)
+        {
+          if ((pp = &parents[p])->number >= 0)
+            {
+              if (pp->level == l)
+                {
+                  pp->refine = -1;
+                  comb++;
+                  for (c = 0; c < 8; c++)
+                    {
+                      if (pp->child_node[c] == my_pe && pp->child[c] >= 0)
+                        {
+                          blocks[pp->child[c]].refine = -1;
+                        }
+                    }
+                }
+            }
+        }
+
+      t2 = timer() - t2;
+      consolidate_blocks();
+      t3 += timer() - t2;
+    }
   timer_target_rb += timer() - t1;
   timer_target_dc += timer() - t1 - t3;
   timer_target_cb += t3;
@@ -103,42 +103,42 @@ void add_blocks()
   t1 = timer();
 
   if (target_active)
-  {
-    num_split = (num_pes * target_active + 3 - global_active) / 7;
-  }
+    {
+      num_split = (num_pes * target_active + 3 - global_active) / 7;
+    }
   else
-  {
-    num_split = (num_pes * target_active - global_active) / 7;
-  }
+    {
+      num_split = (num_pes * target_active - global_active) / 7;
+    }
 
   for (split = l = 0; split < num_split; l++)
-  {
-    zero_refine();
-    for (j = num_refine; j >= 0; j--)
     {
-      if (num_blocks[j])
-      {
-        cur_max_level = j;
-        break;
-      }
-    }
-    for (in = 0; split < num_split && in < sorted_index[num_refine + 1]; in++)
-    {
-      n = sorted_list[in].n;
-      if ((bp = &blocks[n])->number >= 0)
-      {
-        if (bp->level == l)
+      zero_refine();
+      for (j = num_refine; j >= 0; j--)
         {
-          bp->refine = 1;
-          split++;
+          if (num_blocks[j])
+            {
+              cur_max_level = j;
+              break;
+            }
         }
-      }
-    }
+      for (in = 0; split < num_split && in < sorted_index[num_refine + 1]; in++)
+        {
+          n = sorted_list[in].n;
+          if ((bp = &blocks[n])->number >= 0)
+            {
+              if (bp->level == l)
+                {
+                  bp->refine = 1;
+                  split++;
+                }
+            }
+        }
 
-    t2 = timer();
-    split_blocks();
-    t3 += timer() - t2;
-  }
+      t2 = timer();
+      split_blocks();
+      t3 += timer() - t2;
+    }
   timer_target_ab += timer() - t1;
   timer_target_da += timer() - t1 - t3;
   timer_target_sb += t3;
@@ -151,26 +151,26 @@ void zero_refine(void)
   parent *pp;
 
   for (in = 0; in < sorted_index[num_refine + 1]; in++)
-  {
-    n = sorted_list[in].n;
-    if ((bp = &blocks[n])->number >= 0)
     {
-      bp->refine = 0;
-      for (c = 0; c < 6; c++)
-      {
-        if (bp->nei_level[c] >= 0)
+      n = sorted_list[in].n;
+      if ((bp = &blocks[n])->number >= 0)
         {
-          bp->nei_refine[c] = 0;
+          bp->refine = 0;
+          for (c = 0; c < 6; c++)
+            {
+              if (bp->nei_level[c] >= 0)
+                {
+                  bp->nei_refine[c] = 0;
+                }
+            }
         }
-      }
     }
-  }
 
   for (n = 0; n < max_active_parent; n++)
-  {
-    if ((pp = &parents[n])->number >= 0)
     {
-      pp->refine = 0;
+      if ((pp = &parents[n])->number >= 0)
+        {
+          pp->refine = 0;
+        }
     }
-  }
 }

@@ -47,12 +47,12 @@ void HouseMatrix(Matrix H, Vector v, int start, int end)
   a = 2.0 / xty(v, v, start, end);
   MakeID(H);
   for (i = start; i <= end; i++)
-  {
-    for (j = start; j <= end; j++)
     {
-      H[i][j] -= a * v[i] * v[j];
+      for (j = start; j <= end; j++)
+        {
+          H[i][j] -= a * v[i] * v[j];
+        }
     }
-  }
 }
 
 void ApplyHouse(Matrix A, Vector v, int start, int end)
@@ -80,18 +80,18 @@ void WeirdHouse(Matrix A, Vector v, int row, int sc, int ec)
   a = 0.0;
 
   for (i = sc; i <= ec; i++)
-  {
-    a += A[row][i] * A[row][i];
-  }
+    {
+      a += A[row][i] * A[row][i];
+    }
 
   /* a is the 2-norm squared of A(row,sc:ec) */
 
   b = 1 / (A[row][ec] + sign(A[row][ec]) * sqrt(a));
 
   for (i = sc; i < ec; i++)
-  {
-    v[i] = A[row][i] * b;
-  }
+    {
+      v[i] = A[row][i] * b;
+    }
 
   v[ec] = 1.0;
 }
@@ -113,67 +113,67 @@ Matrix DivideAndSolve(Matrix A, int p)
   colstartt = 0;
 
   while (rowstartt < n)
-  {
-    rowendt = (rowstartt + i - 1 < n - 1) ? rowstartt + i - 1 : n - 1;
-    colstartt = rowstartt - i;
-    colendt = colstartt + i - 1;
-
-    /* Now T_i has dimension (p-h)x(p-h) */
-
-    /* First zero all but row 1 in T_i */
-
-    for (m = colstartt; m <= colendt; m++)
     {
-      if (norm(A, m, rowstartt, rowendt) != 0.0)
-      {
-        /* Find Householder(A(h:p,m)) */
-        House(A, v, m, rowstartt, rowendt);
-        for (o = 0; o < rowstartt; o++)
+      rowendt = (rowstartt + i - 1 < n - 1) ? rowstartt + i - 1 : n - 1;
+      colstartt = rowstartt - i;
+      colendt = colstartt + i - 1;
+
+      /* Now T_i has dimension (p-h)x(p-h) */
+
+      /* First zero all but row 1 in T_i */
+
+      for (m = colstartt; m <= colendt; m++)
         {
-          v[o] = 0.0;
+          if (norm(A, m, rowstartt, rowendt) != 0.0)
+            {
+              /* Find Householder(A(h:p,m)) */
+              House(A, v, m, rowstartt, rowendt);
+              for (o = 0; o < rowstartt; o++)
+                {
+                  v[o] = 0.0;
+                }
+              for (o = rowendt + 1; o < n; o++)
+                {
+                  v[o] = 0.0;
+                }
+              ApplyHouse(A, v, rowstartt, rowendt);
+            }
+          printf("m=%i, rowstart=%i, rowend=%i\n", m, rowstartt, rowendt);
+          printVector(v);
+          printMatrix(A);
         }
-        for (o = rowendt + 1; o < n; o++)
-        {
-          v[o] = 0.0;
-        }
-        ApplyHouse(A, v, rowstartt, rowendt);
-      }
-      printf("m=%i, rowstart=%i, rowend=%i\n", m, rowstartt, rowendt);
-      printVector(v);
-      printMatrix(A);
-    }
 
-    /* Now zero all but the last entry in row 1 */
+      /* Now zero all but the last entry in row 1 */
 
-    WeirdHouse(A, v, rowstartt, colstartt, colendt);
+      WeirdHouse(A, v, rowstartt, colstartt, colendt);
 
-    /* Apply the HouseHolder */
+      /* Apply the HouseHolder */
 
-    ApplyHouse(A, v, colstartt, colendt);
+      ApplyHouse(A, v, colstartt, colendt);
 
-    /* Now T_i has one single non-zero entry */
+      /* Now T_i has one single non-zero entry */
 
-    /* Iterate with explicit shift to zero the last
+      /* Iterate with explicit shift to zero the last
        non-zero entry */
 
-    while (A[rowstartt][colendt] >
-           (A[rowstartt - 1][colendt] - A[rowstartt][colendt + 1]) * epsilon)
-    {
-      printMatrix(A);
-      /* Wilkonson Shift?? */
-      d = (A[rowstartt - 1][colendt] - A[rowstartt][colendt + 1]) / 2.0;
-      b = A[rowstartt][colendt];
-      mu = A[rowstartt][colendt + 1] + d - sign(d) * sqrt(d * d + b * b);
+      while (A[rowstartt][colendt] >
+             (A[rowstartt - 1][colendt] - A[rowstartt][colendt + 1]) * epsilon)
+        {
+          printMatrix(A);
+          /* Wilkonson Shift?? */
+          d = (A[rowstartt - 1][colendt] - A[rowstartt][colendt + 1]) / 2.0;
+          b = A[rowstartt][colendt];
+          mu = A[rowstartt][colendt + 1] + d - sign(d) * sqrt(d * d + b * b);
 
-      /* Determine the givens */
-      Givens(A[rowstartt - 1][colendt] - mu, A[rowstartt][colendt], &s, &c);
+          /* Determine the givens */
+          Givens(A[rowstartt - 1][colendt] - mu, A[rowstartt][colendt], &s, &c);
 
-      /* Apply the givens */
-      ApplyGivens(A, s, c, rowstartt - 1, rowstartt, 0, n - 1);
-      printf("%e\n", A[colstartt][colendt]);
+          /* Apply the givens */
+          ApplyGivens(A, s, c, rowstartt - 1, rowstartt, 0, n - 1);
+          printf("%e\n", A[colstartt][colendt]);
+        }
+
+      rowstartt += i;
+      colstartt += i;
     }
-
-    rowstartt += i;
-    colstartt += i;
-  }
 }

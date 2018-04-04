@@ -61,38 +61,38 @@ void sort_basket(min, max) long min, max;
   cut = perm[(long)((l + r) / 2)]->abs_cost;
 
   do
-  {
-    while (perm[l]->abs_cost > cut)
     {
-      l++;
-    }
-    while (cut > perm[r]->abs_cost)
-    {
-      r--;
-    }
+      while (perm[l]->abs_cost > cut)
+        {
+          l++;
+        }
+      while (cut > perm[r]->abs_cost)
+        {
+          r--;
+        }
 
-    if (l < r)
-    {
-      xchange = perm[l];
-      perm[l] = perm[r];
-      perm[r] = xchange;
+      if (l < r)
+        {
+          xchange = perm[l];
+          perm[l] = perm[r];
+          perm[r] = xchange;
+        }
+      if (l <= r)
+        {
+          l++;
+          r--;
+        }
     }
-    if (l <= r)
-    {
-      l++;
-      r--;
-    }
-
-  } while (l <= r);
+  while (l <= r);
 
   if (min < r)
-  {
-    sort_basket(min, r);
-  }
+    {
+      sort_basket(min, r);
+    }
   if (l < max && l <= B)
-  {
-    sort_basket(l, max);
-  }
+    {
+      sort_basket(l, max);
+    }
 }
 
 static long nr_group;
@@ -115,33 +115,33 @@ cost_t *red_cost_of_bea;
   cost_t red_cost;
 
   if (initialize)
-  {
-    for (i = 1; i < K + B + 1; i++)
     {
-      perm[i] = &(basket[i]);
+      for (i = 1; i < K + B + 1; i++)
+        {
+          perm[i] = &(basket[i]);
+        }
+      nr_group = ((m - 1) / K) + 1;
+      group_pos = 0;
+      basket_size = 0;
+      initialize = 0;
     }
-    nr_group = ((m - 1) / K) + 1;
-    group_pos = 0;
-    basket_size = 0;
-    initialize = 0;
-  }
   else
-  {
-    for (i = 2, next = 0; i <= B && i <= basket_size; i++)
     {
-      arc = perm[i]->a;
-      red_cost = arc->cost - arc->tail->potential + arc->head->potential;
-      if ((red_cost < 0 && arc->ident == AT_LOWER) ||
-          (red_cost > 0 && arc->ident == AT_UPPER))
-      {
-        next++;
-        perm[next]->a = arc;
-        perm[next]->cost = red_cost;
-        perm[next]->abs_cost = ABS(red_cost);
-      }
+      for (i = 2, next = 0; i <= B && i <= basket_size; i++)
+        {
+          arc = perm[i]->a;
+          red_cost = arc->cost - arc->tail->potential + arc->head->potential;
+          if ((red_cost < 0 && arc->ident == AT_LOWER) ||
+              (red_cost > 0 && arc->ident == AT_UPPER))
+            {
+              next++;
+              perm[next]->a = arc;
+              perm[next]->cost = red_cost;
+              perm[next]->abs_cost = ABS(red_cost);
+            }
+        }
+      basket_size = next;
     }
-    basket_size = next;
-  }
 
   old_group_pos = group_pos;
 
@@ -149,37 +149,37 @@ NEXT:
   /* price next group */
   arc = arcs + group_pos;
   for (; arc < stop_arcs; arc += nr_group)
-  {
-    if (arc->ident > BASIC)
     {
-      /* red_cost = bea_compute_red_cost( arc ); */
-      red_cost = arc->cost - arc->tail->potential + arc->head->potential;
-      if (bea_is_dual_infeasible(arc, red_cost))
-      {
-        basket_size++;
-        perm[basket_size]->a = arc;
-        perm[basket_size]->cost = red_cost;
-        perm[basket_size]->abs_cost = ABS(red_cost);
-      }
+      if (arc->ident > BASIC)
+        {
+          /* red_cost = bea_compute_red_cost( arc ); */
+          red_cost = arc->cost - arc->tail->potential + arc->head->potential;
+          if (bea_is_dual_infeasible(arc, red_cost))
+            {
+              basket_size++;
+              perm[basket_size]->a = arc;
+              perm[basket_size]->cost = red_cost;
+              perm[basket_size]->abs_cost = ABS(red_cost);
+            }
+        }
     }
-  }
 
   if (++group_pos == nr_group)
-  {
-    group_pos = 0;
-  }
+    {
+      group_pos = 0;
+    }
 
   if (basket_size < B && group_pos != old_group_pos)
-  {
-    goto NEXT;
-  }
+    {
+      goto NEXT;
+    }
 
   if (basket_size == 0)
-  {
-    initialize = 1;
-    *red_cost_of_bea = 0;
-    return NULL;
-  }
+    {
+      initialize = 1;
+      *red_cost_of_bea = 0;
+      return NULL;
+    }
 
   sort_basket(1, basket_size);
 

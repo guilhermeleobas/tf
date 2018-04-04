@@ -48,7 +48,7 @@ Sorry, this code only copes with 8 -
 {
   struct djpeg_dest_struct pub; /* public fields */
 
-  char *iobuffer;          /* physical I/O buffer */
+  char *iobuffer; /* physical I/O buffer */
   JDIMENSION buffer_width; /* width of one row */
 } tga_dest_struct;
 
@@ -64,12 +64,12 @@ write_header(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo, int num_colors)
   MEMZERO(targaheader, SIZEOF(targaheader));
 
   if (num_colors > 0)
-  {
-    targaheader[1] = 1; /* color map type 1 */
-    targaheader[5] = (char)(num_colors & 0xFF);
-    targaheader[6] = (char)(num_colors >> 8);
-    targaheader[7] = 24; /* 24 bits per cmap entry */
-  }
+    {
+      targaheader[1] = 1; /* color map type 1 */
+      targaheader[5] = (char)(num_colors & 0xFF);
+      targaheader[6] = (char)(num_colors >> 8);
+      targaheader[7] = 24; /* 24 bits per cmap entry */
+    }
 
   targaheader[12] = (char)(cinfo->output_width & 0xFF);
   targaheader[13] = (char)(cinfo->output_width >> 8);
@@ -78,28 +78,28 @@ write_header(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo, int num_colors)
   targaheader[17] = 0x20; /* Top-down, non-interlaced */
 
   if (cinfo->out_color_space == JCS_GRAYSCALE)
-  {
-    targaheader[2] = 3;  /* image type = uncompressed gray-scale */
-    targaheader[16] = 8; /* bits per pixel */
-  }
+    {
+      targaheader[2] = 3; /* image type = uncompressed gray-scale */
+      targaheader[16] = 8; /* bits per pixel */
+    }
   else
-  { /* must be RGB */
-    if (num_colors > 0)
-    {
-      targaheader[2] = 1; /* image type = colormapped RGB */
-      targaheader[16] = 8;
+    { /* must be RGB */
+      if (num_colors > 0)
+        {
+          targaheader[2] = 1; /* image type = colormapped RGB */
+          targaheader[16] = 8;
+        }
+      else
+        {
+          targaheader[2] = 2; /* image type = uncompressed RGB */
+          targaheader[16] = 24;
+        }
     }
-    else
-    {
-      targaheader[2] = 2; /* image type = uncompressed RGB */
-      targaheader[16] = 24;
-    }
-  }
 
   if (JFWRITE(dinfo->output_file, targaheader, 18) != (size_t)18)
-  {
-    ERREXIT(cinfo, JERR_FILE_WRITE);
-  }
+    {
+      ERREXIT(cinfo, JERR_FILE_WRITE);
+    }
 }
 
 /*
@@ -120,12 +120,12 @@ put_pixel_rows(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo,
   inptr = dest->pub.buffer[0];
   outptr = dest->iobuffer;
   for (col = cinfo->output_width; col > 0; col--)
-  {
-    outptr[0] = (char)GETJSAMPLE(inptr[2]); /* RGB to BGR order */
-    outptr[1] = (char)GETJSAMPLE(inptr[1]);
-    outptr[2] = (char)GETJSAMPLE(inptr[0]);
-    inptr += 3, outptr += 3;
-  }
+    {
+      outptr[0] = (char)GETJSAMPLE(inptr[2]); /* RGB to BGR order */
+      outptr[1] = (char)GETJSAMPLE(inptr[1]);
+      outptr[2] = (char)GETJSAMPLE(inptr[0]);
+      inptr += 3, outptr += 3;
+    }
   (void)JFWRITE(dest->pub.output_file, dest->iobuffer, dest->buffer_width);
 }
 
@@ -142,9 +142,9 @@ put_gray_rows(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo,
   inptr = dest->pub.buffer[0];
   outptr = dest->iobuffer;
   for (col = cinfo->output_width; col > 0; col--)
-  {
-    *outptr++ = (char)GETJSAMPLE(*inptr++);
-  }
+    {
+      *outptr++ = (char)GETJSAMPLE(*inptr++);
+    }
   (void)JFWRITE(dest->pub.output_file, dest->iobuffer, dest->buffer_width);
 }
 
@@ -166,9 +166,9 @@ put_demapped_gray(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo,
   inptr = dest->pub.buffer[0];
   outptr = dest->iobuffer;
   for (col = cinfo->output_width; col > 0; col--)
-  {
-    *outptr++ = (char)GETJSAMPLE(color_map0[GETJSAMPLE(*inptr++)]);
-  }
+    {
+      *outptr++ = (char)GETJSAMPLE(color_map0[GETJSAMPLE(*inptr++)]);
+    }
   (void)JFWRITE(dest->pub.output_file, dest->iobuffer, dest->buffer_width);
 }
 
@@ -184,50 +184,50 @@ start_output_tga(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo)
   FILE *outfile;
 
   if (cinfo->out_color_space == JCS_GRAYSCALE)
-  {
-    /* Targa doesn't have a mapped grayscale format, so we will */
-    /* demap quantized gray output.  Never emit a colormap. */
-    write_header(cinfo, dinfo, 0);
-    if (cinfo->quantize_colors)
     {
-      dest->pub.put_pixel_rows = put_demapped_gray;
-    }
-    else
-    {
-      dest->pub.put_pixel_rows = put_gray_rows;
-    }
-  }
-  else if (cinfo->out_color_space == JCS_RGB)
-  {
-    if (cinfo->quantize_colors)
-    {
-      /* We only support 8-bit colormap indexes, so only 256 colors */
-      num_colors = cinfo->actual_number_of_colors;
-      if (num_colors > 256)
-      {
-        ERREXIT1(cinfo, JERR_TOO_MANY_COLORS, num_colors);
-      }
-      write_header(cinfo, dinfo, num_colors);
-      /* Write the colormap.  Note Targa uses BGR byte order */
-      outfile = dest->pub.output_file;
-      for (i = 0; i < num_colors; i++)
-      {
-        putc(GETJSAMPLE(cinfo->colormap[2][i]), outfile);
-        putc(GETJSAMPLE(cinfo->colormap[1][i]), outfile);
-        putc(GETJSAMPLE(cinfo->colormap[0][i]), outfile);
-      }
-      dest->pub.put_pixel_rows = put_gray_rows;
-    }
-    else
-    {
+      /* Targa doesn't have a mapped grayscale format, so we will */
+      /* demap quantized gray output.  Never emit a colormap. */
       write_header(cinfo, dinfo, 0);
-      dest->pub.put_pixel_rows = put_pixel_rows;
+      if (cinfo->quantize_colors)
+        {
+          dest->pub.put_pixel_rows = put_demapped_gray;
+        }
+      else
+        {
+          dest->pub.put_pixel_rows = put_gray_rows;
+        }
     }
-  }
+  else if (cinfo->out_color_space == JCS_RGB)
+    {
+      if (cinfo->quantize_colors)
+        {
+          /* We only support 8-bit colormap indexes, so only 256 colors */
+          num_colors = cinfo->actual_number_of_colors;
+          if (num_colors > 256)
+            {
+              ERREXIT1(cinfo, JERR_TOO_MANY_COLORS, num_colors);
+            }
+          write_header(cinfo, dinfo, num_colors);
+          /* Write the colormap.  Note Targa uses BGR byte order */
+          outfile = dest->pub.output_file;
+          for (i = 0; i < num_colors; i++)
+            {
+              putc(GETJSAMPLE(cinfo->colormap[2][i]), outfile);
+              putc(GETJSAMPLE(cinfo->colormap[1][i]), outfile);
+              putc(GETJSAMPLE(cinfo->colormap[0][i]), outfile);
+            }
+          dest->pub.put_pixel_rows = put_gray_rows;
+        }
+      else
+        {
+          write_header(cinfo, dinfo, 0);
+          dest->pub.put_pixel_rows = put_pixel_rows;
+        }
+    }
   else
-  {
-    ERREXIT(cinfo, JERR_TGA_COLORSPACE);
-  }
+    {
+      ERREXIT(cinfo, JERR_TGA_COLORSPACE);
+    }
 }
 
 /*
@@ -240,9 +240,9 @@ finish_output_tga(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo)
   /* Make sure we wrote the output file OK */
   fflush(dinfo->output_file);
   if (ferror(dinfo->output_file))
-  {
-    ERREXIT(cinfo, JERR_FILE_WRITE);
-  }
+    {
+      ERREXIT(cinfo, JERR_FILE_WRITE);
+    }
 }
 
 /*

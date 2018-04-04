@@ -43,11 +43,11 @@ long resize_prob(net) network_t *net;
 
   arc = (arc_t *)realloc(net->arcs, net->max_m * sizeof(arc_t));
   if (!arc)
-  {
-    printf("network %s: not enough memory\n", net->inputfile);
-    fflush(stdout);
-    return -1;
-  }
+    {
+      printf("network %s: not enough memory\n", net->inputfile);
+      fflush(stdout);
+      return -1;
+    }
 
   off = (size_t)arc - (size_t)net->arcs;
 
@@ -56,12 +56,12 @@ long resize_prob(net) network_t *net;
 
   root = node = net->nodes;
   for (node++, stop = (void *)net->stop_nodes; node < stop; node++)
-  {
-    if (node->pred != root)
     {
-      node->basic_arc = (arc_t *)((size_t)node->basic_arc + off);
+      if (node->pred != root)
+        {
+          node->basic_arc = (arc_t *)((size_t)node->basic_arc + off);
+        }
     }
-  }
 
   return 0;
 }
@@ -88,20 +88,20 @@ cost_t red_cost;
 
   pos = newpos + 1;
   while (pos - 1 && red_cost > (cost_t) new[pos / 2 - 1].flow)
-  {
-    new[pos - 1].tail = new[pos / 2 - 1].tail;
-    new[pos - 1].head = new[pos / 2 - 1].head;
-    new[pos - 1].cost = new[pos / 2 - 1].cost;
-    new[pos - 1].org_cost = new[pos / 2 - 1].cost;
-    new[pos - 1].flow = new[pos / 2 - 1].flow;
+    {
+      new[pos - 1].tail = new[pos / 2 - 1].tail;
+      new[pos - 1].head = new[pos / 2 - 1].head;
+      new[pos - 1].cost = new[pos / 2 - 1].cost;
+      new[pos - 1].org_cost = new[pos / 2 - 1].cost;
+      new[pos - 1].flow = new[pos / 2 - 1].flow;
 
-    pos = pos / 2;
-    new[pos - 1].tail = tail;
-    new[pos - 1].head = head;
-    new[pos - 1].cost = cost;
-    new[pos - 1].org_cost = cost;
-    new[pos - 1].flow = (flow_t)red_cost;
-  }
+      pos = pos / 2;
+      new[pos - 1].tail = tail;
+      new[pos - 1].head = head;
+      new[pos - 1].cost = cost;
+      new[pos - 1].org_cost = cost;
+      new[pos - 1].flow = (flow_t)red_cost;
+    }
 
   return;
 }
@@ -130,28 +130,28 @@ cost_t red_cost;
   pos = 1;
   cmp = (new[1].flow > new[2].flow) ? 2 : 3;
   while (cmp <= net->max_residual_new_m && red_cost < new[cmp - 1].flow)
-  {
-    new[pos - 1].tail = new[cmp - 1].tail;
-    new[pos - 1].head = new[cmp - 1].head;
-    new[pos - 1].cost = new[cmp - 1].cost;
-    new[pos - 1].org_cost = new[cmp - 1].cost;
-    new[pos - 1].flow = new[cmp - 1].flow;
-
-    new[cmp - 1].tail = tail;
-    new[cmp - 1].head = head;
-    new[cmp - 1].cost = cost;
-    new[cmp - 1].org_cost = cost;
-    new[cmp - 1].flow = (flow_t)red_cost;
-    pos = cmp;
-    cmp *= 2;
-    if (cmp + 1 <= net->max_residual_new_m)
     {
-      if (new[cmp - 1].flow < new[cmp].flow)
-      {
-        cmp++;
-      }
+      new[pos - 1].tail = new[cmp - 1].tail;
+      new[pos - 1].head = new[cmp - 1].head;
+      new[pos - 1].cost = new[cmp - 1].cost;
+      new[pos - 1].org_cost = new[cmp - 1].cost;
+      new[pos - 1].flow = new[cmp - 1].flow;
+
+      new[cmp - 1].tail = tail;
+      new[cmp - 1].head = head;
+      new[cmp - 1].cost = cost;
+      new[cmp - 1].org_cost = cost;
+      new[cmp - 1].flow = (flow_t)red_cost;
+      pos = cmp;
+      cmp *= 2;
+      if (cmp + 1 <= net->max_residual_new_m)
+        {
+          if (new[cmp - 1].flow < new[cmp].flow)
+            {
+              cmp++;
+            }
+        }
     }
-  }
 
   return;
 }
@@ -200,31 +200,31 @@ long price_out_impl(net) network_t *net;
   bigM_minus_min_impl_duration = (cost_t)bigM - min_impl_duration;
 
   if (net->n_trips <= MAX_NB_TRIPS_FOR_SMALL_NET)
-  {
-    if (net->m + net->max_new_m > net->max_m &&
-        (net->n_trips * net->n_trips) / 2 + net->m > net->max_m)
     {
-      resized = 1;
-      if (resize_prob(net))
-      {
-        return -1;
-      }
+      if (net->m + net->max_new_m > net->max_m &&
+          (net->n_trips * net->n_trips) / 2 + net->m > net->max_m)
+        {
+          resized = 1;
+          if (resize_prob(net))
+            {
+              return -1;
+            }
 
-      refresh_neighbour_lists(net);
+          refresh_neighbour_lists(net);
+        }
     }
-  }
 #if !defined SPEC_STATIC
   else
-  {
-    if (net->m + net->max_new_m > net->max_m &&
-        (net->n_trips * net->n_trips) / 2 + net->m > net->max_m)
     {
-      resized = 1;
-      if (resize_prob(net)) return -1;
+      if (net->m + net->max_new_m > net->max_m &&
+          (net->n_trips * net->n_trips) / 2 + net->m > net->max_m)
+        {
+          resized = 1;
+          if (resize_prob(net)) return -1;
 
-      refresh_neighbour_lists(net);
+          refresh_neighbour_lists(net);
+        }
     }
-  }
 #endif
 
   arcnew = net->stop_arcs;
@@ -232,88 +232,88 @@ long price_out_impl(net) network_t *net;
 
   arcout = net->arcs;
   for (i = 0; i < trips && arcout[1].ident == FIXED; i++, arcout += 3)
-  {
-    ;
-  }
+    {
+      ;
+    }
   first_of_sparse_list = (arc_t *)NULL;
   for (; i < trips; i++, arcout += 3)
-  {
-    if (arcout[1].ident != FIXED)
     {
-      arcout->head->firstout->head->arc_tmp = first_of_sparse_list;
-      first_of_sparse_list = arcout + 1;
-    }
-
-    if (arcout->ident == FIXED)
-    {
-      continue;
-    }
-
-    head = arcout->head;
-    latest = head->time - arcout->org_cost + (long)bigM_minus_min_impl_duration;
-
-    head_potential = head->potential;
-
-    arcin = first_of_sparse_list->tail->arc_tmp;
-    while (arcin)
-    {
-      tail = arcin->tail;
-
-      if (tail->time + arcin->org_cost > latest)
-      {
-        arcin = tail->arc_tmp;
-        continue;
-      }
-
-      red_cost = arc_cost - tail->potential + head->potential;
-
-      if (red_cost < 0)
-      {
-        if (new_arcs < net->max_residual_new_m)
+      if (arcout[1].ident != FIXED)
         {
-          insert_new_arc(arcnew, new_arcs, tail, head, arc_cost, red_cost);
-          new_arcs++;
+          arcout->head->firstout->head->arc_tmp = first_of_sparse_list;
+          first_of_sparse_list = arcout + 1;
         }
-        else if ((cost_t)arcnew[0].flow > red_cost)
-        {
-          replace_weaker_arc(net, arcnew, tail, head, arc_cost, red_cost);
-        }
-      }
 
-      arcin = tail->arc_tmp;
+      if (arcout->ident == FIXED)
+        {
+          continue;
+        }
+
+      head = arcout->head;
+      latest = head->time - arcout->org_cost + (long)bigM_minus_min_impl_duration;
+
+      head_potential = head->potential;
+
+      arcin = first_of_sparse_list->tail->arc_tmp;
+      while (arcin)
+        {
+          tail = arcin->tail;
+
+          if (tail->time + arcin->org_cost > latest)
+            {
+              arcin = tail->arc_tmp;
+              continue;
+            }
+
+          red_cost = arc_cost - tail->potential + head->potential;
+
+          if (red_cost < 0)
+            {
+              if (new_arcs < net->max_residual_new_m)
+                {
+                  insert_new_arc(arcnew, new_arcs, tail, head, arc_cost, red_cost);
+                  new_arcs++;
+                }
+              else if ((cost_t)arcnew[0].flow > red_cost)
+                {
+                  replace_weaker_arc(net, arcnew, tail, head, arc_cost, red_cost);
+                }
+            }
+
+          arcin = tail->arc_tmp;
+        }
     }
-  }
 
   if (new_arcs)
-  {
-    arcnew = net->stop_arcs;
-    net->stop_arcs += new_arcs;
-    stop = (void *)net->stop_arcs;
-    if (resized)
     {
-      for (; arcnew != stop; arcnew++)
-      {
-        arcnew->flow = (flow_t)0;
-        arcnew->ident = AT_LOWER;
-      }
-    }
-    else
-    {
-      for (; arcnew != stop; arcnew++)
-      {
-        arcnew->flow = (flow_t)0;
-        arcnew->ident = AT_LOWER;
-        arcnew->nextout = arcnew->tail->firstout;
-        arcnew->tail->firstout = arcnew;
-        arcnew->nextin = arcnew->head->firstin;
-        arcnew->head->firstin = arcnew;
-      }
-    }
+      arcnew = net->stop_arcs;
+      net->stop_arcs += new_arcs;
+      stop = (void *)net->stop_arcs;
+      if (resized)
+        {
+          for (; arcnew != stop; arcnew++)
+            {
+              arcnew->flow = (flow_t)0;
+              arcnew->ident = AT_LOWER;
+            }
+        }
+      else
+        {
+          for (; arcnew != stop; arcnew++)
+            {
+              arcnew->flow = (flow_t)0;
+              arcnew->ident = AT_LOWER;
+              arcnew->nextout = arcnew->tail->firstout;
+              arcnew->tail->firstout = arcnew;
+              arcnew->nextin = arcnew->head->firstin;
+              arcnew->head->firstin = arcnew;
+            }
+        }
 
-    net->m += new_arcs;
-    net->m_impl += new_arcs;
-    net->max_residual_new_m -= new_arcs;
-  }
+      net->m += new_arcs;
+      net->m_impl += new_arcs;
+      net->max_residual_new_m -= new_arcs;
+    }
 
 #if defined AT_HOME
   wall_time += Get_Time();
@@ -338,47 +338,47 @@ long all;
   void *stop;
 
   if (all)
-  {
-    susp = net->m_impl;
-  }
-  else
-  {
-    stop = (void *)net->stop_arcs;
-    new_arc = &(net->arcs[net->m - net->m_impl]);
-    for (susp = 0, arc = new_arc; arc < (arc_t *)stop; arc++)
     {
-      if (arc->ident == AT_LOWER)
-      {
-        red_cost = arc->cost - arc->tail->potential + arc->head->potential;
-      }
-      else
-      {
-        red_cost = (cost_t)-2;
-
-        if (arc->ident == BASIC)
-        {
-          if (arc->tail->basic_arc == arc)
-          {
-            arc->tail->basic_arc = new_arc;
-          }
-          else
-          {
-            arc->head->basic_arc = new_arc;
-          }
-        }
-      }
-
-      if (red_cost > threshold)
-      {
-        susp++;
-      }
-      else
-      {
-        *new_arc = *arc;
-        new_arc++;
-      }
+      susp = net->m_impl;
     }
-  }
+  else
+    {
+      stop = (void *)net->stop_arcs;
+      new_arc = &(net->arcs[net->m - net->m_impl]);
+      for (susp = 0, arc = new_arc; arc < (arc_t *)stop; arc++)
+        {
+          if (arc->ident == AT_LOWER)
+            {
+              red_cost = arc->cost - arc->tail->potential + arc->head->potential;
+            }
+          else
+            {
+              red_cost = (cost_t)-2;
+
+              if (arc->ident == BASIC)
+                {
+                  if (arc->tail->basic_arc == arc)
+                    {
+                      arc->tail->basic_arc = new_arc;
+                    }
+                  else
+                    {
+                      arc->head->basic_arc = new_arc;
+                    }
+                }
+            }
+
+          if (red_cost > threshold)
+            {
+              susp++;
+            }
+          else
+            {
+              *new_arc = *arc;
+              new_arc++;
+            }
+        }
+    }
 
 #if defined AT_HOME
   printf("\nremove %ld arcs\n\n", susp);
@@ -386,14 +386,14 @@ long all;
 #endif
 
   if (susp)
-  {
-    net->m -= susp;
-    net->m_impl -= susp;
-    net->stop_arcs -= susp;
-    net->max_residual_new_m += susp;
+    {
+      net->m -= susp;
+      net->m_impl -= susp;
+      net->stop_arcs -= susp;
+      net->max_residual_new_m += susp;
 
-    refresh_neighbour_lists(net);
-  }
+      refresh_neighbour_lists(net);
+    }
 
   return susp;
 }

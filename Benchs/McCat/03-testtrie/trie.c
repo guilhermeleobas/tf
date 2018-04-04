@@ -52,10 +52,10 @@ trie trie_init(void)
   trie t;
 
   if ((t = calloc(1, TRIE_SIZE)) == NULL)
-  {
-    ERROR("Out of memory");
-    exit(1);
-  }
+    {
+      ERROR("Out of memory");
+      exit(1);
+    }
 
   return t;
 }
@@ -64,18 +64,18 @@ trie trie_init(void)
 trie trie_insert(trie t, string s)
 {
   if (t == NULL)
-  {
-    t = trie_init();
-  }
+    {
+      t = trie_init();
+    }
 
   if (s[0] == '\0')
-  { /* We've found the end */
-    t->number++;
-  }
+    { /* We've found the end */
+      t->number++;
+    }
   else
-  {
-    t->next[char2index(s[0])] = trie_insert(t->next[char2index(s[0])], s + 1);
-  }
+    {
+      t->next[char2index(s[0])] = trie_insert(t->next[char2index(s[0])], s + 1);
+    }
 
   return t;
 }
@@ -84,18 +84,18 @@ trie trie_insert(trie t, string s)
 int trie_lookup(trie t, string s)
 {
   if (t == NULL)
-  {
-    return 0; /* Didn't find it */
-  }
+    {
+      return 0; /* Didn't find it */
+    }
 
   if (s[0] == '\0')
-  { /* At the end */
-    return (t->next[char2index(s[0])])->number;
-  }
+    { /* At the end */
+      return (t->next[char2index(s[0])])->number;
+    }
   else
-  {
-    return (trie_lookup(t->next[char2index(s[0])], s + 1));
-  }
+    {
+      return (trie_lookup(t->next[char2index(s[0])], s + 1));
+    }
 }
 
 charsequence trie_scan_buffer = CHARSTREAM_INIT; /* reset,push,pop,val */
@@ -106,21 +106,21 @@ void trie_scan(trie t, void f(int, char *))
   char *str;
   int i;
   if (t != NULL)
-  {
-    if (t->number != 0)
     {
-      str = charsequence_val(&trie_scan_buffer);
-      f(t->number, str);
-      free(str);
+      if (t->number != 0)
+        {
+          str = charsequence_val(&trie_scan_buffer);
+          f(t->number, str);
+          free(str);
+        }
+      for (i = 0; i < TRIEWIDTH; i++)
+        {
+          if (t->next[i] != NULL)
+            {
+              charsequence_push(&trie_scan_buffer, index2char(i));
+              trie_scan(t->next[i], f);
+              charsequence_pop(&trie_scan_buffer);
+            }
+        }
     }
-    for (i = 0; i < TRIEWIDTH; i++)
-    {
-      if (t->next[i] != NULL)
-      {
-        charsequence_push(&trie_scan_buffer, index2char(i));
-        trie_scan(t->next[i], f);
-        charsequence_pop(&trie_scan_buffer);
-      }
-    }
-  }
 }

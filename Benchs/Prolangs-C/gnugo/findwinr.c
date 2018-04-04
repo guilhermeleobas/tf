@@ -57,71 +57,71 @@ int findwinner(int *i, int *j, int *val)
 
   /* find opponent with liberty less than four */
   for (m = 0; m < 19; m++)
-  {
-    for (n = 0; n < 19; n++)
     {
-      if ((p[m][n] == umove) && (l[m][n] < 4))
-      {
-        ct = 0;
-        initmark();
-        if (findopen(m, n, ti, tj, umove, l[m][n], &ct))
+      for (n = 0; n < 19; n++)
         {
-          if (l[m][n] == 1)
-          {
-            if (*val < 120)
+          if ((p[m][n] == umove) && (l[m][n] < 4))
             {
-              *val = 120;
-              *i = ti[0];
-              *j = tj[0];
-            }
-          }
-          else
-          {
-            for (u = 0; u < l[m][n]; u++)
-            {
-              for (v = 0; v < l[m][n]; v++)
-              {
-                if (u != v)
+              ct = 0;
+              initmark();
+              if (findopen(m, n, ti, tj, umove, l[m][n], &ct))
                 {
-                  lib = 0;
-                  countlib(ti[u], tj[u], mymove);
-                  if (lib > 0) /* valid move */
-                  {
-                    lib1 = lib;
-                    p[ti[u]][tj[u]] = mymove;
-                    /* look ahead opponent move */
-                    lib = 0;
-                    countlib(ti[v], tj[v], umove);
-                    if ((lib1 == 1) && (lib > 0))
+                  if (l[m][n] == 1)
                     {
-                      tval = 0;
+                      if (*val < 120)
+                        {
+                          *val = 120;
+                          *i = ti[0];
+                          *j = tj[0];
+                        }
                     }
-                    else
+                  else
                     {
-                      tval = 120 - 20 * lib;
+                      for (u = 0; u < l[m][n]; u++)
+                        {
+                          for (v = 0; v < l[m][n]; v++)
+                            {
+                              if (u != v)
+                                {
+                                  lib = 0;
+                                  countlib(ti[u], tj[u], mymove);
+                                  if (lib > 0) /* valid move */
+                                    {
+                                      lib1 = lib;
+                                      p[ti[u]][tj[u]] = mymove;
+                                      /* look ahead opponent move */
+                                      lib = 0;
+                                      countlib(ti[v], tj[v], umove);
+                                      if ((lib1 == 1) && (lib > 0))
+                                        {
+                                          tval = 0;
+                                        }
+                                      else
+                                        {
+                                          tval = 120 - 20 * lib;
+                                        }
+                                      if (*val < tval)
+                                        {
+                                          *val = tval;
+                                          *i = ti[u];
+                                          *j = tj[u];
+                                        }
+                                      p[ti[u]][tj[u]] = EMPTY;
+                                    }
+                                }
+                            }
+                        }
                     }
-                    if (*val < tval)
-                    {
-                      *val = tval;
-                      *i = ti[u];
-                      *j = tj[u];
-                    }
-                    p[ti[u]][tj[u]] = EMPTY;
-                  }
                 }
-              }
             }
-          }
         }
-      }
     }
-  }
   if (*val > 0)
-  { /* find move */
-    return 1;
-  }
+    { /* find move */
+      return 1;
+    }
   else
-  { /* fail to find winner */
-    return 0;
-  }
+    { /* fail to find winner */
+      return 0;
+    }
 } /* end findwinner */

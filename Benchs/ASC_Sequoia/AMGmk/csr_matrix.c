@@ -66,19 +66,19 @@ int hypre_CSRMatrixDestroy(hypre_CSRMatrix *matrix)
   int ierr = 0;
 
   if (matrix)
-  {
-    hypre_TFree(hypre_CSRMatrixI(matrix));
-    if (hypre_CSRMatrixRownnz(matrix))
     {
-      hypre_TFree(hypre_CSRMatrixRownnz(matrix));
+      hypre_TFree(hypre_CSRMatrixI(matrix));
+      if (hypre_CSRMatrixRownnz(matrix))
+        {
+          hypre_TFree(hypre_CSRMatrixRownnz(matrix));
+        }
+      if (hypre_CSRMatrixOwnsData(matrix))
+        {
+          hypre_TFree(hypre_CSRMatrixData(matrix));
+          hypre_TFree(hypre_CSRMatrixJ(matrix));
+        }
+      hypre_TFree(matrix);
     }
-    if (hypre_CSRMatrixOwnsData(matrix))
-    {
-      hypre_TFree(hypre_CSRMatrixData(matrix));
-      hypre_TFree(hypre_CSRMatrixJ(matrix));
-    }
-    hypre_TFree(matrix);
-  }
 
   return ierr;
 }
@@ -96,19 +96,19 @@ int hypre_CSRMatrixInitialize(hypre_CSRMatrix *matrix)
   int ierr = 0;
 
   if (!hypre_CSRMatrixData(matrix) && num_nonzeros)
-  {
-    hypre_CSRMatrixData(matrix) = hypre_CTAlloc(double, num_nonzeros);
-  }
+    {
+      hypre_CSRMatrixData(matrix) = hypre_CTAlloc(double, num_nonzeros);
+    }
   if (!hypre_CSRMatrixI(matrix))
-  {
-    hypre_CSRMatrixI(matrix) = hypre_CTAlloc(int, num_rows + 1);
-  }
+    {
+      hypre_CSRMatrixI(matrix) = hypre_CTAlloc(int, num_rows + 1);
+    }
   /*   if ( ! hypre_CSRMatrixRownnz(matrix) )
         hypre_CSRMatrixRownnz(matrix)    = hypre_CTAlloc(int, num_rownnz);*/
   if (!hypre_CSRMatrixJ(matrix) && num_nonzeros)
-  {
-    hypre_CSRMatrixJ(matrix) = hypre_CTAlloc(int, num_nonzeros);
-  }
+    {
+      hypre_CSRMatrixJ(matrix) = hypre_CTAlloc(int, num_nonzeros);
+    }
 
   return ierr;
 }
@@ -146,34 +146,34 @@ int hypre_CSRMatrixSetRownnz(hypre_CSRMatrix *matrix)
   int irownnz = 0;
 
   for (i = 0; i < num_rows; i++)
-  {
-    adiag = (A_i[i + 1] - A_i[i]);
-    if (adiag > 0)
     {
-      irownnz++;
+      adiag = (A_i[i + 1] - A_i[i]);
+      if (adiag > 0)
+        {
+          irownnz++;
+        }
     }
-  }
 
   hypre_CSRMatrixNumRownnz(matrix) = irownnz;
 
   if ((irownnz == 0) || (irownnz == num_rows))
-  {
-    hypre_CSRMatrixRownnz(matrix) = NULL;
-  }
-  else
-  {
-    Arownnz = hypre_CTAlloc(int, irownnz);
-    irownnz = 0;
-    for (i = 0; i < num_rows; i++)
     {
-      adiag = A_i[i + 1] - A_i[i];
-      if (adiag > 0)
-      {
-        Arownnz[irownnz++] = i;
-      }
+      hypre_CSRMatrixRownnz(matrix) = NULL;
     }
-    hypre_CSRMatrixRownnz(matrix) = Arownnz;
-  }
+  else
+    {
+      Arownnz = hypre_CTAlloc(int, irownnz);
+      irownnz = 0;
+      for (i = 0; i < num_rows; i++)
+        {
+          adiag = A_i[i + 1] - A_i[i];
+          if (adiag > 0)
+            {
+              Arownnz[irownnz++] = i;
+            }
+        }
+      hypre_CSRMatrixRownnz(matrix) = Arownnz;
+    }
   return ierr;
 }
 
@@ -208,10 +208,10 @@ hypre_CSRMatrix *hypre_CSRMatrixRead(char *file_name)
 
   matrix_i = hypre_CTAlloc(int, num_rows + 1);
   for (j = 0; j < num_rows + 1; j++)
-  {
-    fscanf(fp, "%d", &matrix_i[j]);
-    matrix_i[j] -= file_base;
-  }
+    {
+      fscanf(fp, "%d", &matrix_i[j]);
+      matrix_i[j] -= file_base;
+    }
 
   num_nonzeros = matrix_i[num_rows];
 
@@ -221,21 +221,21 @@ hypre_CSRMatrix *hypre_CSRMatrixRead(char *file_name)
 
   matrix_j = hypre_CSRMatrixJ(matrix);
   for (j = 0; j < num_nonzeros; j++)
-  {
-    fscanf(fp, "%d", &matrix_j[j]);
-    matrix_j[j] -= file_base;
-
-    if (matrix_j[j] > max_col)
     {
-      max_col = matrix_j[j];
+      fscanf(fp, "%d", &matrix_j[j]);
+      matrix_j[j] -= file_base;
+
+      if (matrix_j[j] > max_col)
+        {
+          max_col = matrix_j[j];
+        }
     }
-  }
 
   matrix_data = hypre_CSRMatrixData(matrix);
   for (j = 0; j < matrix_i[num_rows]; j++)
-  {
-    fscanf(fp, "%le", &matrix_data[j]);
-  }
+    {
+      fscanf(fp, "%le", &matrix_data[j]);
+    }
 
   fclose(fp);
 
@@ -278,26 +278,26 @@ int hypre_CSRMatrixPrint(hypre_CSRMatrix *matrix, char *file_name)
   fprintf(fp, "%d\n", num_rows);
 
   for (j = 0; j <= num_rows; j++)
-  {
-    fprintf(fp, "%d\n", matrix_i[j] + file_base);
-  }
+    {
+      fprintf(fp, "%d\n", matrix_i[j] + file_base);
+    }
 
   for (j = 0; j < matrix_i[num_rows]; j++)
-  {
-    fprintf(fp, "%d\n", matrix_j[j] + file_base);
-  }
+    {
+      fprintf(fp, "%d\n", matrix_j[j] + file_base);
+    }
 
   if (matrix_data)
-  {
-    for (j = 0; j < matrix_i[num_rows]; j++)
     {
-      fprintf(fp, "%.14e\n", matrix_data[j]);
+      for (j = 0; j < matrix_i[num_rows]; j++)
+        {
+          fprintf(fp, "%.14e\n", matrix_data[j]);
+        }
     }
-  }
   else
-  {
-    fprintf(fp, "Warning: No matrix data!\n");
-  }
+    {
+      fprintf(fp, "Warning: No matrix data!\n");
+    }
 
   fclose(fp);
 
@@ -325,26 +325,26 @@ int hypre_CSRMatrixCopy(hypre_CSRMatrix *A, hypre_CSRMatrix *B, int copy_data)
   int i, j;
 
   for (i = 0; i < num_rows; i++)
-  {
-    B_i[i] = A_i[i];
-    for (j = A_i[i]; j < A_i[i + 1]; j++)
     {
-      B_j[j] = A_j[j];
+      B_i[i] = A_i[i];
+      for (j = A_i[i]; j < A_i[i + 1]; j++)
+        {
+          B_j[j] = A_j[j];
+        }
     }
-  }
   B_i[num_rows] = A_i[num_rows];
   if (copy_data)
-  {
-    A_data = hypre_CSRMatrixData(A);
-    B_data = hypre_CSRMatrixData(B);
-    for (i = 0; i < num_rows; i++)
     {
-      for (j = A_i[i]; j < A_i[i + 1]; j++)
-      {
-        B_data[j] = A_data[j];
-      }
+      A_data = hypre_CSRMatrixData(A);
+      B_data = hypre_CSRMatrixData(B);
+      for (i = 0; i < num_rows; i++)
+        {
+          for (j = A_i[i]; j < A_i[i + 1]; j++)
+            {
+              B_data[j] = A_data[j];
+            }
+        }
     }
-  }
   return ierr;
 }
 
@@ -376,18 +376,18 @@ hypre_CSRMatrix *hypre_CSRMatrixClone(hypre_CSRMatrix *A)
   B_j = hypre_CSRMatrixJ(B);
 
   for (i = 0; i < num_rows + 1; ++i)
-  {
-    B_i[i] = A_i[i];
-  }
+    {
+      B_i[i] = A_i[i];
+    }
   for (j = 0; j < num_nonzeros; ++j)
-  {
-    B_j[j] = A_j[j];
-  }
+    {
+      B_j[j] = A_j[j];
+    }
   hypre_CSRMatrixNumRownnz(B) = hypre_CSRMatrixNumRownnz(A);
   if (hypre_CSRMatrixRownnz(A))
-  {
-    hypre_CSRMatrixSetRownnz(B);
-  }
+    {
+      hypre_CSRMatrixSetRownnz(B);
+    }
 
   return B;
 }
@@ -432,110 +432,110 @@ hypre_CSRMatrix *hypre_CSRMatrixUnion(hypre_CSRMatrix *A, hypre_CSRMatrix *B,
 
   hypre_assert(num_rows == hypre_CSRMatrixNumRows(B));
   if (col_map_offd_B)
-  {
-    hypre_assert(col_map_offd_A);
-  }
+    {
+      hypre_assert(col_map_offd_A);
+    }
   if (col_map_offd_A)
-  {
-    hypre_assert(col_map_offd_B);
-  }
+    {
+      hypre_assert(col_map_offd_B);
+    }
 
   /* ==== First, go through the columns of A and B to count the columns of C. */
   if (col_map_offd_A == 0)
-  { /* The matrices are diagonal blocks.
+    { /* The matrices are diagonal blocks.
        Normally num_cols_A==num_cols_B, col_starts is the same, etc.
     */
-    num_cols = hypre_max(num_cols_A, num_cols_B);
-  }
-  else
-  { /* The matrices are offdiagonal blocks. */
-    jC = hypre_CTAlloc(int, num_cols_B);
-    num_cols = num_cols_A; /* initialization; we'll compute the actual value */
-    for (jB = 0; jB < num_cols_B; ++jB)
-    {
-      match = 0;
-      jBg = col_map_offd_B[jB];
-      for (ma = 0; ma < num_cols_A; ++ma)
-      {
-        if (col_map_offd_A[ma] == jBg)
-        {
-          match = 1;
-        }
-      }
-      if (match == 0)
-      {
-        jC[jB] = num_cols;
-        ++num_cols;
-      }
+      num_cols = hypre_max(num_cols_A, num_cols_B);
     }
-  }
+  else
+    { /* The matrices are offdiagonal blocks. */
+      jC = hypre_CTAlloc(int, num_cols_B);
+      num_cols = num_cols_A; /* initialization; we'll compute the actual value */
+      for (jB = 0; jB < num_cols_B; ++jB)
+        {
+          match = 0;
+          jBg = col_map_offd_B[jB];
+          for (ma = 0; ma < num_cols_A; ++ma)
+            {
+              if (col_map_offd_A[ma] == jBg)
+                {
+                  match = 1;
+                }
+            }
+          if (match == 0)
+            {
+              jC[jB] = num_cols;
+              ++num_cols;
+            }
+        }
+    }
 
   /* ==== If we're working on a ParCSRMatrix's offd block,
      make and load col_map_offd_C */
   if (col_map_offd_A)
-  {
-    *col_map_offd_C = hypre_CTAlloc(int, num_cols);
-    for (jA = 0; jA < num_cols_A; ++jA)
     {
-      (*col_map_offd_C)[jA] = col_map_offd_A[jA];
-    }
-    for (jB = 0; jB < num_cols_B; ++jB)
-    {
-      match = 0;
-      jBg = col_map_offd_B[jB];
-      for (ma = 0; ma < num_cols_A; ++ma)
-      {
-        if (col_map_offd_A[ma] == jBg)
+      *col_map_offd_C = hypre_CTAlloc(int, num_cols);
+      for (jA = 0; jA < num_cols_A; ++jA)
         {
-          match = 1;
+          (*col_map_offd_C)[jA] = col_map_offd_A[jA];
         }
-      }
-      if (match == 0)
-      {
-        (*col_map_offd_C)[jC[jB]] = jBg;
-      }
+      for (jB = 0; jB < num_cols_B; ++jB)
+        {
+          match = 0;
+          jBg = col_map_offd_B[jB];
+          for (ma = 0; ma < num_cols_A; ++ma)
+            {
+              if (col_map_offd_A[ma] == jBg)
+                {
+                  match = 1;
+                }
+            }
+          if (match == 0)
+            {
+              (*col_map_offd_C)[jC[jB]] = jBg;
+            }
+        }
     }
-  }
 
   /* ==== The first run through A and B is to count the number of nonzero
      elements,
      without double-counting duplicates.  Then we can create C. */
   num_nonzeros = hypre_CSRMatrixNumNonzeros(A);
   for (i = 0; i < num_rows; ++i)
-  {
-    ma_min = A_i[i];
-    ma_max = A_i[i + 1];
-    for (mb = B_i[i]; mb < B_i[i + 1]; ++mb)
     {
-      jB = B_j[mb];
-      if (col_map_offd_B)
-      {
-        jB = col_map_offd_B[jB];
-      }
-      match = 0;
-      for (ma = ma_min; ma < ma_max; ++ma)
-      {
-        jA = A_j[ma];
-        if (col_map_offd_A)
+      ma_min = A_i[i];
+      ma_max = A_i[i + 1];
+      for (mb = B_i[i]; mb < B_i[i + 1]; ++mb)
         {
-          jA = col_map_offd_A[jA];
+          jB = B_j[mb];
+          if (col_map_offd_B)
+            {
+              jB = col_map_offd_B[jB];
+            }
+          match = 0;
+          for (ma = ma_min; ma < ma_max; ++ma)
+            {
+              jA = A_j[ma];
+              if (col_map_offd_A)
+                {
+                  jA = col_map_offd_A[jA];
+                }
+              if (jB == jA)
+                {
+                  match = 1;
+                  if (ma == ma_min)
+                    {
+                      ++ma_min;
+                    }
+                  break;
+                }
+            }
+          if (match == 0)
+            {
+              ++num_nonzeros;
+            }
         }
-        if (jB == jA)
-        {
-          match = 1;
-          if (ma == ma_min)
-          {
-            ++ma_min;
-          }
-          break;
-        }
-      }
-      if (match == 0)
-      {
-        ++num_nonzeros;
-      }
     }
-  }
 
   C = hypre_CSRMatrixCreate(num_rows, num_cols, num_nonzeros);
   hypre_CSRMatrixInitialize(C);
@@ -547,53 +547,53 @@ hypre_CSRMatrix *hypre_CSRMatrixUnion(hypre_CSRMatrix *A, hypre_CSRMatrix *B,
   C_j = hypre_CSRMatrixJ(C);
   mc = 0;
   for (i = 0; i < num_rows; ++i)
-  {
-    ma_min = A_i[i];
-    ma_max = A_i[i + 1];
-    for (ma = ma_min; ma < ma_max; ++ma)
     {
-      C_j[mc] = A_j[ma];
-      ++mc;
-    }
-    for (mb = B_i[i]; mb < B_i[i + 1]; ++mb)
-    {
-      jB = B_j[mb];
-      if (col_map_offd_B)
-      {
-        jB = col_map_offd_B[jB];
-      }
-      match = 0;
+      ma_min = A_i[i];
+      ma_max = A_i[i + 1];
       for (ma = ma_min; ma < ma_max; ++ma)
-      {
-        jA = A_j[ma];
-        if (col_map_offd_A)
         {
-          jA = col_map_offd_A[jA];
+          C_j[mc] = A_j[ma];
+          ++mc;
         }
-        if (jB == jA)
+      for (mb = B_i[i]; mb < B_i[i + 1]; ++mb)
         {
-          match = 1;
-          if (ma == ma_min)
-          {
-            ++ma_min;
-          }
-          break;
+          jB = B_j[mb];
+          if (col_map_offd_B)
+            {
+              jB = col_map_offd_B[jB];
+            }
+          match = 0;
+          for (ma = ma_min; ma < ma_max; ++ma)
+            {
+              jA = A_j[ma];
+              if (col_map_offd_A)
+                {
+                  jA = col_map_offd_A[jA];
+                }
+              if (jB == jA)
+                {
+                  match = 1;
+                  if (ma == ma_min)
+                    {
+                      ++ma_min;
+                    }
+                  break;
+                }
+            }
+          if (match == 0)
+            {
+              C_j[mc] = jC[B_j[mb]];
+              ++mc;
+            }
         }
-      }
-      if (match == 0)
-      {
-        C_j[mc] = jC[B_j[mb]];
-        ++mc;
-      }
+      C_i[i + 1] = mc;
     }
-    C_i[i + 1] = mc;
-  }
 
   hypre_assert(mc == num_nonzeros);
   if (jC)
-  {
-    hypre_TFree(jC);
-  }
+    {
+      hypre_TFree(jC);
+    }
 
   return C;
 }

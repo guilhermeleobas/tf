@@ -21,11 +21,11 @@ Root build_tree()
   t = (Root)malloc(sizeof(*t));
 
   for (i = 0; i < NUM_FEEDERS; i++)
-  {
-    /* Insert future here, split into two loops */
-    l = build_lateral(i * LATERALS_PER_FEEDER, LATERALS_PER_FEEDER);
-    t->feeders[i] = l;
-  }
+    {
+      /* Insert future here, split into two loops */
+      l = build_lateral(i * LATERALS_PER_FEEDER, LATERALS_PER_FEEDER);
+      t->feeders[i] = l;
+    }
   t->theta_R = 0.8;
   t->theta_I = 0.16;
   return t;
@@ -38,9 +38,9 @@ Lateral build_lateral(int i, int num)
   Lateral next;
 
   if (num == 0)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
   l = (Lateral)malloc(sizeof(*l));
 
   next = build_lateral(i, num - 1);
@@ -62,9 +62,9 @@ Branch build_branch(int i, int j, int num)
   Branch b;
 
   if (num == 0)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
   /* allocate branch */
   b = (Branch)malloc(sizeof(*b));
 
@@ -72,10 +72,10 @@ Branch build_branch(int i, int j, int num)
   b->next_branch = build_branch(i, j, num - 1);
 
   for (i = 0; i < LEAVES_PER_BRANCH; i++)
-  {
-    l = build_leaf();
-    b->leaves[i] = l;
-  }
+    {
+      l = build_leaf();
+      b->leaves[i] = l;
+    }
 
   /* fill in values */
   b->R = 0.0001;

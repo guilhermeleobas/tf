@@ -41,9 +41,9 @@ int hash(char *key)
   cp = key;
   k = 0;
   while (*cp)
-  {
-    k = ((k << 1) ^ (*cp++)) & 0x3fff;
-  }
+    {
+      k = ((k << 1) ^ (*cp++)) & 0x3fff;
+    }
 
   return (k % TABSIZE);
 }
@@ -56,9 +56,9 @@ char *copys(char *s)
 
   i = 1;
   for (cp = s; *cp; cp++)
-  {
-    i++;
-  }
+    {
+      i++;
+    }
 
   result = mallocate((unsigned int)i);
   strcpy(result, s);
@@ -86,40 +86,40 @@ bucket *getsym(char *key)
 
   found = 0;
   while (bp != NULL && found == 0)
-  {
-    if (strcmp(key, bp->tag) == 0)
     {
-      found = 1;
+      if (strcmp(key, bp->tag) == 0)
+        {
+          found = 1;
+        }
+      else
+        {
+          bp = bp->link;
+        }
     }
-    else
-    {
-      bp = bp->link;
-    }
-  }
 
   if (found == 0)
-  {
-    nsyms++;
-
-    bp = NEW(bucket);
-    bp->link = symtab[hashval];
-    bp->next = NULL;
-    bp->tag = copys(key);
-    bp->class = SUNKNOWN;
-
-    if (firstsymbol == NULL)
     {
-      firstsymbol = bp;
-      lastsymbol = bp;
-    }
-    else
-    {
-      lastsymbol->next = bp;
-      lastsymbol = bp;
-    }
+      nsyms++;
 
-    symtab[hashval] = bp;
-  }
+      bp = NEW(bucket);
+      bp->link = symtab[hashval];
+      bp->next = NULL;
+      bp->tag = copys(key);
+      bp->class = SUNKNOWN;
+
+      if (firstsymbol == NULL)
+        {
+          firstsymbol = bp;
+          lastsymbol = bp;
+        }
+      else
+        {
+          lastsymbol->next = bp;
+          lastsymbol = bp;
+        }
+
+      symtab[hashval] = bp;
+    }
 
   return (bp);
 }
@@ -130,13 +130,13 @@ void free_symtab(void)
   register bucket *bp, *bptmp; /* JF don't use ptr after free */
 
   for (i = 0; i < TABSIZE; i++)
-  {
-    bp = symtab[i];
-    while (bp)
     {
-      bptmp = bp->link;
-      FREE(bp);
-      bp = bptmp;
+      bp = symtab[i];
+      while (bp)
+        {
+          bptmp = bp->link;
+          FREE(bp);
+          bp = bptmp;
+        }
     }
-  }
 }

@@ -87,26 +87,26 @@ char *hypre_MAlloc(int size)
   char *ptr;
 
   if (size > 0)
-  {
+    {
 #ifdef HYPRE_USE_UMALLOC
-    int threadid = hypre_GetThreadID();
+      int threadid = hypre_GetThreadID();
 
-    ptr = _umalloc_(size);
+      ptr = _umalloc_(size);
 #else
-    ptr = malloc(size);
+      ptr = malloc(size);
 #endif
 
 #if 1
-    if (ptr == NULL)
-    {
-      hypre_OutOfMemory(size);
-    }
+      if (ptr == NULL)
+        {
+          hypre_OutOfMemory(size);
+        }
 #endif
-  }
+    }
   else
-  {
-    ptr = NULL;
-  }
+    {
+      ptr = NULL;
+    }
 
   return ptr;
 }
@@ -121,26 +121,26 @@ char *hypre_CAlloc(int count, int elt_size)
   int size = count * elt_size;
 
   if (size > 0)
-  {
+    {
 #ifdef HYPRE_USE_UMALLOC
-    int threadid = hypre_GetThreadID();
+      int threadid = hypre_GetThreadID();
 
-    ptr = _ucalloc_(count, elt_size);
+      ptr = _ucalloc_(count, elt_size);
 #else
-    ptr = calloc(count, elt_size);
+      ptr = calloc(count, elt_size);
 #endif
 
 #if 1
-    if (ptr == NULL)
-    {
-      hypre_OutOfMemory(size);
-    }
+      if (ptr == NULL)
+        {
+          hypre_OutOfMemory(size);
+        }
 #endif
-  }
+    }
   else
-  {
-    ptr = NULL;
-  }
+    {
+      ptr = NULL;
+    }
 
   return ptr;
 }
@@ -153,34 +153,34 @@ char *hypre_ReAlloc(char *ptr, int size)
 {
 #ifdef HYPRE_USE_UMALLOC
   if (ptr == NULL)
-  {
-    ptr = hypre_MAlloc(size);
-  }
+    {
+      ptr = hypre_MAlloc(size);
+    }
   else if (size == 0)
-  {
-    hypre_Free(ptr);
-  }
+    {
+      hypre_Free(ptr);
+    }
   else
-  {
-    int threadid = hypre_GetThreadID();
-    ptr = _urealloc_(ptr, size);
-  }
+    {
+      int threadid = hypre_GetThreadID();
+      ptr = _urealloc_(ptr, size);
+    }
 #else
   if (ptr == NULL)
-  {
-    ptr = malloc(size);
-  }
+    {
+      ptr = malloc(size);
+    }
   else
-  {
-    ptr = realloc(ptr, size);
-  }
+    {
+      ptr = realloc(ptr, size);
+    }
 #endif
 
 #if 1
   if ((ptr == NULL) && (size > 0))
-  {
-    hypre_OutOfMemory(size);
-  }
+    {
+      hypre_OutOfMemory(size);
+    }
 #endif
 
   return ptr;
@@ -193,15 +193,15 @@ char *hypre_ReAlloc(char *ptr, int size)
 void hypre_Free(char *ptr)
 {
   if (ptr)
-  {
+    {
 #ifdef HYPRE_USE_UMALLOC
-    int threadid = hypre_GetThreadID();
+      int threadid = hypre_GetThreadID();
 
-    _ufree_(ptr);
+      _ufree_(ptr);
 #else
-    free(ptr);
+      free(ptr);
 #endif
-  }
+    }
 }
 
 /*--------------------------------------------------------------------------
@@ -227,9 +227,9 @@ char *hypre_SharedMAlloc(int size)
       unthreaded || pthread_equal(hypre_thread[0], pthread_self());
 
   if (I_call_malloc)
-  {
-    global_alloc_ptr = hypre_MAlloc(size);
-  }
+    {
+      global_alloc_ptr = hypre_MAlloc(size);
+    }
 
   hypre_barrier(&talloc_mtx, unthreaded);
   ptr = global_alloc_ptr;
@@ -250,9 +250,9 @@ char *hypre_SharedCAlloc(int count, int elt_size)
       unthreaded || pthread_equal(hypre_thread[0], pthread_self());
 
   if (I_call_calloc)
-  {
-    global_alloc_ptr = hypre_CAlloc(count, elt_size);
-  }
+    {
+      global_alloc_ptr = hypre_CAlloc(count, elt_size);
+    }
 
   hypre_barrier(&talloc_mtx, unthreaded);
   ptr = global_alloc_ptr;
@@ -272,9 +272,9 @@ char *hypre_SharedReAlloc(char *ptr, int size)
       unthreaded || pthread_equal(hypre_thread[0], pthread_self());
 
   if (I_call_realloc)
-  {
-    global_alloc_ptr = hypre_ReAlloc(ptr, size);
-  }
+    {
+      global_alloc_ptr = hypre_ReAlloc(ptr, size);
+    }
 
   hypre_barrier(&talloc_mtx, unthreaded);
   ptr = global_alloc_ptr;
@@ -295,9 +295,9 @@ void hypre_SharedFree(char *ptr)
 
   hypre_barrier(&talloc_mtx, unthreaded);
   if (I_call_free)
-  {
-    hypre_Free(ptr);
-  }
+    {
+      hypre_Free(ptr);
+    }
   hypre_barrier(&talloc_mtx, unthreaded);
 }
 
@@ -312,9 +312,9 @@ double *hypre_IncrementSharedDataPtr(double *ptr, int size)
       unthreaded || pthread_equal(hypre_thread[0], pthread_self());
 
   if (I_increment)
-  {
-    global_data_ptr = ptr + size;
-  }
+    {
+      global_data_ptr = ptr + size;
+    }
 
   hypre_barrier(&talloc_mtx, unthreaded);
   ptr = global_data_ptr;

@@ -49,16 +49,16 @@ static void sha_transform(SHA_INFO *sha_info)
   LONG temp, A, B, C, D, E, W[80];
 
   for (i = 0; i < 16; ++i)
-  {
-    W[i] = sha_info->data[i];
-  }
+    {
+      W[i] = sha_info->data[i];
+    }
   for (i = 16; i < 80; ++i)
-  {
-    W[i] = W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16];
+    {
+      W[i] = W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16];
 #ifdef USE_MODIFIED_SHA
-    W[i] = ROT32(W[i], 1);
+      W[i] = ROT32(W[i], 1);
 #endif /* USE_MODIFIED_SHA */
-  }
+    }
   A = sha_info->digest[0];
   B = sha_info->digest[1];
   C = sha_info->digest[2];
@@ -148,23 +148,23 @@ static void sha_transform(SHA_INFO *sha_info)
   FUNC(4, 77);
   FUNC(4, 78);
   FUNC(4, 79);
-#else  /* !UNROLL_LOOPS */
+#else /* !UNROLL_LOOPS */
   for (i = 0; i < 20; ++i)
-  {
-    FUNC(1, i);
-  }
+    {
+      FUNC(1, i);
+    }
   for (i = 20; i < 40; ++i)
-  {
-    FUNC(2, i);
-  }
+    {
+      FUNC(2, i);
+    }
   for (i = 40; i < 60; ++i)
-  {
-    FUNC(3, i);
-  }
+    {
+      FUNC(3, i);
+    }
   for (i = 60; i < 80; ++i)
-  {
-    FUNC(4, i);
-  }
+    {
+      FUNC(4, i);
+    }
 #endif /* !UNROLL_LOOPS */
   sha_info->digest[0] += A;
   sha_info->digest[1] += B;
@@ -185,17 +185,17 @@ static void byte_reverse(LONG *buffer, int count)
   count /= sizeof(LONG);
   cp = (BYTE *)buffer;
   for (i = 0; i < count; ++i)
-  {
-    ct[0] = cp[0];
-    ct[1] = cp[1];
-    ct[2] = cp[2];
-    ct[3] = cp[3];
-    cp[0] = ct[3];
-    cp[1] = ct[2];
-    cp[2] = ct[1];
-    cp[3] = ct[0];
-    cp += sizeof(LONG);
-  }
+    {
+      ct[0] = cp[0];
+      ct[1] = cp[1];
+      ct[2] = cp[2];
+      ct[3] = cp[3];
+      cp[0] = ct[3];
+      cp[1] = ct[2];
+      cp[2] = ct[1];
+      cp[3] = ct[0];
+      cp += sizeof(LONG);
+    }
 }
 
 #endif /* LITTLE_ENDIAN */
@@ -218,21 +218,21 @@ void sha_init(SHA_INFO *sha_info)
 void sha_update(SHA_INFO *sha_info, BYTE *buffer, int count)
 {
   if ((sha_info->count_lo + ((LONG)count << 3)) < sha_info->count_lo)
-  {
-    ++sha_info->count_hi;
-  }
+    {
+      ++sha_info->count_hi;
+    }
   sha_info->count_lo += (LONG)count << 3;
   sha_info->count_hi += (LONG)count >> 29;
   while (count >= SHA_BLOCKSIZE)
-  {
-    memcpy(sha_info->data, buffer, SHA_BLOCKSIZE);
+    {
+      memcpy(sha_info->data, buffer, SHA_BLOCKSIZE);
 #ifdef LITTLE_ENDIAN
-    byte_reverse(sha_info->data, SHA_BLOCKSIZE);
+      byte_reverse(sha_info->data, SHA_BLOCKSIZE);
 #endif /* LITTLE_ENDIAN */
-    sha_transform(sha_info);
-    buffer += SHA_BLOCKSIZE;
-    count -= SHA_BLOCKSIZE;
-  }
+      sha_transform(sha_info);
+      buffer += SHA_BLOCKSIZE;
+      count -= SHA_BLOCKSIZE;
+    }
   memcpy(sha_info->data, buffer, count);
 }
 
@@ -248,18 +248,18 @@ void sha_final(SHA_INFO *sha_info)
   count = (int)((lo_bit_count >> 3) & 0x3f);
   ((BYTE *)sha_info->data)[count++] = 0x80;
   if (count > 56)
-  {
-    memset((BYTE *)&sha_info->data + count, 0, 64 - count);
+    {
+      memset((BYTE *)&sha_info->data + count, 0, 64 - count);
 #ifdef LITTLE_ENDIAN
-    byte_reverse(sha_info->data, SHA_BLOCKSIZE);
+      byte_reverse(sha_info->data, SHA_BLOCKSIZE);
 #endif /* LITTLE_ENDIAN */
-    sha_transform(sha_info);
-    memset(&sha_info->data, 0, 56);
-  }
+      sha_transform(sha_info);
+      memset(&sha_info->data, 0, 56);
+    }
   else
-  {
-    memset((BYTE *)&sha_info->data + count, 0, 56 - count);
-  }
+    {
+      memset((BYTE *)&sha_info->data + count, 0, 56 - count);
+    }
 #ifdef LITTLE_ENDIAN
   byte_reverse(sha_info->data, SHA_BLOCKSIZE);
 #endif /* LITTLE_ENDIAN */
@@ -279,9 +279,9 @@ void sha_stream(SHA_INFO *sha_info, FILE *fin)
 
   sha_init(sha_info);
   while ((i = fread(data, 1, BLOCK_SIZE, fin)) > 0)
-  {
-    sha_update(sha_info, data, i);
-  }
+    {
+      sha_update(sha_info, data, i);
+    }
   sha_final(sha_info);
 }
 

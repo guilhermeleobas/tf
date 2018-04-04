@@ -80,9 +80,9 @@ void des_set_odd_parity(key) des_cblock(*key);
   int i;
 
   for (i = 0; i < DES_KEY_SZ; i++)
-  {
-    (*key)[i] = odd_parity[(*key)[i]];
-  }
+    {
+      (*key)[i] = odd_parity[(*key)[i]];
+    }
 }
 
 static int check_parity(key) des_cblock(*key);
@@ -90,12 +90,12 @@ static int check_parity(key) des_cblock(*key);
   int i;
 
   for (i = 0; i < DES_KEY_SZ; i++)
-  {
-    if ((*key)[i] != odd_parity[(*key)[i]])
     {
-      return (0);
+      if ((*key)[i] != odd_parity[(*key)[i]])
+        {
+          return (0);
+        }
     }
-  }
   return (1);
 }
 
@@ -134,16 +134,16 @@ int des_is_weak_key(key) des_cblock(*key);
   int i;
 
   for (i = 0; i < NUM_WEAK_KEY; i++)
-  {
-    /* Added == 0 to comparision, I obviously don't run
+    {
+      /* Added == 0 to comparision, I obviously don't run
      * this section very often :-(, thanks to
      * engineering@MorningStar.Com for the fix
      * eay 93/06/29 */
-    if (memcmp(weak_keys[i], key, sizeof(key)) == 0)
-    {
-      return (1);
+      if (memcmp(weak_keys[i], key, sizeof(key)) == 0)
+        {
+          return (1);
+        }
     }
-  }
   return (0);
 }
 
@@ -172,17 +172,17 @@ des_key_schedule schedule;
   register int i;
 
   if (des_check_key)
-  {
-    if (!check_parity(key))
     {
-      return (-1);
-    }
+      if (!check_parity(key))
+        {
+          return (-1);
+        }
 
-    if (des_is_weak_key(key))
-    {
-      return (-2);
+      if (des_is_weak_key(key))
+        {
+          return (-2);
+        }
     }
-  }
 
   k = (DES_LONG *)schedule;
   in = (unsigned char *)key;
@@ -217,38 +217,38 @@ des_key_schedule schedule;
   c &= 0x0fffffffL;
 
   for (i = 0; i < ITERATIONS; i++)
-  {
-    if (shifts2[i])
     {
-      c = ((c >> 2L) | (c << 26L));
-      d = ((d >> 2L) | (d << 26L));
-    }
-    else
-    {
-      c = ((c >> 1L) | (c << 27L));
-      d = ((d >> 1L) | (d << 27L));
-    }
-    c &= 0x0fffffffL;
-    d &= 0x0fffffffL;
-    /* could be a few less shifts but I am to lazy at this
+      if (shifts2[i])
+        {
+          c = ((c >> 2L) | (c << 26L));
+          d = ((d >> 2L) | (d << 26L));
+        }
+      else
+        {
+          c = ((c >> 1L) | (c << 27L));
+          d = ((d >> 1L) | (d << 27L));
+        }
+      c &= 0x0fffffffL;
+      d &= 0x0fffffffL;
+      /* could be a few less shifts but I am to lazy at this
      * point in time to investigate */
-    s = des_skb[0][(c)&0x3f] |
-        des_skb[1][((c >> 6) & 0x03) | ((c >> 7L) & 0x3c)] |
-        des_skb[2][((c >> 13) & 0x0f) | ((c >> 14L) & 0x30)] |
-        des_skb[3]
-               [((c >> 20) & 0x01) | ((c >> 21L) & 0x06) | ((c >> 22L) & 0x38)];
-    t = des_skb[4][(d)&0x3f] |
-        des_skb[5][((d >> 7L) & 0x03) | ((d >> 8L) & 0x3c)] |
-        des_skb[6][(d >> 15L) & 0x3f] |
-        des_skb[7][((d >> 21L) & 0x0f) | ((d >> 22L) & 0x30)];
+      s = des_skb[0][(c)&0x3f] |
+          des_skb[1][((c >> 6) & 0x03) | ((c >> 7L) & 0x3c)] |
+          des_skb[2][((c >> 13) & 0x0f) | ((c >> 14L) & 0x30)] |
+          des_skb[3]
+                 [((c >> 20) & 0x01) | ((c >> 21L) & 0x06) | ((c >> 22L) & 0x38)];
+      t = des_skb[4][(d)&0x3f] |
+          des_skb[5][((d >> 7L) & 0x03) | ((d >> 8L) & 0x3c)] |
+          des_skb[6][(d >> 15L) & 0x3f] |
+          des_skb[7][((d >> 21L) & 0x0f) | ((d >> 22L) & 0x30)];
 
-    /* table contained 0213 4657 */
-    t2 = ((t << 16L) | (s & 0x0000ffffL)) & 0xffffffffL;
-    *(k++) = ((t2 << 2L) | (t2 >> 30L)) & 0xffffffffL;
+      /* table contained 0213 4657 */
+      t2 = ((t << 16L) | (s & 0x0000ffffL)) & 0xffffffffL;
+      *(k++) = ((t2 << 2L) | (t2 >> 30L)) & 0xffffffffL;
 
-    t2 = ((s >> 16L) | (t & 0xffff0000L));
-    *(k++) = ((t2 << 6L) | (t2 >> 26L)) & 0xffffffffL;
-  }
+      t2 = ((s >> 16L) | (t & 0xffff0000L));
+      *(k++) = ((t2 << 6L) | (t2 >> 26L)) & 0xffffffffL;
+    }
   return (0);
 }
 

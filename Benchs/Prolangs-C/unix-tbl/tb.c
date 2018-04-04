@@ -14,53 +14,53 @@ void checkuse(void)
 {
   int i, c, k;
   for (c = 0; c < ncol; c++)
-  {
-    used[c] = lused[c] = rused[c] = 0;
-    for (i = 0; i < nlin; i++)
     {
-      if (instead[i] || fullbot[i])
-      {
-        continue;
-      }
-      k = ctype(i, c);
-      if (k == '-' || k == '=')
-      {
-        continue;
-      }
-      if ((k == 'n' || k == 'a'))
-      {
-        rused[c] |= real(table[i][c].rcol);
-        if (!real(table[i][c].rcol))
+      used[c] = lused[c] = rused[c] = 0;
+      for (i = 0; i < nlin; i++)
         {
-          used[c] |= real(table[i][c].col);
+          if (instead[i] || fullbot[i])
+            {
+              continue;
+            }
+          k = ctype(i, c);
+          if (k == '-' || k == '=')
+            {
+              continue;
+            }
+          if ((k == 'n' || k == 'a'))
+            {
+              rused[c] |= real(table[i][c].rcol);
+              if (!real(table[i][c].rcol))
+                {
+                  used[c] |= real(table[i][c].col);
+                }
+              if (table[i][c].rcol)
+                {
+                  lused[c] |= real(table[i][c].col);
+                }
+            }
+          else
+            {
+              used[c] |= real(table[i][c].col);
+            }
         }
-        if (table[i][c].rcol)
-        {
-          lused[c] |= real(table[i][c].col);
-        }
-      }
-      else
-      {
-        used[c] |= real(table[i][c].col);
-      }
     }
-  }
 }
 
 int real(char *s)
 {
   if (s == 0)
-  {
-    return (0);
-  }
+    {
+      return (0);
+    }
   if (!point((int)s))
-  {
-    return (1);
-  }
+    {
+      return (1);
+    }
   if (*s == 0)
-  {
-    return (0);
-  }
+    {
+      return (0);
+    }
   return (1);
 }
 
@@ -72,18 +72,18 @@ char *chspace(void)
 {
   char *pp;
   if (spvecs[spcount])
-  {
-    return (spvecs[spcount++]);
-  }
+    {
+      return (spvecs[spcount++]);
+    }
   if (spcount >= MAXVEC)
-  {
-    error("Too many characters in table");
-  }
+    {
+      error("Too many characters in table");
+    }
   spvecs[spcount++] = pp = calloc(MAXCHS + 200, 1);
   if ((int)pp == -1 || (int)pp == 0)
-  {
-    error("no space for characters");
-  }
+    {
+      error("no space for characters");
+    }
   return (pp);
 }
 
@@ -96,24 +96,24 @@ int *alocv(int n)
 {
   int *tp, *q;
   if (tpcount < 0 || thisvec + n > tpvecs[tpcount] + MAXCHS)
-  {
-    tpcount++;
-    if (tpvecs[tpcount] == 0)
     {
-      tpvecs[tpcount] = calloc(MAXCHS, 1);
+      tpcount++;
+      if (tpvecs[tpcount] == 0)
+        {
+          tpvecs[tpcount] = calloc(MAXCHS, 1);
+        }
+      thisvec = tpvecs[tpcount];
+      if ((int)thisvec == -1)
+        {
+          error("no space for vectors");
+        }
     }
-    thisvec = tpvecs[tpcount];
-    if ((int)thisvec == -1)
-    {
-      error("no space for vectors");
-    }
-  }
   tp = (int *)thisvec;
   thisvec += n;
   for (q = tp; q < (int *)thisvec; q++)
-  {
-    *q = 0;
-  }
+    {
+      *q = 0;
+    }
   return (tp);
 }
 

@@ -19,12 +19,12 @@ copies.  */
 
 /* gxht.c */
 /* Halftone rendering routines for Ghostscript imaging library */
-#include "gx.h"
 #include "gserrors.h"
+#include "gx.h"
 #include "gxbitmap.h"
-#include "gxfixed.h"  /* ditto */
+#include "gxfixed.h" /* ditto */
 #include "gxmatrix.h" /* for gxdevice.h */
-#include "gzcolor.h"  /* requires gxdevice.h */
+#include "gzcolor.h" /* requires gxdevice.h */
 #include "gzdevice.h"
 #include "gzht.h"
 #include "gzstate.h"
@@ -48,21 +48,21 @@ copies.  */
 #define max_cached_tiles 25
 typedef struct bit_tile_s
 {
-  int level;      /* the cached gray level, i.e. */
-                  /* the number of spots whitened, */
-                  /* or -1 if the cache is empty */
+  int level; /* the cached gray level, i.e. */
+  /* the number of spots whitened, */
+  /* or -1 if the cache is empty */
   gx_bitmap tile; /* the currently rendered tile */
 } bit_tile;
 typedef struct gx_ht_cache_s
 {
   /* The following are set when the cache is created. */
-  byte *bits;     /* the base of the bits */
+  byte *bits; /* the base of the bits */
   uint bits_size; /* the space available for bits */
   /* The following are reset each time the cache is initialized */
   /* for a new screen. */
-  ht_bit *order;                    /* the cached order vector */
-  int num_cached;                   /* actual # of cached tiles */
-  int levels_per_tile;              /* # of levels per cached tile */
+  ht_bit *order; /* the cached order vector */
+  int num_cached; /* actual # of cached tiles */
+  int levels_per_tile; /* # of levels per cached tile */
   bit_tile tiles[max_cached_tiles]; /* the cached tiles */
 } ht_cache;
 private
@@ -76,8 +76,8 @@ byte cache_bits[max_ht_bits];
 typedef unsigned short bit16;
 private
 byte single_bits8[16 * 2] = {
-    0x80, 0,    0x40, 0,    0x20, 0,    0x10, 0,    8, 0, 4, 0, 2, 0, 1, 0,
-    0,    0x80, 0,    0x40, 0,    0x20, 0,    0x10, 0, 8, 0, 4, 0, 2, 0, 1};
+    0x80, 0, 0x40, 0, 0x20, 0, 0x10, 0, 8, 0, 4, 0, 2, 0, 1, 0,
+    0, 0x80, 0, 0x40, 0, 0x20, 0, 0x10, 0, 8, 0, 4, 0, 2, 0, 1};
 #define single_bits ((bit16 *)single_bits8)
 private
 byte mb1[2] = {0xff, 0xff};
@@ -118,9 +118,9 @@ int gx_ht_construct_order(ht_bit *order, int width, int height)
   uint size = (uint)(width * height);
   int padding = (-width) & 31;
   if ((width + padding) / 8 * height > max_ht_bits)
-  {
-    return_error(gs_error_limitcheck); /* can't cache the rendering */
-  }
+    {
+      return_error(gs_error_limitcheck); /* can't cache the rendering */
+    }
   /* Clear the cache, to avoid confusion in case */
   /* the address of a new order vector matches that of a */
   /* (deallocated) old one. */
@@ -130,20 +130,20 @@ int gx_ht_construct_order(ht_bit *order, int width, int height)
   /* Convert sequential indices to */
   /* byte indices and mask values. */
   for (i = 0; i < size; i++)
-  {
-    int pix = order[i].offset;
-    pix += pix / width * padding;
-    order[i].offset = (pix >> 4) << 1;
-    order[i].mask =
-        (width <= 8 ? multi_bits[width][pix & 15] : single_bits[pix & 15]);
-  }
+    {
+      int pix = order[i].offset;
+      pix += pix / width * padding;
+      order[i].offset = (pix >> 4) << 1;
+      order[i].mask =
+          (width <= 8 ? multi_bits[width][pix & 15] : single_bits[pix & 15]);
+    }
 #ifdef DEBUG
   if (gs_debug['h'])
-  {
-    printf("[h]Halftone order %lx:\n", (ulong)order);
-    for (i = 0; i < size; i++)
-      printf("%4d: %u:%x\n", i, order[i].offset, order[i].mask);
-  }
+    {
+      printf("[h]Halftone order %lx:\n", (ulong)order);
+      for (i = 0; i < size; i++)
+        printf("%4d: %u:%x\n", i, order[i].offset, order[i].mask);
+    }
 #endif
   return 0;
 }
@@ -159,19 +159,19 @@ void gx_color_load(register gx_device_color *pdevc, gs_state *pgs)
   halftone *pht;
   bit_tile *bt;
   if (level == 0)
-  {
-    return; /* no halftone */
-  }
+    {
+      return; /* no halftone */
+    }
   pht = pgs->halftone;
   if (cache.order != pht->order)
-  {
-    init_ht(&cache, pht);
-  }
+    {
+      init_ht(&cache, pht);
+    }
   bt = &cache.tiles[level / cache.levels_per_tile];
   if (bt->level != level)
-  {
-    render_ht(bt, level, pht);
-  }
+    {
+      render_ht(bt, level, pht);
+    }
   pdevc->tile = &bt->tile;
 }
 
@@ -195,23 +195,23 @@ void init_ht(ht_cache *pcache, halftone *pht)
   /* Make sure num_cached is within bounds */
   num_cached = max_ht_bits / tile_bytes;
   if (num_cached > size)
-  {
-    num_cached = size;
-  }
+    {
+      num_cached = size;
+    }
   if (num_cached > max_cached_tiles)
-  {
-    num_cached = max_cached_tiles;
-  }
+    {
+      num_cached = max_cached_tiles;
+    }
   for (i = 0; i < num_cached; i++)
-  {
-    register bit_tile *bt = &pcache->tiles[i];
-    bt->level = -1;
-    bt->tile.data = tbits;
-    bt->tile.raster = raster;
-    bt->tile.width = width_unit;
-    bt->tile.height = height;
-    tbits += tile_bytes;
-  }
+    {
+      register bit_tile *bt = &pcache->tiles[i];
+      bt->level = -1;
+      bt->tile.data = tbits;
+      bt->tile.raster = raster;
+      bt->tile.width = width_unit;
+      bt->tile.height = height;
+      tbits += tile_bytes;
+    }
   pcache->order = pht->order;
   pcache->num_cached = num_cached;
   pcache->levels_per_tile = (size + num_cached - 1) / num_cached;
@@ -236,60 +236,61 @@ void render_ht(bit_tile *pbt, int level /* [1..order_size-1] */, halftone *pht)
   register byte *bits = pbt->tile.data;
   int old_level = pbt->level;
   if (old_level < 0)
-  { /* The cache is empty.  Preload it with */
-    /* whichever of all-0s and all-1s will be faster. */
-    uint tile_bytes = pbt->tile.raster * pbt->tile.height;
-    if (level >= pht->order_size >> 1)
-    {
-      old_level = pht->order_size;
-      memset(bits, 0xff, tile_bytes);
+    { /* The cache is empty.  Preload it with */
+      /* whichever of all-0s and all-1s will be faster. */
+      uint tile_bytes = pbt->tile.raster * pbt->tile.height;
+      if (level >= pht->order_size >> 1)
+        {
+          old_level = pht->order_size;
+          memset(bits, 0xff, tile_bytes);
+        }
+      else
+        {
+          old_level = 0;
+          memset(bits, 0, tile_bytes);
+        }
     }
-    else
-    {
-      old_level = 0;
-      memset(bits, 0, tile_bytes);
-    }
-  }
 #ifdef DEBUG
   if (level < 0 || level > pht->order_size || level == old_level)
-  {
-    dprintf3("Error in render_ht: level=%d, old_level=%d, order_size=%d=n",
-             level, old_level, pht->order_size);
-    exit(1);
-  }
+    {
+      dprintf3("Error in render_ht: level=%d, old_level=%d, order_size=%d=n",
+               level, old_level, pht->order_size);
+      exit(1);
+    }
 #endif
   /* Note that we can use the same loop to turn bits either */
   /* on or off, using xor.  We use < to compare pointers, */
   /* rather than ==, because Turbo C only compares the */
   /* low 16 bits for < and > but compares all 32 bits for ==. */
   if (level > old_level)
-  {
-    p = &order[old_level], endp = &order[level];
-  }
+    {
+      p = &order[old_level], endp = &order[level];
+    }
   else
-  {
-    p = &order[level], endp = &order[old_level];
-  }
+    {
+      p = &order[level], endp = &order[old_level];
+    }
   /* Invert bits between the two pointers */
   do
-  {
-    *(bit16 *)&bits[p->offset] ^= p->mask;
-  } while (++p < endp);
+    {
+      *(bit16 *)&bits[p->offset] ^= p->mask;
+    }
+  while (++p < endp);
 #ifdef DEBUG
   if (gs_debug['h'])
-  {
-    byte *p = bits;
-    int wb = pbt->tile.raster;
-    byte *ptr = bits + wb * pbt->tile.height;
-    printf("[h]Halftone cache %lx: old=%d, new=%d, w=%d(%d), h=%d(%d):\n",
-           (ulong)bits, old_level, level, pbt->tile.width, pht->width,
-           pbt->tile.height, pht->height);
-    while (p < ptr)
     {
-      printf(" %02x", *p++);
-      if ((p - bits) % wb == 0) printf("\n");
+      byte *p = bits;
+      int wb = pbt->tile.raster;
+      byte *ptr = bits + wb * pbt->tile.height;
+      printf("[h]Halftone cache %lx: old=%d, new=%d, w=%d(%d), h=%d(%d):\n",
+             (ulong)bits, old_level, level, pbt->tile.width, pht->width,
+             pbt->tile.height, pht->height);
+      while (p < ptr)
+        {
+          printf(" %02x", *p++);
+          if ((p - bits) % wb == 0) printf("\n");
+        }
     }
-  }
 #endif
   pbt->level = level;
 }

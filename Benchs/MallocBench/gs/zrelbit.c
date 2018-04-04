@@ -30,17 +30,17 @@ copies.  */
 int zeq(register ref *op)
 {
   register ref *op1 = op - 1;
-#define eq_check_read(opp)   \
-  switch (r_type(opp))       \
-  {                          \
-    case t_string:           \
-    case t_array:            \
-    case t_packedarray:      \
-      check_read(*opp);      \
-      break;                 \
-    case t_dictionary:       \
-      check_dict_read(*opp); \
-  }
+#define eq_check_read(opp)     \
+  switch (r_type(opp))         \
+    {                          \
+      case t_string:           \
+      case t_array:            \
+      case t_packedarray:      \
+        check_read(*opp);      \
+        break;                 \
+      case t_dictionary:       \
+        check_dict_read(*opp); \
+    }
   eq_check_read(op);
   eq_check_read(op1);
   make_bool(op1, (obj_eq(op1, op) ? 1 : 0));
@@ -53,9 +53,9 @@ int zne(register ref *op)
 { /* We'll just be lazy and use eq. */
   int code = zeq(op);
   if (!code)
-  {
-    op[-1].value.index ^= 1;
-  }
+    {
+      op[-1].value.index ^= 1;
+    }
   return code;
 }
 
@@ -64,9 +64,9 @@ int zge(register ref *op)
 {
   int code = obj_compare(op, 4 + 2);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   make_bool(op - 1, code);
   pop(1);
   return 0;
@@ -77,9 +77,9 @@ int zgt(register ref *op)
 {
   int code = obj_compare(op, 4);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   make_bool(op - 1, code);
   pop(1);
   return 0;
@@ -90,9 +90,9 @@ int zle(register ref *op)
 {
   int code = obj_compare(op, 2 + 1);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   make_bool(op - 1, code);
   pop(1);
   return 0;
@@ -103,9 +103,9 @@ int zlt(register ref *op)
 {
   int code = obj_compare(op, 1);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   make_bool(op - 1, code);
   pop(1);
   return 0;
@@ -116,13 +116,13 @@ int zmax(register ref *op)
 {
   int code = obj_compare(op, 1);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   if (code)
-  {
-    s_store_r(op, -1, 0);
-  }
+    {
+      s_store_r(op, -1, 0);
+    }
   pop(1);
   return 0;
 }
@@ -132,13 +132,13 @@ int zmin(register ref *op)
 {
   int code = obj_compare(op, 4);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   if (code)
-  {
-    s_store_r(op, -1, 0);
-  }
+    {
+      s_store_r(op, -1, 0);
+    }
   pop(1);
   return 0;
 }
@@ -148,16 +148,16 @@ int zand(register ref *op)
 {
   check_type(op[-1], r_type(op));
   switch (r_type(op))
-  {
-    case t_boolean:
-      op[-1].value.index &= op->value.index;
-      break;
-    case t_integer:
-      op[-1].value.intval &= op->value.intval;
-      break;
-    default:
-      return e_typecheck;
-  }
+    {
+      case t_boolean:
+        op[-1].value.index &= op->value.index;
+        break;
+      case t_integer:
+        op[-1].value.intval &= op->value.intval;
+        break;
+      default:
+        return e_typecheck;
+    }
   pop(1);
   return 0;
 }
@@ -166,16 +166,16 @@ int zand(register ref *op)
 int znot(register ref *op)
 {
   switch (r_type(op))
-  {
-    case t_boolean:
-      op->value.index = !op->value.index;
-      break;
-    case t_integer:
-      op->value.intval = ~op->value.intval;
-      break;
-    default:
-      return e_typecheck;
-  }
+    {
+      case t_boolean:
+        op->value.index = !op->value.index;
+        break;
+      case t_integer:
+        op->value.intval = ~op->value.intval;
+        break;
+      default:
+        return e_typecheck;
+    }
   return 0;
 }
 
@@ -184,16 +184,16 @@ int zor(register ref *op)
 {
   check_type(op[-1], r_type(op));
   switch (r_type(op))
-  {
-    case t_boolean:
-      op[-1].value.index |= op->value.index;
-      break;
-    case t_integer:
-      op[-1].value.intval |= op->value.intval;
-      break;
-    default:
-      return e_typecheck;
-  }
+    {
+      case t_boolean:
+        op[-1].value.index |= op->value.index;
+        break;
+      case t_integer:
+        op[-1].value.intval |= op->value.intval;
+        break;
+      default:
+        return e_typecheck;
+    }
   pop(1);
   return 0;
 }
@@ -203,16 +203,16 @@ int zxor(register ref *op)
 {
   check_type(op[-1], r_type(op));
   switch (r_type(op))
-  {
-    case t_boolean:
-      op[-1].value.index ^= op->value.index;
-      break;
-    case t_integer:
-      op[-1].value.intval ^= op->value.intval;
-      break;
-    default:
-      return e_typecheck;
-  }
+    {
+      case t_boolean:
+        op[-1].value.index ^= op->value.index;
+        break;
+      case t_integer:
+        op[-1].value.intval ^= op->value.intval;
+        break;
+      default:
+        return e_typecheck;
+    }
   pop(1);
   return 0;
 }
@@ -224,17 +224,17 @@ int zbitshift(register ref *op)
   check_type(op[-1], t_integer);
   check_type(*op, t_integer);
   if (op->value.intval < -31 || op->value.intval > 31)
-  {
-    op[-1].value.intval = 0;
-  }
+    {
+      op[-1].value.intval = 0;
+    }
   else if ((shift = op->value.intval) < 0)
-  {
-    op[-1].value.intval = ((ulong)(op[-1].value.intval)) >> -shift;
-  }
+    {
+      op[-1].value.intval = ((ulong)(op[-1].value.intval)) >> -shift;
+    }
   else
-  {
-    op[-1].value.intval <<= shift;
-  }
+    {
+      op[-1].value.intval <<= shift;
+    }
   pop(1);
   return 0;
 }
@@ -243,13 +243,7 @@ int zbitshift(register ref *op)
 
 void zrelbit_op_init()
 {
-  static op_def my_defs[] = {{"2and", zand}, {"2bitshift", zbitshift},
-                             {"2eq", zeq},   {"2ge", zge},
-                             {"2gt", zgt},   {"2le", zle},
-                             {"2lt", zlt},   {"2max", zmax},
-                             {"2min", zmin}, {"2ne", zne},
-                             {"1not", znot}, {"2or", zor},
-                             {"2xor", zxor}, op_def_end};
+  static op_def my_defs[] = {{"2and", zand}, {"2bitshift", zbitshift}, {"2eq", zeq}, {"2ge", zge}, {"2gt", zgt}, {"2le", zle}, {"2lt", zlt}, {"2max", zmax}, {"2min", zmin}, {"2ne", zne}, {"1not", znot}, {"2or", zor}, {"2xor", zxor}, op_def_end};
   z_op_init(my_defs);
 }
 
@@ -265,60 +259,60 @@ int obj_compare(register ref *op, int mask)
 #define op1 (op - 1)
   float real1, real2;
   switch (r_type(op1))
-  {
-    case t_integer:
-      switch (r_type(op))
-      {
-        case t_integer:
-          if (op1->value.intval > op->value.intval)
+    {
+      case t_integer:
+        switch (r_type(op))
           {
-            mask >>= 2;
+            case t_integer:
+              if (op1->value.intval > op->value.intval)
+                {
+                  mask >>= 2;
+                }
+              else if (op1->value.intval == op->value.intval)
+                {
+                  mask >>= 1;
+                }
+              return (mask & 1);
+            case t_real:
+              real1 = op1->value.intval;
+              real2 = op->value.realval;
+              break;
+            default:
+              return e_typecheck;
           }
-          else if (op1->value.intval == op->value.intval)
+        break;
+      case t_real:
+        real1 = op1->value.realval;
+        switch (r_type(op))
           {
-            mask >>= 1;
+            case t_integer:
+              real2 = op->value.intval;
+              break;
+            case t_real:
+              real2 = op->value.realval;
+              break;
+            default:
+              return e_typecheck;
           }
-          return (mask & 1);
-        case t_real:
-          real1 = op1->value.intval;
-          real2 = op->value.realval;
-          break;
-        default:
-          return e_typecheck;
-      }
-      break;
-    case t_real:
-      real1 = op1->value.realval;
-      switch (r_type(op))
-      {
-        case t_integer:
-          real2 = op->value.intval;
-          break;
-        case t_real:
-          real2 = op->value.realval;
-          break;
-        default:
-          return e_typecheck;
-      }
-      break;
-    case t_string:
-      check_read(*op1);
-      check_read_type(*op, t_string);
-      mask >>= (bytes_compare(op1->value.bytes, op1->size, op->value.bytes,
-                              op->size) +
-                1);
-      return (mask & 1);
-    default:
-      return e_typecheck;
-  }
+        break;
+      case t_string:
+        check_read(*op1);
+        check_read_type(*op, t_string);
+        mask >>= (bytes_compare(op1->value.bytes, op1->size, op->value.bytes,
+                                op->size) +
+                  1);
+        return (mask & 1);
+      default:
+        return e_typecheck;
+    }
   if (real1 > real2)
-  {
-    mask >>= 2;
-  }
+    {
+      mask >>= 2;
+    }
   else if (real1 == real2)
-  {
-    mask >>= 1;
-  }
+    {
+      mask >>= 1;
+    }
   return (mask & 1);
 #undef op1
 }

@@ -59,12 +59,12 @@ struct element
 };
 /*    emsgtype = packed array[1..15] of char;
 */
-/* Intmm, Mm */     /*
+/* Intmm, Mm */ /*
     index = 1 .. rowsize;
     intmatrix = array [index,index] of integer;
     realmatrix = array [index,index] of real;
 */
-/* Puzzle */        /*
+/* Puzzle */ /*
        piececlass = 0..classmax;
        piecetype = 0..typemax;
        position = 0..size;
@@ -123,7 +123,7 @@ void Initrand() { seed = 74755L; /* constant to long WR*/ }
 int Rand()
 {
   seed = (seed * 1309L + 13849L) & 65535L; /* constants to long WR*/
-  return ((int)seed);                      /* typecast back to int WR*/
+  return ((int)seed); /* typecast back to int WR*/
 }
 
 /*  Program to Solve the Towers of Hanoi */
@@ -134,14 +134,14 @@ int Getelement()
 {
   int temp = 0; /* force init of temp WR*/
   if (freelist > 0)
-  {
-    temp = freelist;
-    freelist = cellspace[freelist].next;
-  }
+    {
+      temp = freelist;
+      freelist = cellspace[freelist].next;
+    }
   else
-  {
-    Error("out of space   ");
-  }
+    {
+      Error("out of space   ");
+    }
   return (temp);
 }
 
@@ -150,20 +150,20 @@ void Push(int i, int s)
   int errorfound, localel;
   errorfound = false;
   if (stack[s] > 0)
-  {
-    if (cellspace[stack[s]].discsize <= i)
     {
-      errorfound = true;
-      Error("disc size error");
+      if (cellspace[stack[s]].discsize <= i)
+        {
+          errorfound = true;
+          Error("disc size error");
+        }
     }
-  }
   if (!errorfound)
-  {
-    localel = Getelement();
-    cellspace[localel].next = stack[s];
-    stack[s] = localel;
-    cellspace[localel].discsize = i;
-  }
+    {
+      localel = Getelement();
+      cellspace[localel].next = stack[s];
+      stack[s] = localel;
+      cellspace[localel].discsize = i;
+    }
 }
 
 void Init(int s, int n)
@@ -171,27 +171,27 @@ void Init(int s, int n)
   int discctr;
   Makenull(s);
   for (discctr = n; discctr >= 1; discctr--)
-  {
-    Push(discctr, s);
-  }
+    {
+      Push(discctr, s);
+    }
 }
 
 int Pop(int s)
 {
   int temp, temp1;
   if (stack[s] > 0)
-  {
-    temp1 = cellspace[stack[s]].discsize;
-    temp = cellspace[stack[s]].next;
-    cellspace[stack[s]].next = freelist;
-    freelist = stack[s];
-    stack[s] = temp;
-    return (temp1);
-  }
+    {
+      temp1 = cellspace[stack[s]].discsize;
+      temp = cellspace[stack[s]].next;
+      cellspace[stack[s]].next = freelist;
+      freelist = stack[s];
+      stack[s] = temp;
+      return (temp1);
+    }
   else
-  {
-    Error("nothing to pop ");
-  }
+    {
+      Error("nothing to pop ");
+    }
   return 0;
 }
 
@@ -205,25 +205,25 @@ void tower(int i, int j, int k)
 {
   int other;
   if (k == 1)
-  {
-    Move(i, j);
-  }
+    {
+      Move(i, j);
+    }
   else
-  {
-    other = 6 - i - j;
-    tower(i, other, k - 1);
-    Move(i, j);
-    tower(other, j, k - 1);
-  }
+    {
+      other = 6 - i - j;
+      tower(i, other, k - 1);
+      Move(i, j);
+      tower(other, j, k - 1);
+    }
 }
 
 void Towers()
 { /* Towers */
   int i;
   for (i = 1; i <= maxcells; i++)
-  {
-    cellspace[i].next = i - 1;
-  }
+    {
+      cellspace[i].next = i - 1;
+    }
   freelist = maxcells;
   Init(1, 14);
   Makenull(2);
@@ -231,9 +231,9 @@ void Towers()
   movesdone = 0;
   tower(1, 2, 14);
   if (movesdone != 16383)
-  {
-    printf(" Error in Towers.\n");
-  }
+    {
+      printf(" Error in Towers.\n");
+    }
   printf("%d\n", movesdone);
 } /* Towers */
 
@@ -241,8 +241,8 @@ int main()
 {
   int i;
   for (i = 0; i < 100; i++)
-  {
-    Towers();
-  }
+    {
+      Towers();
+    }
   return 0;
 }

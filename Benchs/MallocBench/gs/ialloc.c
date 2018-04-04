@@ -74,12 +74,12 @@ struct alloc_chunk_s
   /* (aligned objects) and from the top down (byte objects). */
   byte *base;
   byte *bot; /* bottom of free area */
-             /* (top of aligned objects) */
+  /* (top of aligned objects) */
   byte *top; /* top of free area */
-             /* (bottom of byte objects) */
+  /* (bottom of byte objects) */
   byte *limit;
-  int save_level;    /* save level when this chunk */
-                     /* was allocated */
+  int save_level; /* save level when this chunk */
+  /* was allocated */
   alloc_chunk *next; /* chain chunks together */
 };
 
@@ -110,10 +110,10 @@ struct alloc_state_s
 #define ctop current.top
 #define climit current.limit
   alloc_chunk *current_ptr; /* where to put current */
-  uint chunk_size;          /* unit for wholesale malloc */
-  uint big_size;            /* min size for separate malloc */
-  proc_alloc_t palloc;      /* proc for malloc */
-  proc_free_t pfree;        /* proc for free */
+  uint chunk_size; /* unit for wholesale malloc */
+  uint big_size; /* min size for separate malloc */
+  proc_alloc_t palloc; /* proc for malloc */
+  proc_free_t pfree; /* proc for free */
   /* Cumulative statistics */
   long used, total;
   unsigned num_chunks;
@@ -188,47 +188,47 @@ char *alloc(uint num_elts, uint elt_size, char *client_name)
   uint block_size;
   uint left;
   if (size >= ap->big_size)
-  { /* Large object, do a separate malloc. */
-    char *block = alloc_large(ap, size, client_name);
-    if (block != NULL)
-    {
-      return block;
+    { /* Large object, do a separate malloc. */
+      char *block = alloc_large(ap, size, client_name);
+      if (block != NULL)
+        {
+          return block;
+        }
     }
-  }
   block_size = align_round(size);
   if (block_size <= max_chain_size)
-  { /* See if we can use a freed block. */
-    char **fptr = &ap->free[block_size >> log2_align_mod];
-    char *block = *fptr;
-    if (block != 0)
-    {
-      *fptr = *(char **)block;
-      alloc_print('+', '#', block, size);
-      return block;
+    { /* See if we can use a freed block. */
+      char **fptr = &ap->free[block_size >> log2_align_mod];
+      char *block = *fptr;
+      if (block != 0)
+        {
+          *fptr = *(char **)block;
+          alloc_print('+', '#', block, size);
+          return block;
+        }
     }
-  }
   left = ap->ctop - ap->cbot;
   if (block_size > left)
-  {
-    if (!alloc_add_chunk(ap))
     {
-      alloc_print('+', '?', (ulong)0, size);
-      return 0;
+      if (!alloc_add_chunk(ap))
+        {
+          alloc_print('+', '?', (ulong)0, size);
+          return 0;
+        }
     }
-  }
   if (elt_size == 1)
-  { /* Unaligned block */
-    ap->ctop -= size;
-    alloc_print('+', '>', ap->ctop, size);
-    return (char *)ap->ctop;
-  }
+    { /* Unaligned block */
+      ap->ctop -= size;
+      alloc_print('+', '>', ap->ctop, size);
+      return (char *)ap->ctop;
+    }
   else
-  { /* Aligned block */
-    char *block = (char *)ap->cbot;
-    ap->cbot += block_size;
-    alloc_print('+', '<', block, size);
-    return block;
-  }
+    { /* Aligned block */
+      char *block = (char *)ap->cbot;
+      ap->cbot += block_size;
+      alloc_print('+', '<', block, size);
+      return block;
+    }
 }
 
 /* Free an object, if possible. */
@@ -241,89 +241,89 @@ void alloc_free(char *cobj, uint num_elts, uint elt_size, char *client_name)
   uint size = num_elts * elt_size;
   uint block_size;
   if (size >= ap->big_size)
-  { /* Object was allocated with malloc. */
-    alloc_free_large(cobj, size, client_name);
-    return;
-  }
-#define obj ((byte *)cobj)
-  else if (obj == ap->ctop)
-  { /* Don't free the object if we're in a save and */
-    /* this object wasn't allocated since the save. */
-    if (ap->save_level == 0 || ap->current.save_level >= ap->save_level ||
-        /* We know the current chunk is the same as */
-        /* the one in as->saved->state */
-        obj < ap->saved->state.ctop)
-    {
-      ap->ctop += size;
-    }
-    alloc_print('-', '>', obj, size);
-    return;
-  }
-  else if (obj + (block_size = align_round(size)) == ap->cbot)
-  { /* Freeing an aligned object.  Same check. */
-    if (ap->save_level == 0 || ap->current.save_level >= ap->save_level ||
-        obj >= ap->saved->state.cbot)
-    {
-      ap->cbot = obj;
-    }
-    alloc_print('-', '<', obj, size);
-    return;
-  }
-  else if (!ptr_is_in_chunk(obj, &ap->current))
-  { /* In another segment, check its save level. */
-    int level = ap->save_level;
-    alloc_chunk *cp = ap->current.next;
-    for (;; cp = cp->next)
-    {
-      if (cp != 0)
-      {
-        switch (cp->save_level - level)
-        {
-          case 0:
-            if (ptr_is_in_chunk(obj, cp))
-            {
-              if (ptr_lt(obj, cp->bot))
-              {
-                goto pbf;
-              }
-              else
-              {
-                break;
-              }
-            }
-            else
-            {
-              continue;
-            }
-          case -1:
-            /* Might be alloc'ed since the save, */
-            /* or might not be aligned. */
-            if (ptr_lt(obj, ap->saved->state.cbot))
-            {
-              goto pbf;
-            }
-        }
-      }
-      /* Older save level, not freeable. */
-      alloc_print('-', '\\', obj, size);
+    { /* Object was allocated with malloc. */
+      alloc_free_large(cobj, size, client_name);
       return;
     }
-  pbf: /* If we get here, OK to put the block on a free list. */
-       ;
-  }
+#define obj ((byte *)cobj)
+  else if (obj == ap->ctop)
+    { /* Don't free the object if we're in a save and */
+      /* this object wasn't allocated since the save. */
+      if (ap->save_level == 0 || ap->current.save_level >= ap->save_level ||
+          /* We know the current chunk is the same as */
+          /* the one in as->saved->state */
+          obj < ap->saved->state.ctop)
+        {
+          ap->ctop += size;
+        }
+      alloc_print('-', '>', obj, size);
+      return;
+    }
+  else if (obj + (block_size = align_round(size)) == ap->cbot)
+    { /* Freeing an aligned object.  Same check. */
+      if (ap->save_level == 0 || ap->current.save_level >= ap->save_level ||
+          obj >= ap->saved->state.cbot)
+        {
+          ap->cbot = obj;
+        }
+      alloc_print('-', '<', obj, size);
+      return;
+    }
+  else if (!ptr_is_in_chunk(obj, &ap->current))
+    { /* In another segment, check its save level. */
+      int level = ap->save_level;
+      alloc_chunk *cp = ap->current.next;
+      for (;; cp = cp->next)
+        {
+          if (cp != 0)
+            {
+              switch (cp->save_level - level)
+                {
+                  case 0:
+                    if (ptr_is_in_chunk(obj, cp))
+                      {
+                        if (ptr_lt(obj, cp->bot))
+                          {
+                            goto pbf;
+                          }
+                        else
+                          {
+                            break;
+                          }
+                      }
+                    else
+                      {
+                        continue;
+                      }
+                  case -1:
+                    /* Might be alloc'ed since the save, */
+                    /* or might not be aligned. */
+                    if (ptr_lt(obj, ap->saved->state.cbot))
+                      {
+                        goto pbf;
+                      }
+                }
+            }
+          /* Older save level, not freeable. */
+          alloc_print('-', '\\', obj, size);
+          return;
+        }
+    pbf: /* If we get here, OK to put the block on a free list. */
+         ;
+    }
   else if (obj >= ap->cbot) /* not aligned object, punt */
-  {
-    alloc_print('-', '~', obj, size);
-    return;
-  }
+    {
+      alloc_print('-', '~', obj, size);
+      return;
+    }
   /* Put on a free list if small enough */
   alloc_print('-', '#', obj, size);
   if (block_size <= max_chain_size && block_size >= sizeof(char **))
-  {
-    char **fptr = &ap->free[block_size >> log2_align_mod];
-    *(char **)cobj = *fptr;
-    *fptr = cobj;
-  }
+    {
+      char **fptr = &ap->free[block_size >> log2_align_mod];
+      *(char **)cobj = *fptr;
+      *fptr = cobj;
+    }
 #undef obj
 }
 
@@ -337,43 +337,43 @@ byte *alloc_grow(byte *obj, uint old_num, uint new_num, uint elt_size,
   uint new_size = new_num * elt_size;
   byte *nobj;
   if (new_size == old_size)
-  {
-    return obj;
-  }
+    {
+      return obj;
+    }
   if (new_size < ap->big_size) /* try to grow in place */
-  {
-    uint old_block_size;
-    uint new_block_size;
-    if (obj == ap->ctop)
-    { /* Might be able to grow in place */
-      uint diff = new_size - old_size;
-      if (diff <= ap->ctop - ap->cbot)
-      {
-        alloc_print('>', '>', obj, new_size);
-        ap->ctop -= diff;
-        memcpy(ap->ctop, obj, old_size);
-        return ap->ctop;
-      }
+    {
+      uint old_block_size;
+      uint new_block_size;
+      if (obj == ap->ctop)
+        { /* Might be able to grow in place */
+          uint diff = new_size - old_size;
+          if (diff <= ap->ctop - ap->cbot)
+            {
+              alloc_print('>', '>', obj, new_size);
+              ap->ctop -= diff;
+              memcpy(ap->ctop, obj, old_size);
+              return ap->ctop;
+            }
+        }
+      old_block_size = align_round(old_size);
+      new_block_size = align_round(new_size);
+      if (obj + old_block_size == ap->cbot)
+        { /* Might be able to grow in place */
+          uint diff = new_block_size - old_block_size;
+          if (diff <= ap->ctop - ap->cbot)
+            {
+              alloc_print('>', '<', obj, new_size);
+              ap->cbot += diff;
+              return obj;
+            }
+        }
     }
-    old_block_size = align_round(old_size);
-    new_block_size = align_round(new_size);
-    if (obj + old_block_size == ap->cbot)
-    { /* Might be able to grow in place */
-      uint diff = new_block_size - old_block_size;
-      if (diff <= ap->ctop - ap->cbot)
-      {
-        alloc_print('>', '<', obj, new_size);
-        ap->cbot += diff;
-        return obj;
-      }
-    }
-  }
   /* Can't grow in place.  Allocate a new object and copy. */
   nobj = (byte *)alloc(new_num, elt_size, client_name);
   if (nobj == 0)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
   memcpy(nobj, obj, old_size);
   alloc_free((char *)obj, old_num, elt_size, client_name);
   alloc_print('>', '&', obj, new_size);
@@ -388,38 +388,38 @@ byte *alloc_shrink(byte *obj, uint old_num, uint new_num, uint elt_size,
   uint old_size = old_num * elt_size;
   uint new_size = new_num * elt_size;
   if (new_size == old_size)
-  {
-    return obj;
-  }
+    {
+      return obj;
+    }
   if (old_size >= ap->big_size)
-  { /* Allocate a new block. */
-    byte *nobj = (byte *)alloc(new_num, elt_size, client_name);
-    if (nobj == 0)
-    {
-      return obj; /* can't shrink, leave as is */
+    { /* Allocate a new block. */
+      byte *nobj = (byte *)alloc(new_num, elt_size, client_name);
+      if (nobj == 0)
+        {
+          return obj; /* can't shrink, leave as is */
+        }
+      memcpy(nobj, obj, new_size);
+      alloc_free((char *)obj, old_num, elt_size, client_name);
+      alloc_print('<', '&', obj, new_size);
+      return nobj;
     }
-    memcpy(nobj, obj, new_size);
-    alloc_free((char *)obj, old_num, elt_size, client_name);
-    alloc_print('<', '&', obj, new_size);
-    return nobj;
-  }
   else if (obj == ap->ctop)
-  { /* Move the object up in place. */
-    /* memcpy doesn't do this properly. */
-    register byte *from = obj + new_size;
-    register byte *to = obj + old_size;
-    while (from > obj)
-    {
-      *--to = *--from;
+    { /* Move the object up in place. */
+      /* memcpy doesn't do this properly. */
+      register byte *from = obj + new_size;
+      register byte *to = obj + old_size;
+      while (from > obj)
+        {
+          *--to = *--from;
+        }
+      obj = ap->ctop = to;
     }
-    obj = ap->ctop = to;
-  }
   else
-  {
-    uint new_block_size = align_round(new_size);
-    alloc_free((char *)(obj + new_block_size), 1,
-               align_round(old_size) - new_block_size, "alloc_shrink");
-  }
+    {
+      uint new_block_size = align_round(new_size);
+      alloc_free((char *)(obj + new_block_size), 1,
+                 align_round(old_size) - new_block_size, "alloc_shrink");
+    }
   alloc_print('<', ' ', obj, new_size);
   return obj;
 }
@@ -485,9 +485,9 @@ alloc_save *alloc_save_state()
   alloc_save *save =
       (alloc_save *)alloc(1, sizeof(alloc_save), "alloc_save_state");
   if (save == 0)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
   save->state = *ap;
   /* Clear the free chains, to prevent old objects from being freed. */
   memset(&ap->free[0], 0, num_free_chains * sizeof(char *));
@@ -504,15 +504,15 @@ int alloc_save_change(char *where, uint size)
   register alloc_state_ptr ap = &as_current;
   register alloc_change *cp;
   if (ap->save_level == 0)
-  {
-    return 0; /* no saving */
-  }
+    {
+      return 0; /* no saving */
+    }
   cp = (alloc_change *)alloc(1, sizeof(alloc_change) + size,
                              "alloc_save_change");
   if (cp == 0)
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
   cp->next = ap->changes;
   cp->where = where;
   cp->size = size;
@@ -536,39 +536,39 @@ int alloc_is_since_save(char *ptr, alloc_save *save)
 
   /* Check against current chunk at the time of the save */
   if (ptr_is_in_chunk(ptr, &save->state.current))
-  { /* In the chunk, check against allocation pointers */
-    /* at the time of the save */
-    return ((ptr_ord_t)ptr >= (ptr_ord_t)save->state.cbot &&
-            (ptr_ord_t)ptr < (ptr_ord_t)save->state.ctop);
-  }
+    { /* In the chunk, check against allocation pointers */
+      /* at the time of the save */
+      return ((ptr_ord_t)ptr >= (ptr_ord_t)save->state.cbot &&
+              (ptr_ord_t)ptr < (ptr_ord_t)save->state.ctop);
+    }
 
   /* Check against chunks allocated since the save */
   {
     alloc_chunk *chunk = &ap->current;
     while (chunk->save_level > save->state.save_level)
-    {
-      if (ptr_is_in_chunk(ptr, chunk))
       {
-        return 1;
+        if (ptr_is_in_chunk(ptr, chunk))
+          {
+            return 1;
+          }
+        chunk = chunk->next;
       }
-      chunk = chunk->next;
-    }
   }
 
   /* Check the malloc chains since the save */
   {
     alloc_state *asp = ap;
     for (; asp != &save->state; asp = &asp->saved->state)
-    {
-      alloc_block *mblk = asp->malloc_chain;
-      for (; mblk != 0; mblk = mblk->next)
       {
-        if (alloc_block_size + (char *)mblk == ptr)
-        {
-          return 1;
-        }
+        alloc_block *mblk = asp->malloc_chain;
+        for (; mblk != 0; mblk = mblk->next)
+          {
+            if (alloc_block_size + (char *)mblk == ptr)
+              {
+                return 1;
+              }
+          }
       }
-    }
   }
 
   /* Not in any of those places, must be OK. */
@@ -580,13 +580,13 @@ int alloc_restore_state_check(alloc_save *save)
 {
   alloc_save *sprev = save->cap->saved;
   while (sprev != save)
-  {
-    if (sprev == 0)
     {
-      return -1; /* not on chain */
+      if (sprev == 0)
+        {
+          return -1; /* not on chain */
+        }
+      sprev = sprev->state.saved;
     }
-    sprev = sprev->state.saved;
-  }
   return 0;
 }
 
@@ -600,38 +600,39 @@ void alloc_restore_state(alloc_save *save)
 
   /* Iteratively restore the state */
   do
-  {
-    sprev = ap->saved;
-    /* Free chunks allocated since the save. */
     {
-      alloc_chunk *cp = ap->current_ptr;
-      *cp = ap->current; /* update in memory */
-    }
-    /* Free blocks allocated with malloc since the save. */
-    /* Since we reset the chain when we did the save, */
-    /* we just free all the objects on the current chain. */
-    {
-      while (ap->malloc_chain != 0)
+      sprev = ap->saved;
+      /* Free chunks allocated since the save. */
       {
-        alloc_block *mblock = ap->malloc_chain;
-        ap->malloc_chain = mblock->next;
-        (*ap->pfree)((char *)mblock, 1, alloc_block_size + mblock->size,
-                     "alloc_restore_state(malloc'ed)");
+        alloc_chunk *cp = ap->current_ptr;
+        *cp = ap->current; /* update in memory */
       }
-    }
-    /* Undo changes since the save. */
-    {
-      alloc_change *cp = ap->changes;
-      while (cp)
+      /* Free blocks allocated with malloc since the save. */
+      /* Since we reset the chain when we did the save, */
+      /* we just free all the objects on the current chain. */
       {
-        memcpy(cp->where, (char *)cp + sizeof(alloc_change), cp->size);
-        cp = cp->next;
+        while (ap->malloc_chain != 0)
+          {
+            alloc_block *mblock = ap->malloc_chain;
+            ap->malloc_chain = mblock->next;
+            (*ap->pfree)((char *)mblock, 1, alloc_block_size + mblock->size,
+                         "alloc_restore_state(malloc'ed)");
+          }
       }
+      /* Undo changes since the save. */
+      {
+        alloc_change *cp = ap->changes;
+        while (cp)
+          {
+            memcpy(cp->where, (char *)cp + sizeof(alloc_change), cp->size);
+            cp = cp->next;
+          }
+      }
+      /* Restore the allocator state. */
+      *ap = sprev->state;
+      alloc_free((char *)sprev, 1, sizeof(alloc_save), "alloc_restore_state");
     }
-    /* Restore the allocator state. */
-    *ap = sprev->state;
-    alloc_free((char *)sprev, 1, sizeof(alloc_save), "alloc_restore_state");
-  } while (sprev != save);
+  while (sprev != save);
 }
 
 /* ------ Private routines ------ */
@@ -645,9 +646,9 @@ char *alloc_large(alloc_state_ptr ap, uint size, char *client_name)
       (alloc_block *)(*ap->palloc)(1, alloc_block_size + size, client_name);
   char *block;
   if (mblock == NULL)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
   block = (char *)mblock + alloc_block_size;
   alloc_print_large('+', '*', block, size);
   mblock->next = ap->malloc_chain;
@@ -668,17 +669,17 @@ int alloc_add_chunk(register alloc_state_ptr ap)
     printf("[a]%lx@%u\n", (ulong)space, ap->chunk_size);
 #endif
   if (space == NULL)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
   /* Update statistics for the old chunk */
   alloc_status(&ap->used, &ap->total);
   ap->num_chunks++;
   /* Stash the state of the old chunk */
   if (ap->current_ptr != 0)
-  { /* check for very first chunk */
-    *ap->current_ptr = ap->current;
-  }
+    { /* check for very first chunk */
+      *ap->current_ptr = ap->current;
+    }
   /* Initialize the new chunk */
   ap->cbase = ap->cbot = (byte *)space + align_round(sizeof(alloc_chunk));
   ap->climit = ap->ctop = (byte *)(space + ap->chunk_size);
@@ -696,19 +697,19 @@ void alloc_free_large(char *cobj, uint size, char *client_name)
   alloc_block *mblock = (alloc_block *)(cobj - alloc_block_size);
   alloc_state_ptr ap = mblock->cap;
   if (mblock->save_level == ap->save_level)
-  {
-    for (prev = &ap->malloc_chain; *prev != 0; prev = &mblock->next)
     {
-      mblock = *prev;
-      if ((char *)mblock + alloc_block_size == cobj)
-      {
-        *prev = mblock->next;
-        (*ap->pfree)((char *)mblock, 1, size + alloc_block_size,
-                     "large object");
-        alloc_print_large('-', '*', cobj, size);
-        return;
-      }
+      for (prev = &ap->malloc_chain; *prev != 0; prev = &mblock->next)
+        {
+          mblock = *prev;
+          if ((char *)mblock + alloc_block_size == cobj)
+            {
+              *prev = mblock->next;
+              (*ap->pfree)((char *)mblock, 1, size + alloc_block_size,
+                           "large object");
+              alloc_print_large('-', '*', cobj, size);
+              return;
+            }
+        }
     }
-  }
   alloc_print('-', '?', cobj, size);
 }

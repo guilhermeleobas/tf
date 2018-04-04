@@ -54,46 +54,46 @@ int usiteo2(int a, int b, int ax, int ay, int bx, int by, int newaor,
   if ((cost + newpenalty <= funccost + penalty) ||
       (exp((double)(funccost + penalty - cost - newpenalty) / T) >
        ((double)RAND / (double)0x7fffffff)))
-  {
-    ufixpin(anewtermptr, 1, 0, 0);
-    usoftpin(acellptr, 1, 0, 0, 0);
-    ufixpin(bnewtermptr, 1, 0, 0);
-    usoftpin(bcellptr, 1, 0, 0, 0);
-
-    if (occa1ptr != occa2ptr)
     {
-      for (i = 1; occa1ptr[i] != a; i++)
-      {
-        ;
-      }
-      occa1ptr[i] = occa1ptr[occa1ptr[0]--];
-      occa2ptr[++occa2ptr[0]] = a;
+      ufixpin(anewtermptr, 1, 0, 0);
+      usoftpin(acellptr, 1, 0, 0, 0);
+      ufixpin(bnewtermptr, 1, 0, 0);
+      usoftpin(bcellptr, 1, 0, 0, 0);
+
+      if (occa1ptr != occa2ptr)
+        {
+          for (i = 1; occa1ptr[i] != a; i++)
+            {
+              ;
+            }
+          occa1ptr[i] = occa1ptr[occa1ptr[0]--];
+          occa2ptr[++occa2ptr[0]] = a;
+        }
+      if (occb1ptr != occb2ptr)
+        {
+          for (i = 1; occb1ptr[i] != b; i++)
+            {
+              ;
+            }
+          occb1ptr[i] = occb1ptr[occb1ptr[0]--];
+          occb2ptr[++occb2ptr[0]] = b;
+        }
+
+      acellptr->xcenter = ax;
+      acellptr->ycenter = ay;
+      bcellptr->xcenter = bx;
+      bcellptr->ycenter = by;
+
+      acellptr->orient = newaor;
+      bcellptr->orient = newbor;
+
+      funccost = cost;
+      penalty = newpenalty;
+
+      return (1);
     }
-    if (occb1ptr != occb2ptr)
-    {
-      for (i = 1; occb1ptr[i] != b; i++)
-      {
-        ;
-      }
-      occb1ptr[i] = occb1ptr[occb1ptr[0]--];
-      occb2ptr[++occb2ptr[0]] = b;
-    }
-
-    acellptr->xcenter = ax;
-    acellptr->ycenter = ay;
-    bcellptr->xcenter = bx;
-    bcellptr->ycenter = by;
-
-    acellptr->orient = newaor;
-    bcellptr->orient = newbor;
-
-    funccost = cost;
-    penalty = newpenalty;
-
-    return (1);
-  }
   else
-  {
-    return (0);
-  }
+    {
+      return (0);
+    }
 }

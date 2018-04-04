@@ -48,7 +48,7 @@ int write_string(P2(ref *, stream *));
 
 /* Imported from gs.c */
 extern char **gs_lib_paths; /* search path list, */
-                            /* terminated by a null pointer */
+/* terminated by a null pointer */
 
 /* Imported from gp_*.c. */
 extern char gp_file_name_list_separator;
@@ -71,8 +71,8 @@ struct file_entry_s
 {
   stream *s;
   int can_close; /* 0 for stdin/out/err, */
-                 /* -1 for line/statementedit, */
-                 /* 1 for other files */
+  /* -1 for line/statementedit, */
+  /* 1 for other files */
   ref file_name; /* t_string */
 };
 
@@ -141,15 +141,15 @@ void zfile_init()
   swrite_file(std_files[1].s, stdout, stdout_buf, stdout_buf_size);
   swrite_file(std_files[2].s, stderr, stderr_buf, stderr_buf_size);
   for (i = 0; i < num_std_files; i++)
-  {
-    ref *pfn = &std_files[i].file_name;
-    make_tv(pfn, t_null, intval, 0); /* pre-clear */
-    if (string_to_ref(std_file_names[i], pfn, "zfile_init") < 0)
     {
-      dprintf("alloc failed in zfile_init!\n");
-      gs_exit(1);
+      ref *pfn = &std_files[i].file_name;
+      make_tv(pfn, t_null, intval, 0); /* pre-clear */
+      if (string_to_ref(std_file_names[i], pfn, "zfile_init") < 0)
+        {
+          dprintf("alloc failed in zfile_init!\n");
+          gs_exit(1);
+        }
     }
-  }
 }
 
 /* file */
@@ -162,35 +162,35 @@ int zfile(register ref *op)
   check_type(fname, t_string);
   check_type(*op, t_string);
   if (op->size != 1)
-  {
-    return e_invalidfileaccess;
-  }
-  switch (*op->value.bytes)
-  {
-    case 'r':
-      file_access = "r";
-      break;
-    case 'w':
-      file_access = "w";
-      break;
-    default:
+    {
       return e_invalidfileaccess;
-  }
+    }
+  switch (*op->value.bytes)
+    {
+      case 'r':
+        file_access = "r";
+        break;
+      case 'w':
+        file_access = "w";
+        break;
+      default:
+        return e_invalidfileaccess;
+    }
   code = open_std_file(op - 1, file_access, op - 1);
   switch (code)
-  {
-    case 0: /* successful open */
-      pop(1);
-    default: /* unsuccessful open */
-      return code;
-    case e_undefinedfilename: /* not a %file */
-        ;
-  }
+    {
+      case 0: /* successful open */
+        pop(1);
+      default: /* unsuccessful open */
+        return code;
+      case e_undefinedfilename: /* not a %file */
+          ;
+    }
   code = file_open(fname.value.bytes, fname.size, file_access, op - 1);
   if (code >= 0)
-  {
-    pop(1);
-  }
+    {
+      pop(1);
+    }
   return code;
 }
 
@@ -201,16 +201,16 @@ int zclosefile(register ref *op)
   int code;
   check_file(s, op);
   if ((code = file_close(op, s)) >= 0)
-  { /* If we just closed the file from which the interpreter */
-    /* is reading, zap it on the exec stack. */
-    ref *fp = get_current_file();
-    if (fp != 0 && fptr(fp) == fptr(op))
-    {
-      /* A null would confuse the estack parser.... */
-      make_tasv(fp, t_array, a_executable + a_execute, 0, refs, (ref *)0);
+    { /* If we just closed the file from which the interpreter */
+      /* is reading, zap it on the exec stack. */
+      ref *fp = get_current_file();
+      if (fp != 0 && fptr(fp) == fptr(op))
+        {
+          /* A null would confuse the estack parser.... */
+          make_tasv(fp, t_array, a_executable + a_execute, 0, refs, (ref *)0);
+        }
+      pop(1);
     }
-    pop(1);
-  }
   return code;
 }
 
@@ -223,15 +223,15 @@ int zread(register ref *op)
   check_read(*op);
   ch = sgetc(s);
   if (ch == EOFC)
-  {
-    make_bool(op, 0);
-  }
+    {
+      make_bool(op, 0);
+    }
   else
-  {
-    make_int(op, ch);
-    push(1);
-    make_bool(op, 1);
-  }
+    {
+      make_int(op, ch);
+      push(1);
+      make_bool(op, 1);
+    }
   return 0;
 }
 
@@ -244,13 +244,13 @@ int zunread(register ref *op)
   check_type(*op, t_integer);
   ch = op->value.intval;
   if (ch > 0xff)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   if (sungetc(s, (byte)ch) < 0)
-  {
-    return e_ioerror;
-  }
+    {
+      return e_ioerror;
+    }
   pop(2);
   return 0;
 }
@@ -265,9 +265,9 @@ int zwrite(register ref *op)
   check_type(*op, t_integer);
   ch = op->value.intval;
   if (ch > 0xff)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   sputc(s, (byte)ch);
   pop(2);
   return 0;
@@ -283,45 +283,45 @@ int zreadhexstring(register ref *op)
   int code;
   uint nread;
   switch (r_type(op1))
-  {
-    default:
-      return e_typecheck;
-    case t_file:
-      check_read_file(s, op1);
-      check_read(*op1);
-      break;
-    case t_string:
-      s = &st;
-      sread_string(s, op1->value.bytes, op1->size);
-  }
+    {
+      default:
+        return e_typecheck;
+      case t_file:
+        check_read_file(s, op1);
+        check_read(*op1);
+        break;
+      case t_string:
+        s = &st;
+        sread_string(s, op1->value.bytes, op1->size);
+    }
   check_type(*op, t_string);
   check_write(*op);
   code = sreadhex(s, op->value.bytes, op->size, &nread, &odd);
   switch (code)
-  {
-    case 1:
-      /* Reached end-of-file before filling the string. */
-      /* Return an appropriate substring. */
-      op->size = nread;
-      r_set_attrs(op, a_subrange);
-      break;
-    case 0:
-      /* Filled the string. */
-      break;
-    default: /* Error */
-      return e_ioerror;
-  }
+    {
+      case 1:
+        /* Reached end-of-file before filling the string. */
+        /* Return an appropriate substring. */
+        op->size = nread;
+        r_set_attrs(op, a_subrange);
+        break;
+      case 0:
+        /* Filled the string. */
+        break;
+      default: /* Error */
+        return e_ioerror;
+    }
   if (s == &st)
-  { /* Reading from a string, return remainder */
-    uint pos = stell(&st);
-    op1->size -= pos, op1->value.bytes += pos;
-    r_set_attrs(op1, a_subrange);
-    push(1);
-  }
+    { /* Reading from a string, return remainder */
+      uint pos = stell(&st);
+      op1->size -= pos, op1->value.bytes += pos;
+      r_set_attrs(op1, a_subrange);
+      push(1);
+    }
   else
-  { /* Reading from a file */
-    *op1 = *op;
-  }
+    { /* Reading from a file */
+      *op1 = *op;
+    }
   make_bool(op, 1 - code);
   return 0;
 }
@@ -339,11 +339,11 @@ int zwritehexstring(register ref *op)
   p = op->value.bytes;
   len = op->size;
   while (len--)
-  {
-    byte ch = *p++;
-    sputc(s, hex_digits[ch >> 4]);
-    sputc(s, hex_digits[ch & 0xf]);
-  }
+    {
+      byte ch = *p++;
+      sputc(s, hex_digits[ch >> 4]);
+      sputc(s, hex_digits[ch & 0xf]);
+    }
   pop(2);
   return 0;
 }
@@ -374,9 +374,9 @@ int zwritestring(register ref *op)
   check_write(op[-1]);
   code = write_string(op, s);
   if (code >= 0)
-  {
-    pop(2);
-  }
+    {
+      pop(2);
+    }
   return code;
 }
 
@@ -391,9 +391,9 @@ int zreadline(register ref *op)
   check_write_type(*op, t_string);
   code = zreadline_from(op->value.bytes, op->size, &count, s);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   op->size = count;
   r_set_attrs(op, a_subrange);
   op[-1] = *op;
@@ -414,26 +414,26 @@ int zreadline_from(byte *ptr, uint size, uint *pcount, stream *s)
   uint count = 0;
   int ch;
   while (count < size)
-  {
-    switch (ch = sgetc(s))
     {
-      case '\r':
-        ch = sgetc(s);
-        if (ch != '\n' && ch != EOFC)
+      switch (ch = sgetc(s))
         {
-          sputback(s);
+          case '\r':
+            ch = sgetc(s);
+            if (ch != '\n' && ch != EOFC)
+              {
+                sputback(s);
+              }
+          /* falls through */
+          case '\n':
+            *pcount = count;
+            return 1;
+          case EOFC:
+            *pcount = count;
+            return 0;
         }
-      /* falls through */
-      case '\n':
-        *pcount = count;
-        return 1;
-      case EOFC:
-        *pcount = count;
-        return 0;
+      *ptr++ = ch;
+      count++;
     }
-    *ptr++ = ch;
-    count++;
-  }
   return e_rangecheck; /* filled the string */
 }
 
@@ -446,18 +446,18 @@ int ztoken_file(register ref *op)
   check_read_file(s, op);
   check_read(*op);
   switch (code = scan_token(s, 0, &token))
-  {
-    case 0: /* read a token */
-      *op = token;
-      push(1);
-      make_bool(op, 1);
-      return 0;
-    case 1: /* no tokens */
-      make_bool(op, 0);
-      return 0;
-    default: /* error */
-      return code;
-  }
+    {
+      case 0: /* read a token */
+        *op = token;
+        push(1);
+        make_bool(op, 1);
+        return 0;
+      case 1: /* no tokens */
+        make_bool(op, 0);
+        return 0;
+      default: /* error */
+        return code;
+    }
 }
 
 /* bytesavailable */
@@ -467,9 +467,9 @@ int zbytesavailable(register ref *op)
   long avail;
   check_read_file(s, op);
   if (savailable(s, &avail) < 0)
-  {
-    return e_ioerror;
-  }
+    {
+      return e_ioerror;
+    }
   make_int(op, avail);
   return 0;
 }
@@ -488,9 +488,9 @@ int zflushfile(register ref *op)
   check_file(s, op);
   sflush(s);
   if (!s->writing)
-  {
-    fseek(s->file, 0L, 2); /* set to end */
-  }
+    {
+      fseek(s->file, 0L, 2); /* set to end */
+    }
   pop(1);
   return 0;
 }
@@ -525,15 +525,15 @@ int zcurrentfile(register ref *op)
   ref *fp;
   push(1);
   if ((fp = get_current_file()) == 0)
-  { /* Return an invalid file object. */
-    /* This doesn't make a lot of sense to me, */
-    /* but it's what the PostScript manual specifies. */
-    make_file(op, 0, &invalid_file_entry);
-  }
+    { /* Return an invalid file object. */
+      /* This doesn't make a lot of sense to me, */
+      /* but it's what the PostScript manual specifies. */
+      make_file(op, 0, &invalid_file_entry);
+    }
   else
-  {
-    *op = *fp;
-  }
+    {
+      *op = *fp;
+    }
   /* Make sure the returned value is literal. */
   r_clear_attrs(op, a_executable);
   return 0;
@@ -544,9 +544,9 @@ int zprint(register ref *op)
 {
   int code = write_string(op, std_files[1].s);
   if (code >= 0)
-  {
-    pop(1);
-  }
+    {
+      pop(1);
+    }
   return code;
 }
 
@@ -568,9 +568,9 @@ int zsetfileposition(register ref *op)
   check_file(s, op - 1);
   check_type(*op, t_integer);
   if (sseek(s, op->value.intval) < 0)
-  {
-    return e_ioerror;
-  }
+    {
+      return e_ioerror;
+    }
   pop(2);
   return 0;
 }
@@ -581,9 +581,9 @@ int zfileposition(register ref *op)
   stream *s;
   check_file(s, op);
   if (!sseekable(s))
-  {
-    return e_ioerror;
-  }
+    {
+      return e_ioerror;
+    }
   make_int(op, stell(s));
   return 0;
 }
@@ -596,15 +596,15 @@ int zdeletefile(register ref *op)
   check_read_type(*op, t_string);
   str = ref_to_string(op, "deletefile");
   if (str == 0)
-  {
-    return e_VMerror;
-  }
+    {
+      return e_VMerror;
+    }
   stat = unlink(str);
   alloc_free(str, op->size + 1, 1, "deletefile");
   if (stat != 0)
-  {
-    return e_ioerror;
-  }
+    {
+      return e_ioerror;
+    }
   pop(1);
   return 0;
 }
@@ -618,17 +618,17 @@ int zrenamefile(register ref *op)
   str1 = ref_to_string(op - 1, "renamefile(from)");
   str2 = ref_to_string(op, "renamefile(to)");
   if (str1 != 0 && str2 != 0 && rename(str1, str2) == 0)
-  {
-    pop(2);
-  }
+    {
+      pop(2);
+    }
   if (str1 != 0)
-  {
-    alloc_free(str1, op[-1].size + 1, 1, "renamefile(from)");
-  }
+    {
+      alloc_free(str1, op[-1].size + 1, 1, "renamefile(from)");
+    }
   if (str2 != 0)
-  {
-    alloc_free(str2, op->size + 1, 1, "renamefile(to)");
-  }
+    {
+      alloc_free(str2, op->size + 1, 1, "renamefile(to)");
+    }
   return 0;
 }
 
@@ -650,15 +650,15 @@ int zfindlibfile(register ref *op)
   check_type(*op, t_string);
   code = open_std_file(op, "r", op);
   switch (code)
-  {
-    case 0: /* successful open */
-      push(1);
-      make_bool(op, 1);
-    default: /* unsuccessful open */
-      return code;
-    case e_undefinedfilename: /* not a %file */
-        ;
-  }
+    {
+      case 0: /* successful open */
+        push(1);
+        make_bool(op, 1);
+      default: /* unsuccessful open */
+        return code;
+      case e_undefinedfilename: /* not a %file */
+          ;
+    }
   code = lib_file_open(op->value.bytes, op->size, op);
   push(1);
   make_bool(op, code >= 0);
@@ -674,15 +674,15 @@ int zwriteppmfile(register ref *op)
   check_write(op[-1]);
   check_type(*op, t_device);
   if (!gs_device_is_memory(op->value.pdevice))
-  {
-    return e_typecheck;
-  }
+    {
+      return e_typecheck;
+    }
   sflush(s);
   code = gs_writeppmfile((gx_device_memory *)(op->value.pdevice), s->file);
   if (code >= 0)
-  {
-    pop(2);
-  }
+    {
+      pop(2);
+    }
   return code;
 }
 
@@ -697,15 +697,15 @@ int ztype1decryptfile(register ref *op)
   check_type(op[-1], t_integer);
   state = op[-1].value.intval;
   if (op[-1].value.intval != state)
-  {
-    return e_rangecheck; /* state value was truncated */
-  }
+    {
+      return e_rangecheck; /* state value was truncated */
+    }
   check_read_file(s, op);
   code = file_open((byte *)0, 0, "r", &dec_file);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   es = fptr(&dec_file)->s;
   sread_decrypt(es, fptr(op)->s, es->cbuf, es->bsize, state);
   op[-1] = dec_file;
@@ -760,50 +760,50 @@ int lib_file_open(byte *fname, uint len, ref *pfile)
   char cname[PATH_MAX];
   code = file_open(fname, len, "r", pfile);
   if (code >= 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   if (gp_file_name_is_absolute((char *)fname, len))
-  {
-    return e_undefinedfilename;
-  }
+    {
+      return e_undefinedfilename;
+    }
   /* Go through the list of search paths */
   for (ppath = gs_lib_paths; *ppath != 0; ppath++)
-  {
-    char *path = *ppath;
-    for (;;)
-    { /* Find the end of the next path */
-      char *npath = path;
-      uint plen;
-      char *cstr;
-      int clen;
-      while (*npath != 0 && *npath != gp_file_name_list_separator)
-      {
-        npath++;
-      }
-      plen = npath - path;
-      cstr = gp_file_name_concat_string(path, plen, (char *)fname, len);
-      /* Concatenate the prefix, combiner, and file name. */
-      clen = plen + strlen(cstr) + len;
-      if (clen <= PATH_MAX) /* otherwise punt */
-      {
-        memcpy(cname, path, plen);
-        strcpy(cname + plen, cstr);
-        memcpy(cname + clen - len, fname, len);
-        code = file_open(cname, clen, "r", pfile);
-        if (code >= 0)
-        {
-          return code;
+    {
+      char *path = *ppath;
+      for (;;)
+        { /* Find the end of the next path */
+          char *npath = path;
+          uint plen;
+          char *cstr;
+          int clen;
+          while (*npath != 0 && *npath != gp_file_name_list_separator)
+            {
+              npath++;
+            }
+          plen = npath - path;
+          cstr = gp_file_name_concat_string(path, plen, (char *)fname, len);
+          /* Concatenate the prefix, combiner, and file name. */
+          clen = plen + strlen(cstr) + len;
+          if (clen <= PATH_MAX) /* otherwise punt */
+            {
+              memcpy(cname, path, plen);
+              strcpy(cname + plen, cstr);
+              memcpy(cname + clen - len, fname, len);
+              code = file_open(cname, clen, "r", pfile);
+              if (code >= 0)
+                {
+                  return code;
+                }
+            }
+          /****** NYI ******/
+          if (!*npath)
+            {
+              break;
+            }
+          path = npath + 1;
         }
-      }
-      /****** NYI ******/
-      if (!*npath)
-      {
-        break;
-      }
-      path = npath + 1;
     }
-  }
   return code;
 }
 
@@ -818,63 +818,63 @@ int file_open(byte *fname, uint len, char *file_access, ref *pfile)
   file_entry *fe;
   int code;
   if (len >= buffer_size)
-  {
-    return e_limitcheck; /* we copy the file name into the buffer */
-  }
+    {
+      return e_limitcheck; /* we copy the file name into the buffer */
+    }
   /* Allocate the file entry first, since it persists */
   /* even after the file has been closed. */
   fe = (file_entry *)alloc(1, sizeof(file_entry), "file_open(file_entry)");
   if (fe == 0)
-  {
-    return e_VMerror;
-  }
+    {
+      return e_VMerror;
+    }
   /* Allocate the buffer and stream. */
   buffer = (byte *)alloc(buffer_size, 1, "file_open(buffer)");
   if (buffer == 0)
-  {
-    alloc_free((char *)fe, 1, sizeof(file_entry), "file_open(file_entry)");
-    return e_VMerror;
-  }
+    {
+      alloc_free((char *)fe, 1, sizeof(file_entry), "file_open(file_entry)");
+      return e_VMerror;
+    }
   s = (stream *)alloc(1, sizeof(stream), "file_open(stream)");
   if (s == 0)
-  {
-    alloc_free((char *)buffer, buffer_size, 1, "file_open(buffer)");
-    alloc_free((char *)fe, 1, sizeof(file_entry), "file_open(file_entry)");
-    return e_VMerror;
-  }
-  if (fname != 0)
-  { /* Copy the name (so we can terminate it with a zero byte.) */
-    char *file_name = (char *)buffer;
-    FILE *file;
-    memcpy(file_name, fname, len);
-    file_name[len] = 0; /* terminate string */
-    /* Open the file. */
-    file = fopen(file_name, file_access);
-    code = e_undefinedfilename;
-    if (file == 0 ||
-        (code = string_to_ref(file_name, &fe->file_name,
-                              "file_open(file_name)")) < 0)
     {
-      alloc_free((char *)s, 1, sizeof(stream), "file_open(stream)");
       alloc_free((char *)buffer, buffer_size, 1, "file_open(buffer)");
       alloc_free((char *)fe, 1, sizeof(file_entry), "file_open(file_entry)");
-      return code;
+      return e_VMerror;
     }
-    /* Set up the stream. */
-    if (*file_access == 'r')
-    { /* reading */
-      sread_file(s, file, buffer, buffer_size);
+  if (fname != 0)
+    { /* Copy the name (so we can terminate it with a zero byte.) */
+      char *file_name = (char *)buffer;
+      FILE *file;
+      memcpy(file_name, fname, len);
+      file_name[len] = 0; /* terminate string */
+      /* Open the file. */
+      file = fopen(file_name, file_access);
+      code = e_undefinedfilename;
+      if (file == 0 ||
+          (code = string_to_ref(file_name, &fe->file_name,
+                                "file_open(file_name)")) < 0)
+        {
+          alloc_free((char *)s, 1, sizeof(stream), "file_open(stream)");
+          alloc_free((char *)buffer, buffer_size, 1, "file_open(buffer)");
+          alloc_free((char *)fe, 1, sizeof(file_entry), "file_open(file_entry)");
+          return code;
+        }
+      /* Set up the stream. */
+      if (*file_access == 'r')
+        { /* reading */
+          sread_file(s, file, buffer, buffer_size);
+        }
+      else
+        {
+          swrite_file(s, file, buffer, buffer_size);
+        }
     }
-    else
-    {
-      swrite_file(s, file, buffer, buffer_size);
-    }
-  }
   else /* save the buffer and size */
-  {
-    s->cbuf = buffer;
-    s->bsize = buffer_size;
-  }
+    {
+      s->cbuf = buffer;
+      s->bsize = buffer_size;
+    }
   fe->s = s;
   fe->can_close = 1;
   make_file(pfile,
@@ -899,13 +899,13 @@ ref *get_current_file()
 {
   ref *ep = esp;
   while (ep >= estack)
-  {
-    if (r_type(ep) == t_file && r_has_attrs(ep, a_executable))
     {
-      return ep;
+      if (r_type(ep) == t_file && r_has_attrs(ep, a_executable))
+        {
+          return ep;
+        }
+      ep--;
     }
-    ep--;
-  }
   return (ref *)0;
 }
 
@@ -916,22 +916,22 @@ int file_close(ref *fp /* t_file */, stream *s)
   file_entry *fe = fptr(fp);
   byte *buffer = s->cbuf;
   switch (fe->can_close)
-  {
-    case 0: /* can't close std files */
-      return e_invalidaccess;
-    case -1: /* ignore on statement/lineedit */
-      sclose(s);
-      break;
-    default: /* ordinary file */
-      if (sclose(s))
-      {
-        return e_ioerror;
-      }
-      /* Free the stream and buffer in the reverse of the order */
-      /* in which they were created, and hope for LIFO storage behavior. */
-      alloc_free((char *)s, 1, sizeof(stream), "file_close(stream)");
-      alloc_free((char *)buffer, buffer_size, 1, "file_close(buffer)");
-  }
+    {
+      case 0: /* can't close std files */
+        return e_invalidaccess;
+      case -1: /* ignore on statement/lineedit */
+        sclose(s);
+        break;
+      default: /* ordinary file */
+        if (sclose(s))
+          {
+            return e_ioerror;
+          }
+        /* Free the stream and buffer in the reverse of the order */
+        /* in which they were created, and hope for LIFO storage behavior. */
+        alloc_free((char *)s, 1, sizeof(stream), "file_close(stream)");
+        alloc_free((char *)buffer, buffer_size, 1, "file_close(buffer)");
+    }
   fe->s = 0;
   return 0;
 }
@@ -946,39 +946,39 @@ int open_std_file(ref *pfname, char *file_access, ref *pfile)
 {
   int i;
   for (i = 0; i < num_std_files; i++)
-  {
-    if (!bytes_compare(pfname->value.bytes, pfname->size, std_file_names[i],
-                       strlen(std_file_names[i])))
-    { /* This is a standard file */
-      int attrs =
-          (*file_access == 'r' ? a_read + a_execute : a_write + a_execute);
-      file_entry *fe = &std_files[i];
-      if (attrs != std_file_attrs[i])
-      {
-        return e_invalidaccess;
-      }
-      make_file(pfile, attrs, fe);
-      /* If this is %lineedit or %statementedit, */
-      /* read a line now. */
-      switch (i)
-      {
-        case 3:
-        case 4:
-        {
-          uint count;
-          int code = zreadline_stdin(lineedit_buf, lineedit_buf_size, &count);
-          if (code < 0)
-          {
-            return code;
-          }
-          fe->s = &std_file_streams[i];
-          sread_string(fe->s, lineedit_buf, count);
+    {
+      if (!bytes_compare(pfname->value.bytes, pfname->size, std_file_names[i],
+                         strlen(std_file_names[i])))
+        { /* This is a standard file */
+          int attrs =
+              (*file_access == 'r' ? a_read + a_execute : a_write + a_execute);
+          file_entry *fe = &std_files[i];
+          if (attrs != std_file_attrs[i])
+            {
+              return e_invalidaccess;
+            }
+          make_file(pfile, attrs, fe);
+          /* If this is %lineedit or %statementedit, */
+          /* read a line now. */
+          switch (i)
+            {
+              case 3:
+              case 4:
+                {
+                  uint count;
+                  int code = zreadline_stdin(lineedit_buf, lineedit_buf_size, &count);
+                  if (code < 0)
+                    {
+                      return code;
+                    }
+                  fe->s = &std_file_streams[i];
+                  sread_string(fe->s, lineedit_buf, count);
+                  return 0;
+                }
+            }
           return 0;
         }
-      }
-      return 0;
     }
-  }
   return e_undefinedfilename;
 }
 
@@ -991,8 +991,8 @@ int write_string(ref *op, stream *s)
   check_read_type(*op, t_string);
   len = op->size;
   if (sputs(s, op->value.bytes, len) != len)
-  {
-    return e_ioerror;
-  }
+    {
+      return e_ioerror;
+    }
   return 0;
 }

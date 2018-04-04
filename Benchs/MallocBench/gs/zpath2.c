@@ -42,9 +42,9 @@ int zpathbbox(register ref *op)
   gs_rect box;
   int code = gs_pathbbox(igs, &box);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   push(4);
   make_real(op - 3, box.p.x);
   make_real(op - 2, box.p.y);
@@ -63,18 +63,18 @@ int zpathforall(register ref *op)
   check_estack(8);
   if ((penum = (gs_path_enum *)alloc(1, gs_path_enum_sizeof, "pathforall")) ==
       0)
-  {
-    return e_VMerror;
-  }
+    {
+      return e_VMerror;
+    }
   gs_path_enum_init(penum, igs);
   /* Push a mark, the four procedures, and a pseudo-integer */
   /* in which value.bytes points to the path enumerator, */
   /* and then call the continuation procedure. */
   mark_estack(es_for); /* iterator */
-  *++esp = op[-3];     /* moveto proc */
-  *++esp = op[-2];     /* lineto proc */
-  *++esp = op[-1];     /* curveto proc */
-  *++esp = *op;        /* closepath proc */
+  *++esp = op[-3]; /* moveto proc */
+  *++esp = op[-2]; /* lineto proc */
+  *++esp = op[-1]; /* curveto proc */
+  *++esp = *op; /* closepath proc */
   ++esp;
   make_tv(esp, t_integer, bytes, (byte *)penum);
   pop(4);
@@ -92,36 +92,36 @@ int path_continue(register ref *op)
   int code;
   code = gs_path_enum_next(penum, ppts);
   switch (code)
-  {
-    case 0: /* all done */
     {
-      alloc_free((char *)penum, 1, gs_path_enum_sizeof, "pathforall");
-      esp -= 6;
-      return o_check_estack;
+      case 0: /* all done */
+        {
+          alloc_free((char *)penum, 1, gs_path_enum_sizeof, "pathforall");
+          esp -= 6;
+          return o_check_estack;
+        }
+      default: /* error */
+        return code;
+      case gs_pe_moveto:
+        esp[2] = esp[-4]; /* moveto proc */
+        code = pf_push(ppts, 1, op);
+        break;
+      case gs_pe_lineto:
+        esp[2] = esp[-3]; /* lineto proc */
+        code = pf_push(ppts, 1, op);
+        break;
+      case gs_pe_curveto:
+        esp[2] = esp[-2]; /* curveto proc */
+        code = pf_push(ppts, 3, op);
+        break;
+      case gs_pe_closepath:
+        esp[2] = esp[-1]; /* closepath proc */
+        code = 0;
+        break;
     }
-    default: /* error */
-      return code;
-    case gs_pe_moveto:
-      esp[2] = esp[-4]; /* moveto proc */
-      code = pf_push(ppts, 1, op);
-      break;
-    case gs_pe_lineto:
-      esp[2] = esp[-3]; /* lineto proc */
-      code = pf_push(ppts, 1, op);
-      break;
-    case gs_pe_curveto:
-      esp[2] = esp[-2]; /* curveto proc */
-      code = pf_push(ppts, 3, op);
-      break;
-    case gs_pe_closepath:
-      esp[2] = esp[-1]; /* closepath proc */
-      code = 0;
-      break;
-  }
   if (code < 0)
-  {
-    return code; /* ostack overflow in pf_push */
-  }
+    {
+      return code; /* ostack overflow in pf_push */
+    }
   push_op_estack(path_continue);
   ++esp; /* include pushed procedure */
   return o_check_estack;
@@ -131,12 +131,12 @@ private
 int pf_push(gs_point *ppts, int n, ref *op)
 {
   while (n--)
-  {
-    push(2);
-    make_real(op - 1, ppts->x);
-    make_real(op, ppts->y);
-    ppts++;
-  }
+    {
+      push(2);
+      make_real(op - 1, ppts->x);
+      make_real(op, ppts->y);
+      ppts++;
+    }
   return 0;
 }
 

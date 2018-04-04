@@ -80,23 +80,23 @@ void fillrand(char *buf, int len)
   int i;
 
   if (mt)
-  {
-    mt = 0;
-    /*cycles(a);*/
-    a[0] = 0xeaf3;
-    a[1] = 0x35fe;
-  }
-
-  for (i = 0; i < len; ++i)
-  {
-    if (count == 4)
     {
-      *(unsigned long *)r = RAND(a[0], a[1]);
-      count = 0;
+      mt = 0;
+      /*cycles(a);*/
+      a[0] = 0xeaf3;
+      a[1] = 0x35fe;
     }
 
-    buf[i] = r[count++];
-  }
+  for (i = 0; i < len; ++i)
+    {
+      if (count == 4)
+        {
+          *(unsigned long *)r = RAND(a[0], a[1]);
+          count = 0;
+        }
+
+      buf[i] = r[count++];
+    }
 }
 
 int encfile(FILE *fin, FILE *fout, aes *ctx, char *fn)
@@ -105,40 +105,40 @@ int encfile(FILE *fin, FILE *fout, aes *ctx, char *fn)
   long flen;
   unsigned long i = 0, l = 0;
 
-  fillrand(outbuf, 16);    /* set an IV for CBC mode           */
+  fillrand(outbuf, 16); /* set an IV for CBC mode           */
   fseek(fin, 0, SEEK_END); /* get the length of the file       */
-  flen = ftell(fin);       /* and then reset to start          */
+  flen = ftell(fin); /* and then reset to start          */
   fseek(fin, 0, SEEK_SET);
   fwrite(outbuf, 1, 16, fout); /* write the IV to the output       */
-  fillrand(inbuf, 1);          /* make top 4 bits of a byte random */
-  l = 15;                      /* and store the length of the last */
-                               /* block in the lower 4 bits        */
+  fillrand(inbuf, 1); /* make top 4 bits of a byte random */
+  l = 15; /* and store the length of the last */
+  /* block in the lower 4 bits        */
   inbuf[0] = ((char)flen & 15) | (inbuf[0] & ~15);
 
-  while (!feof(fin))                      /* loop to encrypt the input file   */
-  {                                       /* input 1st 16 bytes to buf[1..16] */
-    i = fread(inbuf + 16 - l, 1, l, fin); /*  on 1st round byte[0] */
-                                          /* is the length code    */
-    if (i < l)
-    {
-      break; /* if end of the input file reached */
-    }
+  while (!feof(fin)) /* loop to encrypt the input file   */
+    { /* input 1st 16 bytes to buf[1..16] */
+      i = fread(inbuf + 16 - l, 1, l, fin); /*  on 1st round byte[0] */
+      /* is the length code    */
+      if (i < l)
+        {
+          break; /* if end of the input file reached */
+        }
 
-    for (i = 0; i < 16; ++i)
-    { /* xor in previous cipher text  */
-      inbuf[i] ^= outbuf[i];
-    }
+      for (i = 0; i < 16; ++i)
+        { /* xor in previous cipher text  */
+          inbuf[i] ^= outbuf[i];
+        }
 
-    encrypt(inbuf, outbuf, ctx); /* and do the encryption        */
+      encrypt(inbuf, outbuf, ctx); /* and do the encryption        */
 
-    if (fwrite(outbuf, 1, 16, fout) != 16)
-    {
-      printf("Error writing to output file: %s\n", fn);
-      return -7;
+      if (fwrite(outbuf, 1, 16, fout) != 16)
+        {
+          printf("Error writing to output file: %s\n", fn);
+          return -7;
+        }
+      /* in all but first round read 16   */
+      l = 16; /* bytes into the buffer            */
     }
-    /* in all but first round read 16   */
-    l = 16; /* bytes into the buffer            */
-  }
 
   /* except for files of length less than two blocks we now have one  */
   /* byte from the previous block and 'i' bytes from the current one  */
@@ -147,30 +147,30 @@ int encfile(FILE *fin, FILE *fout, aes *ctx, char *fn)
   /* buffer position to set to zero since the 'count' byte is extra   */
 
   if (l == 15)
-  {      /* adjust for extra byte in the */
-    ++i; /* in the first block           */
-  }
+    { /* adjust for extra byte in the */
+      ++i; /* in the first block           */
+    }
 
   if (i) /* if bytes remain to be output */
-  {
-    while (i < 16)
-    { /* clear empty buffer positions */
-      inbuf[i++] = 0;
-    }
-
-    for (i = 0; i < 16; ++i)
-    { /* xor in previous cipher text  */
-      inbuf[i] ^= outbuf[i];
-    }
-
-    encrypt(inbuf, outbuf, ctx); /* encrypt and output it        */
-
-    if (fwrite(outbuf, 1, 16, fout) != 16)
     {
-      printf("Error writing to output file: %s\n", fn);
-      return -8;
+      while (i < 16)
+        { /* clear empty buffer positions */
+          inbuf[i++] = 0;
+        }
+
+      for (i = 0; i < 16; ++i)
+        { /* xor in previous cipher text  */
+          inbuf[i] ^= outbuf[i];
+        }
+
+      encrypt(inbuf, outbuf, ctx); /* encrypt and output it        */
+
+      if (fwrite(outbuf, 1, 16, fout) != 16)
+        {
+          printf("Error writing to output file: %s\n", fn);
+          return -8;
+        }
     }
-  }
 
   return 0;
 }
@@ -181,61 +181,61 @@ int decfile(FILE *fin, FILE *fout, aes *ctx, char *ifn, char *ofn)
   int i, l, flen;
 
   if (fread(inbuf1, 1, 16, fin) != 16) /* read Initialisation Vector   */
-  {
-    printf("Error reading from input file: %s\n", ifn);
-    return 9;
-  }
+    {
+      printf("Error reading from input file: %s\n", ifn);
+      return 9;
+    }
 
   i = fread(inbuf2, 1, 16, fin); /* read 1st encrypted file block    */
 
   if (i && i != 16)
-  {
-    printf("\nThe input file is corrupt");
-    return -10;
-  }
+    {
+      printf("\nThe input file is corrupt");
+      return -10;
+    }
 
   decrypt(inbuf2, outbuf, ctx); /* decrypt it                       */
 
   for (i = 0; i < 16; ++i)
-  { /* xor with previous input          */
-    outbuf[i] ^= inbuf1[i];
-  }
+    { /* xor with previous input          */
+      outbuf[i] ^= inbuf1[i];
+    }
 
   flen = outbuf[0] & 15; /* recover length of the last block and set */
-  l = 15;                /* the count of valid bytes in block to 15  */
-  bp1 = inbuf1;          /* set up pointers to two input buffers     */
+  l = 15; /* the count of valid bytes in block to 15  */
+  bp1 = inbuf1; /* set up pointers to two input buffers     */
   bp2 = inbuf2;
 
   while (1)
-  {
-    i = fread(bp1, 1, 16, fin); /* read next encrypted block    */
-                                /* to first input buffer        */
-    if (i != 16)
-    {        /* no more bytes in input - the decrypted   */
-      break; /* partial final buffer needs to be output  */
-    }
-
-    /* if a block has been read the previous block must have been   */
-    /* full lnegth so we can now write it out                       */
-
-    if (fwrite(outbuf + 16 - l, 1, l, fout) != (unsigned long)l)
     {
-      printf("Error writing to output file: %s\n", ofn);
-      return -11;
+      i = fread(bp1, 1, 16, fin); /* read next encrypted block    */
+      /* to first input buffer        */
+      if (i != 16)
+        { /* no more bytes in input - the decrypted   */
+          break; /* partial final buffer needs to be output  */
+        }
+
+      /* if a block has been read the previous block must have been   */
+      /* full lnegth so we can now write it out                       */
+
+      if (fwrite(outbuf + 16 - l, 1, l, fout) != (unsigned long)l)
+        {
+          printf("Error writing to output file: %s\n", ofn);
+          return -11;
+        }
+
+      decrypt(bp1, outbuf, ctx); /* decrypt the new input block and  */
+
+      for (i = 0; i < 16; ++i)
+        { /* xor it with previous input block */
+          outbuf[i] ^= bp2[i];
+        }
+
+      /* set byte count to 16 and swap buffer pointers                */
+
+      l = i;
+      tp = bp1, bp1 = bp2, bp2 = tp;
     }
-
-    decrypt(bp1, outbuf, ctx); /* decrypt the new input block and  */
-
-    for (i = 0; i < 16; ++i)
-    { /* xor it with previous input block */
-      outbuf[i] ^= bp2[i];
-    }
-
-    /* set byte count to 16 and swap buffer pointers                */
-
-    l = i;
-    tp = bp1, bp1 = bp2, bp2 = tp;
-  }
 
   /* we have now output 16 * n + 15 bytes of the file with any left   */
   /* in outbuf waiting to be output. If x bytes remain to be written, */
@@ -247,13 +247,13 @@ int decfile(FILE *fin, FILE *fout, aes *ctx, char *ifn, char *ofn)
   flen += 1 - l;
 
   if (flen)
-  {
-    if (fwrite(outbuf + l, 1, flen, fout) != (unsigned long)flen)
     {
-      printf("Error writing to output file: %s\n", ofn);
-      return -12;
+      if (fwrite(outbuf + l, 1, flen, fout) != (unsigned long)flen)
+        {
+          printf("Error writing to output file: %s\n", ofn);
+          return -12;
+        }
     }
-  }
 
   return 0;
 }
@@ -266,94 +266,94 @@ int main(int argc, char *argv[])
   aes ctx[1];
 
   if (argc != 5 || (toupper(*argv[3]) != 'D' && toupper(*argv[3]) != 'E'))
-  {
-    printf("usage: rijndael in_filename out_filename [d/e] key_in_hex\n");
-    err = -1;
-    goto exit;
-  }
-
-  cp = argv[4]; /* this is a pointer to the hexadecimal key digits  */
-  i = 0;        /* this is a count for the input digits processed   */
-
-  while (i < 64 && *cp)  /* the maximum key length is 32 bytes and   */
-  {                      /* hence at most 64 hexadecimal digits      */
-    ch = toupper(*cp++); /* process a hexadecimal digit  */
-    if (ch >= '0' && ch <= '9')
     {
-      by = (by << 4) + ch - '0';
-    }
-    else if (ch >= 'A' && ch <= 'F')
-    {
-      by = (by << 4) + ch - 'A' + 10;
-    }
-    else /* error if not hexadecimal     */
-    {
-      printf("key must be in hexadecimal notation\n");
-      err = -2;
+      printf("usage: rijndael in_filename out_filename [d/e] key_in_hex\n");
+      err = -1;
       goto exit;
     }
 
-    /* store a key byte for each pair of hexadecimal digits         */
-    if (i++ & 1)
-    {
-      key[i / 2 - 1] = by & 0xff;
+  cp = argv[4]; /* this is a pointer to the hexadecimal key digits  */
+  i = 0; /* this is a count for the input digits processed   */
+
+  while (i < 64 && *cp) /* the maximum key length is 32 bytes and   */
+    { /* hence at most 64 hexadecimal digits      */
+      ch = toupper(*cp++); /* process a hexadecimal digit  */
+      if (ch >= '0' && ch <= '9')
+        {
+          by = (by << 4) + ch - '0';
+        }
+      else if (ch >= 'A' && ch <= 'F')
+        {
+          by = (by << 4) + ch - 'A' + 10;
+        }
+      else /* error if not hexadecimal     */
+        {
+          printf("key must be in hexadecimal notation\n");
+          err = -2;
+          goto exit;
+        }
+
+      /* store a key byte for each pair of hexadecimal digits         */
+      if (i++ & 1)
+        {
+          key[i / 2 - 1] = by & 0xff;
+        }
     }
-  }
 
   if (*cp)
-  {
-    printf("The key value is too long\n");
-    err = -3;
-    goto exit;
-  }
+    {
+      printf("The key value is too long\n");
+      err = -3;
+      goto exit;
+    }
   else if (i < 32 || (i & 15))
-  {
-    printf("The key length must be 32, 48 or 64 hexadecimal digits\n");
-    err = -4;
-    goto exit;
-  }
+    {
+      printf("The key length must be 32, 48 or 64 hexadecimal digits\n");
+      err = -4;
+      goto exit;
+    }
 
   key_len = i / 2;
 
   if (!(fin = fopen(argv[1], "rb"))) /* try to open the input file */
-  {
-    printf("The input file: %s could not be opened\n", argv[1]);
-    err = -5;
-    goto exit;
-  }
+    {
+      printf("The input file: %s could not be opened\n", argv[1]);
+      err = -5;
+      goto exit;
+    }
 
   if (!(fout = fopen(argv[2], "wb"))) /* try to open the output file */
-  {
-    printf("The output file: %s could not be opened\n", argv[1]);
-    err = -6;
-    goto exit;
-  }
+    {
+      printf("The output file: %s could not be opened\n", argv[1]);
+      err = -6;
+      goto exit;
+    }
 
   if (toupper(*argv[3]) == 'E')
-  { /* encryption in Cipher Block Chaining mode */
-    set_key(key, key_len, enc, ctx);
+    { /* encryption in Cipher Block Chaining mode */
+      set_key(key, key_len, enc, ctx);
 
-    err = encfile(fin, fout, ctx, argv[1]);
-  }
+      err = encfile(fin, fout, ctx, argv[1]);
+    }
   else
-  { /* decryption in Cipher Block Chaining mode */
-    set_key(key, key_len, dec, ctx);
+    { /* decryption in Cipher Block Chaining mode */
+      set_key(key, key_len, dec, ctx);
 
 #if 1
-    err = decfile(fin, stdout, ctx, argv[1], argv[2]);
+      err = decfile(fin, stdout, ctx, argv[1], argv[2]);
 #else
-    err = decfile(fin, fout, ctx, argv[1], argv[2]);
+      err = decfile(fin, fout, ctx, argv[1], argv[2]);
 #endif
-  }
+    }
 exit:
   if (fout)
-  {
-    fclose(fout);
-  }
+    {
+      fclose(fout);
+    }
   if (fin)
-  {
-    fclose(fin);
-  }
+    {
+      fclose(fin);
+    }
 
   return err;
 }

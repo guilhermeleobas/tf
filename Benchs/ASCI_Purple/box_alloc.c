@@ -20,7 +20,8 @@
  * list and blocks to be freed by the finalization routine.
  *--------------------------------------------------------------------------*/
 
-union box_memory {
+union box_memory
+{
   union box_memory *d_next;
   hypre_Box d_box;
 };
@@ -47,10 +48,10 @@ static int hypre_AllocateBoxBlock()
   s_finalize = &ptr[0];
 
   for (i = (s_at_a_time - 1); i > 0; i--)
-  {
-    ptr[i].d_next = s_free;
-    s_free = &ptr[i];
-  }
+    {
+      ptr[i].d_next = s_free;
+      s_free = &ptr[i];
+    }
 
   return ierr;
 }
@@ -64,9 +65,9 @@ int hypre_BoxInitializeMemory(const int at_a_time)
   int ierr = 0;
 
   if (at_a_time > 0)
-  {
-    s_at_a_time = at_a_time;
-  }
+    {
+      s_at_a_time = at_a_time;
+    }
 
   return ierr;
 }
@@ -83,11 +84,11 @@ int hypre_BoxFinalizeMemory()
   union box_memory *byebye;
 
   while (s_finalize)
-  {
-    byebye = s_finalize;
-    s_finalize = (s_finalize->d_next);
-    hypre_TFree(byebye);
-  }
+    {
+      byebye = s_finalize;
+      s_finalize = (s_finalize->d_next);
+      hypre_TFree(byebye);
+    }
   s_finalize = NULL;
   s_free = NULL;
 
@@ -104,9 +105,9 @@ hypre_Box *hypre_BoxAlloc()
   union box_memory *ptr = NULL;
 
   if (!s_free)
-  {
-    hypre_AllocateBoxBlock();
-  }
+    {
+      hypre_AllocateBoxBlock();
+    }
 
   ptr = s_free;
   s_free = (s_free->d_next);
@@ -128,9 +129,9 @@ int hypre_BoxFree(hypre_Box *box)
   s_count--;
 
   if (!s_count)
-  {
-    hypre_BoxFinalizeMemory();
-  }
+    {
+      hypre_BoxFinalizeMemory();
+    }
 
   return ierr;
 }

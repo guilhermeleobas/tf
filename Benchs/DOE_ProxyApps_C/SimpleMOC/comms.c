@@ -87,83 +87,83 @@ void fast_transfer_boundary_fluxes(Params params, Input I, CommGrid grid)
 
   long idx = 0;
   for (long i = 0; i < max_msgs_per_dir; i++)
-  {
-    MPI_Request request[12];
-    int active[6] = {0};
-    int mpi_send[6] = {0};
-    int mpi_recv[6] = {0};
-    long bookmark = idx;
-    for (int j = 0; j < 6; j++)
     {
-      if (i >= num_messages[j]) continue;
+      MPI_Request request[12];
+      int active[6] = {0};
+      int mpi_send[6] = {0};
+      int mpi_recv[6] = {0};
+      long bookmark = idx;
+      for (int j = 0; j < 6; j++)
+        {
+          if (i >= num_messages[j]) continue;
 
-      // check if border assembly
-      else if (send_dest[j] == -1)
-      {
-        *params.leakage +=
-            pairwise_sum(&flux_array[idx], I.n_egroups * tracks_per_msg);
-        idx += (long)I.n_egroups * tracks_per_msg;
-      }
-      else
-      {
-        MPI_Isend(
-            &flux_array[idx],   // Send Buffer
-            tracks_per_msg,     // Number of Elements
-            grid.Flux_Array,    /* Type of element
+          // check if border assembly
+          else if (send_dest[j] == -1)
+            {
+              *params.leakage +=
+                  pairwise_sum(&flux_array[idx], I.n_egroups * tracks_per_msg);
+              idx += (long)I.n_egroups * tracks_per_msg;
+            }
+          else
+            {
+              MPI_Isend(
+                  &flux_array[idx],  // Send Buffer
+                  tracks_per_msg,  // Number of Elements
+                  grid.Flux_Array, /* Type of element
                                                         (all energy group array) */
-            send_dest[j],       // Destination MPI rank
-            j,                  // Message ID
-            grid.cart_comm_3d,  // MPI Communicator
-            &request[j]);       /* MPI Request (to monitor
+                  send_dest[j],  // Destination MPI rank
+                  j,  // Message ID
+                  grid.cart_comm_3d,  // MPI Communicator
+                  &request[j]); /* MPI Request (to monitor
                                                         when call finishes) */
-        idx += (long)I.n_egroups * tracks_per_msg;
-        mpi_send[j] = 1;
-      }
-    }
-    for (int j = 0; j < 6; j++)
-    {
-      if (i >= num_messages[j]) continue;
+              idx += (long)I.n_egroups * tracks_per_msg;
+              mpi_send[j] = 1;
+            }
+        }
+      for (int j = 0; j < 6; j++)
+        {
+          if (i >= num_messages[j]) continue;
 
-      // Check if Border Case
-      else if (rec_sources[j] == -1)
-        for (long k = 0; k < I.n_egroups * tracks_per_msg; k++)
-          buffer[j][k] = 0;
-      else
-      {
-        MPI_Irecv(
-            buffer[j],          // Recv Buffer
-            tracks_per_msg,     // Number of Elements
-            grid.Flux_Array,    /* Type of element
+          // Check if Border Case
+          else if (rec_sources[j] == -1)
+            for (long k = 0; k < I.n_egroups * tracks_per_msg; k++)
+              buffer[j][k] = 0;
+          else
+            {
+              MPI_Irecv(
+                  buffer[j],  // Recv Buffer
+                  tracks_per_msg,  // Number of Elements
+                  grid.Flux_Array, /* Type of element
                                                         (all energy group array) */
-            rec_sources[j],     // MPI rank to Receive From
-            j,                  // Message ID
-            grid.cart_comm_3d,  // MPI Communicator
-            &request[6 + j]);   /* MPI Request (to monitor
+                  rec_sources[j],  // MPI rank to Receive From
+                  j,  // Message ID
+                  grid.cart_comm_3d,  // MPI Communicator
+                  &request[6 + j]); /* MPI Request (to monitor
                                                 when call finishes) */
-        mpi_recv[j] = 1;
-      }
-      active[j] = 1;
-    }
+              mpi_recv[j] = 1;
+            }
+          active[j] = 1;
+        }
 
-    // Block for Comm Round to complete & copy received data out of buffer
-    for (int j = 0; j < 6; j++)
-    {
-      if (mpi_send[j] == 1)
-      {
-        MPI_Wait(&request[j], &stat);
-      }
-      if (mpi_recv[j] == 1)
-      {
-        MPI_Wait(&request[6 + j], &stat);
-      }
-      if (active[j] == 1)
-      {
-        memcpy(&flux_array[bookmark], buffer[j],
-               I.n_egroups * tracks_per_msg * sizeof(float));
-        bookmark += (long)I.n_egroups * tracks_per_msg;
-      }
+      // Block for Comm Round to complete & copy received data out of buffer
+      for (int j = 0; j < 6; j++)
+        {
+          if (mpi_send[j] == 1)
+            {
+              MPI_Wait(&request[j], &stat);
+            }
+          if (mpi_recv[j] == 1)
+            {
+              MPI_Wait(&request[6 + j], &stat);
+            }
+          if (active[j] == 1)
+            {
+              memcpy(&flux_array[bookmark], buffer[j],
+                     I.n_egroups * tracks_per_msg * sizeof(float));
+              bookmark += (long)I.n_egroups * tracks_per_msg;
+            }
+        }
     }
-  }
 
   free(&buffer[0][0]);
   free(buffer);

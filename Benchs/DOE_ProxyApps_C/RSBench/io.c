@@ -25,9 +25,9 @@ void center_print(const char *s, int width)
   int length = strlen(s);
   int i;
   for (i = 0; i <= (width - length) / 2; i++)
-  {
-    fputs(" ", stdout);
-  }
+    {
+      fputs(" ", stdout);
+    }
   fputs(s, stdout);
   fputs("\n", stdout);
 }
@@ -43,26 +43,26 @@ void border_print(void)
 void fancy_int(int a)
 {
   if (a < 1000)
-  {
-    printf("%d\n", a);
-  }
+    {
+      printf("%d\n", a);
+    }
   else if (a >= 1000 && a < 1000000)
-  {
-    printf("%d,%03d\n", a / 1000, a % 1000);
-  }
+    {
+      printf("%d,%03d\n", a / 1000, a % 1000);
+    }
   else if (a >= 1000000 && a < 1000000000)
-  {
-    printf("%d,%03d,%03d\n", a / 1000000, (a % 1000000) / 1000, a % 1000);
-  }
+    {
+      printf("%d,%03d,%03d\n", a / 1000000, (a % 1000000) / 1000, a % 1000);
+    }
   else if (a >= 1000000000)
-  {
-    printf("%d,%03d,%03d,%03d\n", a / 1000000000, (a % 1000000000) / 1000000,
-           (a % 1000000) / 1000, a % 1000);
-  }
+    {
+      printf("%d,%03d,%03d,%03d\n", a / 1000000000, (a % 1000000000) / 1000000,
+             (a % 1000000) / 1000, a % 1000);
+    }
   else
-  {
-    printf("%d\n", a);
-  }
+    {
+      printf("%d\n", a);
+    }
 }
 
 Input read_CLI(int argc, char *argv[])
@@ -92,141 +92,141 @@ Input read_CLI(int argc, char *argv[])
 
   // Collect Raw Input
   for (int i = 1; i < argc; i++)
-  {
-    char *arg = argv[i];
+    {
+      char *arg = argv[i];
 
-    // nthreads (-t)
-    if (strcmp(arg, "-t") == 0)
-    {
-      if (++i < argc)
-      {
-        input.nthreads = atoi(argv[i]);
-      }
-      else
-      {
-        print_CLI_error();
-      }
-    }
-    // lookups (-l)
-    else if (strcmp(arg, "-l") == 0)
-    {
-      if (++i < argc)
-      {
-        input.lookups = atoi(argv[i]);
-      }
-      else
-      {
-        print_CLI_error();
-      }
-    }
-    // nuclides (-n)
-    else if (strcmp(arg, "-n") == 0)
-    {
-      if (++i < argc)
-      {
-        input.n_nuclides = atoi(argv[i]);
-      }
-      else
-      {
-        print_CLI_error();
-      }
-    }
-    // HM (-s)
-    else if (strcmp(arg, "-s") == 0)
-    {
-      if (++i < argc)
-      {
-        if (strcmp(argv[i], "small") == 0)
+      // nthreads (-t)
+      if (strcmp(arg, "-t") == 0)
         {
-          input.HM = SMALL;
+          if (++i < argc)
+            {
+              input.nthreads = atoi(argv[i]);
+            }
+          else
+            {
+              print_CLI_error();
+            }
         }
-        else if (strcmp(argv[i], "large") == 0)
+      // lookups (-l)
+      else if (strcmp(arg, "-l") == 0)
         {
-          input.HM = LARGE;
+          if (++i < argc)
+            {
+              input.lookups = atoi(argv[i]);
+            }
+          else
+            {
+              print_CLI_error();
+            }
         }
-        else
+      // nuclides (-n)
+      else if (strcmp(arg, "-n") == 0)
+        {
+          if (++i < argc)
+            {
+              input.n_nuclides = atoi(argv[i]);
+            }
+          else
+            {
+              print_CLI_error();
+            }
+        }
+      // HM (-s)
+      else if (strcmp(arg, "-s") == 0)
+        {
+          if (++i < argc)
+            {
+              if (strcmp(argv[i], "small") == 0)
+                {
+                  input.HM = SMALL;
+                }
+              else if (strcmp(argv[i], "large") == 0)
+                {
+                  input.HM = LARGE;
+                }
+              else
+                {
+                  print_CLI_error();
+                }
+            }
+          else
+            {
+              print_CLI_error();
+            }
+        }
+      // Doppler Broadening (Temperature Dependence)
+      else if (strcmp(arg, "-d") == 0)
+        {
+          input.doppler = 0;
+        }
+      // Avg number of windows per nuclide (-w)
+      else if (strcmp(arg, "-w") == 0)
+        {
+          if (++i < argc)
+            {
+              input.avg_n_windows = atoi(argv[i]);
+            }
+          else
+            {
+              print_CLI_error();
+            }
+        }
+      // Avg number of poles per nuclide (-p)
+      else if (strcmp(arg, "-p") == 0)
+        {
+          if (++i < argc)
+            {
+              input.avg_n_poles = atoi(argv[i]);
+            }
+          else
+            {
+              print_CLI_error();
+            }
+        }
+      else
         {
           print_CLI_error();
         }
-      }
-      else
-      {
-        print_CLI_error();
-      }
     }
-    // Doppler Broadening (Temperature Dependence)
-    else if (strcmp(arg, "-d") == 0)
-    {
-      input.doppler = 0;
-    }
-    // Avg number of windows per nuclide (-w)
-    else if (strcmp(arg, "-w") == 0)
-    {
-      if (++i < argc)
-      {
-        input.avg_n_windows = atoi(argv[i]);
-      }
-      else
-      {
-        print_CLI_error();
-      }
-    }
-    // Avg number of poles per nuclide (-p)
-    else if (strcmp(arg, "-p") == 0)
-    {
-      if (++i < argc)
-      {
-        input.avg_n_poles = atoi(argv[i]);
-      }
-      else
-      {
-        print_CLI_error();
-      }
-    }
-    else
-    {
-      print_CLI_error();
-    }
-  }
 
   // Validate Input
 
   // Validate nthreads
   if (input.nthreads < 1)
-  {
-    print_CLI_error();
-  }
+    {
+      print_CLI_error();
+    }
 
   // Validate n_isotopes
   if (input.n_nuclides < 1)
-  {
-    print_CLI_error();
-  }
+    {
+      print_CLI_error();
+    }
 
   // Validate lookups
   if (input.lookups < 1)
-  {
-    print_CLI_error();
-  }
+    {
+      print_CLI_error();
+    }
 
   // Validate lookups
   if (input.avg_n_poles < 1)
-  {
-    print_CLI_error();
-  }
+    {
+      print_CLI_error();
+    }
 
   // Validate lookups
   if (input.avg_n_windows < 1)
-  {
-    print_CLI_error();
-  }
+    {
+      print_CLI_error();
+    }
 
   // Set HM size specific parameters
   // (defaults to large)
   if (input.HM == SMALL)
-  {
-    input.n_nuclides = 68;
-  }
+    {
+      input.n_nuclides = 68;
+    }
 
   // Return input struct
   return input;
@@ -257,21 +257,21 @@ void print_input_summary(Input input)
   printf("Materials:                   12\n");
   printf("H-M Benchmark Size:          ");
   if (input.HM == 0)
-  {
-    printf("Small\n");
-  }
+    {
+      printf("Small\n");
+    }
   else
-  {
-    printf("Large\n");
-  }
+    {
+      printf("Large\n");
+    }
   if (input.doppler == 1)
-  {
-    printf("Temperature Dependence:      ON\n");
-  }
+    {
+      printf("Temperature Dependence:      ON\n");
+    }
   else
-  {
-    printf("Temperature Dependence:      OFF\n");
-  }
+    {
+      printf("Temperature Dependence:      OFF\n");
+    }
   printf("Total Nuclides:              %d\n", input.n_nuclides);
   printf("Avg Poles per Nuclide:       ");
   fancy_int(input.avg_n_poles);

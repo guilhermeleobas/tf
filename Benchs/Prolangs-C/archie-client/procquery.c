@@ -88,48 +88,48 @@ void display_link(VLINK l, int listflag)
 
   /* Is this a new host? */
   if (strcmp(l->host, lasthost) != 0)
-  {
-    if (!listflag) printf("\nHost %s\n\n", l->host);
-    strcpy(lasthost, l->host);
-    *lastpath = '\001';
-  }
+    {
+      if (!listflag) printf("\nHost %s\n\n", l->host);
+      strcpy(lasthost, l->host);
+      *lastpath = '\001';
+    }
 
   /* Is this a new linkpath (location)? */
   if (strcmp(linkpath, lastpath) != 0)
-  {
-    if (!listflag) printf("    Location: %s\n", (*linkpath ? linkpath : "/"));
-    strcpy(lastpath, linkpath);
-  }
+    {
+      if (!listflag) printf("    Location: %s\n", (*linkpath ? linkpath : "/"));
+      strcpy(lastpath, linkpath);
+    }
 
   /* Parse the attibutes of this link */
   for (ap = l->lattrib; ap; ap = ap->next)
-  {
-    if (strcmp(ap->aname, "SIZE") == 0)
     {
+      if (strcmp(ap->aname, "SIZE") == 0)
+        {
 #ifdef MSDOS
-      sscanf(ap->value.ascii, "%lu", &size);
+          sscanf(ap->value.ascii, "%lu", &size);
 #else
-      sscanf(ap->value.ascii, "%d", &size);
+          sscanf(ap->value.ascii, "%d", &size);
 #endif
+        }
+      else if (strcmp(ap->aname, "UNIX-MODES") == 0)
+        {
+          modes = ap->value.ascii;
+        }
+      else if (strcmp(ap->aname, "LAST-MODIFIED") == 0)
+        {
+          gt_date = ap->value.ascii;
+          sscanf(gt_date, "%4d%2d%2d%2d%2d", &gt_year, &gt_mon, &gt_day, &gt_hour,
+                 &gt_min);
+          if ((12 * (presenttime->tm_year + 1900 - gt_year) + presenttime->tm_mon -
+               gt_mon) > 6)
+            sprintf(archie_date, "%s %2d %4d", month_sname(gt_mon), gt_day,
+                    gt_year);
+          else
+            sprintf(archie_date, "%s %2d %02d:%02d", month_sname(gt_mon), gt_day,
+                    gt_hour, gt_min);
+        }
     }
-    else if (strcmp(ap->aname, "UNIX-MODES") == 0)
-    {
-      modes = ap->value.ascii;
-    }
-    else if (strcmp(ap->aname, "LAST-MODIFIED") == 0)
-    {
-      gt_date = ap->value.ascii;
-      sscanf(gt_date, "%4d%2d%2d%2d%2d", &gt_year, &gt_mon, &gt_day, &gt_hour,
-             &gt_min);
-      if ((12 * (presenttime->tm_year + 1900 - gt_year) + presenttime->tm_mon -
-           gt_mon) > 6)
-        sprintf(archie_date, "%s %2d %4d", month_sname(gt_mon), gt_day,
-                gt_year);
-      else
-        sprintf(archie_date, "%s %2d %02d:%02d", month_sname(gt_mon), gt_day,
-                gt_hour, gt_min);
-    }
-  }
 
   /* Print this link's information */
   if (listflag)
@@ -180,43 +180,43 @@ void procquery(char *host, char *str, int max_hits, int offset, char query_type,
 
   /* Error? */
   if (perrno != PSUCCESS)
-  {
-    if (p_err_text[perrno])
     {
-      if (*p_err_string)
-        fprintf(stderr, "%s: failed: %s - %s\n", progname, p_err_text[perrno],
-                p_err_string);
+      if (p_err_text[perrno])
+        {
+          if (*p_err_string)
+            fprintf(stderr, "%s: failed: %s - %s\n", progname, p_err_text[perrno],
+                    p_err_string);
+          else
+            fprintf(stderr, "%s failed: %s\n", progname, p_err_text[perrno]);
+        }
       else
-        fprintf(stderr, "%s failed: %s\n", progname, p_err_text[perrno]);
+        fprintf(stderr, "%s failed: Undefined error %d (prospero)",
+                (char *)perrno, 0);
     }
-    else
-      fprintf(stderr, "%s failed: Undefined error %d (prospero)",
-              (char *)perrno, 0);
-  }
 
   /* Warning? */
   if (pwarn != PNOWARN)
-  {
-    if (*p_warn_string)
-      fprintf(stderr, "%s: Warning! %s - %s\n", progname, p_warn_text[pwarn],
-              p_warn_string);
-    else
-      fprintf(stderr, "%s: Warning! %s\n", progname, p_warn_text[pwarn]);
-  }
+    {
+      if (*p_warn_string)
+        fprintf(stderr, "%s: Warning! %s - %s\n", progname, p_warn_text[pwarn],
+                p_warn_string);
+      else
+        fprintf(stderr, "%s: Warning! %s\n", progname, p_warn_text[pwarn]);
+    }
 
   /* Display the results */
 
   if (l == (VLINK)NULL && pwarn == PNOWARN && perrno == PSUCCESS)
-  {
-    if (!listflag) puts("No matches.");
-    exit(1);
-  }
+    {
+      if (!listflag) puts("No matches.");
+      exit(1);
+    }
 
   *lasthost = '\001';
   *lastpath = '\001';
   while (l != NULL)
-  {
-    display_link(l, listflag);
-    l = l->next;
-  }
+    {
+      display_link(l, listflag);
+      l = l->next;
+    }
 }

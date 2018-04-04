@@ -15,9 +15,9 @@ int gsm_explode P3((s, c, target), gsm s, gsm_byte* c, gsm_signal* target)
   /* GSM_MAGIC  = (*c >> 4) & 0xF; */
 
   if (((*c >> 4) & 0x0F) != GSM_MAGIC)
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
 
 #define LARc target
 

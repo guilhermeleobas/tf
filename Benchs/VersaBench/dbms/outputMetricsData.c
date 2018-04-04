@@ -22,17 +22,17 @@
  *	Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include <assert.h>         /*  for assert()                    */
-#include <stdio.h>          /*  for fprintf() definition        */
+#include <assert.h> /*  for assert()                    */
+#include <stdio.h> /*  for fprintf() definition        */
 #include "dataManagement.h" /*  for primitive type definitions  */
-#include "metrics.h"        /*  for Metrics definitions         */
+#include "metrics.h" /*  for Metrics definitions         */
 
 /*
  *  Function prototype
  */
 extern void calcMetricsData(Metrics *metrics);
 
-void outputMetricsData(FILE *file,       /*  output file         */
+void outputMetricsData(FILE *file, /*  output file         */
                        Metrics *metrics) /*  metrics to output   */
 { /*  beginning of outputMetricsData()    */
 

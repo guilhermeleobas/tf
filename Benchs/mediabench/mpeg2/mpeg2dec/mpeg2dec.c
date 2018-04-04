@@ -77,68 +77,68 @@ char *argv[];
   /* open MPEG base layer bitstream file(s) */
   /* NOTE: this is either a base layer stream or a spatial enhancement stream */
   if ((base.Infile = open(Main_Bitstream_Filename, O_RDONLY | O_BINARY)) < 0)
-  {
-    fprintf(stderr, "Base layer input file %s not found\n",
-            Main_Bitstream_Filename);
-    exit(1);
-  }
-
-  if (base.Infile != 0)
-  {
-    Initialize_Buffer();
-
-    if (Show_Bits(8) == 0x47)
     {
-      sprintf(Error_Text,
-              "Decoder currently does not parse transport streams\n");
-      Error(Error_Text);
+      fprintf(stderr, "Base layer input file %s not found\n",
+              Main_Bitstream_Filename);
+      exit(1);
     }
 
-    next_start_code();
-    code = Show_Bits(32);
-
-    switch (code)
+  if (base.Infile != 0)
     {
-      case SEQUENCE_HEADER_CODE:
-        break;
-      case PACK_START_CODE:
-        System_Stream_Flag = 1;
-      case VIDEO_ELEMENTARY_STREAM:
-        System_Stream_Flag = 1;
-        break;
-      default:
-        sprintf(Error_Text, "Unable to recognize stream type\n");
-        Error(Error_Text);
-        break;
+      Initialize_Buffer();
+
+      if (Show_Bits(8) == 0x47)
+        {
+          sprintf(Error_Text,
+                  "Decoder currently does not parse transport streams\n");
+          Error(Error_Text);
+        }
+
+      next_start_code();
+      code = Show_Bits(32);
+
+      switch (code)
+        {
+          case SEQUENCE_HEADER_CODE:
+            break;
+          case PACK_START_CODE:
+            System_Stream_Flag = 1;
+          case VIDEO_ELEMENTARY_STREAM:
+            System_Stream_Flag = 1;
+            break;
+          default:
+            sprintf(Error_Text, "Unable to recognize stream type\n");
+            Error(Error_Text);
+            break;
+        }
+
+      lseek(base.Infile, 0l, 0);
+      Initialize_Buffer();
     }
 
-    lseek(base.Infile, 0l, 0);
-    Initialize_Buffer();
-  }
-
   if (base.Infile != 0)
-  {
-    lseek(base.Infile, 0l, 0);
-  }
+    {
+      lseek(base.Infile, 0l, 0);
+    }
 
   Initialize_Buffer();
 
   if (Two_Streams)
-  {
-    ld = &enhan; /* select enhancement layer context */
-
-    if ((enhan.Infile = open(Enhancement_Layer_Bitstream_Filename,
-                             O_RDONLY | O_BINARY)) < 0)
     {
-      sprintf(Error_Text, "enhancment layer bitstream file %s not found\n",
-              Enhancement_Layer_Bitstream_Filename);
+      ld = &enhan; /* select enhancement layer context */
 
-      Error(Error_Text);
+      if ((enhan.Infile = open(Enhancement_Layer_Bitstream_Filename,
+                               O_RDONLY | O_BINARY)) < 0)
+        {
+          sprintf(Error_Text, "enhancment layer bitstream file %s not found\n",
+                  Enhancement_Layer_Bitstream_Filename);
+
+          Error(Error_Text);
+        }
+
+      Initialize_Buffer();
+      ld = &base;
     }
-
-    Initialize_Buffer();
-    ld = &base;
-  }
 
   Initialize_Decoder();
 
@@ -147,9 +147,9 @@ char *argv[];
   close(base.Infile);
 
   if (Two_Streams)
-  {
-    close(enhan.Infile);
-  }
+    {
+      close(enhan.Infile);
+    }
 
   return 0;
 }
@@ -161,26 +161,26 @@ static void Initialize_Decoder()
 
   /* Clip table */
   if (!(Clip = (unsigned char *)malloc(1024)))
-  {
-    Error("Clip[] malloc failed\n");
-  }
+    {
+      Error("Clip[] malloc failed\n");
+    }
 
   Clip += 384;
 
   for (i = -384; i < 640; i++)
-  {
-    Clip[i] = (i < 0) ? 0 : ((i > 255) ? 255 : i);
-  }
+    {
+      Clip[i] = (i < 0) ? 0 : ((i > 255) ? 255 : i);
+    }
 
   /* IDCT */
   if (Reference_IDCT_Flag)
-  {
-    Initialize_Reference_IDCT();
-  }
+    {
+      Initialize_Reference_IDCT();
+    }
   else
-  {
-    Initialize_Fast_IDCT();
-  }
+    {
+      Initialize_Fast_IDCT();
+    }
 }
 
 /* mostly IMPLEMENTAION specific rouintes */
@@ -192,21 +192,21 @@ static void Initialize_Sequence()
   /* check scalability mode of enhancement layer */
   if (Two_Streams && (enhan.scalable_mode != SC_SNR) &&
       (base.scalable_mode != SC_DP))
-  {
-    Error("unsupported scalability mode\n");
-  }
+    {
+      Error("unsupported scalability mode\n");
+    }
 
   /* force MPEG-1 parameters for proper decoder behavior */
   /* see ISO/IEC 13818-2 section D.9.14 */
   if (!base.MPEG2_Flag)
-  {
-    progressive_sequence = 1;
-    progressive_frame = 1;
-    picture_structure = FRAME_PICTURE;
-    frame_pred_frame_dct = 1;
-    chroma_format = CHROMA420;
-    matrix_coefficients = 5;
-  }
+    {
+      progressive_sequence = 1;
+      progressive_frame = 1;
+      picture_structure = FRAME_PICTURE;
+      frame_pred_frame_dct = 1;
+      chroma_format = CHROMA420;
+      matrix_coefficients = 5;
+    }
 
   /* round to nearest multiple of coded macroblocks */
   /* ISO/IEC 13818-2 section 6.3.3 sequence_header() */
@@ -228,78 +228,78 @@ static void Initialize_Sequence()
   block_count = Table_6_20[chroma_format - 1];
 
   for (cc = 0; cc < 3; cc++)
-  {
-    if (cc == 0)
     {
-      size = Coded_Picture_Width * Coded_Picture_Height;
-    }
-    else
-    {
-      size = Chroma_Width * Chroma_Height;
-    }
+      if (cc == 0)
+        {
+          size = Coded_Picture_Width * Coded_Picture_Height;
+        }
+      else
+        {
+          size = Chroma_Width * Chroma_Height;
+        }
 
-    if (!(backward_reference_frame[cc] = (unsigned char *)malloc(size)))
-    {
-      Error("backward_reference_frame[] malloc failed\n");
-    }
+      if (!(backward_reference_frame[cc] = (unsigned char *)malloc(size)))
+        {
+          Error("backward_reference_frame[] malloc failed\n");
+        }
 
-    if (!(forward_reference_frame[cc] = (unsigned char *)malloc(size)))
-    {
-      Error("forward_reference_frame[] malloc failed\n");
-    }
+      if (!(forward_reference_frame[cc] = (unsigned char *)malloc(size)))
+        {
+          Error("forward_reference_frame[] malloc failed\n");
+        }
 
-    if (!(auxframe[cc] = (unsigned char *)malloc(size)))
-    {
-      Error("auxframe[] malloc failed\n");
-    }
+      if (!(auxframe[cc] = (unsigned char *)malloc(size)))
+        {
+          Error("auxframe[] malloc failed\n");
+        }
 
-    if (Ersatz_Flag)
-    {
-      if (!(substitute_frame[cc] = (unsigned char *)malloc(size)))
-      {
-        Error("substitute_frame[] malloc failed\n");
-      }
-    }
+      if (Ersatz_Flag)
+        {
+          if (!(substitute_frame[cc] = (unsigned char *)malloc(size)))
+            {
+              Error("substitute_frame[] malloc failed\n");
+            }
+        }
 
-    if (base.scalable_mode == SC_SPAT)
-    {
-      /* this assumes lower layer is 4:2:0 */
-      if (!(llframe0[cc] = (unsigned char *)malloc(
-                (lower_layer_prediction_horizontal_size *
-                 lower_layer_prediction_vertical_size) /
-                (cc ? 4 : 1))))
-      {
-        Error("llframe0 malloc failed\n");
-      }
-      if (!(llframe1[cc] = (unsigned char *)malloc(
-                (lower_layer_prediction_horizontal_size *
-                 lower_layer_prediction_vertical_size) /
-                (cc ? 4 : 1))))
-      {
-        Error("llframe1 malloc failed\n");
-      }
+      if (base.scalable_mode == SC_SPAT)
+        {
+          /* this assumes lower layer is 4:2:0 */
+          if (!(llframe0[cc] = (unsigned char *)malloc(
+                    (lower_layer_prediction_horizontal_size *
+                     lower_layer_prediction_vertical_size) /
+                    (cc ? 4 : 1))))
+            {
+              Error("llframe0 malloc failed\n");
+            }
+          if (!(llframe1[cc] = (unsigned char *)malloc(
+                    (lower_layer_prediction_horizontal_size *
+                     lower_layer_prediction_vertical_size) /
+                    (cc ? 4 : 1))))
+            {
+              Error("llframe1 malloc failed\n");
+            }
+        }
     }
-  }
 
   /* SCALABILITY: Spatial */
   if (base.scalable_mode == SC_SPAT)
-  {
-    if (!(lltmp = (short *)malloc(lower_layer_prediction_horizontal_size *
-                                  ((lower_layer_prediction_vertical_size *
-                                    vertical_subsampling_factor_n) /
-                                   vertical_subsampling_factor_m) *
-                                  sizeof(short))))
     {
-      Error("lltmp malloc failed\n");
+      if (!(lltmp = (short *)malloc(lower_layer_prediction_horizontal_size *
+                                    ((lower_layer_prediction_vertical_size *
+                                      vertical_subsampling_factor_n) /
+                                     vertical_subsampling_factor_m) *
+                                    sizeof(short))))
+        {
+          Error("lltmp malloc failed\n");
+        }
     }
-  }
 
 #ifdef DISPLAY
   if (Output_Type == T_X11)
-  {
-    Initialize_Display_Process("");
-    Initialize_Dither_Matrix();
-  }
+    {
+      Initialize_Display_Process("");
+      Initialize_Dither_Matrix();
+    }
 #endif /* DISPLAY */
 }
 
@@ -314,23 +314,23 @@ void Print_Bits(code, bits, len) int code, bits, len;
 {
   int i;
   for (i = 0; i < len; i++)
-  {
-    printf("%d", (code >> (bits - 1 - i)) & 1);
-  }
+    {
+      printf("%d", (code >> (bits - 1 - i)) & 1);
+    }
 }
 
 /* option processing */
 static void Process_Options(argc, argv) int argc; /* argument count  */
-char *argv[];                                     /* argument vector */
+char *argv[]; /* argument vector */
 {
   int i, LastArg, NextArg;
 
   /* at least one argument should be present */
   if (argc < 2)
-  {
-    printf("\n%s, %s\n", Version, Author);
-    printf(
-        "Usage:  mpeg2decode {options}\n\
+    {
+      printf("\n%s, %s\n", Version, Author);
+      printf(
+          "Usage:  mpeg2decode {options}\n\
 Options: -b  file  main bitstream (base or spatial enhancement layer)\n\
          -cn file  conformance report (n: level)\n\
          -e  file  enhancement layer bitstream (SNR or Data Partitioning)\n\
@@ -351,8 +351,8 @@ File patterns:  for sequential filenames, \"printf\" style, e.g. rec%%d\n\
 Levels:        0:none 1:sequence 2:picture 3:slice 4:macroblock 5:block\n\n\
 Example:       mpeg2decode -b bitstream.mpg -f -r -o0 rec%%d\n\
          \n");
-    exit(0);
-  }
+      exit(0);
+    }
 
   Output_Type = -1;
   i = 1;
@@ -360,211 +360,211 @@ Example:       mpeg2decode -b bitstream.mpg -f -r -o0 rec%%d\n\
   /* command-line options are proceeded by '-' */
 
   while (i < argc)
-  {
-    /* check if this is the last argument */
-    LastArg = ((argc - i) == 1);
+    {
+      /* check if this is the last argument */
+      LastArg = ((argc - i) == 1);
 
-    /* parse ahead to see if another flag immediately follows current
+      /* parse ahead to see if another flag immediately follows current
        argument (this is used to tell if a filename is missing) */
-    if (!LastArg)
-    {
-      NextArg = (argv[i + 1][0] == '-');
-    }
-    else
-    {
-      NextArg = 0;
-    }
+      if (!LastArg)
+        {
+          NextArg = (argv[i + 1][0] == '-');
+        }
+      else
+        {
+          NextArg = 0;
+        }
 
-    /* second character, [1], after '-' is the switch */
-    if (argv[i][0] == '-')
-    {
-      switch (toupper(argv[i][1]))
-      {
-        /* third character. [2], is the value */
-        case 'B':
-          Main_Bitstream_Flag = 1;
+      /* second character, [1], after '-' is the switch */
+      if (argv[i][0] == '-')
+        {
+          switch (toupper(argv[i][1]))
+            {
+              /* third character. [2], is the value */
+              case 'B':
+                Main_Bitstream_Flag = 1;
 
-          if (NextArg || LastArg)
-          {
-            printf("ERROR: -b must be followed the main bitstream filename\n");
-          }
-          else
-          {
-            Main_Bitstream_Filename = argv[++i];
-          }
+                if (NextArg || LastArg)
+                  {
+                    printf("ERROR: -b must be followed the main bitstream filename\n");
+                  }
+                else
+                  {
+                    Main_Bitstream_Filename = argv[++i];
+                  }
 
-          break;
+                break;
 
-        case 'C':
+              case 'C':
 
 #ifdef VERIFY
-          Verify_Flag = atoi(&argv[i][2]);
+                Verify_Flag = atoi(&argv[i][2]);
 
-          if ((Verify_Flag < NO_LAYER) || (Verify_Flag > ALL_LAYERS))
-          {
-            printf("ERROR: -c level (%d) out of range [%d,%d]\n", Verify_Flag,
-                   NO_LAYER, ALL_LAYERS);
-            exit(ERROR);
-          }
-#else  /* VERIFY */
-          printf("This program not compiled for Verify_Flag option\n");
+                if ((Verify_Flag < NO_LAYER) || (Verify_Flag > ALL_LAYERS))
+                  {
+                    printf("ERROR: -c level (%d) out of range [%d,%d]\n", Verify_Flag,
+                           NO_LAYER, ALL_LAYERS);
+                    exit(ERROR);
+                  }
+#else /* VERIFY */
+                printf("This program not compiled for Verify_Flag option\n");
 #endif /* VERIFY */
-          break;
+                break;
 
-        case 'E':
-          Two_Streams = 1; /* either Data Partitioning (DP) or SNR Scalability
+              case 'E':
+                Two_Streams = 1; /* either Data Partitioning (DP) or SNR Scalability
                               enhancment */
 
-          if (NextArg || LastArg)
-          {
-            printf("ERROR: -e must be followed by filename\n");
-            exit(ERROR);
-          }
-          else
-          {
-            Enhancement_Layer_Bitstream_Filename = argv[++i];
-          }
+                if (NextArg || LastArg)
+                  {
+                    printf("ERROR: -e must be followed by filename\n");
+                    exit(ERROR);
+                  }
+                else
+                  {
+                    Enhancement_Layer_Bitstream_Filename = argv[++i];
+                  }
 
-          break;
+                break;
 
-        case 'F':
-          Frame_Store_Flag = 1;
-          break;
+              case 'F':
+                Frame_Store_Flag = 1;
+                break;
 
-        case 'G':
-          Big_Picture_Flag = 1;
-          break;
+              case 'G':
+                Big_Picture_Flag = 1;
+                break;
 
-        case 'I':
+              case 'I':
 #ifdef VERIFY
-          Stats_Flag = atoi(&argv[i][2]);
-#else  /* VERIFY */
-          printf("WARNING: This program not compiled for -i option\n");
+                Stats_Flag = atoi(&argv[i][2]);
+#else /* VERIFY */
+                printf("WARNING: This program not compiled for -i option\n");
 #endif /* VERIFY */
-          break;
+                break;
 
-        case 'L': /* spatial scalability flag */
-          Spatial_Flag = 1;
+              case 'L': /* spatial scalability flag */
+                Spatial_Flag = 1;
 
-          if (NextArg || LastArg)
-          {
-            printf("ERROR: -l must be followed by filename\n");
-            exit(ERROR);
-          }
-          else
-          {
-            Lower_Layer_Picture_Filename = argv[++i];
-          }
+                if (NextArg || LastArg)
+                  {
+                    printf("ERROR: -l must be followed by filename\n");
+                    exit(ERROR);
+                  }
+                else
+                  {
+                    Lower_Layer_Picture_Filename = argv[++i];
+                  }
 
-          break;
+                break;
 
-        case 'O':
+              case 'O':
 
-          Output_Type = atoi(&argv[i][2]);
+                Output_Type = atoi(&argv[i][2]);
 
-          if ((Output_Type == 4) || (Output_Type == 5))
-          {
-            Output_Picture_Filename = ""; /* no need of filename */
-          }
-          else if (NextArg || LastArg)
-          {
-            printf("ERROR: -o must be followed by filename\n");
-            exit(ERROR);
-          }
-          else
-          {
-            /* filename is separated by space, so it becomes the next argument
+                if ((Output_Type == 4) || (Output_Type == 5))
+                  {
+                    Output_Picture_Filename = ""; /* no need of filename */
+                  }
+                else if (NextArg || LastArg)
+                  {
+                    printf("ERROR: -o must be followed by filename\n");
+                    exit(ERROR);
+                  }
+                else
+                  {
+                    /* filename is separated by space, so it becomes the next argument
              */
-            Output_Picture_Filename = argv[++i];
-          }
+                    Output_Picture_Filename = argv[++i];
+                  }
 
 #ifdef DISPLAY
-          if (Output_Type == T_X11HIQ)
-          {
-            hiQdither = 1;
-            Output_Type = T_X11;
-          }
+                if (Output_Type == T_X11HIQ)
+                  {
+                    hiQdither = 1;
+                    Output_Type = T_X11;
+                  }
 #endif /* DISPLAY */
-          break;
+                break;
 
-        case 'Q':
-          Quiet_Flag = 1;
-          break;
+              case 'Q':
+                Quiet_Flag = 1;
+                break;
 
-        case 'R':
-          Reference_IDCT_Flag = 1;
-          break;
+              case 'R':
+                Reference_IDCT_Flag = 1;
+                break;
 
-        case 'T':
+              case 'T':
 #ifdef TRACE
-          Trace_Flag = 1;
-#else  /* TRACE */
-          printf("WARNING: This program not compiled for -t option\n");
+                Trace_Flag = 1;
+#else /* TRACE */
+                printf("WARNING: This program not compiled for -t option\n");
 #endif /* TRACE */
-          break;
+                break;
 
-        case 'U':
-          User_Data_Flag = 1;
+              case 'U':
+                User_Data_Flag = 1;
 
-        case 'V':
+              case 'V':
 #ifdef VERBOSE
-          Verbose_Flag = atoi(&argv[i][2]);
+                Verbose_Flag = atoi(&argv[i][2]);
 #else /* VERBOSE */
-          printf("This program not compiled for -v option\n");
+                printf("This program not compiled for -v option\n");
 #endif /* VERBOSE */
-          break;
+                break;
 
-        case 'X':
-          Ersatz_Flag = 1;
+              case 'X':
+                Ersatz_Flag = 1;
 
-          if (NextArg || LastArg)
-          {
-            printf("ERROR: -x must be followed by filename\n");
-            exit(ERROR);
-          }
-          else
-          {
-            Substitute_Picture_Filename = argv[++i];
-          }
+                if (NextArg || LastArg)
+                  {
+                    printf("ERROR: -x must be followed by filename\n");
+                    exit(ERROR);
+                  }
+                else
+                  {
+                    Substitute_Picture_Filename = argv[++i];
+                  }
 
-          break;
+                break;
 
-        default:
-          fprintf(stderr, "undefined option -%c ignored. Exiting program\n",
-                  argv[i][1]);
+              default:
+                fprintf(stderr, "undefined option -%c ignored. Exiting program\n",
+                        argv[i][1]);
 
-          exit(ERROR);
+                exit(ERROR);
 
-      } /* switch() */
-    }   /* if argv[i][0] == '-' */
+            } /* switch() */
+        } /* if argv[i][0] == '-' */
 
-    i++;
+      i++;
 
-    /* check for bitstream filename argument (there must always be one, at the
+      /* check for bitstream filename argument (there must always be one, at the
        very end
        of the command line arguments */
 
-  } /* while() */
+    } /* while() */
 
   /* options sense checking */
 
   if (Main_Bitstream_Flag != 1)
-  {
-    printf("There must be a main bitstream specified (-b filename)\n");
-  }
+    {
+      printf("There must be a main bitstream specified (-b filename)\n");
+    }
 
   /* force display process to show frame pictures */
   if ((Output_Type == 4 || Output_Type == 5) && Frame_Store_Flag)
-  {
-    Display_Progressive_Flag = 1;
-  }
+    {
+      Display_Progressive_Flag = 1;
+    }
   else
-  {
-    Display_Progressive_Flag = 0;
-  }
+    {
+      Display_Progressive_Flag = 0;
+    }
 
 #ifdef VERIFY
-/* parse the bitstream, do not actually decode it completely */
+    /* parse the bitstream, do not actually decode it completely */
 
 #if 0
   if(Output_Type==-1)
@@ -581,21 +581,21 @@ Example:       mpeg2decode -b bitstream.mpg -f -r -o0 rec%%d\n\
 
   /* no output type specified */
   if (Output_Type == -1)
-  {
-    Output_Type = 9;
-    Output_Picture_Filename = "";
-  }
+    {
+      Output_Type = 9;
+      Output_Picture_Filename = "";
+    }
 
 #ifdef DISPLAY
   if (Output_Type == T_X11)
-  {
-    if (Frame_Store_Flag)
-      Display_Progressive_Flag = 1;
-    else
-      Display_Progressive_Flag = 0;
+    {
+      if (Frame_Store_Flag)
+        Display_Progressive_Flag = 1;
+      else
+        Display_Progressive_Flag = 0;
 
-    Frame_Store_Flag = 1; /* to avoid calling dither() twice */
-  }
+      Frame_Store_Flag = 1; /* to avoid calling dither() twice */
+    }
 #endif
 }
 
@@ -628,14 +628,14 @@ static int Headers()
   ret = Get_Hdr();
 
   if (Two_Streams)
-  {
-    ld = &enhan;
-    if (Get_Hdr() != ret && !Quiet_Flag)
     {
-      fprintf(stderr, "streams out of sync\n");
+      ld = &enhan;
+      if (Get_Hdr() != ret && !Quiet_Flag)
+        {
+          fprintf(stderr, "streams out of sync\n");
+        }
+      ld = &base;
     }
-    ld = &base;
-  }
 
   return ret;
 }
@@ -648,22 +648,22 @@ static int Decode_Bitstream()
   Bitstream_Framenum = 0;
 
   for (;;)
-  {
+    {
 #ifdef VERIFY
-    Clear_Verify_Headers();
+      Clear_Verify_Headers();
 #endif /* VERIFY */
 
-    ret = Headers();
+      ret = Headers();
 
-    if (ret == 1)
-    {
-      ret = video_sequence(&Bitstream_Framenum);
+      if (ret == 1)
+        {
+          ret = video_sequence(&Bitstream_Framenum);
+        }
+      else
+        {
+          return (ret);
+        }
     }
-    else
-    {
-      return (ret);
-    }
-  }
 }
 
 static void Deinitialize_Sequence()
@@ -674,22 +674,22 @@ static void Deinitialize_Sequence()
   base.MPEG2_Flag = 0;
 
   for (i = 0; i < 3; i++)
-  {
-    free(backward_reference_frame[i]);
-    free(forward_reference_frame[i]);
-    free(auxframe[i]);
-
-    if (base.scalable_mode == SC_SPAT)
     {
-      free(llframe0[i]);
-      free(llframe1[i]);
+      free(backward_reference_frame[i]);
+      free(forward_reference_frame[i]);
+      free(auxframe[i]);
+
+      if (base.scalable_mode == SC_SPAT)
+        {
+          free(llframe0[i]);
+          free(llframe1[i]);
+        }
     }
-  }
 
   if (base.scalable_mode == SC_SPAT)
-  {
-    free(lltmp);
-  }
+    {
+      free(lltmp);
+    }
 
 #ifdef DISPLAY
   if (Output_Type == T_X11) Terminate_Display_Process();
@@ -714,28 +714,28 @@ static int video_sequence(Bitstream_Framenumber) int *Bitstream_Framenumber;
 
   /* update picture numbers */
   if (!Second_Field)
-  {
-    Bitstream_Framenum++;
-    Sequence_Framenum++;
-  }
-
-  /* loop through the rest of the pictures in the sequence */
-  while ((Return_Value = Headers()))
-  {
-    Decode_Picture(Bitstream_Framenum, Sequence_Framenum);
-
-    if (!Second_Field)
     {
       Bitstream_Framenum++;
       Sequence_Framenum++;
     }
-  }
+
+  /* loop through the rest of the pictures in the sequence */
+  while ((Return_Value = Headers()))
+    {
+      Decode_Picture(Bitstream_Framenum, Sequence_Framenum);
+
+      if (!Second_Field)
+        {
+          Bitstream_Framenum++;
+          Sequence_Framenum++;
+        }
+    }
 
   /* put last frame */
   if (Sequence_Framenum != 0)
-  {
-    Output_Last_Frame_of_Sequence(Bitstream_Framenum);
-  }
+    {
+      Output_Last_Frame_of_Sequence(Bitstream_Framenum);
+    }
 
   Deinitialize_Sequence();
 

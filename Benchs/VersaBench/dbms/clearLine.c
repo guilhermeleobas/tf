@@ -21,18 +21,18 @@
  *              Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include <stdio.h>          /* for FILE and fgetc() definitions */
+#include <stdio.h> /* for FILE and fgetc() definitions */
 #include "dataManagement.h" /* for primitive data types         */
 
 void clearLine(FILE *file)
-{        /* begin clearLine() */
+{ /* begin clearLine() */
   Int c; /* temporary character read from file */
 
   c = fgetc(file);
   while (c != EOF && c != '\n' && c != '\r')
-  {
-    c = fgetc(file);
-  } /*  end loop while ( c != EOF, etc. */
+    {
+      c = fgetc(file);
+    } /*  end loop while ( c != EOF, etc. */
 
   return;
 } /* end of clearLine() */

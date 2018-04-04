@@ -40,61 +40,61 @@ precision d;
 
   (void)pparm(d);
   if (p == 2)
-  {
-    if (peven(d))
     {
-      pset(&k, phalf(d));
-      if (peven(k))
-      {
-        res = 2.0 / 3.0 + pfKnuthEx28(2, k) / 2.0; /* eliminate powers of 2 */
-      }
-      else
-      {                  /* until only one 2 left in d. */
-        res = 1.0 / 3.0; /* independent of (the now odd) k. Wow! */
-      }
-    }
-    else
-    { /* d now odd */
-      pset(&k, phalf(d));
-      if (podd(k))
-      {
-        res = 1.0 / 3.0; /* f(2,4k+3): d%8 == 3 or 7 */
-      }
-      else
-      {
-        if (podd(phalf(k)))
+      if (peven(d))
         {
-          res = 2.0 / 3.0; /* f(2,8k+5): d%8 == 5 */
+          pset(&k, phalf(d));
+          if (peven(k))
+            {
+              res = 2.0 / 3.0 + pfKnuthEx28(2, k) / 2.0; /* eliminate powers of 2 */
+            }
+          else
+            { /* until only one 2 left in d. */
+              res = 1.0 / 3.0; /* independent of (the now odd) k. Wow! */
+            }
         }
-        else
-        {
-          res = 4.0 / 3.0; /* f(2,8k+1): d%8 == 1 */
+      else
+        { /* d now odd */
+          pset(&k, phalf(d));
+          if (podd(k))
+            {
+              res = 1.0 / 3.0; /* f(2,4k+3): d%8 == 3 or 7 */
+            }
+          else
+            {
+              if (podd(phalf(k)))
+                {
+                  res = 2.0 / 3.0; /* f(2,8k+5): d%8 == 5 */
+                }
+              else
+                {
+                  res = 4.0 / 3.0; /* f(2,8k+1): d%8 == 1 */
+                }
+            }
         }
-      }
     }
-  }
   else
-  { /* PART 3: p odd, d could still be even (OK) */
-    pset(&k, utop(p));
-    if
-      peq(ppowmod(d, phalf(psub(k, pone)), k), pone)
-      {
-        res =
-            (float)(p + p) / (((float)p) * p - 1.0); /* beware int overflow! */
-      }
-    else
-    {
-      res = 0.0;
+    { /* PART 3: p odd, d could still be even (OK) */
+      pset(&k, utop(p));
+      if
+        peq(ppowmod(d, phalf(psub(k, pone)), k), pone)
+        {
+          res =
+              (float)(p + p) / (((float)p) * p - 1.0); /* beware int overflow! */
+        }
+      else
+        {
+          res = 0.0;
+        }
     }
-  }
 
   pdestroy(k);
   pdestroy(d);
   if (debug > 1)
-  {
-    fprintf(stdout, "f(%u,", p);
-    fprintf(stdout, "d) = %9.7f\n", res);
-  }
+    {
+      fprintf(stdout, "f(%u,", p);
+      fprintf(stdout, "d) = %9.7f\n", res);
+    }
   return res;
 }
 
@@ -139,53 +139,53 @@ unsigned aborts, maxk;
   (void)pparm(n);
 
   for (k = 1; k < maxk; k++)
-  { /* maxk should best be m+m? */
-    if (debug)
-    {
-      fputs("kN = ", stdout);
-      fputp(stdout, pmul(utop(k), n));
-      putc('\n', stdout);
-    }
-    count = *m;
-    p = pfactorbase(n, k, &count, aborts);
-    if (p == (unsigned *)0)
-    {
-      fprintf(stderr, "couldn't compute factor base in findk\n");
-      exit(1);
-    }
+    { /* maxk should best be m+m? */
+      if (debug)
+        {
+          fputs("kN = ", stdout);
+          fputp(stdout, pmul(utop(k), n));
+          putc('\n', stdout);
+        }
+      count = *m;
+      p = pfactorbase(n, k, &count, aborts);
+      if (p == (unsigned *)0)
+        {
+          fprintf(stderr, "couldn't compute factor base in findk\n");
+          exit(1);
+        }
 
-    maxpm = p[count - 1];
+      maxpm = p[count - 1];
 
-    sum = 0.0;
-    primePtr = primes;
-    while (*primePtr <= maxpm)
-    {
-      sum += logf_((unsigned)*primePtr++, n, k);
-    }
-    sum -= log((double)k) * 0.5;
-    if (verbose > 2)
-    {
-      fprintf(stdout, "%u: %5.2f", k, sum);
-    }
-    if (debug)
-    {
-      fprintf(stdout, " log(k)/2=%5.2f", log((double)k) * 0.5);
-    }
-    if (verbose > 2)
-    {
-      fputs("\n", stdout);
-      fflush(stdout);
-    }
-    if (sum > max)
-    {
-      max = sum;
-      bestk = k;
-      bestcount = count;
-    }
+      sum = 0.0;
+      primePtr = primes;
+      while (*primePtr <= maxpm)
+        {
+          sum += logf_((unsigned)*primePtr++, n, k);
+        }
+      sum -= log((double)k) * 0.5;
+      if (verbose > 2)
+        {
+          fprintf(stdout, "%u: %5.2f", k, sum);
+        }
+      if (debug)
+        {
+          fprintf(stdout, " log(k)/2=%5.2f", log((double)k) * 0.5);
+        }
+      if (verbose > 2)
+        {
+          fputs("\n", stdout);
+          fflush(stdout);
+        }
+      if (sum > max)
+        {
+          max = sum;
+          bestk = k;
+          bestcount = count;
+        }
 #ifndef IGNOREFREE
-    free(p);
+      free(p);
 #endif
-  }
+    }
 
   *m = bestcount;
   pdestroy(n);
@@ -212,70 +212,70 @@ char *argv[];
   progName = *argv;
 
   while ((ch = getopt(argc, argv, "a:k:i:dv")) != EOF)
-  {
-    switch (ch)
     {
-      case 'a':
-        aborts = atoi(optarg);
-        break;
-      case 'k':
-        maxk = atoi(optarg);
-        break;
-      case 'i':
-        maxCount = atoi(optarg);
-        break;
-      case 'd':
-        debug++;
-        break;
-      case 'v':
-        verbose++;
-        break;
-      default:
-      usage:
-        fprintf(stderr,
-                "usage: %s [-dv] [-a aborts ] [-k maxk ] [-i maxCount ] n [[ m "
-                "] k ]\n",
-                progName);
-        return 1;
+      switch (ch)
+        {
+          case 'a':
+            aborts = atoi(optarg);
+            break;
+          case 'k':
+            maxk = atoi(optarg);
+            break;
+          case 'i':
+            maxCount = atoi(optarg);
+            break;
+          case 'd':
+            debug++;
+            break;
+          case 'v':
+            verbose++;
+            break;
+          default:
+          usage:
+            fprintf(stderr,
+                    "usage: %s [-dv] [-a aborts ] [-k maxk ] [-i maxCount ] n [[ m "
+                    "] k ]\n",
+                    progName);
+            return 1;
+        }
     }
-  }
   argc -= optind;
   argv += optind;
 
   if (argc < 1 || argc > 3)
-  {
-    goto usage;
-  }
+    {
+      goto usage;
+    }
 
   pset(&n, atop(*argv++));
   --argc;
   if (argc)
-  {
-    m = atoi(*argv++);
-    --argc;
-  }
+    {
+      m = atoi(*argv++);
+      --argc;
+    }
   if (argc)
-  {
-    k = atoi(*argv++);
-    --argc;
-  }
+    {
+      k = atoi(*argv++);
+      --argc;
+    }
 
   if (k == 0)
-  {
-    if (maxk == 0)
     {
-      maxk = m / 2 + 5;
+      if (maxk == 0)
+        {
+          maxk = m / 2 + 5;
+          if (verbose)
+            {
+              fprintf(stdout, "maxk = %u\n", maxk);
+            }
+        }
+      k = findk(n, &m, aborts, maxk);
       if (verbose)
-      {
-        fprintf(stdout, "maxk = %u\n", maxk);
-      }
+        {
+          fprintf(stdout, "k = %u\n", k);
+        }
     }
-    k = findk(n, &m, aborts, maxk);
-    if (verbose)
-    {
-      fprintf(stdout, "k = %u\n", k);
-    }
-  }
 
   count = maxCount;
 
@@ -284,26 +284,26 @@ char *argv[];
   pset(&f, pcfrac(n, &count));
   count = maxCount - count;
   if (verbose)
-  {
-    putc('\n', stdout);
-    fprintf(stdout, "Iterations     : %u\n", count);
-    fprintf(stdout, "Early Aborts   : %u\n", cfracNabort);
-    fprintf(stdout, "Total Partials : %u\n", cfracTsolns);
-    fprintf(stdout, "Used  Partials : %u\n", cfracT2solns);
-    fprintf(stdout, "Full Solutions : %u\n", cfracPsolns);
-    fprintf(stdout, "Factor Attempts: %u\n", cfracFsolns);
-  }
+    {
+      putc('\n', stdout);
+      fprintf(stdout, "Iterations     : %u\n", count);
+      fprintf(stdout, "Early Aborts   : %u\n", cfracNabort);
+      fprintf(stdout, "Total Partials : %u\n", cfracTsolns);
+      fprintf(stdout, "Used  Partials : %u\n", cfracT2solns);
+      fprintf(stdout, "Full Solutions : %u\n", cfracPsolns);
+      fprintf(stdout, "Factor Attempts: %u\n", cfracFsolns);
+    }
 
   if (f != pUndef)
-  {
-    fputp(stdout, n);
-    fputs(" = ", stdout);
-    fputp(stdout, f);
-    fputs(" * ", stdout);
-    pdivmod(n, f, &n, pNull);
-    fputp(stdout, n);
-    putc('\n', stdout);
-  }
+    {
+      fputp(stdout, n);
+      fputs(" = ", stdout);
+      fputp(stdout, f);
+      fputs(" * ", stdout);
+      pdivmod(n, f, &n, pNull);
+      fputp(stdout, n);
+      putc('\n', stdout);
+    }
 
   pdestroy(f);
   pdestroy(n);

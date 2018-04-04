@@ -150,55 +150,55 @@ int zdefinefont(register ref *op)
   check_op(2);
   check_type(*op, t_dictionary);
   if (dict_find(dstack, &name_FontDirectory, &pFontDirectory) <= 0)
-  {
-    return e_invalidfont; /* no FontDirectory?? */
-  }
+    {
+      return e_invalidfont; /* no FontDirectory?? */
+    }
   if (dict_find(op, &name_FontMatrix, &pmatrix) <= 0 ||
       dict_find(op, &name_FontType, &ptype) <= 0 ||
       r_type(ptype) != t_integer || (ulong)(ptype->value.intval) > 255 ||
       dict_find(op, &name_FontBBox, &pbbox) <= 0 ||
       dict_find(op, &name_Encoding, &pencoding) <= 0 ||
       read_matrix(pmatrix, &mat) < 0)
-  {
-    return e_invalidfont;
-  }
-  check_array_else(*pbbox, e_invalidfont);
-  check_array_else(*pencoding, e_invalidfont);
-  if (pbbox->size != 4 || num_params(pbbox->value.refs + 3, 4, bbox) < 0)
-  {
-    return e_invalidfont;
-  }
-  /* If no PaintType entry, set the paint_type member to -1. */
-  if (dict_find(op, &name_PaintType, &ppainttype) <= 0)
-  {
-    paint_type = -1;
-  }
-  else
-  {
-    if (r_type(ppainttype) != t_integer || ppainttype->value.intval < 0 ||
-        ppainttype->value.intval > 0xffff)
     {
       return e_invalidfont;
     }
-    paint_type = (int)ppainttype->value.intval;
-  }
+  check_array_else(*pbbox, e_invalidfont);
+  check_array_else(*pencoding, e_invalidfont);
+  if (pbbox->size != 4 || num_params(pbbox->value.refs + 3, 4, bbox) < 0)
+    {
+      return e_invalidfont;
+    }
+  /* If no PaintType entry, set the paint_type member to -1. */
+  if (dict_find(op, &name_PaintType, &ppainttype) <= 0)
+    {
+      paint_type = -1;
+    }
+  else
+    {
+      if (r_type(ppainttype) != t_integer || ppainttype->value.intval < 0 ||
+          ppainttype->value.intval > 0xffff)
+        {
+          return e_invalidfont;
+        }
+      paint_type = (int)ppainttype->value.intval;
+    }
   /* If no UniqueID entry, set the unique_id member to -1, */
   /* because the specifications say UniqueID need not be */
   /* present in all fonts -- and if it is, the legal range */
   /* is 0 to 2^24-1.  */
   if (dict_find(op, &name_UniqueID, &puniqueid) <= 0)
-  {
-    unique_id = -1;
-  }
-  else
-  {
-    if (r_type(puniqueid) != t_integer || puniqueid->value.intval < 0 ||
-        puniqueid->value.intval > ((1L << 24) - 1))
     {
-      return e_invalidfont;
+      unique_id = -1;
     }
-    unique_id = puniqueid->value.intval;
-  }
+  else
+    {
+      if (r_type(puniqueid) != t_integer || puniqueid->value.intval < 0 ||
+          puniqueid->value.intval > ((1L << 24) - 1))
+        {
+          return e_invalidfont;
+        }
+      unique_id = puniqueid->value.intval;
+    }
   /* In contrast to what is stated (or at least implied) in */
   /* the PostScript manual, every font in GhostScript, */
   /* other than type 1 fonts, must have a BuildChar procedure. */
@@ -208,110 +208,110 @@ int zdefinefont(register ref *op)
   make_null(&no_charstrings);
   pcharstrings = &no_charstrings;
   if (ptype->value.intval == 1)
-  {
-    ref *pprivate;
-    ref *plenIV;
-    if (code > 0 || dict_find(op, &name_CharStrings, &pcharstrings) <= 0 ||
-        r_type(pcharstrings) != t_dictionary ||
-        dict_find(op, &name_Private, &pprivate) <= 0 ||
-        r_type(pprivate) != t_dictionary)
     {
-      return e_invalidfont;
-    }
-    if (dict_find(pprivate, &name_Subrs, &psubrs) > 0)
-    {
-      check_array_else(*psubrs, e_invalidfont);
-    }
-    if (dict_find(pprivate, &name_lenIV, &plenIV) > 0)
-    {
-      if (r_type(plenIV) != t_integer ||
-          (ulong)(plenIV->value.intval) > 255 /* arbitrary */
+      ref *pprivate;
+      ref *plenIV;
+      if (code > 0 || dict_find(op, &name_CharStrings, &pcharstrings) <= 0 ||
+          r_type(pcharstrings) != t_dictionary ||
+          dict_find(op, &name_Private, &pprivate) <= 0 ||
+          r_type(pprivate) != t_dictionary)
+        {
+          return e_invalidfont;
+        }
+      if (dict_find(pprivate, &name_Subrs, &psubrs) > 0)
+        {
+          check_array_else(*psubrs, e_invalidfont);
+        }
+      if (dict_find(pprivate, &name_lenIV, &plenIV) > 0)
+        {
+          if (r_type(plenIV) != t_integer ||
+              (ulong)(plenIV->value.intval) > 255 /* arbitrary */
           )
-      {
-        return e_invalidfont;
-      }
-      lenIV = plenIV->value.intval;
+            {
+              return e_invalidfont;
+            }
+          lenIV = plenIV->value.intval;
+        }
+      else
+        {
+          lenIV = default_lenIV;
+        }
+      /* Check that the UniqueIDs match.  This is part of the */
+      /* Adobe protection scheme, but we may as well emulate it. */
+      if (unique_id >= 0)
+        {
+          if (dict_find(pprivate, &name_UniqueID, &puniqueid) <= 0 ||
+              r_type(puniqueid) != t_integer ||
+              puniqueid->value.intval != unique_id)
+            {
+              unique_id = -1;
+            }
+        }
+      pbuildchar = &name_Type1BuildChar;
+      r_set_attrs(pbuildchar, a_executable);
     }
-    else
-    {
-      lenIV = default_lenIV;
-    }
-    /* Check that the UniqueIDs match.  This is part of the */
-    /* Adobe protection scheme, but we may as well emulate it. */
-    if (unique_id >= 0)
-    {
-      if (dict_find(pprivate, &name_UniqueID, &puniqueid) <= 0 ||
-          r_type(puniqueid) != t_integer ||
-          puniqueid->value.intval != unique_id)
-      {
-        unique_id = -1;
-      }
-    }
-    pbuildchar = &name_Type1BuildChar;
-    r_set_attrs(pbuildchar, a_executable);
-  }
   else /* not type 1 */
-  {
-    if (code <= 0)
     {
-      return e_invalidfont;
+      if (code <= 0)
+        {
+          return e_invalidfont;
+        }
+      check_proc(*pbuildchar);
     }
-    check_proc(*pbuildchar);
-  }
   code = dict_find(op, &name_FID, &pfid);
   if (r_attrs(op) & a_write)
-  { /* Assume this is a new font */
-    gs_font *pfont;
-    font_data *pdata;
-    if (code > 0)
-    {
-      return e_invalidfont; /* has FID already */
+    { /* Assume this is a new font */
+      gs_font *pfont;
+      font_data *pdata;
+      if (code > 0)
+        {
+          return e_invalidfont; /* has FID already */
+        }
+      if ((pfont = (gs_font *)alloc(1, sizeof(gs_font), "definefont(font)")) ==
+              0 ||
+          (pdata =
+               (font_data *)alloc(1, sizeof(font_data), "definefont(data)")) == 0)
+        {
+          return e_VMerror;
+        }
+      if ((code = add_FID(op, pfont)) < 0)
+        {
+          return code;
+        }
+      store_i(&pdata->dict, op);
+      store_i(&pdata->BuildChar, pbuildchar);
+      store_i(&pdata->Encoding, pencoding);
+      store_i(&pdata->CharStrings, pcharstrings);
+      store_i(&pdata->Subrs, psubrs);
+      pdata->type1_data.subr_proc = z1_subr_proc;
+      pdata->type1_data.pop_proc = z1_pop_proc;
+      pdata->type1_data.proc_data = (char *)pdata;
+      pdata->type1_data.lenIV = lenIV;
+      pfont->base = pfont;
+      pfont->dir = ifont_dir;
+      pfont->client_data = (char *)pdata;
+      pfont->matrix = mat;
+      pfont->font_type = ptype->value.intval;
+      pfont->xmin = bbox[0];
+      pfont->ymin = bbox[1];
+      pfont->xmax = bbox[2];
+      pfont->ymax = bbox[3];
+      pfont->build_char_proc = gs_no_build_char_proc;
+      pfont->paint_type = paint_type;
+      pfont->unique_id = unique_id;
     }
-    if ((pfont = (gs_font *)alloc(1, sizeof(gs_font), "definefont(font)")) ==
-            0 ||
-        (pdata =
-             (font_data *)alloc(1, sizeof(font_data), "definefont(data)")) == 0)
-    {
-      return e_VMerror;
+  else
+    { /* Assume this was made by makefont or scalefont */
+      if (code <= 0)
+        {
+          return e_invalidfont; /* no FID */
+        }
     }
-    if ((code = add_FID(op, pfont)) < 0)
+  r_clear_attrs(op, a_write); /****** SHOULD ALTER DICT ACCESS ******/
+  if ((code = dict_put(pFontDirectory, op - 1, op)) < 0)
     {
       return code;
     }
-    store_i(&pdata->dict, op);
-    store_i(&pdata->BuildChar, pbuildchar);
-    store_i(&pdata->Encoding, pencoding);
-    store_i(&pdata->CharStrings, pcharstrings);
-    store_i(&pdata->Subrs, psubrs);
-    pdata->type1_data.subr_proc = z1_subr_proc;
-    pdata->type1_data.pop_proc = z1_pop_proc;
-    pdata->type1_data.proc_data = (char *)pdata;
-    pdata->type1_data.lenIV = lenIV;
-    pfont->base = pfont;
-    pfont->dir = ifont_dir;
-    pfont->client_data = (char *)pdata;
-    pfont->matrix = mat;
-    pfont->font_type = ptype->value.intval;
-    pfont->xmin = bbox[0];
-    pfont->ymin = bbox[1];
-    pfont->xmax = bbox[2];
-    pfont->ymax = bbox[3];
-    pfont->build_char_proc = gs_no_build_char_proc;
-    pfont->paint_type = paint_type;
-    pfont->unique_id = unique_id;
-  }
-  else
-  { /* Assume this was made by makefont or scalefont */
-    if (code <= 0)
-    {
-      return e_invalidfont; /* no FID */
-    }
-  }
-  r_clear_attrs(op, a_write); /****** SHOULD ALTER DICT ACCESS ******/
-  if ((code = dict_put(pFontDirectory, op - 1, op)) < 0)
-  {
-    return code;
-  }
   op[-1] = *op;
   pop(1);
   return 0;
@@ -324,13 +324,13 @@ int zscalefont(register ref *op)
   float scale;
   gs_matrix mat;
   if ((code = num_params(op, 1, &scale)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   if ((code = gs_make_scaling(scale, scale, &mat)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   return make_font(op, &mat);
 }
 
@@ -340,9 +340,9 @@ int zmakefont(register ref *op)
   int code;
   gs_matrix mat;
   if ((code = read_matrix(op, &mat)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   return make_font(op, &mat);
 }
 
@@ -352,9 +352,9 @@ int zsetfont(register ref *op)
   gs_font *pfont;
   int code = font_param(op, &pfont);
   if (code < 0 || (code = gs_setfont(igs, pfont)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   istate.font = *op;
   pop(1);
   return code;
@@ -384,14 +384,14 @@ int zsetcachelimit(register ref *op)
   int code = num_params(op, 1, (float *)0);
   long limit;
   if (code != 1)
-  {
-    return (code < 0 ? code : e_typecheck);
-  }
+    {
+      return (code < 0 ? code : e_typecheck);
+    }
   limit = op->value.intval;
   if (limit < 0 || limit > max_uint)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   gs_setcachelimit(ifont_dir, (uint)limit);
   pop(1);
   return 0;
@@ -403,34 +403,34 @@ int zsetcacheparams(register ref *op)
   uint params[2];
   int i, code;
   for (i = 0; i < 2 && r_type(op - i) != t_mark; i++)
-  {
-    long parm;
-    code = num_params(op - i, 1, (float *)0);
-    if (code != 1)
     {
-      return (code < 0 ? code : e_typecheck);
+      long parm;
+      code = num_params(op - i, 1, (float *)0);
+      if (code != 1)
+        {
+          return (code < 0 ? code : e_typecheck);
+        }
+      parm = op[-i].value.intval;
+      if (parm < 0 || parm > max_uint)
+        {
+          return e_rangecheck;
+        }
+      params[i] = parm;
     }
-    parm = op[-i].value.intval;
-    if (parm < 0 || parm > max_uint)
-    {
-      return e_rangecheck;
-    }
-    params[i] = parm;
-  }
   switch (i)
-  {
-    case 2:
-      if ((code = gs_setcachelower(ifont_dir, params[1])) < 0)
-      {
-        return code;
-      }
-    case 1:
-      if ((code = gs_setcacheupper(ifont_dir, params[0])) < 0)
-      {
-        return code;
-      }
-    case 0:;
-  }
+    {
+      case 2:
+        if ((code = gs_setcachelower(ifont_dir, params[1])) < 0)
+          {
+            return code;
+          }
+      case 1:
+        if ((code = gs_setcacheupper(ifont_dir, params[0])) < 0)
+          {
+            return code;
+          }
+      case 0:;
+    }
   return zcleartomark(op);
 }
 
@@ -474,14 +474,14 @@ int font_param(ref *fp, gs_font **pfont)
   int code;
   check_type(*fp, t_dictionary);
   if ((code = dict_find(fp, &name_FID, &pid)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   *pfont = pid->value.pfont;
   if (*pfont == 0)
-  {
-    return e_invalidfont; /* unregistered font */
-  }
+    {
+      return e_invalidfont; /* unregistered font */
+    }
   return 0;
 }
 
@@ -510,13 +510,13 @@ int make_font(ref *op, gs_matrix *pmat)
       (code = dict_copy(fp, &newdict)) < 0 || (code = zarray(&newmat)) < 0 ||
       (code = dict_put(&newdict, &name_FontMatrix, &newmat)) < 0 ||
       (code = add_FID(&newdict, newfont)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   *(gs_matrix *)(newmat.value.refs) = newfont->matrix;
   if (ffont)
-  { /****** SHOULD DECREMENT REFCT ******/
-  }
+    { /****** SHOULD DECREMENT REFCT ******/
+    }
   *fp = newdict;
   r_clear_attrs(fp, a_write); /****** SHOULD SET DICT ACCESS ******/
   pop(1);
@@ -529,7 +529,7 @@ void make_uint_array(register ref *op, uint *intp, int count)
 {
   int i;
   for (i = 0; i < count; i++, op++, intp++)
-  {
-    make_int(op, *intp);
-  }
+    {
+      make_int(op, *intp);
+    }
 }

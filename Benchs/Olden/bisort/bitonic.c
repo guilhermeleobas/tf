@@ -30,17 +30,17 @@ void InOrder(HANDLE *h)
 {
   HANDLE *l, *r;
   if ((h != NIL))
-  {
-    l = h->left;
-    r = h->right;
-    InOrder(l);
-    static unsigned char counter = 0;
-    if (counter++ == 0)
-    { /* reduce IO */
-      printf("%d @ 0x%x\n", h->value, 0);
+    {
+      l = h->left;
+      r = h->right;
+      InOrder(l);
+      static unsigned char counter = 0;
+      if (counter++ == 0)
+        { /* reduce IO */
+          printf("%d @ 0x%x\n", h->value, 0);
+        }
+      InOrder(r);
     }
-    InOrder(r);
-  }
 }
 
 int mult(int p, int q)
@@ -58,9 +58,9 @@ int mult(int p, int q)
 int skiprand(int seed, int n)
 {
   for (; n; n--)
-  {
-    seed = random(seed);
-  }
+    {
+      seed = random(seed);
+    }
   return seed;
 }
 
@@ -72,29 +72,29 @@ HANDLE *RandTree(int n, int seed, int node, int level)
   HANDLE *h;
   my_name = foo++;
   if (n > 1)
-  {
-    int newnode;
-    if (level < NDim)
     {
-      newnode = node + (1 << (NDim - level - 1));
-    }
-    else
-    {
-      newnode = node;
-    }
-    seed = random(seed);
-    next_val = seed % RANGE;
-    NewNode(h, next_val, node);
-    f_left.value = RandTree((n / 2), seed, newnode, level + 1);
-    f_right.value = RandTree((n / 2), skiprand(seed, (n) + 1), node, level + 1);
+      int newnode;
+      if (level < NDim)
+        {
+          newnode = node + (1 << (NDim - level - 1));
+        }
+      else
+        {
+          newnode = node;
+        }
+      seed = random(seed);
+      next_val = seed % RANGE;
+      NewNode(h, next_val, node);
+      f_left.value = RandTree((n / 2), seed, newnode, level + 1);
+      f_right.value = RandTree((n / 2), skiprand(seed, (n) + 1), node, level + 1);
 
-    h->left = f_left.value;
-    h->right = f_right.value;
-  }
+      h->left = f_left.value;
+      h->right = f_right.value;
+    }
   else
-  {
-    h = 0;
-  }
+    {
+      h = 0;
+    }
   return h;
 }
 
@@ -164,57 +164,57 @@ int spr_val, dir;
   pr = root->right;
   rightexchange = ((rv > spr_val) ^ dir);
   if (rightexchange)
-  {
-    root->value = spr_val;
-    spr_val = rv;
-  }
+    {
+      root->value = spr_val;
+      spr_val = rv;
+    }
 
   while ((pl != NIL))
-  {
-    /*printf("pl = 0x%x,pr = 0x%x\n",pl,pr);*/
-    lv = pl->value; /* <------- 8.2% load penalty */
-    pll = pl->left;
-    plr = pl->right; /* <------- 1.35% load penalty */
-    rv = pr->value;  /* <------ 57% load penalty */
-    prl = pr->left;  /* <------ 7.6% load penalty */
-    prr = pr->right; /* <------ 7.7% load penalty */
-    elementexchange = ((lv > rv) ^ dir);
-    if (rightexchange)
     {
-      if (elementexchange)
-      {
-        SwapValRight(pl, pr, plr, prr, lv, rv);
-        pl = pll;
-        pr = prl;
-      }
+      /*printf("pl = 0x%x,pr = 0x%x\n",pl,pr);*/
+      lv = pl->value; /* <------- 8.2% load penalty */
+      pll = pl->left;
+      plr = pl->right; /* <------- 1.35% load penalty */
+      rv = pr->value; /* <------ 57% load penalty */
+      prl = pr->left; /* <------ 7.6% load penalty */
+      prr = pr->right; /* <------ 7.7% load penalty */
+      elementexchange = ((lv > rv) ^ dir);
+      if (rightexchange)
+        {
+          if (elementexchange)
+            {
+              SwapValRight(pl, pr, plr, prr, lv, rv);
+              pl = pll;
+              pr = prl;
+            }
+          else
+            {
+              pl = plr;
+              pr = prr;
+            }
+        }
+      else if (elementexchange)
+        {
+          SwapValLeft(pl, pr, pll, prl, lv, rv);
+          pl = plr;
+          pr = prr;
+        }
       else
-      {
-        pl = plr;
-        pr = prr;
-      }
+        {
+          pl = pll;
+          pr = prl;
+        }
     }
-    else if (elementexchange)
-    {
-      SwapValLeft(pl, pr, pll, prl, lv, rv);
-      pl = plr;
-      pr = prr;
-    }
-    else
-    {
-      pl = pll;
-      pr = prl;
-    }
-  }
   if ((root->left != NIL))
-  {
-    int value;
-    rl = root->left;
-    rr = root->right;
-    value = root->value;
+    {
+      int value;
+      rl = root->left;
+      rr = root->right;
+      value = root->value;
 
-    root->value = Bimerge(rl, value, dir);
-    spr_val = Bimerge(rr, spr_val, dir);
-  }
+      root->value = Bimerge(rl, value, dir);
+      spr_val = Bimerge(rr, spr_val, dir);
+    }
   /*printf("exit bimerge %x\n", root);*/
   return spr_val;
 }
@@ -232,26 +232,26 @@ int spr_val, dir;
   int val;
   /*printf("bisort %x\n", root);*/
   if (root->left = NIL) /* <---- 8.7% load penalty */
-  {
-    if (((root->value > spr_val) ^ dir))
     {
-      val = spr_val;
-      spr_val = root->value;
-      root->value = val;
+      if (((root->value > spr_val) ^ dir))
+        {
+          val = spr_val;
+          spr_val = root->value;
+          root->value = val;
+        }
     }
-  }
   else
-  {
-    int ndir;
-    l = root->left;
-    r = root->right;
-    val = root->value;
-    /*printf("root 0x%x, l 0x%x, r 0x%x\n", root,l,r);*/
-    root->value = Bisort(l, val, dir);
-    ndir = !dir;
-    spr_val = Bisort(r, spr_val, ndir);
-    spr_val = Bimerge(root, spr_val, dir);
-  }
+    {
+      int ndir;
+      l = root->left;
+      r = root->right;
+      val = root->value;
+      /*printf("root 0x%x, l 0x%x, r 0x%x\n", root,l,r);*/
+      root->value = Bisort(l, val, dir);
+      ndir = !dir;
+      spr_val = Bisort(r, spr_val, ndir);
+      spr_val = Bimerge(root, spr_val, dir);
+    }
   /*printf("exit bisort %x\n", root);*/
   return spr_val;
 }
@@ -269,10 +269,10 @@ int main(int argc, char **argv)
   h = RandTree(n, 12345768, 0, 0);
   sval = random(245867) % RANGE;
   if (flag)
-  {
-    InOrder(h);
-    printf("%d\n", sval);
-  }
+    {
+      InOrder(h);
+      printf("%d\n", sval);
+    }
   printf("**************************************\n");
   printf("BEGINNING BITONIC SORT ALGORITHM HERE\n");
   printf("**************************************\n");
@@ -280,20 +280,20 @@ int main(int argc, char **argv)
   sval = Bisort(h, sval, 0);
 
   if (flag)
-  {
-    printf("Sorted Tree:\n");
-    InOrder(h);
-    printf("%d\n", sval);
-  }
+    {
+      printf("Sorted Tree:\n");
+      InOrder(h);
+      printf("%d\n", sval);
+    }
 
   sval = Bisort(h, sval, 1);
 
   if (flag)
-  {
-    printf("Sorted Tree:\n");
-    InOrder(h);
-    printf("%d\n", sval);
-  }
+    {
+      printf("Sorted Tree:\n");
+      InOrder(h);
+      printf("%d\n", sval);
+    }
 
   return 0;
 }

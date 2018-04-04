@@ -35,16 +35,16 @@ PTEXT ptalloc(void)
 {
   PTEXT vt;
   if (free1)
-  {
-    vt = free1;
-    free1 = free1->next;
-  }
+    {
+      vt = free1;
+      free1 = free1->next;
+    }
   else
-  {
-    vt = (PTEXT)malloc(sizeof(PTEXT_ST));
-    if (!vt) return (NULL);
-    ptext_max++;
-  }
+    {
+      vt = (PTEXT)malloc(sizeof(PTEXT_ST));
+      if (!vt) return (NULL);
+      ptext_max++;
+    }
   ptext_count++;
 
   /* nearly all parts are 0 [or NULL] */
@@ -83,9 +83,9 @@ void ptlfree(PTEXT vt)
   PTEXT nxt;
 
   while (vt != NULL)
-  {
-    nxt = vt->next;
-    ptfree(vt);
-    vt = nxt;
-  }
+    {
+      nxt = vt->next;
+      ptfree(vt);
+      vt = nxt;
+    }
 }

@@ -37,9 +37,9 @@ DLL *list_pop_tail(DLL *head)
 {
   DLL *prev, *tail;
   if (list_empty(head))
-  {
-    return (NULL);
-  }
+    {
+      return (NULL);
+    }
   tail = head->prev;
   prev = tail->prev;
   prev->next = head;
@@ -62,9 +62,9 @@ DLL *list_pop_head(DLL *head)
 {
   DLL *next;
   if (list_empty(head))
-  {
-    return (NULL);
-  }
+    {
+      return (NULL);
+    }
   next = head->next;
   head->next = next->next;
   next->next->prev = head;
@@ -77,16 +77,16 @@ int list_equal(DLL *x, DLL *y)
   DLL *xp, *yp;
   /* first val's checked will be list lengths */
   for (xp = x, yp = y; xp->next != x; xp = xp->next, yp = yp->next)
-  {
-    if (xp->val != yp->val)
+    {
+      if (xp->val != yp->val)
+        {
+          return (0);
+        }
+    }
+  if (xp->val != yp->val)
     {
       return (0);
     }
-  }
-  if (xp->val != yp->val)
-  {
-    return (0);
-  }
   return (yp->next == y);
 }
 
@@ -97,10 +97,10 @@ void list_print(char *msg, DLL *x)
   puts(msg);
   printf("length: %d\n", list_length(x));
   for (xp = x->next; xp->next != first; xp = xp->next)
-  {
-    printf("i:%3d  v:%3d  n:%3d  p:%3d\n", ++i, xp->val, xp->next->val,
-           xp->prev->val);
-  }
+    {
+      printf("i:%3d  v:%3d  n:%3d  p:%3d\n", ++i, xp->val, xp->next->val,
+             xp->prev->val);
+    }
   printf("[last entry points to list head]\n");
   printf("[val of next of tail is:  %d]\n", xp->next->val);
 }
@@ -120,20 +120,20 @@ DLL *list_sequence(int from, int to)
   int size, tmp, i, j;
   DLL *l;
   if (from > to)
-  {
-    tmp = from;
-    from = to;
-    to = tmp;
-  }
+    {
+      tmp = from;
+      from = to;
+      to = tmp;
+    }
   size = to - from + 1;
   l = (DLL *)malloc((size + 1) * sizeof(DLL));
   from--;
   for (i = 0, j = 1; i < size; ++i, ++j)
-  {
-    l[i].next = &l[i + 1];
-    l[j].prev = &l[j - 1];
-    l[i].val = from++;
-  }
+    {
+      l[i].next = &l[i + 1];
+      l[j].prev = &l[j - 1];
+      l[i].val = from++;
+    }
   l[0].prev = &l[size];
   l[size].next = &l[0];
   l[size].prev = &l[size - 1];
@@ -146,11 +146,11 @@ DLL *list_copy(DLL *x)
   int i, j, size = list_length(x);
   DLL *xp, *l = (DLL *)malloc((size + 1) * sizeof(DLL));
   for (i = 0, j = 1, xp = x; i < size; i++, j++, xp = xp->next)
-  {
-    l[i].next = &l[j];
-    l[j].prev = &l[i];
-    l[i].val = xp->val;
-  }
+    {
+      l[i].next = &l[j];
+      l[j].prev = &l[i];
+      l[i].val = xp->val;
+    }
   l[0].prev = &l[size];
   l[size].next = &l[0];
   l[size].val = list_last(x)->val;
@@ -161,12 +161,13 @@ void list_reverse(DLL *head)
 {
   DLL *tmp, *p = head;
   do
-  {
-    tmp = p->next;
-    p->next = p->prev;
-    p->prev = tmp;
-    p = tmp;
-  } while (p != head);
+    {
+      tmp = p->next;
+      p->next = p->prev;
+      p->prev = tmp;
+      p = tmp;
+    }
+  while (p != head);
 }
 
 int test_lists()
@@ -181,72 +182,72 @@ int test_lists()
   DLL *li3 = list_new();
   /* compare li2 and li1 for equality */
   if (!list_equal(li2, li1))
-  {
-    printf("li2 and li1 are not equal\n");
-    exit(1);
-  }
+    {
+      printf("li2 and li1 are not equal\n");
+      exit(1);
+    }
   while (!list_empty(li2))
-  {
-    list_push_tail(li3, list_pop_head(li2));
-  }
+    {
+      list_push_tail(li3, list_pop_head(li2));
+    }
   /* li2 must now be empty */
   if (!list_empty(li2))
-  {
-    printf("li2 should be empty now\n");
-    exit(1);
-  }
+    {
+      printf("li2 should be empty now\n");
+      exit(1);
+    }
   /* remove each individual item from right side of li3 and
      append to right side of li2 (reversing list) */
   while (!list_empty(li3))
-  {
-    list_push_tail(li2, list_pop_tail(li3));
-  }
+    {
+      list_push_tail(li2, list_pop_tail(li3));
+    }
   /* li3 must now be empty */
   if (!list_empty(li3))
-  {
-    printf("li3 should be empty now\n");
-    exit(1);
-  }
+    {
+      printf("li3 should be empty now\n");
+      exit(1);
+    }
   /* reverse li1 in place */
   list_reverse(li1);
   /* check that li1's first item is now SIZE */
   if (list_first(li1)->val != SIZE)
-  {
-    printf("li1 first value wrong, wanted %d, got %d\n", SIZE,
-           list_first(li1)->val);
-    exit(1);
-  }
+    {
+      printf("li1 first value wrong, wanted %d, got %d\n", SIZE,
+             list_first(li1)->val);
+      exit(1);
+    }
   /* check that li1's last item is now 1 */
   if (list_last(li1)->val != 1)
-  {
-    printf("last value wrong, wanted %d, got %d\n", SIZE, list_last(li1)->val);
-    exit(1);
-  }
+    {
+      printf("last value wrong, wanted %d, got %d\n", SIZE, list_last(li1)->val);
+      exit(1);
+    }
   /* check that li2's first item is now SIZE */
   if (list_first(li2)->val != SIZE)
-  {
-    printf("li2 first value wrong, wanted %d, got %d\n", SIZE,
-           list_first(li2)->val);
-    exit(1);
-  }
+    {
+      printf("li2 first value wrong, wanted %d, got %d\n", SIZE,
+             list_first(li2)->val);
+      exit(1);
+    }
   /* check that li2's last item is now 1 */
   if (list_last(li2)->val != 1)
-  {
-    printf("last value wrong, wanted %d, got %d\n", SIZE, list_last(li2)->val);
-    exit(1);
-  }
+    {
+      printf("last value wrong, wanted %d, got %d\n", SIZE, list_last(li2)->val);
+      exit(1);
+    }
   /* check that li1's length is still SIZE */
   if (list_length(li1) != SIZE)
-  {
-    printf("li1 size wrong, wanted %d, got %d\n", SIZE, list_length(li1));
-    exit(1);
-  }
+    {
+      printf("li1 size wrong, wanted %d, got %d\n", SIZE, list_length(li1));
+      exit(1);
+    }
   /* compare li1 and li2 for equality */
   if (!list_equal(li1, li2))
-  {
-    printf("li1 and li2 are not equal\n");
-    exit(1);
-  }
+    {
+      printf("li1 and li2 are not equal\n");
+      exit(1);
+    }
   len = list_length(li1);
   free(li1);
   free(li2);
@@ -265,9 +266,9 @@ int main(int argc, char *argv[])
   int n = ((argc == 2) ? atoi(argv[1]) : LENGTH);
   int result = 0;
   while (n--)
-  {
-    result = test_lists();
-  }
+    {
+      result = test_lists();
+    }
   printf("%d\n", result);
   return 0;
 }

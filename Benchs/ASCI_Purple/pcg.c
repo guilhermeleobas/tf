@@ -102,22 +102,22 @@ int hypre_PCGDestroy(void *pcg_vdata)
   int ierr = 0;
 
   if (pcg_data)
-  {
-    if ((pcg_data->logging) > 0)
     {
-      hypre_TFreeF(pcg_data->norms, pcg_functions);
-      hypre_TFreeF(pcg_data->rel_norms, pcg_functions);
+      if ((pcg_data->logging) > 0)
+        {
+          hypre_TFreeF(pcg_data->norms, pcg_functions);
+          hypre_TFreeF(pcg_data->rel_norms, pcg_functions);
+        }
+
+      (*(pcg_functions->MatvecDestroy))(pcg_data->matvec_data);
+
+      (*(pcg_functions->DestroyVector))(pcg_data->p);
+      (*(pcg_functions->DestroyVector))(pcg_data->s);
+      (*(pcg_functions->DestroyVector))(pcg_data->r);
+
+      hypre_TFreeF(pcg_data, pcg_functions);
+      hypre_TFreeF(pcg_functions, pcg_functions);
     }
-
-    (*(pcg_functions->MatvecDestroy))(pcg_data->matvec_data);
-
-    (*(pcg_functions->DestroyVector))(pcg_data->p);
-    (*(pcg_functions->DestroyVector))(pcg_data->s);
-    (*(pcg_functions->DestroyVector))(pcg_data->r);
-
-    hypre_TFreeF(pcg_data, pcg_functions);
-    hypre_TFreeF(pcg_functions, pcg_functions);
-  }
 
   return (ierr);
 }
@@ -156,10 +156,10 @@ int hypre_PCGSetup(void *pcg_vdata, void *A, void *b, void *x)
    *-----------------------------------------------------*/
 
   if ((pcg_data->logging) > 0)
-  {
-    (pcg_data->norms) = hypre_CTAllocF(double, max_iter + 1, pcg_functions);
-    (pcg_data->rel_norms) = hypre_CTAllocF(double, max_iter + 1, pcg_functions);
-  }
+    {
+      (pcg_data->norms) = hypre_CTAllocF(double, max_iter + 1, pcg_functions);
+      (pcg_data->rel_norms) = hypre_CTAllocF(double, max_iter + 1, pcg_functions);
+    }
 
   return ierr;
 }
@@ -233,38 +233,38 @@ int hypre_PCGSolve(void *pcg_vdata, void *A, void *b, void *x)
 
   /* compute eps */
   if (two_norm)
-  {
-    /* bi_prod = <b,b> */
-    bi_prod = (*(pcg_functions->InnerProd))(b, b);
-  }
+    {
+      /* bi_prod = <b,b> */
+      bi_prod = (*(pcg_functions->InnerProd))(b, b);
+    }
   else
-  {
-    /* bi_prod = <C*b,b> */
-    (*(pcg_functions->ClearVector))(p);
-    precond(precond_data, A, b, p);
-    bi_prod = (*(pcg_functions->InnerProd))(p, b);
-  };
+    {
+      /* bi_prod = <C*b,b> */
+      (*(pcg_functions->ClearVector))(p);
+      precond(precond_data, A, b, p);
+      bi_prod = (*(pcg_functions->InnerProd))(p, b);
+    };
 
   eps = tol * tol;
   if (bi_prod > 0.0)
-  {
-    if (stop_crit && !rel_change)
-    { /* absolute tolerance */
-      eps = eps / bi_prod;
-    }
-  }
-  else /* bi_prod==0.0: the rhs vector b is zero */
-  {
-    /* Set x equal to zero and return */
-    (*(pcg_functions->CopyVector))(b, x);
-    if (logging > 0)
     {
-      norms[0] = 0.0;
-      rel_norms[i] = 0.0;
+      if (stop_crit && !rel_change)
+        { /* absolute tolerance */
+          eps = eps / bi_prod;
+        }
     }
-    ierr = 0;
-    return ierr;
-  };
+  else /* bi_prod==0.0: the rhs vector b is zero */
+    {
+      /* Set x equal to zero and return */
+      (*(pcg_functions->CopyVector))(b, x);
+      if (logging > 0)
+        {
+          norms[0] = 0.0;
+          rel_norms[i] = 0.0;
+        }
+      ierr = 0;
+      return ierr;
+    };
 
   /* r = b - Ax */
   (*(pcg_functions->CopyVector))(b, r);
@@ -272,13 +272,13 @@ int hypre_PCGSolve(void *pcg_vdata, void *A, void *b, void *x)
 
   /* Set initial residual norm */
   if (logging > 0 || cf_tol > 0.0)
-  {
-    i_prod_0 = (*(pcg_functions->InnerProd))(r, r);
-    if (logging > 0)
     {
-      norms[0] = sqrt(i_prod_0);
+      i_prod_0 = (*(pcg_functions->InnerProd))(r, r);
+      if (logging > 0)
+        {
+          norms[0] = sqrt(i_prod_0);
+        }
     }
-  }
 
   /* p = C*r */
   (*(pcg_functions->ClearVector))(p);
@@ -288,39 +288,39 @@ int hypre_PCGSolve(void *pcg_vdata, void *A, void *b, void *x)
   gamma = (*(pcg_functions->InnerProd))(r, p);
 
   while ((i + 1) <= max_iter)
-  {
-    i++;
-
-    /* s = A*p */
-    (*(pcg_functions->Matvec))(matvec_data, 1.0, A, p, 0.0, s);
-
-    /* alpha = gamma / <s,p> */
-    alpha = gamma / (*(pcg_functions->InnerProd))(s, p);
-
-    gamma_old = gamma;
-
-    /* x = x + alpha*p */
-    (*(pcg_functions->Axpy))(alpha, p, x);
-
-    /* r = r - alpha*s */
-    (*(pcg_functions->Axpy))(-alpha, s, r);
-
-    /* s = C*r */
-    (*(pcg_functions->ClearVector))(s);
-    precond(precond_data, A, r, s);
-
-    /* gamma = <r,s> */
-    gamma = (*(pcg_functions->InnerProd))(r, s);
-
-    /* set i_prod for convergence test */
-    if (two_norm)
     {
-      i_prod = (*(pcg_functions->InnerProd))(r, r);
-    }
-    else
-    {
-      i_prod = gamma;
-    }
+      i++;
+
+      /* s = A*p */
+      (*(pcg_functions->Matvec))(matvec_data, 1.0, A, p, 0.0, s);
+
+      /* alpha = gamma / <s,p> */
+      alpha = gamma / (*(pcg_functions->InnerProd))(s, p);
+
+      gamma_old = gamma;
+
+      /* x = x + alpha*p */
+      (*(pcg_functions->Axpy))(alpha, p, x);
+
+      /* r = r - alpha*s */
+      (*(pcg_functions->Axpy))(-alpha, s, r);
+
+      /* s = C*r */
+      (*(pcg_functions->ClearVector))(s);
+      precond(precond_data, A, r, s);
+
+      /* gamma = <r,s> */
+      gamma = (*(pcg_functions->InnerProd))(r, s);
+
+      /* set i_prod for convergence test */
+      if (two_norm)
+        {
+          i_prod = (*(pcg_functions->InnerProd))(r, r);
+        }
+      else
+        {
+          i_prod = gamma;
+        }
 
 #if 0
       if (two_norm)
@@ -331,32 +331,32 @@ int hypre_PCGSolve(void *pcg_vdata, void *A, void *b, void *x)
                 i, sqrt(i_prod), (bi_prod ? sqrt(i_prod/bi_prod) : 0));
 #endif
 
-    /* log norm info */
-    if (logging > 0)
-    {
-      norms[i] = sqrt(i_prod);
-      rel_norms[i] = bi_prod ? sqrt(i_prod / bi_prod) : 0;
-    }
-
-    /* check for convergence */
-    if (i_prod / bi_prod < eps)
-    {
-      if (rel_change && i_prod > guard_zero_residual)
-      {
-        pi_prod = (*(pcg_functions->InnerProd))(p, p);
-        xi_prod = (*(pcg_functions->InnerProd))(x, x);
-        if ((alpha * alpha * pi_prod / xi_prod) < eps)
+      /* log norm info */
+      if (logging > 0)
         {
-          break;
+          norms[i] = sqrt(i_prod);
+          rel_norms[i] = bi_prod ? sqrt(i_prod / bi_prod) : 0;
         }
-      }
-      else
-      {
-        break;
-      }
-    }
 
-    /*--------------------------------------------------------------------
+      /* check for convergence */
+      if (i_prod / bi_prod < eps)
+        {
+          if (rel_change && i_prod > guard_zero_residual)
+            {
+              pi_prod = (*(pcg_functions->InnerProd))(p, p);
+              xi_prod = (*(pcg_functions->InnerProd))(x, x);
+              if ((alpha * alpha * pi_prod / xi_prod) < eps)
+                {
+                  break;
+                }
+            }
+          else
+            {
+              break;
+            }
+        }
+
+      /*--------------------------------------------------------------------
      * Optional test to see if adequate progress is being made.
      * The average convergence factor is recorded and compared
      * against the tolerance 'cf_tol'. The weighting factor is
@@ -364,31 +364,31 @@ int hypre_PCGSolve(void *pcg_vdata, void *A, void *b, void *x)
      * estimate for average convergence factor is available.
      *--------------------------------------------------------------------*/
 
-    if (cf_tol > 0.0)
-    {
-      cf_ave_0 = cf_ave_1;
-      cf_ave_1 = pow(i_prod / i_prod_0, 1.0 / (2.0 * i));
+      if (cf_tol > 0.0)
+        {
+          cf_ave_0 = cf_ave_1;
+          cf_ave_1 = pow(i_prod / i_prod_0, 1.0 / (2.0 * i));
 
-      weight = fabs(cf_ave_1 - cf_ave_0);
-      weight = weight / max(cf_ave_1, cf_ave_0);
-      weight = 1.0 - weight;
+          weight = fabs(cf_ave_1 - cf_ave_0);
+          weight = weight / max(cf_ave_1, cf_ave_0);
+          weight = 1.0 - weight;
 #if 0
          printf("I = %d: cf_new = %e, cf_old = %e, weight = %e\n",
                 i, cf_ave_1, cf_ave_0, weight );
 #endif
-      if (weight * cf_ave_1 > cf_tol)
-      {
-        break;
-      }
+          if (weight * cf_ave_1 > cf_tol)
+            {
+              break;
+            }
+        }
+
+      /* beta = gamma / gamma_old */
+      beta = gamma / gamma_old;
+
+      /* p = s + beta p */
+      (*(pcg_functions->ScaleVector))(beta, p);
+      (*(pcg_functions->Axpy))(1.0, s, p);
     }
-
-    /* beta = gamma / gamma_old */
-    beta = gamma / gamma_old;
-
-    /* p = s + beta p */
-    (*(pcg_functions->ScaleVector))(beta, p);
-    (*(pcg_functions->Axpy))(1.0, s, p);
-  }
 
 #if 0
    if (two_norm)
@@ -399,7 +399,7 @@ int hypre_PCGSolve(void *pcg_vdata, void *A, void *b, void *x)
              i, sqrt(i_prod), (bi_prod ? sqrt(i_prod/bi_prod) : 0));
 #endif
 
-/*-----------------------------------------------------------------------
+    /*-----------------------------------------------------------------------
  * Print log
  *-----------------------------------------------------------------------*/
 
@@ -589,16 +589,16 @@ int hypre_PCGPrintLogging(void *pcg_vdata, int myid)
   int ierr = 0;
 
   if (myid == 0)
-  {
-    if (logging > 0)
     {
-      for (i = 0; i < num_iterations; i++)
-      {
-        printf("Residual norm[%d] = %e   ", i, norms[i]);
-        printf("Relative residual norm[%d] = %e\n", i, rel_norms[i]);
-      }
+      if (logging > 0)
+        {
+          for (i = 0; i < num_iterations; i++)
+            {
+              printf("Residual norm[%d] = %e   ", i, norms[i]);
+              printf("Relative residual norm[%d] = %e\n", i, rel_norms[i]);
+            }
+        }
     }
-  }
 
   return ierr;
 }
@@ -619,10 +619,10 @@ int hypre_PCGGetFinalRelativeResidualNorm(void *pcg_vdata,
   int ierr = -1;
 
   if (logging > 0)
-  {
-    *relative_residual_norm = rel_norms[num_iterations];
-    ierr = 0;
-  }
+    {
+      *relative_residual_norm = rel_norms[num_iterations];
+      ierr = 0;
+    }
 
   return ierr;
 }

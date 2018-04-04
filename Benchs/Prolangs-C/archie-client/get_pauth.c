@@ -60,39 +60,39 @@ PAUTH get_pauth(int type)
 #endif
 
   if (no_auth == NULL)
-  {
-    no_auth = &no_auth_st;
-    strcpy(no_auth->auth_type, "UNAUTHENTICATED");
+    {
+      no_auth = &no_auth_st;
+      strcpy(no_auth->auth_type, "UNAUTHENTICATED");
 
 /* find out who we are */
 #ifndef VMS
 #if defined(MSDOS) && !defined(OS2)
 #ifndef CUTCP
-    if (!getconf("general", "user", no_auth->authenticator, 250) ||
-        (strlen(no_auth->authenticator) == 0))
+      if (!getconf("general", "user", no_auth->authenticator, 250) ||
+          (strlen(no_auth->authenticator) == 0))
 #endif
-      strcpy(no_auth->authenticator, "nobody");
-#else  /* not MSDOS */
-    DISABLE_PFS(whoiampw = getpwuid(getuid()));
-    if (whoiampw == 0)
-      strcpy(no_auth->authenticator, "nobody");
-    else
-      strcpy(no_auth->authenticator, whoiampw->pw_name);
+        strcpy(no_auth->authenticator, "nobody");
+#else /* not MSDOS */
+      DISABLE_PFS(whoiampw = getpwuid(getuid()));
+      if (whoiampw == 0)
+        strcpy(no_auth->authenticator, "nobody");
+      else
+        strcpy(no_auth->authenticator, whoiampw->pw_name);
 #endif /* not MSDOS */
 #else
-    jpi_itemlist.buflen = sizeof(username);
-    jpi_itemlist.itmcod = JPI$_USERNAME;
-    jpi_itemlist.bufadr = &username;
-    jpi_itemlist.retlenadr = &usernamelen;
-    jpi_itemlist.null = 0;
-    if (SYS$GETJPI(0, 0, 0, &jpi_itemlist, 0, 0, 0) & 0x1)
-    {
-      username[usernamelen] = 0;
-      strcpy(no_auth->authenticator, username);
-    }
-    else
-      strcpy(no_auth->authenticator, "nobody");
+      jpi_itemlist.buflen = sizeof(username);
+      jpi_itemlist.itmcod = JPI$_USERNAME;
+      jpi_itemlist.bufadr = &username;
+      jpi_itemlist.retlenadr = &usernamelen;
+      jpi_itemlist.null = 0;
+      if (SYS$GETJPI(0, 0, 0, &jpi_itemlist, 0, 0, 0) & 0x1)
+        {
+          username[usernamelen] = 0;
+          strcpy(no_auth->authenticator, username);
+        }
+      else
+        strcpy(no_auth->authenticator, "nobody");
 #endif
-  }
+    }
   return (no_auth);
 }

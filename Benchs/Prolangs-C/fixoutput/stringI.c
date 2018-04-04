@@ -9,10 +9,10 @@ cc stringI.c lex.o -lm
 #define LEX_LEN_INCR 256
 #define PERROR_1 0
 
-char CH;      /* Current input Character */
+char CH; /* Current input Character */
 char *LEXEME; /* Input String */
 
-char *FRONT, *BACK;   /* FRONT and BACK characters of Input String*/
+char *FRONT, *BACK; /* FRONT and BACK characters of Input String*/
 unsigned LEX_LEN = 0; /* Size of the Input String Buffer */
 
 /* FORWORD function definitions */
@@ -24,11 +24,11 @@ void FLUSH(void)
 {
   /* reset buffer to correst size if necessary */
   if (LEX_LEN > LEX_LEN_INCR)
-  {
-    free(LEXEME);
-    LEX_LEN = LEX_LEN_INCR;
-    LEXEME = calloc(LEX_LEN, sizeof(CH));
-  }
+    {
+      free(LEXEME);
+      LEX_LEN = LEX_LEN_INCR;
+      LEXEME = calloc(LEX_LEN, sizeof(CH));
+    }
   /* Clear input string */
   *LEXEME = 0;
   /* reset pointers */
@@ -44,14 +44,14 @@ void GETCHR(void)
 
   /* expand buffer if needed */
   if (FRONT - BACK >= LEX_LEN - 3)
-  {
-    LEX_LEN = LEX_LEN + LEX_LEN_INCR;
-    TEMP = calloc(LEX_LEN, sizeof(CH));
-    for (I = 0; I < LEX_LEN - LEX_LEN_INCR; I++)
     {
-      TEMP[I] = LEXEME[I];
+      LEX_LEN = LEX_LEN + LEX_LEN_INCR;
+      TEMP = calloc(LEX_LEN, sizeof(CH));
+      for (I = 0; I < LEX_LEN - LEX_LEN_INCR; I++)
+        {
+          TEMP[I] = LEXEME[I];
+        }
     }
-  }
 
   /* get next character */
   CH = getc(stdin);
@@ -66,18 +66,18 @@ void BACKUP(void)
    character back on input file */
 {
   if (FRONT < BACK)
-  {
-    (void)printf(
-        "%D SCANNER ERROR: Tried to BACKUP past beginning of a Token\n",
-        PERROR_1);
-  }
+    {
+      (void)printf(
+          "%D SCANNER ERROR: Tried to BACKUP past beginning of a Token\n",
+          PERROR_1);
+    }
   else
-  {
-    /* put current char back on input file */
-    (void)ungetc(CH, stdin);
-    /* backup input string one character */
-    *FRONT = 0;
-    FRONT--;
-    CH = *FRONT;
-  }
+    {
+      /* put current char back on input file */
+      (void)ungetc(CH, stdin);
+      /* backup input string one character */
+      *FRONT = 0;
+      FRONT--;
+      CH = *FRONT;
+    }
 }

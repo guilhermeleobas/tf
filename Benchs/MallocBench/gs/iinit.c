@@ -40,9 +40,9 @@ void initial_enter_name(char *nstr, ref *pref)
   ref nref;
   name_enter(nstr, &nref);
   if (dict_put(&systemdict, &nref, pref))
-  {
-    dprintf("dict_put failed!\n"), exit(1);
-  }
+    {
+      dprintf("dict_put failed!\n"), exit(1);
+    }
 }
 
 /* Enter an operator into systemdict. */
@@ -117,7 +117,7 @@ void z_op_init(op_def *op_table)
 {
   op_def *def = op_table;
   while (def->name)
-  {
-    initial_enter_op(def->name, def->proc), def++;
-  }
+    {
+      initial_enter_op(def->name, def->proc), def++;
+    }
 }

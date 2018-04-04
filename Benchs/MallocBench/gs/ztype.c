@@ -87,9 +87,9 @@ int zexecuteonly(register ref *op)
 {
   check_op(1);
   if (r_type(op) == t_dictionary)
-  {
-    return e_typecheck;
-  }
+    {
+      return e_typecheck;
+    }
   return access_check(op, a_execute, 1);
 }
 
@@ -106,9 +106,9 @@ int zrcheck(register ref *op)
 {
   int code = access_check(op, a_read, 0);
   if (code >= 0)
-  {
-    make_bool(op, code);
-  }
+    {
+      make_bool(op, code);
+    }
   return code;
 }
 
@@ -117,9 +117,9 @@ int zwcheck(register ref *op)
 {
   int code = access_check(op, a_write, 0);
   if (code >= 0)
-  {
-    make_bool(op, code);
-  }
+    {
+      make_bool(op, code);
+    }
   return code;
 }
 
@@ -128,44 +128,44 @@ int zcvi(register ref *op)
 {
   float fval;
   switch (r_type(op))
-  {
-    case t_integer:
-      return 0;
-    case t_real:
-      fval = op->value.realval;
-      break;
-    default:
-      return e_typecheck;
-    case t_string:
     {
-      stream st;
-      ref nref;
-      int code;
-      check_read(*op);
-      sread_string(&st, op->value.bytes, op->size);
-      code = scan_number(&st, &nref);
-      if (code)
-      {
-        return code; /* error condition */
-      }
-      if (sgetc(&st) != EOFC)
-      {
-        return e_syntaxerror;
-      }
-      if (r_type(&nref) == t_integer)
-      {
-        *op = nref;
+      case t_integer:
         return 0;
-      }
-      /* Otherwise, result was a real */
-      fval = nref.value.realval;
+      case t_real:
+        fval = op->value.realval;
+        break;
+      default:
+        return e_typecheck;
+      case t_string:
+        {
+          stream st;
+          ref nref;
+          int code;
+          check_read(*op);
+          sread_string(&st, op->value.bytes, op->size);
+          code = scan_number(&st, &nref);
+          if (code)
+            {
+              return code; /* error condition */
+            }
+          if (sgetc(&st) != EOFC)
+            {
+              return e_syntaxerror;
+            }
+          if (r_type(&nref) == t_integer)
+            {
+              *op = nref;
+              return 0;
+            }
+          /* Otherwise, result was a real */
+          fval = nref.value.realval;
+        }
     }
-  }
   /* Check if a real will fit into an integer value */
   if (fval <= lb_real_int || fval >= ub_real_int)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   make_int(op, (long)fval); /* truncates towards 0 */
   return 0;
 }
@@ -179,9 +179,9 @@ int zcvn(register ref *op)
   exec = r_attrs(op) & a_executable;
   code = name_ref(op->value.bytes, op->size, op, 1);
   if (code)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   r_set_attrs(op, exec);
   return 0;
 }
@@ -190,39 +190,39 @@ int zcvn(register ref *op)
 int zcvr(register ref *op)
 {
   switch (r_type(op))
-  {
-    case t_integer:
-      make_real(op, op->value.intval);
-    case t_real:
-      return 0;
-    default:
-      return e_typecheck;
-    case t_string:
     {
-      stream st;
-      ref nref;
-      int code;
-      check_read(*op);
-      sread_string(&st, op->value.bytes, op->size);
-      code = scan_number(&st, &nref);
-      if (code)
-      {
-        return code; /* error condition */
-      }
-      if (sgetc(&st) != EOFC)
-      {
-        return e_syntaxerror;
-      }
-      if (r_type(&nref) == t_real)
-      {
-        *op = nref;
+      case t_integer:
+        make_real(op, op->value.intval);
+      case t_real:
         return 0;
-      }
-      /* Otherwise, result was an integer */
-      make_real(op, nref.value.intval);
-      return 0;
+      default:
+        return e_typecheck;
+      case t_string:
+        {
+          stream st;
+          ref nref;
+          int code;
+          check_read(*op);
+          sread_string(&st, op->value.bytes, op->size);
+          code = scan_number(&st, &nref);
+          if (code)
+            {
+              return code; /* error condition */
+            }
+          if (sgetc(&st) != EOFC)
+            {
+              return e_syntaxerror;
+            }
+          if (r_type(&nref) == t_real)
+            {
+              *op = nref;
+              return 0;
+            }
+          /* Otherwise, result was an integer */
+          make_real(op, nref.value.intval);
+          return 0;
+        }
     }
-  }
 }
 
 /* cvrs */
@@ -236,35 +236,36 @@ int zcvrs(register ref *op)
   byte *dp = endp;
   check_type(op[-1], t_integer);
   if (op[-1].value.intval < 2 || op[-1].value.intval > 36)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   radix = op[-1].value.intval;
   check_write_type(*op, t_string);
   switch (r_type(op - 2))
-  {
-    case t_integer:
-      ival = op[-2].value.intval;
-      break;
-    case t_real: /****** SHOULD USE cvi HERE ******/
-    default:
-      return e_typecheck;
-  }
+    {
+      case t_integer:
+        ival = op[-2].value.intval;
+        break;
+      case t_real: /****** SHOULD USE cvi HERE ******/
+      default:
+        return e_typecheck;
+    }
   val = (ival < 0 ? -ival : ival);
   do
-  {
-    int dit = val % radix;
-    *--dp = dit + (dit < 10 ? '0' : ('A' - 10));
-    val /= radix;
-  } while (val);
+    {
+      int dit = val % radix;
+      *--dp = dit + (dit < 10 ? '0' : ('A' - 10));
+      val /= radix;
+    }
+  while (val);
   if (ival < 0)
-  {
-    *--dp = '-';
-  }
+    {
+      *--dp = '-';
+    }
   if (endp - dp > op->size)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   memcpy(op->value.bytes, dp, (uint)(endp - dp));
   op->size = endp - dp;
   r_set_attrs(op, a_subrange);
@@ -282,50 +283,50 @@ int zcvs(register ref *op)
   check_write_type(*op, t_string);
   stref.value.bytes = (byte *)buf;
   switch (r_btype(op1))
-  {
-    case t_boolean:
-      stref.value.bytes = (byte *)(op1->value.index ? "true" : "false");
-      break;
-    case t_integer:
-      sprintf(buf, "%ld", op1->value.intval);
-      break;
-    case t_name:
-      name_string_ref(op1, &stref); /* name string */
-      goto nl;
-    case t_operator:
-    { /* Get the name by enumerating systemdict. */
-      int pos = dict_first(&systemdict);
-      ref entry[2];
-      while ((pos = dict_next(&systemdict, pos, entry)) >= 0)
-      {
-        if ((long)op1->value.opproc == (long)entry[1].value.opproc &&
-            r_type(&entry[0]) == t_name)
-        { /* Found it. */
-          name_string_ref(&entry[0], &stref);
-          goto nl;
+    {
+      case t_boolean:
+        stref.value.bytes = (byte *)(op1->value.index ? "true" : "false");
+        break;
+      case t_integer:
+        sprintf(buf, "%ld", op1->value.intval);
+        break;
+      case t_name:
+        name_string_ref(op1, &stref); /* name string */
+        goto nl;
+      case t_operator:
+        { /* Get the name by enumerating systemdict. */
+          int pos = dict_first(&systemdict);
+          ref entry[2];
+          while ((pos = dict_next(&systemdict, pos, entry)) >= 0)
+            {
+              if ((long)op1->value.opproc == (long)entry[1].value.opproc &&
+                  r_type(&entry[0]) == t_name)
+                { /* Found it. */
+                  name_string_ref(&entry[0], &stref);
+                  goto nl;
+                }
+            }
         }
-      }
+        /* Can't find it (shouldn't happen...). */
+        sprintf(buf, "operator %lx", (ulong)op1->value.opproc);
+        break;
+      case t_real:
+        sprintf(buf, "%g", op1->value.realval);
+        break;
+      case t_string:
+        check_read(*op1);
+        stref = *op1;
+        goto nl;
+      default:
+        check_op(1);
+        stref.value.bytes = (byte *)"--nostringval--";
     }
-      /* Can't find it (shouldn't happen...). */
-      sprintf(buf, "operator %lx", (ulong)op1->value.opproc);
-      break;
-    case t_real:
-      sprintf(buf, "%g", op1->value.realval);
-      break;
-    case t_string:
-      check_read(*op1);
-      stref = *op1;
-      goto nl;
-    default:
-      check_op(1);
-      stref.value.bytes = (byte *)"--nostringval--";
-  }
   stref.size = strlen((char *)stref.value.bytes);
 nl:
   if (stref.size > op->size)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   memcpy(op->value.bytes, stref.value.bytes, stref.size);
   op[-1] = *op;
   op[-1].size = stref.size;
@@ -365,32 +366,32 @@ void ztype_op_init()
 /* or if the object did not have the access already when modify=1. */
 private
 int access_check(ref *op, int access, /* mask for attrs */
-                 int modify)          /* if true, reduce access */
+                 int modify) /* if true, reduce access */
 {
   ref *aop = op;
   switch (r_type(op))
-  {
-    default:
-      return e_typecheck;
-    case t_dictionary:
-      aop = dict_access_ref(op);
-    case t_array:
-    case t_file:
-    case t_packedarray:
-    case t_string:;
-  }
-  if (modify)
-  {
-    if (~r_attrs(aop) & access)
     {
-      return e_invalidaccess;
+      default:
+        return e_typecheck;
+      case t_dictionary:
+        aop = dict_access_ref(op);
+      case t_array:
+      case t_file:
+      case t_packedarray:
+      case t_string:;
     }
-    r_clear_attrs(aop, a_all);
-    r_set_attrs(aop, access);
-    return 0;
-  }
+  if (modify)
+    {
+      if (~r_attrs(aop) & access)
+        {
+          return e_invalidaccess;
+        }
+      r_clear_attrs(aop, a_all);
+      r_set_attrs(aop, access);
+      return 0;
+    }
   else
-  {
-    return (r_attrs(aop) & access) == access;
-  }
+    {
+      return (r_attrs(aop) & access) == access;
+    }
 }

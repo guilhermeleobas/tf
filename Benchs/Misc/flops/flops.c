@@ -127,11 +127,11 @@
 /* #define ROPT */
 
 double nulltime, TimeArray[3]; /* Variables needed for 'dtime()'.     */
-double TLimit;                 /* Threshold to determine Number of    */
-                               /* Loops to run. Fixed at 15.0 seconds.*/
+double TLimit; /* Threshold to determine Number of    */
+/* Loops to run. Fixed at 15.0 seconds.*/
 
 double T[36]; /* Global Array used to hold timing    */
-              /* results and other information.      */
+/* results and other information.      */
 
 double sa, sb, sc, sd, one, two, three;
 double four, five, piref, piprg;
@@ -239,29 +239,29 @@ int main()
   sa = 0.0;
 
   while (sa < TLimit)
-  {
-    n = 2 * n;
-    x = one / (double)n; /*********************/
-    s = 0.0;             /*  Loop 1.          */
-    v = 0.0;             /*********************/
-    w = one;
-
-    dtime(TimeArray);
-    for (i = 1; i <= n - 1; i++)
     {
-      v = v + w;
-      u = v * x;
-      s = s + (D1 + u * (D2 + u * D3)) / (w + u * (D1 + u * (E2 + u * E3)));
-    }
-    dtime(TimeArray);
-    sa = TimeArray[1];
+      n = 2 * n;
+      x = one / (double)n; /*********************/
+      s = 0.0; /*  Loop 1.          */
+      v = 0.0; /*********************/
+      w = one;
 
-    if (n == NLimit)
-    {
-      break;
+      dtime(TimeArray);
+      for (i = 1; i <= n - 1; i++)
+        {
+          v = v + w;
+          u = v * x;
+          s = s + (D1 + u * (D2 + u * D3)) / (w + u * (D1 + u * (E2 + u * E3)));
+        }
+      dtime(TimeArray);
+      sa = TimeArray[1];
+
+      if (n == NLimit)
+        {
+          break;
+        }
+      /* printf(" %10ld  %12.5lf\n",n,sa); */
     }
-    /* printf(" %10ld  %12.5lf\n",n,sa); */
-  }
 #ifdef SMALL_PROBLEM_SIZE
   scale = 1;
 #else
@@ -274,23 +274,23 @@ int main()
   /****************************************/
   dtime(TimeArray);
   for (i = 1; i <= n - 1; i++)
-  {
-  }
+    {
+    }
   dtime(TimeArray);
   nulltime = T[1] * TimeArray[1];
   if (nulltime < 0.0)
-  {
-    nulltime = 0.0;
-  }
+    {
+      nulltime = 0.0;
+    }
 
   T[2] = T[1] * sa - nulltime;
 
   sa = (D1 + D2 + D3) / (one + D1 + E2 + E3);
   sb = D1;
 
-  T[3] = T[2] / 14.0;                 /*********************/
+  T[3] = T[2] / 14.0; /*********************/
   sa = x * (sa + sb + two * s) / two; /* Module 1 Results. */
-  sb = one / sa;                      /*********************/
+  sb = one / sa; /*********************/
   n = (long)((double)(40000 * (long)sb) / scale);
   sc = sb - 25.2;
   T[4] = one / T[3];
@@ -315,43 +315,43 @@ int main()
 
   s = -five; /********************/
   sa = -one; /* Loop 2.          */
-             /********************/
+  /********************/
   dtime(TimeArray);
   for (i = 1; i <= m; i++)
-  {
-    s = -s;
-    sa = sa + s;
-  }
+    {
+      s = -s;
+      sa = sa + s;
+    }
   dtime(TimeArray);
   T[5] = T[1] * TimeArray[1];
   if (T[5] < 0.0)
-  {
-    T[5] = 0.0;
-  }
+    {
+      T[5] = 0.0;
+    }
 
   sc = (double)m;
 
-  u = sa;  /*********************/
+  u = sa; /*********************/
   v = 0.0; /* Loop 3.           */
   w = 0.0; /*********************/
   x = 0.0;
 
   dtime(TimeArray);
   for (i = 1; i <= m; i++)
-  {
-    s = -s;
-    sa = sa + s;
-    u = u + two;
-    x = x + (s - u);
-    v = v - s * u;
-    w = w + s / u;
-  }
+    {
+      s = -s;
+      sa = sa + s;
+      u = u + two;
+      x = x + (s - u);
+      v = v - s * u;
+      w = w + s / u;
+    }
   dtime(TimeArray);
   T[6] = T[1] * TimeArray[1];
 
   T[7] = (T[6] - T[5]) / 7.0; /*********************/
-  m = (long)(sa * x / sc);    /*  PI Results       */
-  sa = four * w / five;       /*********************/
+  m = (long)(sa * x / sc); /*  PI Results       */
+  sa = four * w / five; /*********************/
   sb = sa + five / v;
   sc = 31.25;
   piprg = sb - sc / (v * v * v);
@@ -376,19 +376,19 @@ int main()
   /*******************************************************/
 
   x = piref / (three * (double)m); /*********************/
-  s = 0.0;                         /*  Loop 4.          */
-  v = 0.0;                         /*********************/
+  s = 0.0; /*  Loop 4.          */
+  v = 0.0; /*********************/
 
   dtime(TimeArray);
   for (i = 1; i <= m - 1; i++)
-  {
-    v = v + one;
-    u = v * x;
-    w = u * u;
-    s = s +
-        u * ((((((A6 * w - A5) * w + A4) * w - A3) * w + A2) * w + A1) * w +
-             one);
-  }
+    {
+      v = v + one;
+      u = v * x;
+      w = u * u;
+      s = s +
+          u * ((((((A6 * w - A5) * w + A4) * w - A3) * w + A2) * w + A1) * w +
+               one);
+    }
   dtime(TimeArray);
   T[9] = T[1] * TimeArray[1] - nulltime;
 
@@ -397,9 +397,9 @@ int main()
   sa =
       u * ((((((A6 * w - A5) * w + A4) * w - A3) * w + A2) * w + A1) * w + one);
 
-  T[10] = T[9] / 17.0;           /*********************/
+  T[10] = T[9] / 17.0; /*********************/
   sa = x * (sa + two * s) / two; /* sin(x) Results.   */
-  sb = 0.5;                      /*********************/
+  sb = 0.5; /*********************/
   sc = sa - sb;
   T[11] = one / T[10];
   /*********************/
@@ -421,16 +421,16 @@ int main()
   A3 = -A3;
   A5 = -A5;
   x = piref / (three * (double)m); /*********************/
-  s = 0.0;                         /*  Loop 5.          */
-  v = 0.0;                         /*********************/
+  s = 0.0; /*  Loop 5.          */
+  v = 0.0; /*********************/
 
   dtime(TimeArray);
   for (i = 1; i <= m - 1; i++)
-  {
-    u = (double)i * x;
-    w = u * u;
-    s = s + w * (w * (w * (w * (w * (B6 * w + B5) + B4) + B3) + B2) + B1) + one;
-  }
+    {
+      u = (double)i * x;
+      w = u * u;
+      s = s + w * (w * (w * (w * (w * (B6 * w + B5) + B4) + B3) + B2) + B1) + one;
+    }
   dtime(TimeArray);
   T[12] = T[1] * TimeArray[1] - nulltime;
 
@@ -438,9 +438,9 @@ int main()
   w = u * u;
   sa = w * (w * (w * (w * (w * (B6 * w + B5) + B4) + B3) + B2) + B1) + one;
 
-  T[13] = T[12] / 15.0;                /*******************/
+  T[13] = T[12] / 15.0; /*******************/
   sa = x * (sa + one + two * s) / two; /* Module 4 Result */
-  u = piref / three;                   /*******************/
+  u = piref / three; /*******************/
   w = u * u;
   sb = u * ((((((A6 * w + A5) * w + A4) * w + A3) * w + A2) * w + A1) * w + A0);
   sc = sa - sb;
@@ -464,20 +464,20 @@ int main()
   /************************************************************/
 
   x = piref / (three * (double)m); /*********************/
-  s = 0.0;                         /*  Loop 6.          */
-  v = 0.0;                         /*********************/
+  s = 0.0; /*  Loop 6.          */
+  v = 0.0; /*********************/
 
   dtime(TimeArray);
   for (i = 1; i <= m - 1; i++)
-  {
-    u = (double)i * x;
-    w = u * u;
-    v = u *
-        ((((((A6 * w + A5) * w + A4) * w + A3) * w + A2) * w + A1) * w + one);
-    s = s +
-        v / (w * (w * (w * (w * (w * (B6 * w + B5) + B4) + B3) + B2) + B1) +
-             one);
-  }
+    {
+      u = (double)i * x;
+      w = u * u;
+      v = u *
+          ((((((A6 * w + A5) * w + A4) * w + A3) * w + A2) * w + A1) * w + one);
+      s = s +
+          v / (w * (w * (w * (w * (w * (B6 * w + B5) + B4) + B3) + B2) + B1) +
+               one);
+    }
   dtime(TimeArray);
   T[15] = T[1] * TimeArray[1] - nulltime;
 
@@ -488,9 +488,9 @@ int main()
   sb = w * (w * (w * (w * (w * (B6 * w + B5) + B4) + B3) + B2) + B1) + one;
   sa = sa / sb;
 
-  T[16] = T[15] / 29.0;          /*******************/
+  T[16] = T[15] / 29.0; /*******************/
   sa = x * (sa + two * s) / two; /* Module 5 Result */
-  sb = 0.6931471805599453;       /*******************/
+  sb = 0.6931471805599453; /*******************/
   sc = sa - sb;
   T[17] = one / T[16];
   /*********************/
@@ -512,20 +512,20 @@ int main()
   /************************************************************/
 
   x = piref / (four * (double)m); /*********************/
-  s = 0.0;                        /*  Loop 7.          */
-  v = 0.0;                        /*********************/
+  s = 0.0; /*  Loop 7.          */
+  v = 0.0; /*********************/
 
   dtime(TimeArray);
   for (i = 1; i <= m - 1; i++)
-  {
-    u = (double)i * x;
-    w = u * u;
-    v = u *
-        ((((((A6 * w + A5) * w + A4) * w + A3) * w + A2) * w + A1) * w + one);
-    s = s +
-        v * (w * (w * (w * (w * (w * (B6 * w + B5) + B4) + B3) + B2) + B1) +
-             one);
-  }
+    {
+      u = (double)i * x;
+      w = u * u;
+      v = u *
+          ((((((A6 * w + A5) * w + A4) * w + A3) * w + A2) * w + A1) * w + one);
+      s = s +
+          v * (w * (w * (w * (w * (w * (B6 * w + B5) + B4) + B3) + B2) + B1) +
+               one);
+    }
   dtime(TimeArray);
   T[18] = T[1] * TimeArray[1] - nulltime;
 
@@ -536,9 +536,9 @@ int main()
   sb = w * (w * (w * (w * (w * (B6 * w + B5) + B4) + B3) + B2) + B1) + one;
   sa = sa * sb;
 
-  T[19] = T[18] / 29.0;          /*******************/
+  T[19] = T[18] / 29.0; /*******************/
   sa = x * (sa + two * s) / two; /* Module 6 Result */
-  sb = 0.25;                     /*******************/
+  sb = 0.25; /*******************/
   sc = sa - sb;
   T[20] = one / T[19];
   /*********************/
@@ -568,11 +568,11 @@ int main()
 
   dtime(TimeArray);
   for (i = 1; i <= m - 1; i++)
-  {
-    x = (double)i * v;
-    u = x * x;
-    s = s - w / (x + w) - x / (u + w) - u / (x * u + w);
-  }
+    {
+      x = (double)i * v;
+      u = x * x;
+      s = s - w / (x + w) - x / (u + w) - u / (x * u + w);
+    }
   dtime(TimeArray);
   T[21] = T[1] * TimeArray[1] - nulltime;
   /*********************/
@@ -609,20 +609,20 @@ int main()
   /************************************************************/
 
   x = piref / (three * (double)m); /*********************/
-  s = 0.0;                         /*  Loop 9.          */
-  v = 0.0;                         /*********************/
+  s = 0.0; /*  Loop 9.          */
+  v = 0.0; /*********************/
 
   dtime(TimeArray);
   for (i = 1; i <= m - 1; i++)
-  {
-    u = (double)i * x;
-    w = u * u;
-    v = w * (w * (w * (w * (w * (B6 * w + B5) + B4) + B3) + B2) + B1) + one;
-    s = s +
-        v * v * u *
-            ((((((A6 * w + A5) * w + A4) * w + A3) * w + A2) * w + A1) * w +
-             one);
-  }
+    {
+      u = (double)i * x;
+      w = u * u;
+      v = w * (w * (w * (w * (w * (B6 * w + B5) + B4) + B3) + B2) + B1) + one;
+      s = s +
+          v * v * u *
+              ((((((A6 * w + A5) * w + A4) * w + A3) * w + A2) * w + A1) * w +
+               one);
+    }
   dtime(TimeArray);
   T[24] = T[1] * TimeArray[1] - nulltime;
 
@@ -633,9 +633,9 @@ int main()
   sb = w * (w * (w * (w * (w * (B6 * w + B5) + B4) + B3) + B2) + B1) + one;
   sa = sa * sb * sb;
 
-  T[25] = T[24] / 30.0;          /*******************/
+  T[25] = T[24] / 30.0; /*******************/
   sa = x * (sa + two * s) / two; /* Module 8 Result */
-  sb = 0.29166666666666667;      /*******************/
+  sb = 0.29166666666666667; /*******************/
   sc = sa - sb;
   T[26] = one / T[25];
   /*********************/
@@ -1065,27 +1065,27 @@ static void Remove_timer()
 int dtime(p) double p[];
 {
   if (mgrInited)
-  {
-    RMV_TIMER;
-    mgrClock += (MAX_TIME + mgrTimer.tmCount) * 1.0e-6;
-  }
+    {
+      RMV_TIMER;
+      mgrClock += (MAX_TIME + mgrTimer.tmCount) * 1.0e-6;
+    }
   else
-  {
-    if (_atexit(&Remove_timer) == 0) mgrInited = TRUE;
-    mgrClock = 0.0;
-  }
+    {
+      if (_atexit(&Remove_timer) == 0) mgrInited = TRUE;
+      mgrClock = 0.0;
+    }
 
   p[1] = mgrClock - p[2];
   p[2] = mgrClock;
   if (mgrInited)
-  {
-    mgrTimer.tmAddr = NULL;
-    mgrTimer.tmCount = 0;
-    mgrTimer.tmWakeUp = 0;
-    mgrTimer.tmReserved = 0;
-    InsTime((QElemPtr)&mgrTimer);
-    PrimeTime((QElemPtr)&mgrTimer, -MAX_TIME);
-  }
+    {
+      mgrTimer.tmAddr = NULL;
+      mgrTimer.tmCount = 0;
+      mgrTimer.tmWakeUp = 0;
+      mgrTimer.tmReserved = 0;
+      InsTime((QElemPtr)&mgrTimer);
+      PrimeTime((QElemPtr)&mgrTimer, -MAX_TIME);
+    }
   return (0);
 }
 #endif

@@ -31,13 +31,13 @@
  */
 
 #include "getNextCommandCode.h" /* for getNextCommandCode() return codes    */
-#include <assert.h>             /* for assert()                             */
-#include <stdio.h>              /* for FILE definition                      */
-#include "dataManagement.h"     /* for primitive data types                 */
-#include "errorMessage.h"       /* for errorMessage() definition            */
-#include "getInt.h"             /* for getInt() and return code definitions */
+#include <assert.h> /* for assert()                             */
+#include <stdio.h> /* for FILE definition                      */
+#include "dataManagement.h" /* for primitive data types                 */
+#include "errorMessage.h" /* for errorMessage() definition            */
+#include "getInt.h" /* for getInt() and return code definitions */
 
-Int getNextCommandCode(FILE *file,               /*  file for reading     */
+Int getNextCommandCode(FILE *file, /*  file for reading     */
                        CommandType *commandCode) /*  code of next command */
 { /*  begin getNextCommandCode()  */
   Int returnCode;
@@ -58,54 +58,54 @@ Int getNextCommandCode(FILE *file,               /*  file for reading     */
    */
   returnCode = getInt(file, &command);
   if (returnCode == GET_INT_SUCCESS)
-  {
-    if (command == INIT)
     {
-      *commandCode = INIT;
-      returnCode = GET_NEXT_COMMAND_CODE_SUCCESS;
-    } /*  end of if ( command == INIT ) */
-    else if (command == INSERT)
+      if (command == INIT)
+        {
+          *commandCode = INIT;
+          returnCode = GET_NEXT_COMMAND_CODE_SUCCESS;
+        } /*  end of if ( command == INIT ) */
+      else if (command == INSERT)
+        {
+          *commandCode = INSERT;
+          returnCode = GET_NEXT_COMMAND_CODE_SUCCESS;
+        } /*  end of if ( command == INSERT ) */
+      else if (command == QUERY)
+        {
+          *commandCode = QUERY;
+          returnCode = GET_NEXT_COMMAND_CODE_SUCCESS;
+        } /*  end of if ( command == QUERY ) */
+      else if (command == DELETE)
+        {
+          *commandCode = DELETE;
+          returnCode = GET_NEXT_COMMAND_CODE_SUCCESS;
+        } /*  end of if ( command == DELETE ) */
+      else
+        {
+          errorMessage("unknown command code", REPLACE);
+          errorMessage(name, PREPEND);
+          *commandCode = INVALID;
+          returnCode = GET_NEXT_COMMAND_CODE_INVALID_COMMAND;
+        } /*  end of command code branches    */
+    } /*  end of if ( returnCode == GET_INT_SUCCESS ) */
+  else if (returnCode == GET_INT_EOI)
     {
-      *commandCode = INSERT;
+      *commandCode = NONE;
       returnCode = GET_NEXT_COMMAND_CODE_SUCCESS;
-    } /*  end of if ( command == INSERT ) */
-    else if (command == QUERY)
-    {
-      *commandCode = QUERY;
-      returnCode = GET_NEXT_COMMAND_CODE_SUCCESS;
-    } /*  end of if ( command == QUERY ) */
-    else if (command == DELETE)
-    {
-      *commandCode = DELETE;
-      returnCode = GET_NEXT_COMMAND_CODE_SUCCESS;
-    } /*  end of if ( command == DELETE ) */
-    else
+    } /*  end of if ( returnCode == GET_INT_EOI ) */
+  else if (returnCode == GET_INT_RANGE_EXCEEDED)
     {
       errorMessage("unknown command code", REPLACE);
       errorMessage(name, PREPEND);
       *commandCode = INVALID;
       returnCode = GET_NEXT_COMMAND_CODE_INVALID_COMMAND;
-    } /*  end of command code branches    */
-  }   /*  end of if ( returnCode == GET_INT_SUCCESS ) */
-  else if (returnCode == GET_INT_EOI)
-  {
-    *commandCode = NONE;
-    returnCode = GET_NEXT_COMMAND_CODE_SUCCESS;
-  } /*  end of if ( returnCode == GET_INT_EOI ) */
-  else if (returnCode == GET_INT_RANGE_EXCEEDED)
-  {
-    errorMessage("unknown command code", REPLACE);
-    errorMessage(name, PREPEND);
-    *commandCode = INVALID;
-    returnCode = GET_NEXT_COMMAND_CODE_INVALID_COMMAND;
-  } /*  end of if ( returnCode == GET_INT_EOF ) */
+    } /*  end of if ( returnCode == GET_INT_EOF ) */
   else if (returnCode == GET_INT_BAD_CONVERSION)
-  {
-    errorMessage("improper format - code must be an integer", REPLACE);
-    errorMessage(name, PREPEND);
-    *commandCode = INVALID;
-    returnCode = GET_NEXT_COMMAND_CODE_INVALID_COMMAND;
-  } /*  end of if ( returnCode == GET_INT_EOF ) */
+    {
+      errorMessage("improper format - code must be an integer", REPLACE);
+      errorMessage(name, PREPEND);
+      *commandCode = INVALID;
+      returnCode = GET_NEXT_COMMAND_CODE_INVALID_COMMAND;
+    } /*  end of if ( returnCode == GET_INT_EOF ) */
 
   return (returnCode);
 } /*  end of getNextCommandCode() */

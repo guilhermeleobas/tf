@@ -18,18 +18,19 @@ register char *chp;
   register int count = 0, res = 0;
 
   if (chp != (char *)0 && *chp != '\0')
-  {
-    do
     {
-      count++;
-      res = putc(*chp, stream);
-    } while (*++chp != '\0' && res != EOF);
-  }
+      do
+        {
+          count++;
+          res = putc(*chp, stream);
+        }
+      while (*++chp != '\0' && res != EOF);
+    }
 
   if (res != EOF)
-  {
-    res = count;
-  }
+    {
+      res = count;
+    }
   return res;
 }
 
@@ -81,21 +82,21 @@ register int minWidth;
 
   len = strlen(chp);
   if (minWidth < 0)
-  { /* left-justified */
-    res = fouts(stream, chp);
-    while (minWidth++ < -len)
-    {
-      putc(' ', stream);
+    { /* left-justified */
+      res = fouts(stream, chp);
+      while (minWidth++ < -len)
+        {
+          putc(' ', stream);
+        }
     }
-  }
   else
-  {
-    while (minWidth-- > len)
-    { /* right-justified */
-      putc(' ', stream);
+    {
+      while (minWidth-- > len)
+        { /* right-justified */
+          putc(' ', stream);
+        }
+      res = fouts(stream, chp);
     }
-    res = fouts(stream, chp);
-  }
 
   deallocate(chp);
   pdestroy(p);
@@ -123,76 +124,78 @@ precision fgetp(stream) FILE *stream;
 
   ch = getc(stream);
   if (ch != EOF)
-  {
-    while (isspace(ch))
     {
-      ch = getc(stream); /* skip whitespace */
-    }
-    if (ch == '-')
-    {
-      sign = 1;
-      ch = getc(stream);
-    }
-    else if (ch == '+')
-    {
-      ch = getc(stream);
-    }
-    if (isdigit(ch))
-    {
-      pset(&res, pzero);
-      pset(&clump, utop(aDigit));
-      do
-      {
-        j = aDigitLog - 1;
-        temp = ch - '0';
-        do
+      while (isspace(ch))
         {
-          if (!isdigit(ch = getc(stream)))
-          {
-            goto atoplast;
-          }
-          temp = temp * aBase + (ch - '0');
-        } while (--j > 0);
-        pset(&res, padd(pmul(res, clump), utop(temp)));
-      } while (isdigit(ch = getc(stream)));
-      goto atopdone;
-    atoplast:
-      x = aBase;
-      while (j++ < aDigitLog - 1)
-      {
-        x *= aBase;
-      }
-      pset(&res, padd(pmul(res, utop(x)), utop(temp)));
-    atopdone:
-      if (ch != EOF)
-      {
-        ungetc(ch, stream);
-      }
-      if (sign)
-      {
-        pset(&res, pneg(res));
-      }
-    }
-    else
-    {
-      if (ch == EOF)
-      {
-        res = pUndef;
-      }
+          ch = getc(stream); /* skip whitespace */
+        }
+      if (ch == '-')
+        {
+          sign = 1;
+          ch = getc(stream);
+        }
+      else if (ch == '+')
+        {
+          ch = getc(stream);
+        }
+      if (isdigit(ch))
+        {
+          pset(&res, pzero);
+          pset(&clump, utop(aDigit));
+          do
+            {
+              j = aDigitLog - 1;
+              temp = ch - '0';
+              do
+                {
+                  if (!isdigit(ch = getc(stream)))
+                    {
+                      goto atoplast;
+                    }
+                  temp = temp * aBase + (ch - '0');
+                }
+              while (--j > 0);
+              pset(&res, padd(pmul(res, clump), utop(temp)));
+            }
+          while (isdigit(ch = getc(stream)));
+          goto atopdone;
+        atoplast:
+          x = aBase;
+          while (j++ < aDigitLog - 1)
+            {
+              x *= aBase;
+            }
+          pset(&res, padd(pmul(res, utop(x)), utop(temp)));
+        atopdone:
+          if (ch != EOF)
+            {
+              ungetc(ch, stream);
+            }
+          if (sign)
+            {
+              pset(&res, pneg(res));
+            }
+        }
       else
-      {
-        ungetc(ch, stream);
-      }
+        {
+          if (ch == EOF)
+            {
+              res = pUndef;
+            }
+          else
+            {
+              ungetc(ch, stream);
+            }
+        }
     }
-  }
   else
-  {
-    res = pUndef;
-  }
+    {
+      res = pUndef;
+    }
   pdestroy(clump);
   if (res == pUndef)
-  {
-    return res;
-  }
+    {
+      return res;
+    }
   return presult(res);
 }

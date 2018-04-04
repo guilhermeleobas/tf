@@ -373,47 +373,47 @@ static double sin(x) double x;
   if (x > twopi) x -= (aint(x / twopi) * twopi);
 
   if (x > pi)
-  {
-    x -= pi;
-    sign = !sign;
-  }
+    {
+      x -= pi;
+      sign = !sign;
+    }
 
   if (x > piover2) x = pi - x;
 
   if (x < piover4)
-  {
-    y = x * fouroverpi;
-    z = y * y;
-    r = y * (((((((-0.202253129293E-13 * z + 0.69481520350522E-11) * z -
-                  0.17572474176170806E-8) *
+    {
+      y = x * fouroverpi;
+      z = y * y;
+      r = y * (((((((-0.202253129293E-13 * z + 0.69481520350522E-11) * z -
+                    0.17572474176170806E-8) *
+                       z +
+                   0.313361688917325348E-6) *
+                      z -
+                  0.365762041821464001E-4) *
                      z +
-                 0.313361688917325348E-6) *
+                 0.249039457019271628E-2) *
                     z -
-                0.365762041821464001E-4) *
+                0.0807455121882807815) *
                    z +
-               0.249039457019271628E-2) *
-                  z -
-              0.0807455121882807815) *
-                 z +
-             0.785398163397448310);
-  }
+               0.785398163397448310);
+    }
   else
-  {
-    y = (piover2 - x) * fouroverpi;
-    z = y * y;
-    r = ((((((-0.38577620372E-12 * z + 0.11500497024263E-9) * z -
-             0.2461136382637005E-7) *
+    {
+      y = (piover2 - x) * fouroverpi;
+      z = y * y;
+      r = ((((((-0.38577620372E-12 * z + 0.11500497024263E-9) * z -
+               0.2461136382637005E-7) *
+                  z +
+              0.359086044588581953E-5) *
+                 z -
+             0.325991886926687550E-3) *
                 z +
-            0.359086044588581953E-5) *
+            0.0158543442438154109) *
                z -
-           0.325991886926687550E-3) *
+           0.308425137534042452) *
               z +
-          0.0158543442438154109) *
-             z -
-         0.308425137534042452) *
-            z +
-        1.0;
-  }
+          1.0;
+    }
   return sign ? -r : r;
 }
 
@@ -422,7 +422,7 @@ static double sin(x) double x;
 static double cos(x) double x;
 {
   x = (x < 0.0) ? -x : x;
-  if (x > twopi)                       /* Do range reduction here to limit */
+  if (x > twopi) /* Do range reduction here to limit */
     x = x - (aint(x / twopi) * twopi); /* roundoff on add of PI/2    */
   return sin(x + piover2);
 }
@@ -445,22 +445,22 @@ double sqrt(x) double x;
   if (x == 0.0) return 0.0;
 
   if (x < 0.0)
-  {
-    fprintf(stderr, "\nGood work!  You tried to take the square root of %g", x);
-    fprintf(stderr, "\nunfortunately, that is too complex for me to handle.\n");
-    exit(1);
-  }
+    {
+      fprintf(stderr, "\nGood work!  You tried to take the square root of %g", x);
+      fprintf(stderr, "\nunfortunately, that is too complex for me to handle.\n");
+      exit(1);
+    }
 
   y = (0.154116 + 1.893872 * x) / (1.0 + 1.047988 * x);
 
   c = (y - x / y) / 2.0;
   cl = 0.0;
   for (n = 50; c != cl && n--;)
-  {
-    y = y - c;
-    cl = c;
-    c = (y - x / y) / 2.0;
-  }
+    {
+      y = y - c;
+      cl = c;
+      c = (y - x / y) / 2.0;
+    }
   return y;
 }
 
@@ -476,20 +476,20 @@ static double atan(x) double x;
   l = 0;
 
   if (x >= 4.0)
-  {
-    l = -1;
-    x = 1.0 / x;
-    y = 0;
-    goto atl;
-  }
-  else
-  {
-    if (x < 0.25)
     {
+      l = -1;
+      x = 1.0 / x;
       y = 0;
       goto atl;
     }
-  }
+  else
+    {
+      if (x < 0.25)
+        {
+          y = 0;
+          goto atl;
+        }
+    }
 
   y = aint(x / 0.5);
   z = y * 0.5;
@@ -518,22 +518,22 @@ static double atan2(y, x) double y, x;
   double temp;
 
   if (x == 0.0)
-  {
-    if (y == 0.0) /*  Special case: atan2(0,0) = 0  */
-      return 0.0;
-    else if (y > 0)
-      return piover2;
-    else
-      return -piover2;
-  }
+    {
+      if (y == 0.0) /*  Special case: atan2(0,0) = 0  */
+        return 0.0;
+      else if (y > 0)
+        return piover2;
+      else
+        return -piover2;
+    }
   temp = atan(y / x);
   if (x < 0.0)
-  {
-    if (y >= 0.0)
-      temp += pic;
-    else
-      temp -= pic;
-  }
+    {
+      if (y >= 0.0)
+        temp += pic;
+      else
+        temp -= pic;
+    }
   return temp;
 }
 
@@ -542,12 +542,12 @@ static double atan2(y, x) double y, x;
 static double asin(x) double x;
 {
   if (fabs(x) > 1.0)
-  {
-    fprintf(stderr, "\nInverse trig functions lose much of their gloss when");
-    fprintf(stderr, "\ntheir arguments are greater than 1, such as the");
-    fprintf(stderr, "\nvalue %g you passed.\n", x);
-    exit(1);
-  }
+    {
+      fprintf(stderr, "\nInverse trig functions lose much of their gloss when");
+      fprintf(stderr, "\ntheir arguments are greater than 1, such as the");
+      fprintf(stderr, "\nvalue %g you passed.\n", x);
+      exit(1);
+    }
   return atan2(x, sqrt(1 - x * x));
 }
 #endif
@@ -592,68 +592,68 @@ static double asin(x) double x;
 
 static void transit_surface()
 {
-  double iang,  /* Incidence angle */
-      rang,     /* Refraction angle */
+  double iang, /* Incidence angle */
+      rang, /* Refraction angle */
       iang_sin, /* Incidence angle sin */
       rang_sin, /* Refraction angle sin */
       old_axis_slope_angle, sagitta;
 
   if (paraxial)
-  {
-    if (radius_of_curvature != 0.0)
     {
-      if (object_distance == 0.0)
-      {
-        axis_slope_angle = 0.0;
-        iang_sin = ray_height / radius_of_curvature;
-      }
-      else
-      {
-        iang_sin =
-            ((object_distance - radius_of_curvature) / radius_of_curvature) *
-            axis_slope_angle;
-      }
+      if (radius_of_curvature != 0.0)
+        {
+          if (object_distance == 0.0)
+            {
+              axis_slope_angle = 0.0;
+              iang_sin = ray_height / radius_of_curvature;
+            }
+          else
+            {
+              iang_sin =
+                  ((object_distance - radius_of_curvature) / radius_of_curvature) *
+                  axis_slope_angle;
+            }
 
-      rang_sin = (from_index / to_index) * iang_sin;
-      old_axis_slope_angle = axis_slope_angle;
-      axis_slope_angle = axis_slope_angle + iang_sin - rang_sin;
-      if (object_distance != 0.0)
-      {
-        ray_height = object_distance * old_axis_slope_angle;
-      }
-      object_distance = ray_height / axis_slope_angle;
+          rang_sin = (from_index / to_index) * iang_sin;
+          old_axis_slope_angle = axis_slope_angle;
+          axis_slope_angle = axis_slope_angle + iang_sin - rang_sin;
+          if (object_distance != 0.0)
+            {
+              ray_height = object_distance * old_axis_slope_angle;
+            }
+          object_distance = ray_height / axis_slope_angle;
+          return;
+        }
+      object_distance = object_distance * (to_index / from_index);
+      axis_slope_angle = axis_slope_angle * (from_index / to_index);
       return;
     }
-    object_distance = object_distance * (to_index / from_index);
-    axis_slope_angle = axis_slope_angle * (from_index / to_index);
-    return;
-  }
 
   if (radius_of_curvature != 0.0)
-  {
-    if (object_distance == 0.0)
     {
-      axis_slope_angle = 0.0;
-      iang_sin = ray_height / radius_of_curvature;
+      if (object_distance == 0.0)
+        {
+          axis_slope_angle = 0.0;
+          iang_sin = ray_height / radius_of_curvature;
+        }
+      else
+        {
+          iang_sin =
+              ((object_distance - radius_of_curvature) / radius_of_curvature) *
+              sin(axis_slope_angle);
+        }
+      iang = asin(iang_sin);
+      rang_sin = (from_index / to_index) * iang_sin;
+      old_axis_slope_angle = axis_slope_angle;
+      axis_slope_angle = axis_slope_angle + iang - asin(rang_sin);
+      sagitta = sin((old_axis_slope_angle + iang) / 2.0);
+      sagitta = 2.0 * radius_of_curvature * sagitta * sagitta;
+      object_distance =
+          ((radius_of_curvature * sin(old_axis_slope_angle + iang)) *
+           cot(axis_slope_angle)) +
+          sagitta;
+      return;
     }
-    else
-    {
-      iang_sin =
-          ((object_distance - radius_of_curvature) / radius_of_curvature) *
-          sin(axis_slope_angle);
-    }
-    iang = asin(iang_sin);
-    rang_sin = (from_index / to_index) * iang_sin;
-    old_axis_slope_angle = axis_slope_angle;
-    axis_slope_angle = axis_slope_angle + iang - asin(rang_sin);
-    sagitta = sin((old_axis_slope_angle + iang) / 2.0);
-    sagitta = 2.0 * radius_of_curvature * sagitta * sagitta;
-    object_distance =
-        ((radius_of_curvature * sin(old_axis_slope_angle + iang)) *
-         cot(axis_slope_angle)) +
-        sagitta;
-    return;
-  }
 
   rang = -asin((from_index / to_index) * sin(axis_slope_angle));
   object_distance = object_distance * ((to_index * cos(-rang)) /
@@ -673,23 +673,23 @@ double ray_h;
   from_index = 1.0;
 
   for (i = 1; i <= current_surfaces; i++)
-  {
-    radius_of_curvature = s[i][1];
-    to_index = s[i][2];
-    if (to_index > 1.0)
     {
-      to_index = to_index +
-                 ((spectral_line[4] - spectral_line[line]) /
-                  (spectral_line[3] - spectral_line[6])) *
-                     ((s[i][2] - 1.0) / s[i][3]);
+      radius_of_curvature = s[i][1];
+      to_index = s[i][2];
+      if (to_index > 1.0)
+        {
+          to_index = to_index +
+                     ((spectral_line[4] - spectral_line[line]) /
+                      (spectral_line[3] - spectral_line[6])) *
+                         ((s[i][2] - 1.0) / s[i][3]);
+        }
+      transit_surface();
+      from_index = to_index;
+      if (i < current_surfaces)
+        {
+          object_distance = object_distance - s[i][4];
+        }
     }
-    transit_surface();
-    from_index = to_index;
-    if (i < current_surfaces)
-    {
-      object_distance = object_distance - s[i][4];
-    }
-  }
 }
 
 /*  Initialise when called the first time  */
@@ -703,7 +703,7 @@ char *argv[];
   long passes;
 #endif
 
-  spectral_line[1] = 7621.0;   /* A */
+  spectral_line[1] = 7621.0; /* A */
   spectral_line[2] = 6869.955; /* B */
   spectral_line[3] = 6562.816; /* C */
   spectral_line[4] = 5895.944; /* D */
@@ -721,12 +721,12 @@ char *argv[];
   clear_aperture = 4.0;
   current_surfaces = 4;
   for (i = 0; i < current_surfaces; i++)
-  {
-    for (j = 0; j < 4; j++)
     {
-      s[i + 1][j + 1] = testcase[i][j];
+      for (j = 0; j < 4; j++)
+        {
+          s[i + 1][j + 1] = testcase[i][j];
+        }
     }
-  }
 
 #ifdef ACCURACY
   printf("Beginning execution of floating point accuracy test...\n");
@@ -742,54 +742,54 @@ char *argv[];
       "adjust iteration count so the benchmark runs about five minutes.\n\n");
 #endif
 
-/* Perform ray trace the specified number of times. */
+  /* Perform ray trace the specified number of times. */
 
 #ifdef ACCURACY
   while (TRUE)
-  {
-    passes++;
-    if ((passes % 100L) == 0)
     {
-      printf("Pass %ld.\n", passes);
-    }
+      passes++;
+      if ((passes % 100L) == 0)
+        {
+          printf("Pass %ld.\n", passes);
+        }
 #else
   for (itercount = 0; itercount < niter; itercount++)
-  {
+    {
 #endif
 
-    for (paraxial = 0; paraxial <= 1; paraxial++)
-    {
-      /* Do main trace in D light */
+      for (paraxial = 0; paraxial <= 1; paraxial++)
+        {
+          /* Do main trace in D light */
 
-      trace_line(4, clear_aperture / 2.0);
-      od_sa[paraxial][0] = object_distance;
-      od_sa[paraxial][1] = axis_slope_angle;
-    }
-    paraxial = FALSE;
+          trace_line(4, clear_aperture / 2.0);
+          od_sa[paraxial][0] = object_distance;
+          od_sa[paraxial][1] = axis_slope_angle;
+        }
+      paraxial = FALSE;
 
-    /* Trace marginal ray in C */
+      /* Trace marginal ray in C */
 
-    trace_line(3, clear_aperture / 2.0);
-    od_cline = object_distance;
+      trace_line(3, clear_aperture / 2.0);
+      od_cline = object_distance;
 
-    /* Trace marginal ray in F */
+      /* Trace marginal ray in F */
 
-    trace_line(6, clear_aperture / 2.0);
-    od_fline = object_distance;
+      trace_line(6, clear_aperture / 2.0);
+      od_fline = object_distance;
 
-    aberr_lspher = od_sa[1][0] - od_sa[0][0];
-    aberr_osc =
-        1.0 - (od_sa[1][0] * od_sa[1][1]) / (sin(od_sa[0][1]) * od_sa[0][0]);
-    aberr_lchrom = od_fline - od_cline;
-    max_lspher = sin(od_sa[0][1]);
+      aberr_lspher = od_sa[1][0] - od_sa[0][0];
+      aberr_osc =
+          1.0 - (od_sa[1][0] * od_sa[1][1]) / (sin(od_sa[0][1]) * od_sa[0][0]);
+      aberr_lchrom = od_fline - od_cline;
+      max_lspher = sin(od_sa[0][1]);
 
-    /* D light */
+      /* D light */
 
-    max_lspher = 0.0000926 / (max_lspher * max_lspher);
-    max_osc = 0.0025;
-    max_lchrom = max_lspher;
+      max_lspher = 0.0000926 / (max_lspher * max_lspher);
+      max_osc = 0.0025;
+      max_lchrom = max_lspher;
 #ifndef ACCURACY
-  }
+    }
 #endif
 
   /* Now evaluate the accuracy of the results from the last ray trace */
@@ -816,41 +816,41 @@ char *argv[];
 
   errors = 0;
   for (i = 0; i < 8; i++)
-  {
-    if (strcmp(outarr[i], refarr[i]) != 0)
     {
-#ifdef ACCURACY
-      printf("\nError in pass %ld for results on line %d...\n", passes, i + 1);
-#else
-        printf("\nError in results on line %d...\n", i + 1);
-#endif
-      printf("Expected:  \"%s\"\n", refarr[i]);
-      printf("Received:  \"%s\"\n", outarr[i]);
-      printf("(Errors)    ");
-      k = strlen(refarr[i]);
-      for (j = 0; j < k; j++)
-      {
-        printf("%c", refarr[i][j] == outarr[i][j] ? ' ' : '^');
-        if (refarr[i][j] != outarr[i][j])
+      if (strcmp(outarr[i], refarr[i]) != 0)
         {
-          errors++;
+#ifdef ACCURACY
+          printf("\nError in pass %ld for results on line %d...\n", passes, i + 1);
+#else
+              printf("\nError in results on line %d...\n", i + 1);
+#endif
+          printf("Expected:  \"%s\"\n", refarr[i]);
+          printf("Received:  \"%s\"\n", outarr[i]);
+          printf("(Errors)    ");
+          k = strlen(refarr[i]);
+          for (j = 0; j < k; j++)
+            {
+              printf("%c", refarr[i][j] == outarr[i][j] ? ' ' : '^');
+              if (refarr[i][j] != outarr[i][j])
+                {
+                  errors++;
+                }
+            }
+          printf("\n");
         }
-      }
-      printf("\n");
     }
-  }
 #ifdef ACCURACY
 }
 #else
-    if (errors > 0)
-    {
-      printf("\n%d error%s in results.  This is VERY SERIOUS.\n", errors,
-             errors > 1 ? "s" : "");
-    }
-    else
-    {
-      printf("\nNo errors in results.\n");
-    }
+      if (errors > 0)
+        {
+          printf("\n%d error%s in results.  This is VERY SERIOUS.\n", errors,
+                 errors > 1 ? "s" : "");
+        }
+      else
+        {
+          printf("\nNo errors in results.\n");
+        }
 #endif
 return 0;
 }

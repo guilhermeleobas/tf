@@ -93,10 +93,10 @@ int main(int argc, char *argv[])
 #ifdef PAPI
   /* initialize papi with one thread here  */
   if (PAPI_library_init(PAPI_VER_CURRENT) != PAPI_VER_CURRENT)
-  {
-    fprintf(stderr, "PAPI library init error!\n");
-    exit(1);
-  }
+    {
+      fprintf(stderr, "PAPI library init error!\n");
+      exit(1);
+    }
 #endif
 
 #if defined(TIMING) && defined(OPENMP)
@@ -106,7 +106,8 @@ int main(int argc, char *argv[])
   long g_abrarov = 0;
   long g_alls = 0;
 #pragma omp parallel default(none) shared(input, data) \
-                                              reduction(+ : g_abrarov, g_alls)
+    reduction(+                                        \
+              : g_abrarov, g_alls)
   {
     unsigned long seed = time(NULL) + 1;
     double macro_xs[4];
@@ -134,21 +135,21 @@ int main(int argc, char *argv[])
 
 #pragma omp for schedule(dynamic)
     for (int i = 0; i < input.lookups; i++)
-    {
+      {
 #ifdef STATUS
-      if (thread == 0 && i % 1000 == 0)
-        printf("\rCalculating XS's... (%.0lf%% completed)",
-               (i / ((double)input.lookups / (double)input.nthreads)) /
-                   (double)input.nthreads * 100.0);
+        if (thread == 0 && i % 1000 == 0)
+          printf("\rCalculating XS's... (%.0lf%% completed)",
+                 (i / ((double)input.lookups / (double)input.nthreads)) /
+                     (double)input.nthreads * 100.0);
 #endif
-      mat = pick_mat(&seed);
-      E = rn(&seed);
-      calculate_macro_xs(macro_xs, mat, E, input, data, sigTfactors, &abrarov,
-                         &alls);
-      // Results are copied onto heap to avoid some compiler
-      // flags (-flto) from optimizing out function call
-      memcpy(xs, macro_xs, 4 * sizeof(double));
-    }
+        mat = pick_mat(&seed);
+        E = rn(&seed);
+        calculate_macro_xs(macro_xs, mat, E, input, data, sigTfactors, &abrarov,
+                           &alls);
+        // Results are copied onto heap to avoid some compiler
+        // flags (-flto) from optimizing out function call
+        memcpy(xs, macro_xs, 4 * sizeof(double));
+      }
 
     free(sigTfactors);
 
@@ -158,17 +159,16 @@ int main(int argc, char *argv[])
 
 #ifdef PAPI
     if (thread == 0)
-    {
-      printf("\n");
-      border_print();
-      center_print("PAPI COUNTER RESULTS", 79);
-      border_print();
-      printf("Count          \tSmybol      \tDescription\n");
-    }
+      {
+        printf("\n");
+        border_print();
+        center_print("PAPI COUNTER RESULTS", 79);
+        border_print();
+        printf("Count          \tSmybol      \tDescription\n");
+      }
     {
 #pragma omp barrier
-    }
-    counter_stop(&eventset, num_papi_events);
+    } counter_stop(&eventset, num_papi_events);
 #endif
   }
 

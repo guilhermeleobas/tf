@@ -51,8 +51,8 @@ const int jpeg_zigzag_order[DCTSIZE2] = {
 
 const int jpeg_natural_order[DCTSIZE2 + 16] =
     {
-        0,  1,  8,  16, 9,  2,  3,  10, 17, 24, 32, 25, 18, 11, 4,
-        5,  12, 19, 26, 33, 40, 48, 41, 34, 27, 20, 13, 6,  7,  14,
+        0, 1, 8, 16, 9, 2, 3, 10, 17, 24, 32, 25, 18, 11, 4,
+        5, 12, 19, 26, 33, 40, 48, 41, 34, 27, 20, 13, 6, 7, 14,
         21, 28, 35, 42, 49, 56, 57, 50, 43, 36, 29, 22, 15, 23, 30,
         37, 44, 51, 58, 59, 52, 45, 38, 31, 39, 46, 53, 60, 61, 54,
         47, 55, 62, 63, 63, 63, 63, 63, 63, 63, 63, 63, /* extra entries for
@@ -118,16 +118,16 @@ jcopy_sample_rows(JSAMPARRAY input_array, int source_row,
   output_array += dest_row;
 
   for (row = num_rows; row > 0; row--)
-  {
-    inptr = *input_array++;
-    outptr = *output_array++;
+    {
+      inptr = *input_array++;
+      outptr = *output_array++;
 #ifdef FMEMCOPY
-    FMEMCOPY(outptr, inptr, count);
+      FMEMCOPY(outptr, inptr, count);
 #else
-    for (count = num_cols; count > 0; count--)
-      *outptr++ = *inptr++; /* needn't bother with GETJSAMPLE() here */
+      for (count = num_cols; count > 0; count--)
+        *outptr++ = *inptr++; /* needn't bother with GETJSAMPLE() here */
 #endif
-  }
+    }
 }
 
 GLOBAL(void)
@@ -144,9 +144,9 @@ jcopy_block_row(JBLOCKROW input_row, JBLOCKROW output_row,
   inptr = (JCOEFPTR)input_row;
   outptr = (JCOEFPTR)output_row;
   for (count = (long)num_blocks * DCTSIZE2; count > 0; count--)
-  {
-    *outptr++ = *inptr++;
-  }
+    {
+      *outptr++ = *inptr++;
+    }
 #endif
 }
 
@@ -162,8 +162,8 @@ jzero_far(void FAR *target, size_t bytestozero)
   register size_t count;
 
   for (count = bytestozero; count > 0; count--)
-  {
-    *ptr++ = 0;
-  }
+    {
+      *ptr++ = 0;
+    }
 #endif
 }

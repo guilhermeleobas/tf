@@ -57,20 +57,20 @@ void OUTPUT_BUFFER(struct BUFFER_TYPE *BUF, FILE *OUTPUT, int PASS)
   /* --------------------------------- each string on a different line. */
 
   while ((*BUF).HEAD_OF_BUFFER != NULL)
-  {
-    NEXT = (*(*BUF).HEAD_OF_BUFFER).NEXT;
-    if ((PASS == 2) && !strncmp("eERROR", (*(*BUF).HEAD_OF_BUFFER).LINE, 6))
     {
-      (void)fprintf(OUTPUT, "%s\n", &((*(*BUF).HEAD_OF_BUFFER).LINE[1]));
+      NEXT = (*(*BUF).HEAD_OF_BUFFER).NEXT;
+      if ((PASS == 2) && !strncmp("eERROR", (*(*BUF).HEAD_OF_BUFFER).LINE, 6))
+        {
+          (void)fprintf(OUTPUT, "%s\n", &((*(*BUF).HEAD_OF_BUFFER).LINE[1]));
+        }
+      else
+        {
+          (void)fprintf(OUTPUT, "%s\n", (*(*BUF).HEAD_OF_BUFFER).LINE);
+        }
+      free((*(*BUF).HEAD_OF_BUFFER).LINE);
+      free((char *)(*BUF).HEAD_OF_BUFFER);
+      (*BUF).HEAD_OF_BUFFER = NEXT;
     }
-    else
-    {
-      (void)fprintf(OUTPUT, "%s\n", (*(*BUF).HEAD_OF_BUFFER).LINE);
-    }
-    free((*(*BUF).HEAD_OF_BUFFER).LINE);
-    free((char *)(*BUF).HEAD_OF_BUFFER);
-    (*BUF).HEAD_OF_BUFFER = NEXT;
-  }
   (*BUF).TAIL_OF_BUFFER = NULL;
 }
 
@@ -82,29 +82,29 @@ void ADD_TO_END_OF_BUFFER(struct BUFFER_TYPE *BUF, char *INPUT_STR)
   char *TEMP_LINE;
   /* --------------------------------- Create new element, and put on buffr */
   if ((*BUF).HEAD_OF_BUFFER == NULL)
-  {
-    (*BUF).HEAD_OF_BUFFER = (struct BUFFER *)malloc(sizeof(struct BUFFER));
-    (*BUF).TAIL_OF_BUFFER = (*BUF).HEAD_OF_BUFFER;
-  }
+    {
+      (*BUF).HEAD_OF_BUFFER = (struct BUFFER *)malloc(sizeof(struct BUFFER));
+      (*BUF).TAIL_OF_BUFFER = (*BUF).HEAD_OF_BUFFER;
+    }
   else
-  {
-    (*(*BUF).TAIL_OF_BUFFER).NEXT =
-        (struct BUFFER *)malloc(sizeof(struct BUFFER));
-    (*BUF).TAIL_OF_BUFFER = (*(*BUF).TAIL_OF_BUFFER).NEXT;
-  }
+    {
+      (*(*BUF).TAIL_OF_BUFFER).NEXT =
+          (struct BUFFER *)malloc(sizeof(struct BUFFER));
+      (*BUF).TAIL_OF_BUFFER = (*(*BUF).TAIL_OF_BUFFER).NEXT;
+    }
 
   /* --------------------------------- Initialize the buffer element correctly
    */
   (*(*BUF).TAIL_OF_BUFFER).LINE = TEMP_LINE =
       malloc((unsigned int)(strlen(INPUT_STR) + 2));
   if ((*BUF).KIND == MOD_REC_2)
-  {
-    TEMP_LINE[0] = 'M';
-    (void)strcpy(&(TEMP_LINE[1]), INPUT_STR);
-  }
+    {
+      TEMP_LINE[0] = 'M';
+      (void)strcpy(&(TEMP_LINE[1]), INPUT_STR);
+    }
   else
-  {
-    (void)strcpy(TEMP_LINE, INPUT_STR);
-  }
+    {
+      (void)strcpy(TEMP_LINE, INPUT_STR);
+    }
   (*(*BUF).TAIL_OF_BUFFER).NEXT = NULL;
 }

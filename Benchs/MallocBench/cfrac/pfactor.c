@@ -11,25 +11,27 @@ char *argv[];
 
   --argc;
   if (argc != 0)
-  {
-    do
     {
-      pset(&n, atop(*++argv));
-      showfactors(n);
-    } while (--argc > 0);
-  }
+      do
+        {
+          pset(&n, atop(*++argv));
+          showfactors(n);
+        }
+      while (--argc > 0);
+    }
   else
-  {
-    do
     {
-      pset(&n, fgetp(stdin));
-      if (n == pUndef)
-      {
-        break;
-      }
-      showfactors(n);
-    } while (1);
-  }
+      do
+        {
+          pset(&n, fgetp(stdin));
+          if (n == pUndef)
+            {
+              break;
+            }
+          showfactors(n);
+        }
+      while (1);
+    }
   pdestroy(n);
   return 0;
 }
@@ -50,15 +52,15 @@ void showfactors(n) precision n;
       if
         pne(r, n) putc('*', stdout);
       if (!pprime(r, 16))
-      {
-        fputc('(', stdout);
-        fputp(stdout, r);
-        fputc(')', stdout);
-      }
+        {
+          fputc('(', stdout);
+          fputp(stdout, r);
+          fputc(')', stdout);
+        }
       else
-      {
-        fputp(stdout, r);
-      }
+        {
+          fputp(stdout, r);
+        }
     }
   putc('\n', stdout);
 

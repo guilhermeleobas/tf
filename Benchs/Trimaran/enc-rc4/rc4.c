@@ -30,23 +30,23 @@ void rc4_setup(struct rc4_state *s, unsigned char *key, int length)
   m = s->m;
 
   for (i = 0; i < 256; i++)
-  {
-    m[i] = i;
-  }
+    {
+      m[i] = i;
+    }
 
   j = k = 0;
 
   for (i = 0; i < 256; i++)
-  {
-    a = m[i];
-    j = (unsigned char)(j + a + key[k]);
-    m[i] = m[j];
-    m[j] = a;
-    if (++k >= length)
     {
-      k = 0;
+      a = m[i];
+      j = (unsigned char)(j + a + key[k]);
+      m[i] = m[j];
+      m[j] = a;
+      if (++k >= length)
+        {
+          k = 0;
+        }
     }
-  }
 }
 
 void rc4_crypt(struct rc4_state *s, unsigned char *data, int length)
@@ -58,14 +58,14 @@ void rc4_crypt(struct rc4_state *s, unsigned char *data, int length)
   m = s->m;
 
   for (i = 0; i < length; i++)
-  {
-    x = (unsigned char)(x + 1);
-    a = m[x];
-    y = (unsigned char)(y + a);
-    m[x] = b = m[y];
-    m[y] = a;
-    data[i] ^= m[(unsigned char)(a + b)];
-  }
+    {
+      x = (unsigned char)(x + 1);
+      a = m[x];
+      y = (unsigned char)(y + a);
+      m[x] = b = m[y];
+      m[y] = a;
+      data[i] ^= m[(unsigned char)(a + b)];
+    }
 
   s->x = x;
   s->y = y;
@@ -122,32 +122,32 @@ int main(int argc, const char **argv)
 
   int count = 200000;
   if (argc == 2)
-  {
-    count = atoi(argv[1]);
-  }
+    {
+      count = atoi(argv[1]);
+    }
 
   printf("\n RC4 Validation Tests:\n\n");
 
   for (i = 0; i < 6; i++)
-  {
-    printf(" Test %d ", i + 1);
-
-    for (j = 0; j < count; j++)
     {
-      memcpy(buffer, data[i], data_len[i]);
+      printf(" Test %d ", i + 1);
 
-      rc4_setup(&s, &keys[i][1], keys[i][0]);
-      rc4_crypt(&s, buffer, data_len[i]);
+      for (j = 0; j < count; j++)
+        {
+          memcpy(buffer, data[i], data_len[i]);
+
+          rc4_setup(&s, &keys[i][1], keys[i][0]);
+          rc4_crypt(&s, buffer, data_len[i]);
+        }
+
+      if (memcmp(buffer, output[i], data_len[i]))
+        {
+          printf("failed!\n");
+          return (1);
+        }
+
+      printf("passed.\n");
     }
-
-    if (memcmp(buffer, output[i], data_len[i]))
-    {
-      printf("failed!\n");
-      return (1);
-    }
-
-    printf("passed.\n");
-  }
 
   printf("\n");
 

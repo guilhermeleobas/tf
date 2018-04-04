@@ -81,40 +81,40 @@ int hypre_MPI_Allgather(void *sendbuf, int sendcount,
   int i;
 
   switch (sendtype)
-  {
-    case hypre_MPI_INT:
     {
-      int *crecvbuf = (int *)recvbuf;
-      int *csendbuf = (int *)sendbuf;
-      for (i = 0; i < sendcount; i++)
-      {
-        crecvbuf[i] = csendbuf[i];
-      }
-    }
-    break;
+      case hypre_MPI_INT:
+        {
+          int *crecvbuf = (int *)recvbuf;
+          int *csendbuf = (int *)sendbuf;
+          for (i = 0; i < sendcount; i++)
+            {
+              crecvbuf[i] = csendbuf[i];
+            }
+        }
+        break;
 
-    case hypre_MPI_DOUBLE:
-    {
-      double *crecvbuf = (double *)recvbuf;
-      double *csendbuf = (double *)sendbuf;
-      for (i = 0; i < sendcount; i++)
-      {
-        crecvbuf[i] = csendbuf[i];
-      }
-    }
-    break;
+      case hypre_MPI_DOUBLE:
+        {
+          double *crecvbuf = (double *)recvbuf;
+          double *csendbuf = (double *)sendbuf;
+          for (i = 0; i < sendcount; i++)
+            {
+              crecvbuf[i] = csendbuf[i];
+            }
+        }
+        break;
 
-    case hypre_MPI_CHAR:
-    {
-      char *crecvbuf = (char *)recvbuf;
-      char *csendbuf = (char *)sendbuf;
-      for (i = 0; i < sendcount; i++)
-      {
-        crecvbuf[i] = csendbuf[i];
-      }
+      case hypre_MPI_CHAR:
+        {
+          char *crecvbuf = (char *)recvbuf;
+          char *csendbuf = (char *)sendbuf;
+          for (i = 0; i < sendcount; i++)
+            {
+              crecvbuf[i] = csendbuf[i];
+            }
+        }
+        break;
     }
-    break;
-  }
 
   return (0);
 }
@@ -250,31 +250,31 @@ int hypre_MPI_Allreduce(void *sendbuf, void *recvbuf, int count,
                         hypre_MPI_Comm comm)
 {
   switch (datatype)
-  {
-    case hypre_MPI_INT:
     {
-      int *crecvbuf = (int *)recvbuf;
-      int *csendbuf = (int *)sendbuf;
-      crecvbuf[0] = csendbuf[0];
-    }
-    break;
+      case hypre_MPI_INT:
+        {
+          int *crecvbuf = (int *)recvbuf;
+          int *csendbuf = (int *)sendbuf;
+          crecvbuf[0] = csendbuf[0];
+        }
+        break;
 
-    case hypre_MPI_DOUBLE:
-    {
-      double *crecvbuf = (double *)recvbuf;
-      double *csendbuf = (double *)sendbuf;
-      crecvbuf[0] = csendbuf[0];
-    }
-    break;
+      case hypre_MPI_DOUBLE:
+        {
+          double *crecvbuf = (double *)recvbuf;
+          double *csendbuf = (double *)sendbuf;
+          crecvbuf[0] = csendbuf[0];
+        }
+        break;
 
-    case hypre_MPI_CHAR:
-    {
-      char *crecvbuf = (char *)recvbuf;
-      char *csendbuf = (char *)sendbuf;
-      crecvbuf[0] = csendbuf[0];
+      case hypre_MPI_CHAR:
+        {
+          char *crecvbuf = (char *)recvbuf;
+          char *csendbuf = (char *)sendbuf;
+          crecvbuf[0] = csendbuf[0];
+        }
+        break;
     }
-    break;
-  }
 
   return (0);
 }

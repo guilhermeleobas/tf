@@ -28,18 +28,18 @@ float pairwise_sum(float *vector, long size)
 
   // Base case: perform summation if size <= 16
   if (size <= 16)
-  {
-    for (int i = 0; i < size; i++)
     {
-      sum += vector[i];
+      for (int i = 0; i < size; i++)
+        {
+          sum += vector[i];
+        }
     }
-  }
   else
-  {
-    // otherwise, split
-    sum = pairwise_sum(&vector[0], size / 2) +
-          pairwise_sum(&vector[size / 2], size - size / 2);
-  }
+    {
+      // otherwise, split
+      sum = pairwise_sum(&vector[0], size / 2) +
+            pairwise_sum(&vector[size / 2], size - size / 2);
+    }
 
   return sum;
 }
@@ -61,12 +61,12 @@ Table buildExponentialTable(float precision, float maxVal)
 
   // store linear segment information (slope and y-intercept)
   for (int n = 0; n < N; n++)
-  {
-    // compute slope and y-intercept for ( 1 - exp(-x) )
-    float exponential = exp(-n * dx);
-    tableVals[2 * n] = -exponential;
-    tableVals[2 * n + 1] = 1 + (n * dx - 1) * exponential;
-  }
+    {
+      // compute slope and y-intercept for ( 1 - exp(-x) )
+      float exponential = exp(-n * dx);
+      tableVals[2 * n] = -exponential;
+      tableVals[2 * n + 1] = 1 + (n * dx - 1) * exponential;
+    }
 
   // assign data to table
   table.dx = dx;

@@ -65,9 +65,9 @@ hypre_StructMatrix *hypre_StructMatrixCreateMask(hypre_StructMatrix *matrix,
   mask_stencil_size = num_stencil_indices;
   mask_stencil_shape = hypre_CTAlloc(hypre_Index, num_stencil_indices);
   for (i = 0; i < num_stencil_indices; i++)
-  {
-    hypre_CopyIndex(stencil_shape[stencil_indices[i]], mask_stencil_shape[i]);
-  }
+    {
+      hypre_CopyIndex(stencil_shape[stencil_indices[i]], mask_stencil_shape[i]);
+    }
   hypre_StructMatrixStencil(mask) = hypre_StructStencilCreate(
       hypre_StructStencilDim(stencil), mask_stencil_size, mask_stencil_shape);
 
@@ -86,9 +86,9 @@ hypre_StructMatrix *hypre_StructMatrixCreateMask(hypre_StructMatrix *matrix,
   {
     mask_data_indices[i] = hypre_TAlloc(int, num_stencil_indices);
     for (j = 0; j < num_stencil_indices; j++)
-    {
-      mask_data_indices[i][j] = data_indices[i][stencil_indices[j]];
-    }
+      {
+        mask_data_indices[i][j] = data_indices[i][stencil_indices[j]];
+      }
   }
   hypre_StructMatrixDataIndices(mask) = mask_data_indices;
 
@@ -96,15 +96,15 @@ hypre_StructMatrix *hypre_StructMatrixCreateMask(hypre_StructMatrix *matrix,
 
   hypre_StructMatrixSymmElements(mask) = hypre_TAlloc(int, stencil_size);
   for (i = 0; i < stencil_size; i++)
-  {
-    hypre_StructMatrixSymmElements(mask)[i] =
-        hypre_StructMatrixSymmElements(matrix)[i];
-  }
+    {
+      hypre_StructMatrixSymmElements(mask)[i] =
+          hypre_StructMatrixSymmElements(matrix)[i];
+    }
 
   for (i = 0; i < 6; i++)
-  {
-    hypre_StructMatrixNumGhost(mask)[i] = hypre_StructMatrixNumGhost(matrix)[i];
-  }
+    {
+      hypre_StructMatrixNumGhost(mask)[i] = hypre_StructMatrixNumGhost(matrix)[i];
+    }
 
   hypre_StructMatrixGlobalSize(mask) =
       hypre_StructGridGlobalSize(hypre_StructMatrixGrid(mask)) *

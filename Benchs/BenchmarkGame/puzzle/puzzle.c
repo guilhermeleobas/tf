@@ -35,14 +35,14 @@ void shuffle(int *items, int len)
   int aux;
 
   for (i = len - 1; i > 0; --i)
-  {
-    k = (int)((i + 1) * (rand() / (RAND_MAX + 1.0)));
-    j = (k == (i + 1)) ? k - 1 : k;
+    {
+      k = (int)((i + 1) * (rand() / (RAND_MAX + 1.0)));
+      j = (k == (i + 1)) ? k - 1 : k;
 
-    aux = items[i];
-    items[i] = items[j];
-    items[j] = aux;
-  }
+      aux = items[i];
+      items[i] = items[j];
+      items[j] = aux;
+    }
 }
 
 int *createRandomArray(int size)
@@ -53,9 +53,9 @@ int *createRandomArray(int size)
   len = size + 1;
   result = (int *)malloc(len * sizeof(int));
   for (i = 0; i < len; i++)
-  {
-    result[i] = i;
-  }
+    {
+      result[i] = i;
+    }
   result[0] = randInt(1, size);
   shuffle(result, len);
   return result;
@@ -67,9 +67,9 @@ int findDuplicate(int *data, int len)
   int result = 0;
 
   for (i = 0; i < len; i++)
-  {
-    result = result ^ (i + 1) ^ data[i];
-  }
+    {
+      result = result ^ (i + 1) ^ data[i];
+    }
   result ^= len;
   return result;
 }
@@ -82,15 +82,15 @@ int main()
   srand(1);
 
   for (i = 0; i < NLOOPS1; i++)
-  {
-    rndArr = createRandomArray(ARRAY_SIZE);
-    for (j = 0; j < NLOOPS2; j++)
     {
-      duplicate = findDuplicate(rndArr, ARRAY_SIZE + 1);
+      rndArr = createRandomArray(ARRAY_SIZE);
+      for (j = 0; j < NLOOPS2; j++)
+        {
+          duplicate = findDuplicate(rndArr, ARRAY_SIZE + 1);
+        }
+      free(rndArr);
+      printf("Found duplicate: %d\n", duplicate);
     }
-    free(rndArr);
-    printf("Found duplicate: %d\n", duplicate);
-  }
 
   return 0;
 }

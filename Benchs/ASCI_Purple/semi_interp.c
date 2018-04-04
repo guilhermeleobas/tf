@@ -186,9 +186,9 @@ int hypre_SemiInterp(void *interp_vdata, hypre_StructMatrix *P,
   hypre_ForBoxI(ci, cgrid_boxes)
   {
     while (fgrid_ids[fi] != cgrid_ids[ci])
-    {
-      fi++;
-    }
+      {
+        fi++;
+      }
 
     compute_box = hypre_BoxArrayBox(cgrid_boxes, ci);
 
@@ -207,7 +207,10 @@ int hypre_SemiInterp(void *interp_vdata, hypre_StructMatrix *P,
                         stridec, xci);
 #define HYPRE_BOX_SMP_PRIVATE loopk, loopi, loopj, ei, xci
 #include "hypre_box_smp_forloop.h"
-    hypre_BoxLoop2For(loopi, loopj, loopk, ei, xci) { ep[ei] = xcp[xci]; }
+    hypre_BoxLoop2For(loopi, loopj, loopk, ei, xci)
+    {
+      ep[ei] = xcp[xci];
+    }
     hypre_BoxLoop2End(ei, xci);
   }
 
@@ -216,68 +219,68 @@ int hypre_SemiInterp(void *interp_vdata, hypre_StructMatrix *P,
    *-----------------------------------------------------------------------*/
 
   for (compute_i = 0; compute_i < 2; compute_i++)
-  {
-    switch (compute_i)
     {
-      case 0:
+      switch (compute_i)
+        {
+          case 0:
+            {
+              ep = hypre_StructVectorData(e);
+              hypre_InitializeIndtComputations(compute_pkg, ep, &comm_handle);
+              compute_box_aa = hypre_ComputePkgIndtBoxes(compute_pkg);
+            }
+            break;
+
+          case 1:
+            {
+              hypre_FinalizeIndtComputations(comm_handle);
+              compute_box_aa = hypre_ComputePkgDeptBoxes(compute_pkg);
+            }
+            break;
+        }
+
+      hypre_ForBoxArrayI(fi, compute_box_aa)
       {
-        ep = hypre_StructVectorData(e);
-        hypre_InitializeIndtComputations(compute_pkg, ep, &comm_handle);
-        compute_box_aa = hypre_ComputePkgIndtBoxes(compute_pkg);
-      }
-      break;
+        compute_box_a = hypre_BoxArrayArrayBoxArray(compute_box_aa, fi);
 
-      case 1:
-      {
-        hypre_FinalizeIndtComputations(comm_handle);
-        compute_box_aa = hypre_ComputePkgDeptBoxes(compute_pkg);
-      }
-      break;
-    }
+        P_dbox = hypre_BoxArrayBox(hypre_StructMatrixDataSpace(P), fi);
+        e_dbox = hypre_BoxArrayBox(hypre_StructVectorDataSpace(e), fi);
 
-    hypre_ForBoxArrayI(fi, compute_box_aa)
-    {
-      compute_box_a = hypre_BoxArrayArrayBoxArray(compute_box_aa, fi);
+        if (P_stored_as_transpose)
+          {
+            Pp0 = hypre_StructMatrixBoxData(P, fi, 1);
+            Pp1 = hypre_StructMatrixBoxData(P, fi, 0) -
+                  hypre_BoxOffsetDistance(P_dbox, stencil_shape[0]);
+          }
+        else
+          {
+            Pp0 = hypre_StructMatrixBoxData(P, fi, 0);
+            Pp1 = hypre_StructMatrixBoxData(P, fi, 1);
+          }
+        ep = hypre_StructVectorBoxData(e, fi);
+        ep0 = ep + hypre_BoxOffsetDistance(e_dbox, stencil_shape[0]);
+        ep1 = ep + hypre_BoxOffsetDistance(e_dbox, stencil_shape[1]);
 
-      P_dbox = hypre_BoxArrayBox(hypre_StructMatrixDataSpace(P), fi);
-      e_dbox = hypre_BoxArrayBox(hypre_StructVectorDataSpace(e), fi);
+        hypre_ForBoxI(j, compute_box_a)
+        {
+          compute_box = hypre_BoxArrayBox(compute_box_a, j);
 
-      if (P_stored_as_transpose)
-      {
-        Pp0 = hypre_StructMatrixBoxData(P, fi, 1);
-        Pp1 = hypre_StructMatrixBoxData(P, fi, 0) -
-              hypre_BoxOffsetDistance(P_dbox, stencil_shape[0]);
-      }
-      else
-      {
-        Pp0 = hypre_StructMatrixBoxData(P, fi, 0);
-        Pp1 = hypre_StructMatrixBoxData(P, fi, 1);
-      }
-      ep = hypre_StructVectorBoxData(e, fi);
-      ep0 = ep + hypre_BoxOffsetDistance(e_dbox, stencil_shape[0]);
-      ep1 = ep + hypre_BoxOffsetDistance(e_dbox, stencil_shape[1]);
+          hypre_CopyIndex(hypre_BoxIMin(compute_box), start);
+          hypre_StructMapFineToCoarse(start, findex, stride, startc);
 
-      hypre_ForBoxI(j, compute_box_a)
-      {
-        compute_box = hypre_BoxArrayBox(compute_box_a, j);
+          hypre_BoxGetStrideSize(compute_box, stride, loop_size);
 
-        hypre_CopyIndex(hypre_BoxIMin(compute_box), start);
-        hypre_StructMapFineToCoarse(start, findex, stride, startc);
-
-        hypre_BoxGetStrideSize(compute_box, stride, loop_size);
-
-        hypre_BoxLoop2Begin(loop_size, P_dbox, startc, stridec, Pi, e_dbox,
-                            start, stride, ei);
+          hypre_BoxLoop2Begin(loop_size, P_dbox, startc, stridec, Pi, e_dbox,
+                              start, stride, ei);
 #define HYPRE_BOX_SMP_PRIVATE loopk, loopi, loopj, Pi, ei
 #include "hypre_box_smp_forloop.h"
-        hypre_BoxLoop2For(loopi, loopj, loopk, Pi, ei)
-        {
-          ep[ei] = (Pp0[Pi] * ep0[ei] + Pp1[Pi] * ep1[ei]);
+          hypre_BoxLoop2For(loopi, loopj, loopk, Pi, ei)
+          {
+            ep[ei] = (Pp0[Pi] * ep0[ei] + Pp1[Pi] * ep1[ei]);
+          }
+          hypre_BoxLoop2End(Pi, ei);
         }
-        hypre_BoxLoop2End(Pi, ei);
       }
     }
-  }
 
   /*-----------------------------------------------------------------------
    * Return
@@ -300,12 +303,12 @@ int hypre_SemiInterpDestroy(void *interp_vdata)
   hypre_SemiInterpData *interp_data = interp_vdata;
 
   if (interp_data)
-  {
-    hypre_StructMatrixDestroy(interp_data->P);
-    hypre_ComputePkgDestroy(interp_data->compute_pkg);
-    hypre_FinalizeTiming(interp_data->time_index);
-    hypre_TFree(interp_data);
-  }
+    {
+      hypre_StructMatrixDestroy(interp_data->P);
+      hypre_ComputePkgDestroy(interp_data->compute_pkg);
+      hypre_FinalizeTiming(interp_data->time_index);
+      hypre_TFree(interp_data);
+    }
 
   return ierr;
 }

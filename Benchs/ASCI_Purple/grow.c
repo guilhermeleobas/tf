@@ -38,26 +38,26 @@ hypre_BoxArray *hypre_GrowBoxByStencil(hypre_Box *box,
   shift_box_array = hypre_BoxArrayCreate(hypre_StructStencilSize(stencil));
   shift_box = hypre_BoxCreate();
   for (s = 0; s < hypre_StructStencilSize(stencil); s++)
-  {
-    if (transpose)
-      for (d = 0; d < 3; d++)
-      {
-        hypre_BoxIMinD(shift_box, d) =
-            hypre_BoxIMinD(box, d) - hypre_IndexD(stencil_shape[s], d);
-        hypre_BoxIMaxD(shift_box, d) =
-            hypre_BoxIMaxD(box, d) - hypre_IndexD(stencil_shape[s], d);
-      }
-    else
-      for (d = 0; d < 3; d++)
-      {
-        hypre_BoxIMinD(shift_box, d) =
-            hypre_BoxIMinD(box, d) + hypre_IndexD(stencil_shape[s], d);
-        hypre_BoxIMaxD(shift_box, d) =
-            hypre_BoxIMaxD(box, d) + hypre_IndexD(stencil_shape[s], d);
-      }
+    {
+      if (transpose)
+        for (d = 0; d < 3; d++)
+          {
+            hypre_BoxIMinD(shift_box, d) =
+                hypre_BoxIMinD(box, d) - hypre_IndexD(stencil_shape[s], d);
+            hypre_BoxIMaxD(shift_box, d) =
+                hypre_BoxIMaxD(box, d) - hypre_IndexD(stencil_shape[s], d);
+          }
+      else
+        for (d = 0; d < 3; d++)
+          {
+            hypre_BoxIMinD(shift_box, d) =
+                hypre_BoxIMinD(box, d) + hypre_IndexD(stencil_shape[s], d);
+            hypre_BoxIMaxD(shift_box, d) =
+                hypre_BoxIMaxD(box, d) + hypre_IndexD(stencil_shape[s], d);
+          }
 
-    hypre_CopyBox(shift_box, hypre_BoxArrayBox(shift_box_array, s));
-  }
+      hypre_CopyBox(shift_box, hypre_BoxArrayBox(shift_box_array, s));
+    }
   hypre_BoxDestroy(shift_box);
 
   hypre_UnionBoxes(shift_box_array);

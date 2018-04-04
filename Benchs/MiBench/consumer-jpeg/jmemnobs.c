@@ -98,4 +98,6 @@ jpeg_mem_init(j_common_ptr cinfo)
 }
 
 GLOBAL(void)
-jpeg_mem_term(j_common_ptr cinfo) { /* no work */ }
+jpeg_mem_term(j_common_ptr cinfo)
+{ /* no work */
+}

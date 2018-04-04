@@ -30,22 +30,22 @@ int fill_level = 0; /* default, no fill */
 int fill(int level)
 {
   if (level == 0)
-  {
-    fill_level = 0;
-  }
+    {
+      fill_level = 0;
+    }
   else
-  {
-    fill_level = 5 * ((double)level - 1.) / 0xFFFE;
-    /* The value of fill level should be between 1 and 5,
+    {
+      fill_level = 5 * ((double)level - 1.) / 0xFFFE;
+      /* The value of fill level should be between 1 and 5,
        which is enforced here. */
-    if (fill_level > 5)
-    {
-      fill_level = 5;
+      if (fill_level > 5)
+        {
+          fill_level = 5;
+        }
+      else if (fill_level < 1)
+        {
+          fill_level = 1;
+        }
     }
-    else if (fill_level < 1)
-    {
-      fill_level = 1;
-    }
-  }
   return 0;
 }

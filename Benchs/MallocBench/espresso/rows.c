@@ -10,14 +10,14 @@ sm_row *sm_row_alloc()
 
 #ifdef FAST_AND_LOOSE
   if (sm_row_freelist == NIL(sm_row))
-  {
-    prow = ALLOC(sm_row, 1);
-  }
+    {
+      prow = ALLOC(sm_row, 1);
+    }
   else
-  {
-    prow = sm_row_freelist;
-    sm_row_freelist = prow->next_row;
-  }
+    {
+      prow = sm_row_freelist;
+      sm_row_freelist = prow->next_row;
+    }
 #else
   prow = ALLOC(sm_row, 1);
 #endif
@@ -41,11 +41,11 @@ void sm_row_free(prow) register sm_row *prow;
 {
 #if defined(FAST_AND_LOOSE) && !defined(COLS)
   if (prow->first_col != NIL(sm_element))
-  {
-    /* Add the linked list of row items to the free list */
-    prow->last_col->next_col = sm_element_freelist;
-    sm_element_freelist = prow->first_col;
-  }
+    {
+      /* Add the linked list of row items to the free list */
+      prow->last_col->next_col = sm_element_freelist;
+      sm_element_freelist = prow->first_col;
+    }
 
   /* Add the row to the free list of rows */
   prow->next_row = sm_row_freelist;
@@ -54,10 +54,10 @@ void sm_row_free(prow) register sm_row *prow;
   register sm_element *p, *pnext;
 
   for (p = prow->first_col; p != 0; p = pnext)
-  {
-    pnext = p->next_col;
-    sm_element_free(p);
-  }
+    {
+      pnext = p->next_col;
+      sm_element_free(p);
+    }
   FREE(prow);
 #endif
 }
@@ -72,9 +72,9 @@ sm_row *sm_row_dup(prow) register sm_row *prow;
 
   pnew = sm_row_alloc();
   for (p = prow->first_col; p != 0; p = p->next_col)
-  {
-    (void)sm_row_insert(pnew, p->col_num);
-  }
+    {
+      (void)sm_row_insert(pnew, p->col_num);
+    }
   return pnew;
 }
 
@@ -94,9 +94,9 @@ register int col;
 
   /* if item was not used, free it */
   if (element != test)
-  {
-    sm_element_free(element);
-  }
+    {
+      sm_element_free(element);
+    }
 
   /* either way, return the current new value */
   return test;
@@ -111,15 +111,15 @@ register int col;
   register sm_element *p;
 
   for (p = prow->first_col; p != 0 && p->col_num < col; p = p->next_col)
-  {
-    ;
-  }
+    {
+      ;
+    }
   if (p != 0 && p->col_num == col)
-  {
-    dll_unlink(p, prow->first_col, prow->last_col, next_col, prev_col,
-               prow->length);
-    sm_element_free(p);
-  }
+    {
+      dll_unlink(p, prow->first_col, prow->last_col, next_col, prev_col,
+                 prow->length);
+      sm_element_free(p);
+    }
 }
 
 /*
@@ -131,17 +131,17 @@ int col;
   register sm_element *p;
 
   for (p = prow->first_col; p != 0 && p->col_num < col; p = p->next_col)
-  {
-    ;
-  }
+    {
+      ;
+    }
   if (p != 0 && p->col_num == col)
-  {
-    return p;
-  }
+    {
+      return p;
+    }
   else
-  {
-    return NIL(sm_element);
-  }
+    {
+      return NIL(sm_element);
+    }
 }
 
 /*
@@ -154,21 +154,21 @@ int sm_row_contains(p1, p2) sm_row *p1, *p2;
   q1 = p1->first_col;
   q2 = p2->first_col;
   while (q1 != 0)
-  {
-    if (q2 == 0 || q1->col_num < q2->col_num)
     {
-      return 0;
+      if (q2 == 0 || q1->col_num < q2->col_num)
+        {
+          return 0;
+        }
+      else if (q1->col_num == q2->col_num)
+        {
+          q1 = q1->next_col;
+          q2 = q2->next_col;
+        }
+      else
+        {
+          q2 = q2->next_col;
+        }
     }
-    else if (q1->col_num == q2->col_num)
-    {
-      q1 = q1->next_col;
-      q2 = q2->next_col;
-    }
-    else
-    {
-      q2 = q2->next_col;
-    }
-  }
   return 1;
 }
 
@@ -182,30 +182,30 @@ int sm_row_intersects(p1, p2) sm_row *p1, *p2;
   q1 = p1->first_col;
   q2 = p2->first_col;
   if (q1 == 0 || q2 == 0)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
   for (;;)
-  {
-    if (q1->col_num < q2->col_num)
     {
-      if ((q1 = q1->next_col) == 0)
-      {
-        return 0;
-      }
+      if (q1->col_num < q2->col_num)
+        {
+          if ((q1 = q1->next_col) == 0)
+            {
+              return 0;
+            }
+        }
+      else if (q1->col_num > q2->col_num)
+        {
+          if ((q2 = q2->next_col) == 0)
+            {
+              return 0;
+            }
+        }
+      else
+        {
+          return 1;
+        }
     }
-    else if (q1->col_num > q2->col_num)
-    {
-      if ((q2 = q2->next_col) == 0)
-      {
-        return 0;
-      }
-    }
-    else
-    {
-      return 1;
-    }
-  }
 }
 
 /*
@@ -218,27 +218,27 @@ int sm_row_compare(p1, p2) sm_row *p1, *p2;
   q1 = p1->first_col;
   q2 = p2->first_col;
   while (q1 != 0 && q2 != 0)
-  {
-    if (q1->col_num != q2->col_num)
     {
-      return q1->col_num - q2->col_num;
+      if (q1->col_num != q2->col_num)
+        {
+          return q1->col_num - q2->col_num;
+        }
+      q1 = q1->next_col;
+      q2 = q2->next_col;
     }
-    q1 = q1->next_col;
-    q2 = q2->next_col;
-  }
 
   if (q1 != 0)
-  {
-    return 1;
-  }
+    {
+      return 1;
+    }
   else if (q2 != 0)
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
   else
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
 }
 
 /*
@@ -253,38 +253,38 @@ sm_row *sm_row_and(p1, p2) sm_row *p1, *p2;
   q1 = p1->first_col;
   q2 = p2->first_col;
   if (q1 == 0 || q2 == 0)
-  {
-    return result;
-  }
+    {
+      return result;
+    }
   for (;;)
-  {
-    if (q1->col_num < q2->col_num)
     {
-      if ((q1 = q1->next_col) == 0)
-      {
-        return result;
-      }
+      if (q1->col_num < q2->col_num)
+        {
+          if ((q1 = q1->next_col) == 0)
+            {
+              return result;
+            }
+        }
+      else if (q1->col_num > q2->col_num)
+        {
+          if ((q2 = q2->next_col) == 0)
+            {
+              return result;
+            }
+        }
+      else
+        {
+          (void)sm_row_insert(result, q1->col_num);
+          if ((q1 = q1->next_col) == 0)
+            {
+              return result;
+            }
+          if ((q2 = q2->next_col) == 0)
+            {
+              return result;
+            }
+        }
     }
-    else if (q1->col_num > q2->col_num)
-    {
-      if ((q2 = q2->next_col) == 0)
-      {
-        return result;
-      }
-    }
-    else
-    {
-      (void)sm_row_insert(result, q1->col_num);
-      if ((q1 = q1->next_col) == 0)
-      {
-        return result;
-      }
-      if ((q2 = q2->next_col) == 0)
-      {
-        return result;
-      }
-    }
-  }
 }
 
 int sm_row_hash(prow, modulus) sm_row *prow;
@@ -295,9 +295,9 @@ int modulus;
 
   sum = 0;
   for (p = prow->first_col; p != 0; p = p->next_col)
-  {
-    sum = (sum * 17 + p->col_num) % modulus;
-  }
+    {
+      sum = (sum * 17 + p->col_num) % modulus;
+    }
   return sum;
 }
 
@@ -318,7 +318,7 @@ sm_row *prow;
   sm_element *p;
 
   for (p = prow->first_col; p != 0; p = p->next_col)
-  {
-    (void)fprintf(fp, " %d", p->col_num);
-  }
+    {
+      (void)fprintf(fp, " %d", p->col_num);
+    }
 }

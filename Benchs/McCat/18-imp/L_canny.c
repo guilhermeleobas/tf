@@ -45,33 +45,33 @@ char *err;
   int tgauss, tdgauss, i;
 
   if (GaussianMask(sigma, &tgauss, &gmask, err))
-  {
-    return (1);
-  }
+    {
+      return (1);
+    }
   if (DGaussianMask(sigma, &tdgauss, &dgmask, err))
-  {
-    return (1);
-  }
+    {
+      return (1);
+    }
 
   if (dfilter(image, gmask, dgmask, tgauss, tdgauss, nc, nr, &Ix, err))
-  {
-    return (1);
-  }
+    {
+      return (1);
+    }
   if (dfilter(image, dgmask, gmask, tdgauss, tgauss, nc, nr, &Iy, err))
-  {
-    return (1);
-  }
+    {
+      return (1);
+    }
 
   gr = (float *)calloc(nr * nc, FWS);
   if (!gr)
-  {
-    sprintf(err, "Out of memory");
-    return (1);
-  }
+    {
+      sprintf(err, "Out of memory");
+      return (1);
+    }
   for (i = 0; i < nr * nc; i++)
-  {
-    gr[i] = MOD(Iy[i], Ix[i]);
-  }
+    {
+      gr[i] = MOD(Iy[i], Ix[i]);
+    }
 
   *edge = dnon_max(gr, Ix, Iy, nc, nr);
 
@@ -89,39 +89,39 @@ char *err;
 
   *tg = (short)(GAUSS_MASK * sigma);
   if (*tg % 2 == 0)
-  {
-    *tg += 1;
-  }
+    {
+      *tg += 1;
+    }
 
   coeff_gauss = p = (float *)calloc(*tg, FWS);
   if (!coeff_gauss)
-  {
-    sprintf(err, "Out of memory");
-    return (1);
-  }
+    {
+      sprintf(err, "Out of memory");
+      return (1);
+    }
 
   for (i = -(*tg / 2); i <= *tg / 2; i++)
-  {
-    if ((i + (*tg / 2)) == 0)
     {
-      *coeff_gauss++ =
-          (float)((erf((double)(i + 0.5) / (sqrt((double)2.0) * sigma)) + 1.0) /
-                  2.0);
+      if ((i + (*tg / 2)) == 0)
+        {
+          *coeff_gauss++ =
+              (float)((erf((double)(i + 0.5) / (sqrt((double)2.0) * sigma)) + 1.0) /
+                      2.0);
+        }
+      else if ((i + (*tg / 2)) == *tg - 1)
+        {
+          *coeff_gauss++ =
+              (float)((-erf((double)(i - 0.5) / (sqrt((double)2.0) * sigma)) +
+                       1.0) /
+                      2.0);
+        }
+      else
+        {
+          *coeff_gauss++ =
+              (float)0.5 * (erf((double)(i + 0.5) / (sqrt((double)2.0) * sigma)) -
+                            erf((double)(i - 0.5) / (sqrt((double)2.0) * sigma)));
+        }
     }
-    else if ((i + (*tg / 2)) == *tg - 1)
-    {
-      *coeff_gauss++ =
-          (float)((-erf((double)(i - 0.5) / (sqrt((double)2.0) * sigma)) +
-                   1.0) /
-                  2.0);
-    }
-    else
-    {
-      *coeff_gauss++ =
-          (float)0.5 * (erf((double)(i + 0.5) / (sqrt((double)2.0) * sigma)) -
-                        erf((double)(i - 0.5) / (sqrt((double)2.0) * sigma)));
-    }
-  }
   *mask = p;
 
   return (0);
@@ -138,40 +138,40 @@ char *err;
 
   *tg = (short)(DGAUSS_MASK * sigma);
   if (*tg % 2 == 0)
-  {
-    *tg += 1;
-  }
+    {
+      *tg += 1;
+    }
 
   coeff_dgauss = p = (float *)calloc(*tg, FWS);
   if (!coeff_dgauss)
-  {
-    sprintf(err, "Out of memory");
-    return (1);
-  }
+    {
+      sprintf(err, "Out of memory");
+      return (1);
+    }
 
   for (i = -(*tg / 2); i <= *tg / 2; i++)
-  {
-    if ((i + (*tg / 2)) == 0)
     {
-      *coeff_dgauss++ =
-          (float)(1.0 / (sigma * sqrt((double)(2.0 * M_PI)))) *
-          exp(-(double)((i + 0.5) * (i + 0.5)) / (double)(2.0 * sigma * sigma));
+      if ((i + (*tg / 2)) == 0)
+        {
+          *coeff_dgauss++ =
+              (float)(1.0 / (sigma * sqrt((double)(2.0 * M_PI)))) *
+              exp(-(double)((i + 0.5) * (i + 0.5)) / (double)(2.0 * sigma * sigma));
+        }
+      else if ((i + (*tg / 2)) == *tg - 1)
+        {
+          *coeff_dgauss++ =
+              (float)-(1.0 / (sigma * sqrt(2.0 * M_PI))) *
+              exp(-(double)((i - 0.5) * (i - 0.5)) / (double)(2.0 * sigma * sigma));
+        }
+      else
+        {
+          *coeff_dgauss++ = (float)((exp(-(double)((i + 0.5) * (i + 0.5)) /
+                                         (double)(2.0 * sigma * sigma)) -
+                                     exp(-(double)((i - 0.5) * (i - 0.5)) /
+                                         (double)(2.0 * sigma * sigma))) /
+                                    (sigma * sqrt((double)2.0 * M_PI)));
+        }
     }
-    else if ((i + (*tg / 2)) == *tg - 1)
-    {
-      *coeff_dgauss++ =
-          (float)-(1.0 / (sigma * sqrt(2.0 * M_PI))) *
-          exp(-(double)((i - 0.5) * (i - 0.5)) / (double)(2.0 * sigma * sigma));
-    }
-    else
-    {
-      *coeff_dgauss++ = (float)((exp(-(double)((i + 0.5) * (i + 0.5)) /
-                                     (double)(2.0 * sigma * sigma)) -
-                                 exp(-(double)((i - 0.5) * (i - 0.5)) /
-                                     (double)(2.0 * sigma * sigma))) /
-                                (sigma * sqrt((double)2.0 * M_PI)));
-    }
-  }
   coeff_dgauss = p;
   *mask = p;
 
@@ -188,67 +188,67 @@ char *err;
 
   d = d1 = (float *)calloc(nc * nr, FWS);
   if (!d)
-  {
-    sprintf(err, "Out of memory");
-    return (1);
-  }
+    {
+      sprintf(err, "Out of memory");
+      return (1);
+    }
 
   for (i = 0; i < high; i++)
-  {
-    for (j = 0; j < larg; j++)
     {
-      for (l = -(tm_g / 2); l <= (tm_g / 2); l++)
-      {
-        if ((j + l) < 0)
+      for (j = 0; j < larg; j++)
         {
-          nv = (float)image[i * larg];
+          for (l = -(tm_g / 2); l <= (tm_g / 2); l++)
+            {
+              if ((j + l) < 0)
+                {
+                  nv = (float)image[i * larg];
+                }
+              else if ((j + l) >= larg)
+                {
+                  nv = (float)image[((i + 1) * larg) - 1];
+                }
+              else
+                {
+                  nv = (float)image[(i * larg) + j + l];
+                }
+              *d = (nv * g[(tm_g / 2) - l]) + *d;
+            }
+          d++;
         }
-        else if ((j + l) >= larg)
-        {
-          nv = (float)image[((i + 1) * larg) - 1];
-        }
-        else
-        {
-          nv = (float)image[(i * larg) + j + l];
-        }
-        *d = (nv * g[(tm_g / 2) - l]) + *d;
-      }
-      d++;
     }
-  }
 
   d = d1;
 
   d2 = (float *)calloc(nc * nr, FWS);
   if (!d2)
-  {
-    sprintf(err, "Out of memory");
-    return (1);
-  }
+    {
+      sprintf(err, "Out of memory");
+      return (1);
+    }
 
   for (j = 0; j < larg; j++)
-  {
-    for (i = 0; i < high; i++)
     {
-      for (l = -(tm_f / 2); l <= (tm_f / 2); l++)
-      {
-        if ((i + l) < 0)
+      for (i = 0; i < high; i++)
         {
-          nv = d[j];
+          for (l = -(tm_f / 2); l <= (tm_f / 2); l++)
+            {
+              if ((i + l) < 0)
+                {
+                  nv = d[j];
+                }
+              else if ((i + l) >= high)
+                {
+                  nv = d[((high - 1) * nc) + j];
+                }
+              else
+                {
+                  nv = d[((i + l) * larg) + j];
+                }
+              temp = (d2 + (i * larg) + j);
+              *temp = (nv * f[(tm_f / 2) - l]) + *temp;
+            }
         }
-        else if ((i + l) >= high)
-        {
-          nv = d[((high - 1) * nc) + j];
-        }
-        else
-        {
-          nv = d[((i + l) * larg) + j];
-        }
-        temp = (d2 + (i * larg) + j);
-        *temp = (nv * f[(tm_f / 2) - l]) + *temp;
-      }
     }
-  }
 
   *filt = d2;
   return (0);
@@ -267,50 +267,50 @@ int nr;
   maxima = (float *)calloc(nc * nr, FWS);
 
   for (i = 1; i < nr - 2; i++)
-  {
-    for (j = 1; j < nc - 2; j++)
     {
-      if (ZERO(I(Ix, i, j, nc)))
-      {
-        ampl1 = I(gr, i, j - 1, nc);
-        ampl2 = I(gr, i, j + 1, nc);
-      }
-      else
-      {
-        R = I(Iy, i, j, nc) / I(Ix, i, j, nc);
-        if ((R >= 0.) && (R < .4))
+      for (j = 1; j < nc - 2; j++)
         {
-          ampl1 = I(gr, i + 1, j + 1, nc) * R + (1. - R) * I(gr, i + 1, j, nc);
-          ampl2 = I(gr, i - 1, j - 1, nc) * R + (1. - R) * I(gr, i - 1, j, nc);
-        }
-        /*
+          if (ZERO(I(Ix, i, j, nc)))
+            {
+              ampl1 = I(gr, i, j - 1, nc);
+              ampl2 = I(gr, i, j + 1, nc);
+            }
+          else
+            {
+              R = I(Iy, i, j, nc) / I(Ix, i, j, nc);
+              if ((R >= 0.) && (R < .4))
+                {
+                  ampl1 = I(gr, i + 1, j + 1, nc) * R + (1. - R) * I(gr, i + 1, j, nc);
+                  ampl2 = I(gr, i - 1, j - 1, nc) * R + (1. - R) * I(gr, i - 1, j, nc);
+                }
+              /*
           else if ( R >= 1.) {
           ampl1 = (I(gr,i+1,j+1,nc) + (R - 1.) * I(gr,i,j+1,nc)) / R;
           ampl2 = (I(gr,i-1,j-1,nc) + (R - 1.) * I(gr,i,j-1,nc)) / R;
         } */
-        else if ((R <= 0.) && (R > -.4))
-        {
-          ampl1 = -I(gr, i + 1, j - 1, nc) * R + (1. + R) * I(gr, i + 1, j, nc);
-          ampl2 = -I(gr, i - 1, j + 1, nc) * R + (1. + R) * I(gr, i - 1, j, nc);
-        }
-        /*
+              else if ((R <= 0.) && (R > -.4))
+                {
+                  ampl1 = -I(gr, i + 1, j - 1, nc) * R + (1. + R) * I(gr, i + 1, j, nc);
+                  ampl2 = -I(gr, i - 1, j + 1, nc) * R + (1. + R) * I(gr, i - 1, j, nc);
+                }
+              /*
           else if (R <= -1.) {
           ampl1 = (- I(gr,i+1,j-1,nc) + (R + 1.) * I(gr,i,j-1,nc)) / R;
           ampl2 = (- I(gr,i-1,j+1,nc) + (R + 1.) * I(gr,i,j+1,nc)) / R;
         } */
-        else
-        {
-          I(maxima, i, j, nc) = 0;
-          continue;
-        }
-      }
+              else
+                {
+                  I(maxima, i, j, nc) = 0;
+                  continue;
+                }
+            }
 
-      if (GEPS(I(gr, i, j, nc), ampl1) && GEPS(I(gr, i, j, nc), ampl2))
-      {
-        I(maxima, i, j, nc) = NGMAX;
-      }
+          if (GEPS(I(gr, i, j, nc), ampl1) && GEPS(I(gr, i, j, nc), ampl2))
+            {
+              I(maxima, i, j, nc) = NGMAX;
+            }
+        }
     }
-  }
 
   return (maxima);
 }

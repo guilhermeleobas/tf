@@ -118,95 +118,95 @@ int main(int argc, char *argv[])
 #endif
 
   if (!config)
-  {
-    printf(
-        "Error: Could not allocation configuration "
-        "structure.\n\n\t---Exiting\n\n");
-    exit(0);
-  }
-
-  if (argc < 2)
-  {
-    exhaustiveLegSearch(defaultFile, config);
-  }
-  else
-  {
-    while ((c = getopt(argc, argv, "c:i:x:o:q:huy")) != -1)
     {
-      switch (c)
-      {
-        case '?': /* we had a problem */
-          if (optopt == 'c')
-          {
-            fprintf(stderr, "\tPlease specify configuration file.\n\n");
-          }
-          else if (optopt == 'i' || optopt == 'x')
-          {
-            fprintf(stderr, "\tPlease specify data file.\n\n");
-          }
-          else if (optopt == 'o')
-          {
-            fprintf(stderr, "\tPlease specify output graph data file.\n\n");
-          }
-          else if (optopt == 'q')
-          {
-            fprintf(
-                stderr,
-                "\tPlease specify recursion depth to keep spawning tasks.\n\n");
-          }
-          return (1);
-          break; /* Superfluous, I know */
-        case 'h':
-        case 'u':
-          printf("\n%s\n\n", helpString);
-          return (0); /* Nothing else matters */
-          break;      /* Superfluous, I know. */
-        case 'c':     /* configuration file */
-          fileName = optarg;
-          cFlag = 1;
-          break;
-        case 'i': /* interactive */
-          fileName = optarg;
-          iFlag = 1;
-          break;
-        case 'x': /* exhaustive leg search */
-          fileName = optarg;
-          xFlag = 1;
-          break;
-        case 'o': /* Save optimized paths in a new graph definition data file */
-          config->searchOptions->outputFile = optarg;
-          config->searchOptions->writeOutputFile = true;
-          oFlag = 1;
-          break;
-        case 's':
-          config->searchOptions->doStatistics = true;
-          break;
-        case 'q':
-          qCount = atoi(optarg);
-          if (qCount < 1)
-          {
-            qCount = 1;
-          }
-          config->qThreadCount = qCount;
-          break;
-        case 'y':
-          /* if ( commandLine != NULL ) */
-          {
-            YAMLOpen();
-            commandLine[0] = '\0';
-            for (i = 0; i < argc; ++i)
-            {
-              sprintf(commandLine, "%s %s", commandLine, argv[i]);
-            }
-            YAMLWriteString("Command", commandLine + 1);
-          }
-          break;
-        default:
-          break;
-      }
+      printf(
+          "Error: Could not allocation configuration "
+          "structure.\n\n\t---Exiting\n\n");
+      exit(0);
     }
 
-    /* Debug --* /
+  if (argc < 2)
+    {
+      exhaustiveLegSearch(defaultFile, config);
+    }
+  else
+    {
+      while ((c = getopt(argc, argv, "c:i:x:o:q:huy")) != -1)
+        {
+          switch (c)
+            {
+              case '?': /* we had a problem */
+                if (optopt == 'c')
+                  {
+                    fprintf(stderr, "\tPlease specify configuration file.\n\n");
+                  }
+                else if (optopt == 'i' || optopt == 'x')
+                  {
+                    fprintf(stderr, "\tPlease specify data file.\n\n");
+                  }
+                else if (optopt == 'o')
+                  {
+                    fprintf(stderr, "\tPlease specify output graph data file.\n\n");
+                  }
+                else if (optopt == 'q')
+                  {
+                    fprintf(
+                        stderr,
+                        "\tPlease specify recursion depth to keep spawning tasks.\n\n");
+                  }
+                return (1);
+                break; /* Superfluous, I know */
+              case 'h':
+              case 'u':
+                printf("\n%s\n\n", helpString);
+                return (0); /* Nothing else matters */
+                break; /* Superfluous, I know. */
+              case 'c': /* configuration file */
+                fileName = optarg;
+                cFlag = 1;
+                break;
+              case 'i': /* interactive */
+                fileName = optarg;
+                iFlag = 1;
+                break;
+              case 'x': /* exhaustive leg search */
+                fileName = optarg;
+                xFlag = 1;
+                break;
+              case 'o': /* Save optimized paths in a new graph definition data file */
+                config->searchOptions->outputFile = optarg;
+                config->searchOptions->writeOutputFile = true;
+                oFlag = 1;
+                break;
+              case 's':
+                config->searchOptions->doStatistics = true;
+                break;
+              case 'q':
+                qCount = atoi(optarg);
+                if (qCount < 1)
+                  {
+                    qCount = 1;
+                  }
+                config->qThreadCount = qCount;
+                break;
+              case 'y':
+                /* if ( commandLine != NULL ) */
+                {
+                  YAMLOpen();
+                  commandLine[0] = '\0';
+                  for (i = 0; i < argc; ++i)
+                    {
+                      sprintf(commandLine, "%s %s", commandLine, argv[i]);
+                    }
+                  YAMLWriteString("Command", commandLine + 1);
+                }
+                break;
+              default:
+                break;
+            }
+        }
+
+      /* Debug --* /
     if (cFlag) printf ("cFlag ");
     if (iFlag) printf ("iFlag ");
     if (xFlag) printf ("xFlag ");
@@ -216,46 +216,46 @@ int main(int argc, char *argv[])
     printf ("\n");
     / *-- End Debug */
 
-    if ((cFlag + iFlag + xFlag) > 1)
-    {
-      fprintf(stderr,
-              "-c -i and -x are mutually exclusive, PathFinder can only do one "
-              "of those.\n\n");
-      return (1);
-    }
+      if ((cFlag + iFlag + xFlag) > 1)
+        {
+          fprintf(stderr,
+                  "-c -i and -x are mutually exclusive, PathFinder can only do one "
+                  "of those.\n\n");
+          return (1);
+        }
 
-    if ((cFlag + iFlag + xFlag) == 0)
-    {
-      fprintf(stderr,
-              "-c (config file) -i (interactive) or -x (exhaustive) must be "
-              "specified.\n\n");
-      return (1);
-    }
+      if ((cFlag + iFlag + xFlag) == 0)
+        {
+          fprintf(stderr,
+                  "-c (config file) -i (interactive) or -x (exhaustive) must be "
+                  "specified.\n\n");
+          return (1);
+        }
 
-    if (oFlag && !xFlag)
-    {
-      fprintf(stderr,
-              "-o (optimized graph output) is only compatible with -x "
-              "(exhaustive searches).\n\n");
-      return (1);
-    }
+      if (oFlag && !xFlag)
+        {
+          fprintf(stderr,
+                  "-o (optimized graph output) is only compatible with -x "
+                  "(exhaustive searches).\n\n");
+          return (1);
+        }
 
-    if (cFlag)
-    {
-      runBatch(fileName, config);
+      if (cFlag)
+        {
+          runBatch(fileName, config);
+        }
+      else if (iFlag)
+        {
+          runInteractively(fileName, config);
+        }
+      else
+        {
+          exhaustiveLegSearch(fileName, config);
+        }
     }
-    else if (iFlag)
-    {
-      runInteractively(fileName, config);
-    }
-    else
-    {
-      exhaustiveLegSearch(fileName, config);
-    }
-  }
 
   YAMLClose(); /* works even if YAML logging isn't present */
-  return (0);  /* zero means no error */
+  return (0); /* zero means no error */
 }
 
 void runBatch(char *configFile, Configuration *config)
@@ -269,10 +269,10 @@ void runBatch(char *configFile, Configuration *config)
   double sec;
 
   if (!configFile)
-  {
-    printf("Error: No config file entered.\n\n\t---Exiting---");
-    exit(0);
-  }
+    {
+      printf("Error: No config file entered.\n\n\t---Exiting---");
+      exit(0);
+    }
 
   // printf("config file: %s\n", configFile);
 
@@ -294,13 +294,13 @@ void runBatch(char *configFile, Configuration *config)
   / *-- End Debug */
 
   if (success)
-  {
+    {
 #ifdef QT
-    doMultiSearchesQT(config);
+      doMultiSearchesQT(config);
 #else
-    doMultiSearches(config);
+      doMultiSearches(config);
 #endif
-  }
+    }
 
   printf("\n\nSearches complete.\n");
 }
@@ -318,68 +318,68 @@ void runInteractively(char *fileName, Configuration *config)
   graph = parseFile(fileName);
 
   if (!graph)
-  {
-    return;
-  }
+    {
+      return;
+    }
 
   while (1)
-  {
-    i = 0;
-    do
     {
-      printf(
-          "\nPlease insert a node label for this signature (\"\" to complete, "
-          "\"bail\" to exit):\n");
-      gets(stringBuffer);
+      i = 0;
+      do
+        {
+          printf(
+              "\nPlease insert a node label for this signature (\"\" to complete, "
+              "\"bail\" to exit):\n");
+          gets(stringBuffer);
 
-      if (strcmp(stringBuffer, "bail") == 0)
-      {
-        exit(1);
-      }
+          if (strcmp(stringBuffer, "bail") == 0)
+            {
+              exit(1);
+            }
 
-      if (strcmp(stringBuffer, "") != 0)
-      {
-        labels[i] = strdup(stringBuffer);
-        ++i;
-      }
+          if (strcmp(stringBuffer, "") != 0)
+            {
+              labels[i] = strdup(stringBuffer);
+              ++i;
+            }
+        }
+      while (i < 25 && strcmp(stringBuffer, "") != 0);
 
-    } while (i < 25 && strcmp(stringBuffer, "") != 0);
+      labels[i] = NULL;
 
-    labels[i] = NULL;
+      /* Debug */
+      printf("\nSignature: ");
+      for (j = 0; j < i; ++j)
+        {
+          printf("'%s'", labels[j]);
+          if (j < i - 1)
+            {
+              printf(" -> ");
+            }
+          else
+            {
+              printf("\n\n");
+            }
+        }
+      /* end debug */
 
-    /* Debug */
-    printf("\nSignature: ");
-    for (j = 0; j < i; ++j)
-    {
-      printf("'%s'", labels[j]);
-      if (j < i - 1)
-      {
-        printf(" -> ");
-      }
+      path = NodePtrVec_new(50);
+      success = findLabelPath(graph, (Signature)labels, path,
+                              config->searchOptions->searchType);
+
+      /* Sanity check to verify that a valid path exists */
+      if (success)
+        {
+          /* printStack ( path ); */
+          printf("Found, resultant path has %d steps.\n", path->contentSize);
+        }
       else
-      {
-        printf("\n\n");
-      }
-    }
-    /* end debug */
+        {
+          printf("\n\tPath not found for signature.\n");
+        }
 
-    path = NodePtrVec_new(50);
-    success = findLabelPath(graph, (Signature)labels, path,
-                            config->searchOptions->searchType);
-
-    /* Sanity check to verify that a valid path exists */
-    if (success)
-    {
-      /* printStack ( path ); */
-      printf("Found, resultant path has %d steps.\n", path->contentSize);
+      NodePtrVec_delete(path);
     }
-    else
-    {
-      printf("\n\tPath not found for signature.\n");
-    }
-
-    NodePtrVec_delete(path);
-  }
 }
 
 void exhaustiveLegSearch(char *fileName, Configuration *config)
@@ -390,18 +390,18 @@ void exhaustiveLegSearch(char *fileName, Configuration *config)
   graph = parseFile(fileName);
 
   if (!graph || !config)
-  {
-    return;
-  }
+    {
+      return;
+    }
 
   if (config->searchOptions->outputFile == NULL)
-  {
-    found = findAllPossibleLegs(graph, config->searchOptions->searchType);
-  }
+    {
+      found = findAllPossibleLegs(graph, config->searchOptions->searchType);
+    }
   else
-  {
-    found = findAndLogAllPossibleLegs(graph, config->searchOptions);
-  }
+    {
+      found = findAndLogAllPossibleLegs(graph, config->searchOptions);
+    }
   printf("\n\nTotal %d legs found\n\n", found);
   Graph_delete(graph);
 }

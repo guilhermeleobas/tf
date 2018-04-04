@@ -81,27 +81,27 @@ typedef struct
   j_decompress_ptr cinfo; /* back link saves passing separate parm */
 
   /* State for packing variable-width codes into a bitstream */
-  int n_bits;       /* current number of bits/code */
+  int n_bits; /* current number of bits/code */
   code_int maxcode; /* maximum code, given n_bits */
-  int init_bits;    /* initial n_bits ... restored after clear */
-  INT32 cur_accum;  /* holds bits not yet output */
-  int cur_bits;     /* # of bits in cur_accum */
+  int init_bits; /* initial n_bits ... restored after clear */
+  INT32 cur_accum; /* holds bits not yet output */
+  int cur_bits; /* # of bits in cur_accum */
 
   /* LZW string construction */
   code_int waiting_code; /* symbol not yet output; may be extendable */
-  boolean first_byte;    /* if TRUE, waiting_code is not valid */
+  boolean first_byte; /* if TRUE, waiting_code is not valid */
 
   /* State for LZW code assignment */
   code_int ClearCode; /* clear code (doesn't change) */
-  code_int EOFCode;   /* EOF code (ditto) */
+  code_int EOFCode; /* EOF code (ditto) */
   code_int free_code; /* first not-yet-used symbol code */
 
   /* LZW hash table */
-  code_int *hash_code;        /* => hash table of symbol codes */
+  code_int *hash_code; /* => hash table of symbol codes */
   hash_entry FAR *hash_value; /* => hash table of symbol values */
 
   /* GIF data packet construction buffer */
-  int bytesinpkt;      /* # of bytes in current packet */
+  int bytesinpkt; /* # of bytes in current packet */
   char packetbuf[256]; /* workspace for accumulating packet */
 
 } gif_dest_struct;
@@ -118,15 +118,15 @@ flush_packet(gif_dest_ptr dinfo)
 /* flush any accumulated data */
 {
   if (dinfo->bytesinpkt > 0)
-  { /* never write zero-length packet */
-    dinfo->packetbuf[0] = (char)dinfo->bytesinpkt++;
-    if (JFWRITE(dinfo->pub.output_file, dinfo->packetbuf, dinfo->bytesinpkt) !=
-        (size_t)dinfo->bytesinpkt)
-    {
-      ERREXIT(dinfo->cinfo, JERR_FILE_WRITE);
+    { /* never write zero-length packet */
+      dinfo->packetbuf[0] = (char)dinfo->bytesinpkt++;
+      if (JFWRITE(dinfo->pub.output_file, dinfo->packetbuf, dinfo->bytesinpkt) !=
+          (size_t)dinfo->bytesinpkt)
+        {
+          ERREXIT(dinfo->cinfo, JERR_FILE_WRITE);
+        }
+      dinfo->bytesinpkt = 0;
     }
-    dinfo->bytesinpkt = 0;
-  }
 }
 
 /* Add a character to current packet; flush to disk if necessary */
@@ -147,11 +147,11 @@ output(gif_dest_ptr dinfo, code_int code)
   dinfo->cur_bits += dinfo->n_bits;
 
   while (dinfo->cur_bits >= 8)
-  {
-    CHAR_OUT(dinfo, dinfo->cur_accum & 0xFF);
-    dinfo->cur_accum >>= 8;
-    dinfo->cur_bits -= 8;
-  }
+    {
+      CHAR_OUT(dinfo, dinfo->cur_accum & 0xFF);
+      dinfo->cur_accum >>= 8;
+      dinfo->cur_bits -= 8;
+    }
 
   /*
    * If the next entry is going to be too big for the code size,
@@ -159,17 +159,17 @@ output(gif_dest_ptr dinfo, code_int code)
    * that it's done in sync with the decoder's codesize increases.
    */
   if (dinfo->free_code > dinfo->maxcode)
-  {
-    dinfo->n_bits++;
-    if (dinfo->n_bits == MAX_LZW_BITS)
     {
-      dinfo->maxcode = LZW_TABLE_SIZE; /* free_code will never exceed this */
+      dinfo->n_bits++;
+      if (dinfo->n_bits == MAX_LZW_BITS)
+        {
+          dinfo->maxcode = LZW_TABLE_SIZE; /* free_code will never exceed this */
+        }
+      else
+        {
+          dinfo->maxcode = MAXCODE(dinfo->n_bits);
+        }
     }
-    else
-    {
-      dinfo->maxcode = MAXCODE(dinfo->n_bits);
-    }
-  }
 }
 
 /* The LZW algorithm proper */
@@ -188,7 +188,7 @@ clear_block(gif_dest_ptr dinfo)
 {
   clear_hash(dinfo); /* delete all the symbols */
   dinfo->free_code = dinfo->ClearCode + 2;
-  output(dinfo, dinfo->ClearCode);  /* inform decoder */
+  output(dinfo, dinfo->ClearCode); /* inform decoder */
   dinfo->n_bits = dinfo->init_bits; /* reset code size */
   dinfo->maxcode = MAXCODE(dinfo->n_bits);
 }
@@ -223,11 +223,11 @@ compress_byte(gif_dest_ptr dinfo, int c)
   register hash_entry probe_value;
 
   if (dinfo->first_byte)
-  { /* need to initialize waiting_code */
-    dinfo->waiting_code = c;
-    dinfo->first_byte = FALSE;
-    return;
-  }
+    { /* need to initialize waiting_code */
+      dinfo->waiting_code = c;
+      dinfo->first_byte = FALSE;
+      return;
+    }
 
   /* Probe hash table to see if a symbol exists for
    * waiting_code followed by c.
@@ -236,57 +236,57 @@ compress_byte(gif_dest_ptr dinfo, int c)
   i = ((hash_int)c << (MAX_LZW_BITS - 8)) + dinfo->waiting_code;
   /* i is less than twice 2**MAX_LZW_BITS, therefore less than twice HSIZE */
   if (i >= HSIZE)
-  {
-    i -= HSIZE;
-  }
+    {
+      i -= HSIZE;
+    }
 
   probe_value = HASH_ENTRY(dinfo->waiting_code, c);
 
   if (dinfo->hash_code[i] != 0)
-  { /* is first probed slot empty? */
-    if (dinfo->hash_value[i] == probe_value)
-    {
-      dinfo->waiting_code = dinfo->hash_code[i];
-      return;
-    }
-    if (i == 0)
-    { /* secondary hash (after G. Knott) */
-      disp = 1;
-    }
-    else
-    {
-      disp = HSIZE - i;
-    }
-    for (;;)
-    {
-      i -= disp;
-      if (i < 0)
-      {
-        i += HSIZE;
-      }
-      if (dinfo->hash_code[i] == 0)
-      {
-        break; /* hit empty slot */
-      }
+    { /* is first probed slot empty? */
       if (dinfo->hash_value[i] == probe_value)
-      {
-        dinfo->waiting_code = dinfo->hash_code[i];
-        return;
-      }
+        {
+          dinfo->waiting_code = dinfo->hash_code[i];
+          return;
+        }
+      if (i == 0)
+        { /* secondary hash (after G. Knott) */
+          disp = 1;
+        }
+      else
+        {
+          disp = HSIZE - i;
+        }
+      for (;;)
+        {
+          i -= disp;
+          if (i < 0)
+            {
+              i += HSIZE;
+            }
+          if (dinfo->hash_code[i] == 0)
+            {
+              break; /* hit empty slot */
+            }
+          if (dinfo->hash_value[i] == probe_value)
+            {
+              dinfo->waiting_code = dinfo->hash_code[i];
+              return;
+            }
+        }
     }
-  }
 
   /* here when hashtable[i] is an empty slot; desired symbol not in table */
   output(dinfo, dinfo->waiting_code);
   if (dinfo->free_code < LZW_TABLE_SIZE)
-  {
-    dinfo->hash_code[i] = dinfo->free_code++; /* add symbol to hashtable */
-    dinfo->hash_value[i] = probe_value;
-  }
+    {
+      dinfo->hash_code[i] = dinfo->free_code++; /* add symbol to hashtable */
+      dinfo->hash_value[i] = probe_value;
+    }
   else
-  {
-    clear_block(dinfo);
-  }
+    {
+      clear_block(dinfo);
+    }
   dinfo->waiting_code = c;
 }
 
@@ -296,16 +296,16 @@ compress_term(gif_dest_ptr dinfo)
 {
   /* Flush out the buffered code */
   if (!dinfo->first_byte)
-  {
-    output(dinfo, dinfo->waiting_code);
-  }
+    {
+      output(dinfo, dinfo->waiting_code);
+    }
   /* Send an EOF code */
   output(dinfo, dinfo->EOFCode);
   /* Flush the bit-packing buffer */
   if (dinfo->cur_bits > 0)
-  {
-    CHAR_OUT(dinfo, dinfo->cur_accum & 0xFF);
-  }
+    {
+      CHAR_OUT(dinfo, dinfo->cur_accum & 0xFF);
+    }
   /* Flush the packet buffer */
   flush_packet(dinfo);
 }
@@ -339,24 +339,24 @@ emit_header(gif_dest_ptr dinfo, int num_colors, JSAMPARRAY colormap)
   int i;
 
   if (num_colors > 256)
-  {
-    ERREXIT1(dinfo->cinfo, JERR_TOO_MANY_COLORS, num_colors);
-  }
+    {
+      ERREXIT1(dinfo->cinfo, JERR_TOO_MANY_COLORS, num_colors);
+    }
   /* Compute bits/pixel and related values */
   BitsPerPixel = 1;
   while (num_colors > (1 << BitsPerPixel))
-  {
-    BitsPerPixel++;
-  }
+    {
+      BitsPerPixel++;
+    }
   ColorMapSize = 1 << BitsPerPixel;
   if (BitsPerPixel <= 1)
-  {
-    InitCodeSize = 2;
-  }
+    {
+      InitCodeSize = 2;
+    }
   else
-  {
-    InitCodeSize = BitsPerPixel;
-  }
+    {
+      InitCodeSize = BitsPerPixel;
+    }
   /*
    * Write the GIF header.
    * Note that we generate a plain GIF87 header for maximum compatibility.
@@ -370,9 +370,9 @@ emit_header(gif_dest_ptr dinfo, int num_colors, JSAMPARRAY colormap)
   /* Write the Logical Screen Descriptor */
   put_word(dinfo, (unsigned int)dinfo->cinfo->output_width);
   put_word(dinfo, (unsigned int)dinfo->cinfo->output_height);
-  FlagByte = 0x80;                     /* Yes, there is a global color table */
+  FlagByte = 0x80; /* Yes, there is a global color table */
   FlagByte |= (BitsPerPixel - 1) << 4; /* color resolution */
-  FlagByte |= (BitsPerPixel - 1);      /* size of global color table */
+  FlagByte |= (BitsPerPixel - 1); /* size of global color table */
   putc(FlagByte, dinfo->pub.output_file);
   putc(0, dinfo->pub.output_file); /* Background color index */
   putc(0, dinfo->pub.output_file); /* Reserved (aspect ratio in GIF89) */
@@ -380,39 +380,39 @@ emit_header(gif_dest_ptr dinfo, int num_colors, JSAMPARRAY colormap)
   /* If the color map is more than 8 bits precision, */
   /* we reduce it to 8 bits by shifting */
   for (i = 0; i < ColorMapSize; i++)
-  {
-    if (i < num_colors)
     {
-      if (colormap != NULL)
-      {
-        if (dinfo->cinfo->out_color_space == JCS_RGB)
+      if (i < num_colors)
         {
-          /* Normal case: RGB color map */
-          putc(GETJSAMPLE(colormap[0][i]) >> cshift, dinfo->pub.output_file);
-          putc(GETJSAMPLE(colormap[1][i]) >> cshift, dinfo->pub.output_file);
-          putc(GETJSAMPLE(colormap[2][i]) >> cshift, dinfo->pub.output_file);
+          if (colormap != NULL)
+            {
+              if (dinfo->cinfo->out_color_space == JCS_RGB)
+                {
+                  /* Normal case: RGB color map */
+                  putc(GETJSAMPLE(colormap[0][i]) >> cshift, dinfo->pub.output_file);
+                  putc(GETJSAMPLE(colormap[1][i]) >> cshift, dinfo->pub.output_file);
+                  putc(GETJSAMPLE(colormap[2][i]) >> cshift, dinfo->pub.output_file);
+                }
+              else
+                {
+                  /* Grayscale "color map": possible if quantizing grayscale image */
+                  put_3bytes(dinfo, GETJSAMPLE(colormap[0][i]) >> cshift);
+                }
+            }
+          else
+            {
+              /* Create a gray-scale map of num_colors values, range 0..255 */
+              put_3bytes(dinfo, (i * 255 + (num_colors - 1) / 2) / (num_colors - 1));
+            }
         }
-        else
-        {
-          /* Grayscale "color map": possible if quantizing grayscale image */
-          put_3bytes(dinfo, GETJSAMPLE(colormap[0][i]) >> cshift);
-        }
-      }
       else
-      {
-        /* Create a gray-scale map of num_colors values, range 0..255 */
-        put_3bytes(dinfo, (i * 255 + (num_colors - 1) / 2) / (num_colors - 1));
-      }
+        {
+          /* fill out the map to a power of 2 */
+          put_3bytes(dinfo, 0);
+        }
     }
-    else
-    {
-      /* fill out the map to a power of 2 */
-      put_3bytes(dinfo, 0);
-    }
-  }
   /* Write image separator and Image Descriptor */
   putc(',', dinfo->pub.output_file); /* separator */
-  put_word(dinfo, 0);                /* left/top offset */
+  put_word(dinfo, 0); /* left/top offset */
   put_word(dinfo, 0);
   put_word(dinfo, (unsigned int)dinfo->cinfo->output_width); /* image size */
   put_word(dinfo, (unsigned int)dinfo->cinfo->output_height);
@@ -435,13 +435,13 @@ start_output_gif(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo)
   gif_dest_ptr dest = (gif_dest_ptr)dinfo;
 
   if (cinfo->quantize_colors)
-  {
-    emit_header(dest, cinfo->actual_number_of_colors, cinfo->colormap);
-  }
+    {
+      emit_header(dest, cinfo->actual_number_of_colors, cinfo->colormap);
+    }
   else
-  {
-    emit_header(dest, 256, (JSAMPARRAY)NULL);
-  }
+    {
+      emit_header(dest, 256, (JSAMPARRAY)NULL);
+    }
 }
 
 /*
@@ -459,9 +459,9 @@ put_pixel_rows(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo,
 
   ptr = dest->pub.buffer[0];
   for (col = cinfo->output_width; col > 0; col--)
-  {
-    compress_byte(dest, GETJSAMPLE(*ptr++));
-  }
+    {
+      compress_byte(dest, GETJSAMPLE(*ptr++));
+    }
 }
 
 /*
@@ -482,9 +482,9 @@ finish_output_gif(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo)
   /* Make sure we wrote the output file OK */
   fflush(dest->pub.output_file);
   if (ferror(dest->pub.output_file))
-  {
-    ERREXIT(cinfo, JERR_FILE_WRITE);
-  }
+    {
+      ERREXIT(cinfo, JERR_FILE_WRITE);
+    }
 }
 
 /*
@@ -506,28 +506,28 @@ jinit_write_gif(j_decompress_ptr cinfo)
 
   if (cinfo->out_color_space != JCS_GRAYSCALE &&
       cinfo->out_color_space != JCS_RGB)
-  {
-    ERREXIT(cinfo, JERR_GIF_COLORSPACE);
-  }
+    {
+      ERREXIT(cinfo, JERR_GIF_COLORSPACE);
+    }
 
   /* Force quantization if color or if > 8 bits input */
   if (cinfo->out_color_space != JCS_GRAYSCALE || cinfo->data_precision > 8)
-  {
-    /* Force quantization to at most 256 colors */
-    cinfo->quantize_colors = TRUE;
-    if (cinfo->desired_number_of_colors > 256)
     {
-      cinfo->desired_number_of_colors = 256;
+      /* Force quantization to at most 256 colors */
+      cinfo->quantize_colors = TRUE;
+      if (cinfo->desired_number_of_colors > 256)
+        {
+          cinfo->desired_number_of_colors = 256;
+        }
     }
-  }
 
   /* Calculate output image dimensions so we can allocate space */
   jpeg_calc_output_dimensions(cinfo);
 
   if (cinfo->output_components != 1)
-  { /* safety check: just one component? */
-    ERREXIT(cinfo, JERR_GIF_BUG);
-  }
+    { /* safety check: just one component? */
+      ERREXIT(cinfo, JERR_GIF_BUG);
+    }
 
   /* Create decompressor output buffer. */
   dest->pub.buffer = (*cinfo->mem->alloc_sarray)(

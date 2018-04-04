@@ -44,9 +44,9 @@ static void mul4(double *Out, const double A[4][4], const double B[4][4])
             A[3][3] * B[3][3];
 
   for (n = 0; n < 16; ++n)
-  {
-    Out[n] = Res[n];
-  }
+    {
+      Out[n] = Res[n];
+    }
 }
 
 /* Allow mul4 to be inlined into wrap_mul4. This actually enables further
@@ -76,18 +76,18 @@ int main()
   unsigned n, m;
 
   for (n = 0; n != Iterations; ++n)
-  {
-    wrap_mul4(&C[0][0], A, B);
-  }
+    {
+      wrap_mul4(&C[0][0], A, B);
+    }
 
   for (n = 0; n != 4; ++n)
-  {
-    for (m = 0; m != 4; ++m)
     {
-      printf("%8.2f", C[n][m]);
+      for (m = 0; m != 4; ++m)
+        {
+          printf("%8.2f", C[n][m]);
+        }
+      puts("");
     }
-    puts("");
-  }
 
   return 0;
 }

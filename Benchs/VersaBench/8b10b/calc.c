@@ -169,65 +169,65 @@ unsigned int calc(unsigned int theWord, unsigned int k)
   lookup5 = lookupTable5B[index5];
   lookup3 = lookupTable3B[index3];
   if (GET_X_5(lookup5))
-  {
-    // set the output and don't touch the parity
-    result = lookup5 & B5_MASK;
-    disparity1 = disparity0;
-  }
-  else
-  {
-    // ugg I need to think about this one
-    if (disparity0 == GET_PLUS_5(lookup5))
     {
-      // this means that we are comming in the correct way
-      result = (lookup5 & B5_MASK);
-    }
-    else
-    {
-      // this means that we are comming in the wrong way
-      // and that means that we need to use the alternative
-      // word
-      result = (lookup5 & B5_MASK) ^ B5_MASK;
-    }
-    if (GET_FLIP_5(lookup5))
-    {
-      disparity1 = disparity0 ^ 1;
-    }
-    else
-    {
+      // set the output and don't touch the parity
+      result = lookup5 & B5_MASK;
       disparity1 = disparity0;
     }
-  }
-  if (GET_X_3(lookup3))
-  {
-    // set the output and don't touch the parity
-    result |= lookup3 & B3_MASK;
-    disparity0 = disparity1;
-  }
   else
-  {
-    // ugg I need to think about this one
-    if (disparity1 == GET_PLUS_3(lookup3))
     {
-      // this means that we are comming in the correct way
-      result |= (lookup3 & B3_MASK);
+      // ugg I need to think about this one
+      if (disparity0 == GET_PLUS_5(lookup5))
+        {
+          // this means that we are comming in the correct way
+          result = (lookup5 & B5_MASK);
+        }
+      else
+        {
+          // this means that we are comming in the wrong way
+          // and that means that we need to use the alternative
+          // word
+          result = (lookup5 & B5_MASK) ^ B5_MASK;
+        }
+      if (GET_FLIP_5(lookup5))
+        {
+          disparity1 = disparity0 ^ 1;
+        }
+      else
+        {
+          disparity1 = disparity0;
+        }
     }
-    else
+  if (GET_X_3(lookup3))
     {
-      // this means that we are comming in the wrong way
-      // and that means that we need to use the alternative
-      // word
-      result |= (lookup3 & B3_MASK) ^ B3_MASK;
-    }
-    if (GET_FLIP_3(lookup3))
-    {
-      disparity0 = disparity1 ^ 1;
-    }
-    else
-    {
+      // set the output and don't touch the parity
+      result |= lookup3 & B3_MASK;
       disparity0 = disparity1;
     }
-  }
+  else
+    {
+      // ugg I need to think about this one
+      if (disparity1 == GET_PLUS_3(lookup3))
+        {
+          // this means that we are comming in the correct way
+          result |= (lookup3 & B3_MASK);
+        }
+      else
+        {
+          // this means that we are comming in the wrong way
+          // and that means that we need to use the alternative
+          // word
+          result |= (lookup3 & B3_MASK) ^ B3_MASK;
+        }
+      if (GET_FLIP_3(lookup3))
+        {
+          disparity0 = disparity1 ^ 1;
+        }
+      else
+        {
+          disparity0 = disparity1;
+        }
+    }
   return result;
 }
 
@@ -245,10 +245,10 @@ void bigTableSetup()
   int counter;
   unsigned int tempResult;
   for (counter = 0; counter < 1024; counter++)
-  {
-    disparity0 = counter >> 9;
-    tempResult = calc(counter & 0xff, ((counter >> 8) & 1));
-    bigTable[counter] = tempResult | disparity0 << 16;
-  }
+    {
+      disparity0 = counter >> 9;
+      tempResult = calc(counter & 0xff, ((counter >> 8) & 1));
+      bigTable[counter] = tempResult | disparity0 << 16;
+    }
   resetDisparity();
 }

@@ -22,10 +22,10 @@ static void id3_pad(char *string, int length)
   l = strlen(string);
 
   while (l < length)
-  {
-    string[l] = ' ';
-    l++;
-  }
+    {
+      string[l] = ' ';
+      l++;
+    }
   string[l] = '\0';
 }
 
@@ -68,10 +68,10 @@ void id3_buildtag(ID3TAGDATA *tag)
   strncat(tag->tagtext, tag->genre, 1);
 
   if (tag->track != 0)
-  {
-    tag->tagtext[125] = '\0';
-    tag->tagtext[126] = tag->track;
-  }
+    {
+      tag->tagtext[125] = '\0';
+      tag->tagtext[126] = tag->track;
+    }
   tag->valid = 1; /* ready for writing*/
 }
 
@@ -83,15 +83,15 @@ int id3_writetag(char *filename, ID3TAGDATA *tag)
 {
   FILE *f;
   if (!tag->valid)
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
 
   f = fopen(filename, "rb+");
   if (!f)
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
 
   fseek(f, 0, SEEK_END);
   fwrite(tag->tagtext, 1, 128, f);

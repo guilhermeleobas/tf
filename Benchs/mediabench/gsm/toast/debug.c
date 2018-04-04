@@ -25,18 +25,18 @@ void gsm_debug_words P4((name, from, to, ptr), char* name, int from, int to,
 
   fprintf(stderr, "%s [%d .. %d]: ", name, from, to);
   while (from <= to)
-  {
-    fprintf(stderr, "%d ", ptr[from]);
-    from++;
-    if (nprinted++ >= 7)
     {
-      nprinted = 0;
-      if (from < to)
-      {
-        putc('\n', stderr);
-      }
+      fprintf(stderr, "%d ", ptr[from]);
+      from++;
+      if (nprinted++ >= 7)
+        {
+          nprinted = 0;
+          if (from < to)
+            {
+              putc('\n', stderr);
+            }
+        }
     }
-  }
   putc('\n', stderr);
 }
 
@@ -47,18 +47,18 @@ void gsm_debug_longwords P4((name, from, to, ptr), char* name, int from, int to,
 
   fprintf(stderr, "%s [%d .. %d]: ", name, from, to);
   while (from <= to)
-  {
-    fprintf(stderr, "%ld ", ptr[from]);
-    from++;
-    if (nprinted++ >= 7)
     {
-      nprinted = 0;
-      if (from < to)
-      {
-        putc('\n', stderr);
-      }
+      fprintf(stderr, "%ld ", ptr[from]);
+      from++;
+      if (nprinted++ >= 7)
+        {
+          nprinted = 0;
+          if (from < to)
+            {
+              putc('\n', stderr);
+            }
+        }
     }
-  }
   putc('\n', stderr);
 }
 

@@ -89,103 +89,103 @@ int gs_main(int argc, char *argv[], char *map_name,
     pdevs[2] = 0;
     for (ppdev = pdevs; *ppdev != 0; ppdev++)
       for (pdev = *ppdev; *pdev != 0; pdev++)
-      {
-        gx_device *tdev = gs_trace_device(*pdev);
-        if (tdev == 0)
         {
-          dprintf("Can't allocate traced device!\n");
-          exit(1);
+          gx_device *tdev = gs_trace_device(*pdev);
+          if (tdev == 0)
+            {
+              dprintf("Can't allocate traced device!\n");
+              exit(1);
+            }
+          *pdev = tdev;
         }
-        *pdev = tdev;
-      }
   }
 #endif
   for (; argi < argc; argi++)
-  {
-    char *arg = argv[argi];
-    if (*arg == '-')
     {
-      switch (*++arg)
-      {
-        default:
-          if ((*switch_proc)(*arg, arg + 1) < 0)
-          {
-            printf("Unknown switch %s - ignoring\n", arg - 1);
-          }
-          break;
-        case 'Z':
+      char *arg = argv[argi];
+      if (*arg == '-')
+        {
+          switch (*++arg)
+            {
+              default:
+                if ((*switch_proc)(*arg, arg + 1) < 0)
+                  {
+                    printf("Unknown switch %s - ignoring\n", arg - 1);
+                  }
+                break;
+              case 'Z':
 #ifdef DEBUG
-          /* Print the address of 'main' so that */
-          /* we can decipher stack traces later. */
-          {
-            extern main();
-            printf("[Z]main = %lx\n", (ulong)main);
-          }
-          if (!arg[1])
-          { /* No options, set all flags */
-            memset(gs_debug, -1, 128);
-          }
-          else
-          {
-            while (*++arg) gs_debug[*arg & 127] = -1;
-          }
+                /* Print the address of 'main' so that */
+                /* we can decipher stack traces later. */
+                {
+                  extern main();
+                  printf("[Z]main = %lx\n", (ulong)main);
+                }
+                if (!arg[1])
+                  { /* No options, set all flags */
+                    memset(gs_debug, -1, 128);
+                  }
+                else
+                  {
+                    while (*++arg) gs_debug[*arg & 127] = -1;
+                  }
 #else
-          printf("Not a debugging configuration, -Z switch ignored\n");
+                printf("Not a debugging configuration, -Z switch ignored\n");
 #endif
-          break;
-        case 'T':
-          if (mapf == NULL)
-          { /* Open the map file and look up 'main' */
-            extern FILE *trace_open_map(P2(char *, long *));
-            mapf = trace_open_map(map_name, &proc_reloc);
-            if (mapf == NULL)
-            {
-              printf("Map file %s is apparently missing or malformed\n",
-                     map_name);
-              break;
+                break;
+              case 'T':
+                if (mapf == NULL)
+                  { /* Open the map file and look up 'main' */
+                    extern FILE *trace_open_map(P2(char *, long *));
+                    mapf = trace_open_map(map_name, &proc_reloc);
+                    if (mapf == NULL)
+                      {
+                        printf("Map file %s is apparently missing or malformed\n",
+                               map_name);
+                        break;
+                      }
+                    /* Print the address of 'main' so that */
+                    /* we can decipher return addresses later. */
+                    {
+                      extern main();
+                      printf("[T]main = %lx\n", (ulong)main);
+                    }
+                  }
+                {
+                  char *delim;
+                  char *tname;
+                  char *targs = NULL;
+                  int rsize = 0;
+                  extern int trace_flush_flag;
+                  delim = strchr(arg, ':');
+                  if (delim != NULL)
+                    {
+                      sscanf(delim + 1, "%d", &rsize);
+                      *delim = 0; /* terminate name */
+                      delim = strchr(delim + 1, ':');
+                      if (delim != NULL)
+                        {
+                          targs = delim + 1;
+                        }
+                    }
+                  tname = gs_malloc(strlen(arg) + 1, 1, "-T switch");
+                  strcpy(tname, arg);
+                  *tname = '_';
+                  strupr(tname);
+                  if (trace_name(tname, mapf, targs, rsize) < 0)
+                    {
+                      printf("%s not found\n", tname);
+                    }
+                  trace_flush_flag = 1;
+                }
+                break;
             }
-            /* Print the address of 'main' so that */
-            /* we can decipher return addresses later. */
-            {
-              extern main();
-              printf("[T]main = %lx\n", (ulong)main);
-            }
-          }
-          {
-            char *delim;
-            char *tname;
-            char *targs = NULL;
-            int rsize = 0;
-            extern int trace_flush_flag;
-            delim = strchr(arg, ':');
-            if (delim != NULL)
-            {
-              sscanf(delim + 1, "%d", &rsize);
-              *delim = 0; /* terminate name */
-              delim = strchr(delim + 1, ':');
-              if (delim != NULL)
-              {
-                targs = delim + 1;
-              }
-            }
-            tname = gs_malloc(strlen(arg) + 1, 1, "-T switch");
-            strcpy(tname, arg);
-            *tname = '_';
-            strupr(tname);
-            if (trace_name(tname, mapf, targs, rsize) < 0)
-            {
-              printf("%s not found\n", tname);
-            }
-            trace_flush_flag = 1;
-          }
-          break;
-      }
+        }
+      else
+        {
+          (*arg_proc)(arg, arg_count++);
+        }
     }
-    else
-    {
-      (*arg_proc)(arg, arg_count++);
-    }
-  }
   return arg_count;
 }
 
@@ -194,16 +194,16 @@ void gs_exit(int code)
 {
   gx_device **pdev = gx_device_list;
   if (code != 0)
-  {
-    fflush(stderr); /* in case of error exit */
-  }
-  for (; *pdev != 0; pdev++)
-  {
-    if ((*pdev)->is_open)
     {
-      ((*pdev)->procs->close_device)(*pdev);
+      fflush(stderr); /* in case of error exit */
     }
-  }
+  for (; *pdev != 0; pdev++)
+    {
+      if ((*pdev)->is_open)
+        {
+          ((*pdev)->procs->close_device)(*pdev);
+        }
+    }
   exit(code);
 }
 
@@ -217,10 +217,10 @@ void gs_dump_C_stack();
 int gs_log_error(int err)
 {
   if (gs_debug['e'])
-  {
-    printf("Returning error %d:\n", err);
-    gs_dump_C_stack();
-  }
+    {
+      printf("Returning error %d:\n", err);
+      gs_dump_C_stack();
+    }
   return err;
 }
 
@@ -236,10 +236,11 @@ void gs_dump_C_stack()
   char *nbp = stack_top_frame();
   char *bp;
   do
-  {
-    bp = nbp;
-    printf("frame %8lx called from %8lx (%8lx)\n", (unsigned long)bp,
-           stack_return(bp), stack_return(bp) - proc_reloc);
-    nbp = stack_next_frame(bp);
-  } while (nbp != 0);
+    {
+      bp = nbp;
+      printf("frame %8lx called from %8lx (%8lx)\n", (unsigned long)bp,
+             stack_return(bp), stack_return(bp) - proc_reloc);
+      nbp = stack_next_frame(bp);
+    }
+  while (nbp != 0);
 }

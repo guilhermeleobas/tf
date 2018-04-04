@@ -44,36 +44,36 @@ int gdev_prn_open(gx_device *dev)
   prn_dev->mem.width = dev->width;
   prn_dev->mem.height = dev->height;
   if (prn_dev->vmem_space)
-  { /* only allocate pointer table */
-    space = dev->height * sizeof(byte **);
-  }
-  else /* allocate entire buffer */
-  {
-    space = gx_device_memory_bitmap_size(&prn_dev->mem);
-    if (space > (uint)(-4))
-    {
-      return -1; /* can't allocate */
+    { /* only allocate pointer table */
+      space = dev->height * sizeof(byte **);
     }
-  }
+  else /* allocate entire buffer */
+    {
+      space = gx_device_memory_bitmap_size(&prn_dev->mem);
+      if (space > (uint)(-4))
+        {
+          return -1; /* can't allocate */
+        }
+    }
   base = (byte *)gs_malloc((uint)space, 1, "printer buffer");
   if (base == 0)
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
   prn_dev->mem.base = base;
   if ((*prn_dev->mem.procs->open_device)((gx_device *)&prn_dev->mem) < 0)
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
   if (prn_dev->vmem_space)
-  {
-    int line_size = (prn_dev->width + 7) >> 3;
-    prn_dev->mem.bring_in_proc = prn_bring_in_rect;
-    vmem_init(&prn_dev->vmem, (char **)prn_dev->mem.line_ptrs, line_size,
-              prn_dev->height, 0,
-              (int)(prn_dev->x_pixels_per_inch / 8 * line_size),
-              max(prn_dev->vmem_space, line_size + 4), gs_malloc, gs_free);
-  }
+    {
+      int line_size = (prn_dev->width + 7) >> 3;
+      prn_dev->mem.bring_in_proc = prn_bring_in_rect;
+      vmem_init(&prn_dev->vmem, (char **)prn_dev->mem.line_ptrs, line_size,
+                prn_dev->height, 0,
+                (int)(prn_dev->x_pixels_per_inch / 8 * line_size),
+                max(prn_dev->vmem_space, line_size + 4), gs_malloc, gs_free);
+    }
   printf("Printing in memory, please be patient.\n");
   return 0;
 }
@@ -126,30 +126,30 @@ int gdev_prn_copy_color(gx_device *dev, byte *data, int dx, int raster, int x,
 int gdev_prn_open_printer(gx_device *dev)
 {
   if (prn_dev->write_to_prn)
-  {
-#ifdef __MSDOS__
-    int fno = fileno(stdprn);
-    int ctrl = ioctl(fno, 0);
-    ioctl(fno, 1, (ctrl | 0x20) & 0xff); /* no ^Z intervention! */
-    prn_dev->file = stdprn;
-    printf("Printing from memory to printer.\n");
-#else
-    printf("Can't print directly from memory to printer yet.\n");
-#endif
-  }
-  else
-  {
-    char *fname = prn_dev->fname;
-    strcpy(fname, SCRATCH_TEMPLATE);
-    mktemp(fname);
-    prn_dev->file = fopen(fname, "wb+");
-    if (prn_dev->file == NULL)
     {
-      eprintf1("could not open the printer file %s!\n", fname);
-      return -1;
+#ifdef __MSDOS__
+      int fno = fileno(stdprn);
+      int ctrl = ioctl(fno, 0);
+      ioctl(fno, 1, (ctrl | 0x20) & 0xff); /* no ^Z intervention! */
+      prn_dev->file = stdprn;
+      printf("Printing from memory to printer.\n");
+#else
+      printf("Can't print directly from memory to printer yet.\n");
+#endif
     }
-    printf("Printing from memory to file %s.\n", fname);
-  }
+  else
+    {
+      char *fname = prn_dev->fname;
+      strcpy(fname, SCRATCH_TEMPLATE);
+      mktemp(fname);
+      prn_dev->file = fopen(fname, "wb+");
+      if (prn_dev->file == NULL)
+        {
+          eprintf1("could not open the printer file %s!\n", fname);
+          return -1;
+        }
+      printf("Printing from memory to file %s.\n", fname);
+    }
   return 0;
 }
 
@@ -210,10 +210,10 @@ void gdev_prn_transpose_8x8(byte *inp, register int line_size, byte *outp,
 int gdev_prn_close_printer(gx_device *dev)
 {
   if (!prn_dev->write_to_prn)
-  {
-    fclose(prn_dev->file);
-    printf("To print the page, copy the file %s to the printer\n",
-           prn_dev->fname);
-  }
+    {
+      fclose(prn_dev->file);
+      printf("To print the page, copy the file %s to the printer\n",
+             prn_dev->fname);
+    }
   return 0;
 }

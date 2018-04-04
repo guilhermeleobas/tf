@@ -16,14 +16,14 @@
 /* Handles a signal interupt.                                                */
 void SIGNAL_INTERUPT(TYPE,
                      CODE) int TYPE; /* TYPE/CLASS of interupt (1,2,3, or 4) */
-int CODE;                            /* Interupt code.                       */
+int CODE; /* Interupt code.                       */
 {
   switch (TYPE)
-  {
-    case 2:
-      SW_0 = ((int)SW_0 / 256) * 256 + CODE;
-      RETURN_STATUS = ABNORMAL_1;
-      break;
-    default:;
-  }
+    {
+      case 2:
+        SW_0 = ((int)SW_0 / 256) * 256 + CODE;
+        RETURN_STATUS = ABNORMAL_1;
+        break;
+      default:;
+    }
 }

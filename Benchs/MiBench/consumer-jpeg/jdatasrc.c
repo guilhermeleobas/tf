@@ -25,8 +25,8 @@ typedef struct
 {
   struct jpeg_source_mgr pub; /* public fields */
 
-  FILE *infile;          /* source stream */
-  JOCTET *buffer;        /* start of buffer */
+  FILE *infile; /* source stream */
+  JOCTET *buffer; /* start of buffer */
   boolean start_of_file; /* have we gotten any data yet? */
 } my_source_mgr;
 
@@ -93,17 +93,17 @@ fill_input_buffer(j_decompress_ptr cinfo)
   nbytes = JFREAD(src->infile, src->buffer, INPUT_BUF_SIZE);
 
   if (nbytes <= 0)
-  {
-    if (src->start_of_file)
-    { /* Treat empty input file as fatal error */
-      ERREXIT(cinfo, JERR_INPUT_EMPTY);
+    {
+      if (src->start_of_file)
+        { /* Treat empty input file as fatal error */
+          ERREXIT(cinfo, JERR_INPUT_EMPTY);
+        }
+      WARNMS(cinfo, JWRN_JPEG_EOF);
+      /* Insert a fake EOI marker */
+      src->buffer[0] = (JOCTET)0xFF;
+      src->buffer[1] = (JOCTET)JPEG_EOI;
+      nbytes = 2;
     }
-    WARNMS(cinfo, JWRN_JPEG_EOF);
-    /* Insert a fake EOI marker */
-    src->buffer[0] = (JOCTET)0xFF;
-    src->buffer[1] = (JOCTET)JPEG_EOI;
-    nbytes = 2;
-  }
 
   src->pub.next_input_byte = src->buffer;
   src->pub.bytes_in_buffer = nbytes;
@@ -134,18 +134,18 @@ skip_input_data(j_decompress_ptr cinfo, long num_bytes)
    * any trouble anyway --- large skips are infrequent.
    */
   if (num_bytes > 0)
-  {
-    while (num_bytes > (long)src->pub.bytes_in_buffer)
     {
-      num_bytes -= (long)src->pub.bytes_in_buffer;
-      (void)fill_input_buffer(cinfo);
-      /* note we assume that fill_input_buffer will never return FALSE,
+      while (num_bytes > (long)src->pub.bytes_in_buffer)
+        {
+          num_bytes -= (long)src->pub.bytes_in_buffer;
+          (void)fill_input_buffer(cinfo);
+          /* note we assume that fill_input_buffer will never return FALSE,
        * so suspension need not be handled.
        */
+        }
+      src->pub.next_input_byte += (size_t)num_bytes;
+      src->pub.bytes_in_buffer -= (size_t)num_bytes;
     }
-    src->pub.next_input_byte += (size_t)num_bytes;
-    src->pub.bytes_in_buffer -= (size_t)num_bytes;
-  }
 }
 
 /*
@@ -166,7 +166,9 @@ skip_input_data(j_decompress_ptr cinfo, long num_bytes)
  */
 
 METHODDEF(void)
-term_source(j_decompress_ptr cinfo) { /* no work necessary here */ }
+term_source(j_decompress_ptr cinfo)
+{ /* no work necessary here */
+}
 /*
  * Prepare for input from a stdio stream.
  * The caller must have already opened the stream, and is responsible
@@ -186,13 +188,13 @@ jpeg_stdio_src(j_decompress_ptr cinfo, FILE *infile)
    * manager serially with the same JPEG object.  Caveat programmer.
    */
   if (cinfo->src == NULL)
-  { /* first time for this JPEG object? */
-    cinfo->src = (struct jpeg_source_mgr *)(*cinfo->mem->alloc_small)(
-        (j_common_ptr)cinfo, JPOOL_PERMANENT, SIZEOF(my_source_mgr));
-    src = (my_src_ptr)cinfo->src;
-    src->buffer = (JOCTET *)(*cinfo->mem->alloc_small)(
-        (j_common_ptr)cinfo, JPOOL_PERMANENT, INPUT_BUF_SIZE * SIZEOF(JOCTET));
-  }
+    { /* first time for this JPEG object? */
+      cinfo->src = (struct jpeg_source_mgr *)(*cinfo->mem->alloc_small)(
+          (j_common_ptr)cinfo, JPOOL_PERMANENT, SIZEOF(my_source_mgr));
+      src = (my_src_ptr)cinfo->src;
+      src->buffer = (JOCTET *)(*cinfo->mem->alloc_small)(
+          (j_common_ptr)cinfo, JPOOL_PERMANENT, INPUT_BUF_SIZE * SIZEOF(JOCTET));
+    }
 
   src = (my_src_ptr)cinfo->src;
   src->pub.init_source = init_source;
@@ -201,6 +203,6 @@ jpeg_stdio_src(j_decompress_ptr cinfo, FILE *infile)
   src->pub.resync_to_restart = jpeg_resync_to_restart; /* use default method */
   src->pub.term_source = term_source;
   src->infile = infile;
-  src->pub.bytes_in_buffer = 0;    /* forces fill_input_buffer on first read */
+  src->pub.bytes_in_buffer = 0; /* forces fill_input_buffer on first read */
   src->pub.next_input_byte = NULL; /* until buffer loaded */
 }

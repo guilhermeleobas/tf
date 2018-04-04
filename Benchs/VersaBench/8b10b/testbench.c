@@ -62,27 +62,27 @@ void runTestbench(int numberOfWords, char* inputFileName, char* outputFileName0)
   /*** VERSABENCH START ***/
   // run calc for numberOfWords times
   for (tmp = 0; tmp < numberOfWords; ++tmp)
-  {  // LLVM: increase execution time.
-    for (counter = 0; counter < numberOfWords; counter++)
-    {
+    {  // LLVM: increase execution time.
+      for (counter = 0; counter < numberOfWords; counter++)
+        {
 #ifdef BIG_CALC
-      bits0 = theInputArray[counter];
-      theOutputArray0[counter] = bigTableCalc(bits0);
+          bits0 = theInputArray[counter];
+          theOutputArray0[counter] = bigTableCalc(bits0);
 #else
-      bits0 = theInputArray[counter];
-      theOutputArray0[counter] = calc(bits0 & 0xff, bits0 >> 8);
+          bits0 = theInputArray[counter];
+          theOutputArray0[counter] = calc(bits0 & 0xff, bits0 >> 8);
 #endif
+        }
     }
-  }
   /*** VERSABENCH END ***/
 
   // dump the outputs to a files
   outputFile0 = stdout;
   for (counter = 0; counter < (numberOfWords); counter += 128)
-  {
-    bits0 = theOutputArray0[counter];
-    fprintf(outputFile0, "%8.8X\n", bits0);
-  }
+    {
+      bits0 = theOutputArray0[counter];
+      fprintf(outputFile0, "%8.8X\n", bits0);
+    }
 
   free(theBigAllocatedThing);
 }

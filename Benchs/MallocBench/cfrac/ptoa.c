@@ -29,55 +29,57 @@ char *ptoa(u) precision u;
 
   consize = (unsigned int)u->size;
   if (consize > MAXINT / aDigits)
-  {
-    consize = (consize / pDigits) * aDigits;
-  }
+    {
+      consize = (consize / pDigits) * aDigits;
+    }
   else
-  {
-    consize = (consize * aDigits) / pDigits;
-  }
+    {
+      consize = (consize * aDigits) / pDigits;
+    }
 
   consize += aDigitLog + 2; /* leading 0's, sign, & '\0' */
   d = (char *)allocate((unsigned int)consize);
   if (d == (char *)0)
-  {
-    return d;
-  }
+    {
+      return d;
+    }
 
   pset(&v, pabs(u));
   pset(&pbase, utop(aDigit));
 
   dPtr = d + consize;
   *--dPtr = '\0'; /* null terminate string */
-  i = u->sign;    /* save sign */
+  i = u->sign; /* save sign */
   do
-  {
-    pdivmod(v, pbase, &v, &r);
-    temp = ptou(r); /* Assumes unsigned and accumulator same! */
-    j = aDigitLog;
-    do
     {
-      *--dPtr = CONDIGIT(temp % aBase); /* remainder */
-      temp = temp / aBase;
-    } while (--j > 0);
-  } while (pnez(v));
+      pdivmod(v, pbase, &v, &r);
+      temp = ptou(r); /* Assumes unsigned and accumulator same! */
+      j = aDigitLog;
+      do
+        {
+          *--dPtr = CONDIGIT(temp % aBase); /* remainder */
+          temp = temp / aBase;
+        }
+      while (--j > 0);
+    }
+  while (pnez(v));
 
   while (*dPtr == '0')
-  {
-    dPtr++; /* toss leading zero's */
-  }
+    {
+      dPtr++; /* toss leading zero's */
+    }
   if (*dPtr == '\0')
-  {
-    --dPtr; /* but don't waste zero! */
-  }
+    {
+      --dPtr; /* but don't waste zero! */
+    }
   if (i)
-  {
-    *--dPtr = '-';
-  }
+    {
+      *--dPtr = '-';
+    }
   if (dPtr > d)
-  { /* ASSUME copied from lower to higher! */
-    (void)memmove(d, dPtr, consize - (dPtr - d));
-  }
+    { /* ASSUME copied from lower to higher! */
+      (void)memmove(d, dPtr, consize - (dPtr - d));
+    }
 
   pdestroy(pbase);
   pdestroy(v);

@@ -10,37 +10,37 @@ void print_Input_struct(Input I)
                                                                x-axis of the
                           reactor */
   printf("%d\n",
-         I.y_assemblies);             /* Number of assemblies in the
+         I.y_assemblies); /* Number of assemblies in the
                                                                                       y-axis
                                          of the reactor */
-  printf("%d\n", I.cai);              // Number of course axial intervals
-  printf("%d\n", I.fai);              /* Number of fine axial intervals
+  printf("%d\n", I.cai);  // Number of course axial intervals
+  printf("%d\n", I.fai); /* Number of fine axial intervals
                                                                                  per coarse
                                          axial interval */
-  printf("%d\n", I.axial_exp);        // Axial source expansion order
+  printf("%d\n", I.axial_exp);  // Axial source expansion order
   printf("%lf\n", I.radial_ray_sep);  // Radial ray separation
-  printf("%lf\n", I.axial_z_sep);     // Axial stacked z-ray separation
-  printf("%d\n", I.n_azimuthal);      // Number of azimuthal angles
-  printf("%d\n", I.n_polar_angles);   // Number of polar angles
-  printf("%d\n", I.n_egroups);        // Number of energy groups
+  printf("%lf\n", I.axial_z_sep);  // Axial stacked z-ray separation
+  printf("%d\n", I.n_azimuthal);  // Number of azimuthal angles
+  printf("%d\n", I.n_polar_angles);  // Number of polar angles
+  printf("%d\n", I.n_egroups);  // Number of energy groups
   printf(
       "%d\n",
       I.decomp_assemblies_ax); /* Number of assemblies per
                                                                                sub-domain (axially) */
   printf(
       "%ld\n",
-      I.segments_per_track);          /* Average number of segments per
+      I.segments_per_track); /* Average number of segments per
                                                                                       track
                                          */
   printf("%lf\n", I.assembly_width);  // Width of an assembly
-  printf("%lf\n", I.height);          // Height of the reactor
-  printf("%lf\n", I.domain_height);   // Z Height of a domain
-  printf("%lf\n", I.precision);       // precision for source convergence
-  printf("%ld\n", I.mype);            // MPI Rank
-  printf("%ld\n", I.ntracks_2D);      // Number of 2D tracks (derived)
-  printf("%d\n", I.z_stacked);        // Number of z rays (derived)
+  printf("%lf\n", I.height);  // Height of the reactor
+  printf("%lf\n", I.domain_height);  // Z Height of a domain
+  printf("%lf\n", I.precision);  // precision for source convergence
+  printf("%ld\n", I.mype);  // MPI Rank
+  printf("%ld\n", I.ntracks_2D);  // Number of 2D tracks (derived)
+  printf("%d\n", I.z_stacked);  // Number of z rays (derived)
   printf("%ld\n",
-         I.ntracks);           /* Total number of 3D tracks per
+         I.ntracks); /* Total number of 3D tracks per
                                                                           assembly
                                   (derived) */
   printf("%d\n", I.nthreads);  // Number of OpenMP Threads
@@ -75,10 +75,10 @@ void gen_norm_pts(float mean, float sigma, int n_pts)
 
   // generate gaussian random points
   for (int i = 0; i < n_pts; i++)
-  {
-    float random = nrand(mean, sigma);
-    fprintf(out, "%f\n", random);
-  }
+    {
+      float random = nrand(mean, sigma);
+      fprintf(out, "%f\n", random);
+    }
 
   // close stream
   fclose(out);

@@ -54,34 +54,34 @@ double SPEdriver(double slipRate[MS_XTAL_NSLIP_MAX],
   gettimeofday(&t0, ((void *)0));
   t0_cpu = clock();
   for (i = 0; i < noIter; ++i)
-  {
-    Crystal_div(MS_XTAL_NSLIP_MAX, 0.01, slipRate, dSlipRate, tau, tauc, rhs,
-                dtcdgd, dtdg, matrix);
-  }
+    {
+      Crystal_div(MS_XTAL_NSLIP_MAX, 0.01, slipRate, dSlipRate, tau, tauc, rhs,
+                  dtcdgd, dtdg, matrix);
+    }
 
   for (i = 0; i < noIter; ++i)
-  {
-    tmp = Crystal_pow(MS_XTAL_NSLIP_MAX, slipRate);
-  }
+    {
+      tmp = Crystal_pow(MS_XTAL_NSLIP_MAX, slipRate);
+    }
 
   for (i = 0; i < MS_XTAL_NSLIP_MAX; i++)
-  {
-    for (j = 0; j < MS_XTAL_NSLIP_MAX; j++)
     {
-      matrix[i][j] = dtcdgd[i][j];
+      for (j = 0; j < MS_XTAL_NSLIP_MAX; j++)
+        {
+          matrix[i][j] = dtcdgd[i][j];
+        }
     }
-  }
 
   for (i = 0; i < noIter; ++i)
-  {
-    for (j = 0; j < MS_XTAL_NSLIP_MAX; j++)
     {
-      for (k = 0; k < MS_XTAL_NSLIP_MAX; k++)
-      {
-        dtcdgd[j][k] = matrix[j][k];
-      }
+      for (j = 0; j < MS_XTAL_NSLIP_MAX; j++)
+        {
+          for (k = 0; k < MS_XTAL_NSLIP_MAX; k++)
+            {
+              dtcdgd[j][k] = matrix[j][k];
+            }
+        }
+      Crystal_Cholesky(MS_XTAL_NSLIP_MAX, dtcdgd, tau, rhs);
     }
-    Crystal_Cholesky(MS_XTAL_NSLIP_MAX, dtcdgd, tau, rhs);
-  }
   return tmp;
 }

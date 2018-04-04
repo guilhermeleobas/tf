@@ -61,12 +61,12 @@ int main()
   printf("returnVal = %f \n", returnVal);
 
   for (i = 0; i < MS_XTAL_NSLIP_MAX; i += MS_XTAL_NSLIP_MAX / 3)
-  {
-    for (j = 0; j < MS_XTAL_NSLIP_MAX; j += MS_XTAL_NSLIP_MAX / 3)
     {
-      printf("i = %5d j = %5d    dtcdgd[i][j]   = %e \n", i, j, dtcdgd[i][j]);
+      for (j = 0; j < MS_XTAL_NSLIP_MAX; j += MS_XTAL_NSLIP_MAX / 3)
+        {
+          printf("i = %5d j = %5d    dtcdgd[i][j]   = %e \n", i, j, dtcdgd[i][j]);
+        }
     }
-  }
 
   return 0;
 }

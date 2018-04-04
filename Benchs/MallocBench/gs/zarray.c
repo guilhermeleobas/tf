@@ -39,16 +39,16 @@ int zarray(register ref *op)
 {
   int code = make_array(op, t_array, a_all, "array");
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   { /* Fill the array with nulls. */
     ushort size = op->size;
     ref *abody = op->value.refs;
     while (size--)
-    {
-      abody++->type_attrs = null_type_attrs;
-    }
+      {
+        abody++->type_attrs = null_type_attrs;
+      }
   }
   return 0;
 }
@@ -61,9 +61,9 @@ int zaload(register ref *op)
   check_read(*op);
   aref = *op;
   if (aref.size > ostop - op)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   memcpy((char *)op, (char *)aref.value.refs, aref.size * sizeof(ref));
   push(aref.size);
   *op = aref;
@@ -78,9 +78,9 @@ int zastore(register ref *op)
   check_write(*op);
   size = op->size;
   if (size > op - osbot)
-  {
-    return e_stackunderflow;
-  }
+    {
+      return e_stackunderflow;
+    }
   refcpy(op->value.refs, op - size, size);
   op[-size] = *op;
   pop(size);
@@ -107,15 +107,15 @@ int make_array(register ref *op, int type, int attrs, char *client_name)
   uint size;
   check_type(*op, t_integer);
   if (op->value.intval < 0 || op->value.intval > max_uint / sizeof(ref) - 1)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   size = op->value.intval;
   abody = (ref *)alloc(size, sizeof(ref), client_name);
   if (abody == 0)
-  {
-    return e_VMerror;
-  }
+    {
+      return e_VMerror;
+    }
   make_tasv(op, type, attrs, size, refs, abody);
   return 0;
 }

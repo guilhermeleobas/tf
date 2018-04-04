@@ -56,15 +56,15 @@ int main(void)
 #else
 
   for (int i = 0; i < NUM; ++i)
-  {
-    sum32 += ReverseBits32(i);
-    sum64 += ReverseBits64(i);
-  }
+    {
+      sum32 += ReverseBits32(i);
+      sum64 += ReverseBits64(i);
+    }
   for (int i = 0; i < NUM; ++i)
-  {
-    sum32 -= __builtin_bitreverse32(i);
-    sum64 -= __builtin_bitreverse64(i);
-  }
+    {
+      sum32 -= __builtin_bitreverse32(i);
+      sum64 -= __builtin_bitreverse64(i);
+    }
   printf("0x%x -> 0x%x\n", rev32, __builtin_bitreverse32(rev32));
   printf("0x%llx -> 0x%llx\n", rev64, __builtin_bitreverse64(rev64));
   return sum32 == 0 && sum64 == 0 ? 0 : 1;

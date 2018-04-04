@@ -43,16 +43,16 @@ int zcopyscanlines(register ref *op)
   dev = op2->value.pdevice;
   check_type(*op1, t_integer);
   if (op1->value.intval < 0 || op1->value.intval > dev->height)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   check_write_type(*op, t_string);
   code = gs_copyscanlines(dev, (int)op1->value.intval, op->value.bytes,
                           op->size, NULL, &bytes_copied);
   if (code < 0)
-  {
-    return e_typecheck; /* not a memory device */
-  }
+    {
+      return e_typecheck; /* not a memory device */
+    }
   *op2 = *op;
   op2->size = bytes_copied;
   r_set_attrs(op2, a_subrange);
@@ -78,9 +78,9 @@ int zdevicename(register ref *op)
   dname = gs_devicename(op->value.pdevice);
   code = string_to_ref(dname, op, "devicename");
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   return 0;
 }
 
@@ -92,9 +92,9 @@ int zdeviceparams(register ref *op)
   gs_matrix imat;
   int width, height;
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   check_type(op[-1], t_device);
   gs_deviceparams(op[-1].value.pdevice, &imat, &width, &height);
   /* Transfer the values to the matrix */
@@ -120,14 +120,14 @@ int zgetdevice(register ref *op)
   gx_device *dev;
   check_type(*op, t_integer);
   if (op->value.intval != (int)(op->value.intval))
-  {
-    return e_rangecheck; /* won't fit in an int */
-  }
+    {
+      return e_rangecheck; /* won't fit in an int */
+    }
   dev = gs_getdevice((int)(op->value.intval));
   if (dev == 0)
-  {
-    return e_rangecheck; /* index out of range */
-  }
+    {
+      return e_rangecheck; /* index out of range */
+    }
   make_tv(op, t_device, pdevice, dev);
   return 0;
 }
@@ -140,24 +140,24 @@ int zmakedevice(register ref *op)
   int code;
   check_type(op[-3], t_device);
   check_type(op[-1], t_integer); /* width */
-  check_type(*op, t_integer);    /* height */
+  check_type(*op, t_integer); /* height */
   if ((ulong)(op[-1].value.intval) > max_uint >> 1 ||
       (ulong)(op->value.intval) > max_uint >> 1)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   if ((code = read_matrix(op - 2, &imat)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   /* Everything OK, create device */
   code = gs_makedevice(&new_dev, op[-3].value.pdevice, &imat,
                        (int)op[-1].value.intval, (int)op->value.intval, alloc);
   if (code == 0)
-  {
-    make_tv(op - 3, t_device, pdevice, new_dev);
-    pop(3);
-  }
+    {
+      make_tv(op - 3, t_device, pdevice, new_dev);
+      pop(3);
+    }
   return code;
 }
 
@@ -171,48 +171,48 @@ int zmakeimagedevice(register ref *op)
   int code;
   check_type(op[-2], t_integer); /* width */
   check_type(op[-1], t_integer); /* height */
-  if (r_type(op) == t_null)      /* true color */
-  {
-    num_colors = -24; /* 24-bit true color */
-  }
+  if (r_type(op) == t_null) /* true color */
+    {
+      num_colors = -24; /* 24-bit true color */
+    }
   else
-  {
-    check_array(*op); /* palette */
-    num_colors = op->size;
-  }
+    {
+      check_array(*op); /* palette */
+      num_colors = op->size;
+    }
   if ((ulong)(op[-2].value.intval) > max_uint >> 1 ||
       (ulong)(op[-1].value.intval) > max_uint >> 1 || num_colors > 256)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   if ((code = read_matrix(op - 3, &imat)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   /* Check and convert colors */
   {
     int i;
     ref *pc = op->value.refs;
     float *p = colors;
     for (i = 0; i < num_colors; i++, pc++, p += 3)
-    {
-      check_type(*pc, t_color);
-      code = gs_colorrgb(pc->value.pcolor, p);
-      if (code < 0)
       {
-        return code;
+        check_type(*pc, t_color);
+        code = gs_colorrgb(pc->value.pcolor, p);
+        if (code < 0)
+          {
+            return code;
+          }
       }
-    }
   }
   /* Everything OK, create device */
   code =
       gs_makeimagedevice(&new_dev, &imat, (int)op[-2].value.intval,
                          (int)op[-1].value.intval, colors, num_colors, alloc);
   if (code == 0)
-  {
-    make_tv(op - 3, t_device, pdevice, new_dev);
-    pop(3);
-  }
+    {
+      make_tv(op - 3, t_device, pdevice, new_dev);
+      pop(3);
+    }
   return code;
 }
 
@@ -230,9 +230,9 @@ int zsetdevice(register ref *op)
   check_type(*op, t_device);
   code = gs_setdevice(igs, op->value.pdevice);
   if (code == 0)
-  {
-    pop(1);
-  }
+    {
+      pop(1);
+    }
   return code;
 }
 

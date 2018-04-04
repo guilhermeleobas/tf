@@ -26,48 +26,48 @@ double analyze(void)
   how_many = (int *)malloc((1 + numnets) * sizeof(int));
   arraynet = (int *)malloc((1 + numnets) * sizeof(int));
   for (net = 0; net <= numnets; net++)
-  {
-    number[net] = (int *)malloc((1 + numcells) * sizeof(int));
-  }
+    {
+      number[net] = (int *)malloc((1 + numcells) * sizeof(int));
+    }
 
   for (net = 1; net <= numnets; net++)
-  {
-    for (cell = 0; cell <= numcells; cell++)
     {
-      count[cell] = 0;
-      number[net][cell] = 0;
-    }
-    netptr = netarray[net]->netptr;
-    for (; netptr != (NETBOXPTR)NULL; netptr = netptr->nextterm)
-    {
-      if (netptr->cell <= numcells)
-      {
-        count[netptr->cell] = 1;
-      }
-    }
-    /*
+      for (cell = 0; cell <= numcells; cell++)
+        {
+          count[cell] = 0;
+          number[net][cell] = 0;
+        }
+      netptr = netarray[net]->netptr;
+      for (; netptr != (NETBOXPTR)NULL; netptr = netptr->nextterm)
+        {
+          if (netptr->cell <= numcells)
+            {
+              count[netptr->cell] = 1;
+            }
+        }
+      /*
      *  I would like to find the number of distinct nets
      */
-    for (cell = 1; cell <= numcells; cell++)
-    {
-      if (count[cell] == 1)
-      {
-        number[net][++number[net][0]] = cell;
-      }
+      for (cell = 1; cell <= numcells; cell++)
+        {
+          if (count[cell] == 1)
+            {
+              number[net][++number[net][0]] = cell;
+            }
+        }
     }
-  }
   /* ********************************************************** */
   num_nets = 0;
   tot_cels = 0;
   for (net1 = 1; net1 <= numnets; net1++)
-  {
-    if (number[net1][0] <= 1)
     {
-      continue;
+      if (number[net1][0] <= 1)
+        {
+          continue;
+        }
+      num_nets++;
+      tot_cels += number[net1][0];
     }
-    num_nets++;
-    tot_cels += number[net1][0];
-  }
 
   fprintf(fpo, "\n\n*************************************\n");
   fprintf(fpo, "AVERAGE NUMBER OF CELLS PER NET: %f\n",
@@ -75,51 +75,51 @@ double analyze(void)
   fprintf(fpo, "*************************************\n\n\n");
   /* ********************************************************** */
   for (net1 = 1; net1 <= numnets; net1++)
-  {
-    if (number[net1][0] == 0)
     {
-      how_many[net1] = 0;
-      continue;
-    }
-    if (number[net1][0] == 1)
-    {
-      number[net1][0] = 0;
-      how_many[net1] = 0;
-      continue;
-    }
-    how_many[net1] = 1;
-    for (net2 = net1 + 1; net2 <= numnets; net2++)
-    {
-      if (number[net2][0] != number[net1][0])
-      {
-        continue;
-      }
-      different = 0;
-      for (i = 1; i <= numcells; i++)
-      {
-        if (number[net2][i] != number[net1][i])
+      if (number[net1][0] == 0)
         {
-          different = 1;
-          break;
+          how_many[net1] = 0;
+          continue;
         }
-      }
-      if (!different)
-      {
-        number[net2][0] = 0;
-        how_many[net1]++;
-      }
+      if (number[net1][0] == 1)
+        {
+          number[net1][0] = 0;
+          how_many[net1] = 0;
+          continue;
+        }
+      how_many[net1] = 1;
+      for (net2 = net1 + 1; net2 <= numnets; net2++)
+        {
+          if (number[net2][0] != number[net1][0])
+            {
+              continue;
+            }
+          different = 0;
+          for (i = 1; i <= numcells; i++)
+            {
+              if (number[net2][i] != number[net1][i])
+                {
+                  different = 1;
+                  break;
+                }
+            }
+          if (!different)
+            {
+              number[net2][0] = 0;
+              how_many[net1]++;
+            }
+        }
     }
-  }
 
   arraynet[0] = 0;
   for (net = 1; net <= numnets; net++)
-  {
-    if (how_many[net] <= 0)
     {
-      continue;
+      if (how_many[net] <= 0)
+        {
+          continue;
+        }
+      arraynet[++arraynet[0]] = net;
     }
-    arraynet[++arraynet[0]] = net;
-  }
   num = arraynet[0];
   arraynet[0] = arraynet[arraynet[0]];
   qsortx((char *)arraynet, num, sizeof(int));
@@ -129,14 +129,14 @@ double analyze(void)
   cnum = 0;
   c2num = 0;
   for (net = 1; net <= numnets; net++)
-  {
-    if (number[net][0] > 0)
     {
-      cnum += number[net][0] - 1;
-      c2num += number[net][0];
-      num++;
+      if (number[net][0] > 0)
+        {
+          cnum += number[net][0] - 1;
+          c2num += number[net][0];
+          num++;
+        }
     }
-  }
   C = (double)num / (double)numcells;
   C1 = (double)cnum / (double)num;
 
@@ -169,11 +169,11 @@ double analyze(void)
 int comparex(int *a, int *b) { return (how_many[*b] - how_many[*a]); }
 /* @(#)qsort.c	4.2 (Berkeley) 3/9/83 */
 
-#define THRESH 4  /* threshold for insertion */
+#define THRESH 4 /* threshold for insertion */
 #define MTHRESH 6 /* threshold for median */
 
-int qsz;     /* size of each record */
-int thresh;  /* THRESHold in chars */
+int qsz; /* size of each record */
+int thresh; /* THRESHold in chars */
 int mthresh; /* MTHRESHold in chars */
 
 void qsortx(char *base, int n, int size)
@@ -182,22 +182,22 @@ void qsortx(char *base, int n, int size)
   char *min, *max;
 
   if (n <= 1)
-  {
-    return;
-  }
+    {
+      return;
+    }
   qsz = size;
   thresh = qsz * THRESH;
   mthresh = qsz * MTHRESH;
   max = base + n * qsz;
   if (n >= THRESH)
-  {
-    qst(base, max);
-    hi = base + thresh;
-  }
+    {
+      qst(base, max);
+      hi = base + thresh;
+    }
   else
-  {
-    hi = max;
-  }
+    {
+      hi = max;
+    }
   /*
    * First put smallest element, which must be in the first THRESH, in
    * the first position as a sentinel.  This is done just by searching
@@ -205,22 +205,22 @@ void qsortx(char *base, int n, int size)
    * the min, and swapping it into the first position.
    */
   for (j = lo = base; (lo += qsz) < hi;)
-  {
-    if (comparex(j, lo) > 0)
     {
-      j = lo;
+      if (comparex(j, lo) > 0)
+        {
+          j = lo;
+        }
     }
-  }
   if (j != base)
-  {
-    /* swap j into place */
-    for (i = base, hi = base + qsz; i < hi;)
     {
-      c = *j;
-      *j++ = *i;
-      *i++ = c;
+      /* swap j into place */
+      for (i = base, hi = base + qsz; i < hi;)
+        {
+          c = *j;
+          *j++ = *i;
+          *i++ = c;
+        }
     }
-  }
   /*
    * With our sentinel in place, we now run the following hyper-fast
    * insertion sort.  For each remaining element, min, from [1] to [n-1],
@@ -229,24 +229,24 @@ void qsortx(char *base, int n, int size)
    * basis for each element in the frob.
    */
   for (min = base; (hi = min += qsz) < max;)
-  {
-    while (comparex(hi -= qsz, min) > 0)
     {
-      /* void */;
-    }
-    if ((hi += qsz) != min)
-    {
-      for (lo = min + qsz; --lo >= min;)
-      {
-        c = *lo;
-        for (i = j = lo; (j -= qsz) >= hi; i = j)
+      while (comparex(hi -= qsz, min) > 0)
         {
-          *i = *j;
+          /* void */;
         }
-        *i = c;
-      }
+      if ((hi += qsz) != min)
+        {
+          for (lo = min + qsz; --lo >= min;)
+            {
+              c = *lo;
+              for (i = j = lo; (j -= qsz) >= hi; i = j)
+                {
+                  *i = *j;
+                }
+              *i = c;
+            }
+        }
     }
-  }
 }
 
 /*
@@ -282,83 +282,85 @@ void qst(char *base, char *max)
    */
   lo = max - base; /* number of elements as chars */
   do
-  {
-    mid = i = base + qsz * ((lo / qsz) >> 1);
-    if (lo >= mthresh)
     {
-      j = (comparex((jj = base), i) > 0 ? jj : i);
-      if (comparex(j, (tmp = max - qsz)) > 0)
-      {
-        /* switch to first loser */
-        j = (j == jj ? i : jj);
-        if (comparex(j, tmp) < 0)
+      mid = i = base + qsz * ((lo / qsz) >> 1);
+      if (lo >= mthresh)
         {
-          j = tmp;
+          j = (comparex((jj = base), i) > 0 ? jj : i);
+          if (comparex(j, (tmp = max - qsz)) > 0)
+            {
+              /* switch to first loser */
+              j = (j == jj ? i : jj);
+              if (comparex(j, tmp) < 0)
+                {
+                  j = tmp;
+                }
+            }
+          if (j != i)
+            {
+              ii = qsz;
+              do
+                {
+                  c = *i;
+                  *i++ = *j;
+                  *j++ = c;
+                }
+              while (--ii);
+            }
         }
-      }
-      if (j != i)
-      {
-        ii = qsz;
-        do
-        {
-          c = *i;
-          *i++ = *j;
-          *j++ = c;
-        } while (--ii);
-      }
-    }
-    /*
+      /*
      * Semi-standard quicksort partitioning/swapping
      */
-    for (i = base, j = max - qsz;;)
-    {
-      while (i < mid && comparex(i, mid) <= 0)
-      {
-        i += qsz;
-      }
-      while (j > mid)
-      {
-        if (comparex(mid, j) <= 0)
+      for (i = base, j = max - qsz;;)
         {
-          j -= qsz;
-          continue;
+          while (i < mid && comparex(i, mid) <= 0)
+            {
+              i += qsz;
+            }
+          while (j > mid)
+            {
+              if (comparex(mid, j) <= 0)
+                {
+                  j -= qsz;
+                  continue;
+                }
+              tmp = i + qsz; /* value of i after swap */
+              if (i == mid)
+                {
+                  /* j <-> mid, new mid is j */
+                  mid = jj = j;
+                }
+              else
+                {
+                  /* i <-> j */
+                  jj = j;
+                  j -= qsz;
+                }
+              goto swap;
+            }
+          if (i == mid)
+            {
+              break;
+            }
+          else
+            {
+              /* i <-> mid, new mid is i */
+              jj = mid;
+              tmp = mid = i; /* value of i after swap */
+              j -= qsz;
+            }
+        swap:
+          ii = qsz;
+          do
+            {
+              c = *i;
+              *i++ = *jj;
+              *jj++ = c;
+            }
+          while (--ii);
+          i = tmp;
         }
-        tmp = i + qsz; /* value of i after swap */
-        if (i == mid)
-        {
-          /* j <-> mid, new mid is j */
-          mid = jj = j;
-        }
-        else
-        {
-          /* i <-> j */
-          jj = j;
-          j -= qsz;
-        }
-        goto swap;
-      }
-      if (i == mid)
-      {
-        break;
-      }
-      else
-      {
-        /* i <-> mid, new mid is i */
-        jj = mid;
-        tmp = mid = i; /* value of i after swap */
-        j -= qsz;
-      }
-    swap:
-      ii = qsz;
-      do
-      {
-        c = *i;
-        *i++ = *jj;
-        *jj++ = c;
-      } while (--ii);
-      i = tmp;
-    }
-    /*
+      /*
      * Look at sizes of the two partitions, do the smaller
      * one first by recursion, then do the larger one by
      * making sure lo is its size, base and max are update
@@ -366,23 +368,24 @@ void qst(char *base, char *max)
      * (recursively or by branching) if the partition is
      * of at least size THRESH.
      */
-    i = (j = mid) + qsz;
-    if ((lo = j - base) <= (hi = max - i))
-    {
-      if (lo >= thresh)
-      {
-        qst(base, j);
-      }
-      base = i;
-      lo = hi;
+      i = (j = mid) + qsz;
+      if ((lo = j - base) <= (hi = max - i))
+        {
+          if (lo >= thresh)
+            {
+              qst(base, j);
+            }
+          base = i;
+          lo = hi;
+        }
+      else
+        {
+          if (hi >= thresh)
+            {
+              qst(i, max);
+            }
+          max = j;
+        }
     }
-    else
-    {
-      if (hi >= thresh)
-      {
-        qst(i, max);
-      }
-      max = j;
-    }
-  } while (lo >= thresh);
+  while (lo >= thresh);
 }

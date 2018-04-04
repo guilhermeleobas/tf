@@ -44,32 +44,32 @@ void plot(int ts)
   fname[3] = 't';
   fname[4] = '.';
   for (n = 1, j = 0; n < num_tsteps; j++, n *= 10)
-  {
-    ;
-  }
+    {
+      ;
+    }
   for (n = 1, i = 0; i <= j; i++, n *= 10)
-  {
-    fname[5 + j - i] = (char)('0' + (ts / n) % 10);
-  }
+    {
+      fname[5 + j - i] = (char)('0' + (ts / n) % 10);
+    }
   fname[6 + j] = '\0';
   fp = fopen(fname, "w");
 
   total_num_blocks = 0;
   for (i = 0; i <= num_refine; i++)
-  {
-    total_num_blocks += num_blocks[i];
-  }
+    {
+      total_num_blocks += num_blocks[i];
+    }
   fprintf(fp, "%d %d %d %d %d\n", total_num_blocks, num_refine,
           npx * init_block_x, npy * init_block_y, npz * init_block_z);
   buf_size = 0;
   fprintf(fp, "%d\n", num_active);
   for (n = 0; n < max_active_block; n++)
-  {
-    if ((bp = &blocks[n])->number >= 0)
     {
-      fprintf(fp, "%d %d %d %d\n", bp->level, bp->cen[0], bp->cen[1],
-              bp->cen[2]);
+      if ((bp = &blocks[n])->number >= 0)
+        {
+          fprintf(fp, "%d %d %d %d\n", bp->level, bp->cen[0], bp->cen[1],
+                  bp->cen[2]);
+        }
     }
-  }
   fclose(fp);
 }

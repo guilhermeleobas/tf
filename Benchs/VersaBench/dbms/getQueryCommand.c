@@ -54,25 +54,25 @@
  *              Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include "getQueryCommand.h"    /* for getQueryCommand() return codes         */
-#include <assert.h>             /* for assert()                               */
-#include <stdio.h>              /* for FILE definition                        */
-#include <stdlib.h>             /* for NULL                                   */
-#include "dataManagement.h"     /* for primitive data types                   */
-#include "dataObject.h"         /* for DataAttribute definition               */
-#include "errorMessage.h"       /* for errorMessage() definition              */
-#include "getFloat.h"           /* for getFloat() and return code definitions */
-#include "getInt.h"             /* for getInt() and return code definitions   */
-#include "getKeyAttribute.h"    /* for prototype and return code definitions  */
+#include "getQueryCommand.h" /* for getQueryCommand() return codes         */
+#include <assert.h> /* for assert()                               */
+#include <stdio.h> /* for FILE definition                        */
+#include <stdlib.h> /* for NULL                                   */
+#include "dataManagement.h" /* for primitive data types                   */
+#include "dataObject.h" /* for DataAttribute definition               */
+#include "errorMessage.h" /* for errorMessage() definition              */
+#include "getFloat.h" /* for getFloat() and return code definitions */
+#include "getInt.h" /* for getInt() and return code definitions   */
+#include "getKeyAttribute.h" /* for prototype and return code definitions  */
 #include "getNonKeyAttribute.h" /* for prototype and return code definitions  */
-#include "indexKey.h"           /* for IndexKey definition                    */
+#include "indexKey.h" /* for IndexKey definition                    */
 
-Int getQueryCommand(FILE *file,                   /* file for reading     */
-                    IndexKey *searchKey,          /* index key            */
+Int getQueryCommand(FILE *file, /* file for reading     */
+                    IndexKey *searchKey, /* index key            */
                     DataAttribute **searchNonKey) /* list of attributes   */
-{                                                 /*  begin getQueryCommand() */
+{ /*  begin getQueryCommand() */
   Int attributeCode; /* attribute code read from file     */
-  Int returnCode;    /* return code from various routines */
+  Int returnCode; /* return code from various routines */
 
   static Char name[] = "getQueryCommand";
 
@@ -111,134 +111,134 @@ Int getQueryCommand(FILE *file,                   /* file for reading     */
    */
   returnCode = GET_INT_SUCCESS;
   while (returnCode != GET_INT_EOI)
-  {
-    /*
+    {
+      /*
      *  Read the attribute code first and check return code.  If a
      *  successful read, check range of code for error.  If code is in
      *  range, check for key or non-key attribute.  For key attribute, read
      *  in float value.  For non-key attribute, read in character string.
      *  For each type of read, check for errors.
      */
-    returnCode = getInt(file, &attributeCode);
-    if (returnCode == GET_INT_SUCCESS)
-    {
-      if (attributeCode < MIN_ATTRIBUTE_CODE || /* check code range */
-          attributeCode > MAX_ATTRIBUTE_CODE)
-      {
-        errorMessage("code out-of-range", REPLACE);
-        errorMessage(name, PREPEND);
-        return (GET_QUERY_INVALID_CODE_ERROR);
-      } /*  end of check for invalid code   */
-      else if (attributeCode < NUM_OF_KEY_ATTRIBUTES)
-      {
-        Float value;
+      returnCode = getInt(file, &attributeCode);
+      if (returnCode == GET_INT_SUCCESS)
+        {
+          if (attributeCode < MIN_ATTRIBUTE_CODE || /* check code range */
+              attributeCode > MAX_ATTRIBUTE_CODE)
+            {
+              errorMessage("code out-of-range", REPLACE);
+              errorMessage(name, PREPEND);
+              return (GET_QUERY_INVALID_CODE_ERROR);
+            } /*  end of check for invalid code   */
+          else if (attributeCode < NUM_OF_KEY_ATTRIBUTES)
+            {
+              Float value;
 
-        returnCode = getKeyAttribute(file, &value);
-        if (returnCode == GET_KEY_ATTRIBUTE_SUCCESS)
-        {
-          if (attributeCode == LOWER_POINT_T)
-          {
-            searchKey->lower.T = value;
-          } /*  end of LOWER_POINT_T    */
-          else if (attributeCode == LOWER_POINT_X)
-          {
-            searchKey->lower.X = value;
-          } /*  end of LOWER_POINT_X    */
-          else if (attributeCode == LOWER_POINT_Y)
-          {
-            searchKey->lower.Y = value;
-          } /*  end of LOWER_POINT_Y    */
-          else if (attributeCode == LOWER_POINT_Z)
-          {
-            searchKey->lower.Z = value;
-          } /*  end of LOWER_POINT_Z    */
-          else if (attributeCode == UPPER_POINT_T)
-          {
-            searchKey->upper.T = value;
-          } /*  end of UPPER_POINT_T    */
-          else if (attributeCode == UPPER_POINT_X)
-          {
-            searchKey->upper.X = value;
-          } /*  end of UPPER_POINT_X    */
-          else if (attributeCode == UPPER_POINT_Y)
-          {
-            searchKey->upper.Y = value;
-          } /*  end of UPPER_POINT_Y    */
-          else if (attributeCode == UPPER_POINT_Z)
-          {
-            searchKey->upper.Z = value;
-          } /*  end of UPPER_POINT_Z    */
-        }   /*  end of GET_KEY_ATTRIBUTE_SUCCESS */
-        else if (returnCode == GET_KEY_ATTRIBUTE_EOI)
-        {
-          errorMessage("improper format - early EOI", REPLACE);
-          errorMessage(name, PREPEND);
-          return (GET_QUERY_EARLY_EOI);
-        } /*  end returnCode == GET_KEY_ATTRIBUTE_GET_FLOAT_FAILURE */
-        else if (returnCode == GET_KEY_ATTRIBUTE_GET_FLOAT_FAILURE)
-        {
-          errorMessage("low-level I/O error", REPLACE);
-          errorMessage(name, PREPEND);
-          return (GET_QUERY_IO_ERROR);
-        } /*  end returnCode == GET_KEY_ATTRIBUTE_GET_FLOAT_FAILURE */
-      }   /*  end of key attribute        */
-      else
-      {
-        Char *value;
+              returnCode = getKeyAttribute(file, &value);
+              if (returnCode == GET_KEY_ATTRIBUTE_SUCCESS)
+                {
+                  if (attributeCode == LOWER_POINT_T)
+                    {
+                      searchKey->lower.T = value;
+                    } /*  end of LOWER_POINT_T    */
+                  else if (attributeCode == LOWER_POINT_X)
+                    {
+                      searchKey->lower.X = value;
+                    } /*  end of LOWER_POINT_X    */
+                  else if (attributeCode == LOWER_POINT_Y)
+                    {
+                      searchKey->lower.Y = value;
+                    } /*  end of LOWER_POINT_Y    */
+                  else if (attributeCode == LOWER_POINT_Z)
+                    {
+                      searchKey->lower.Z = value;
+                    } /*  end of LOWER_POINT_Z    */
+                  else if (attributeCode == UPPER_POINT_T)
+                    {
+                      searchKey->upper.T = value;
+                    } /*  end of UPPER_POINT_T    */
+                  else if (attributeCode == UPPER_POINT_X)
+                    {
+                      searchKey->upper.X = value;
+                    } /*  end of UPPER_POINT_X    */
+                  else if (attributeCode == UPPER_POINT_Y)
+                    {
+                      searchKey->upper.Y = value;
+                    } /*  end of UPPER_POINT_Y    */
+                  else if (attributeCode == UPPER_POINT_Z)
+                    {
+                      searchKey->upper.Z = value;
+                    } /*  end of UPPER_POINT_Z    */
+                } /*  end of GET_KEY_ATTRIBUTE_SUCCESS */
+              else if (returnCode == GET_KEY_ATTRIBUTE_EOI)
+                {
+                  errorMessage("improper format - early EOI", REPLACE);
+                  errorMessage(name, PREPEND);
+                  return (GET_QUERY_EARLY_EOI);
+                } /*  end returnCode == GET_KEY_ATTRIBUTE_GET_FLOAT_FAILURE */
+              else if (returnCode == GET_KEY_ATTRIBUTE_GET_FLOAT_FAILURE)
+                {
+                  errorMessage("low-level I/O error", REPLACE);
+                  errorMessage(name, PREPEND);
+                  return (GET_QUERY_IO_ERROR);
+                } /*  end returnCode == GET_KEY_ATTRIBUTE_GET_FLOAT_FAILURE */
+            } /*  end of key attribute        */
+          else
+            {
+              Char *value;
 
-        returnCode = getNonKeyAttribute(file, &value);
-        if (returnCode == GET_NON_KEY_ATTRIBUTE_SUCCESS)
-        {
-          DataAttribute *newAttribute;
+              returnCode = getNonKeyAttribute(file, &value);
+              if (returnCode == GET_NON_KEY_ATTRIBUTE_SUCCESS)
+                {
+                  DataAttribute *newAttribute;
 
-          /*
+                  /*
            *  Allocate new DataAttribute, store values of attribute
            *  code and attribute string, and add new DataAttribute to
            *  output list.
            */
-          newAttribute = (DataAttribute *)malloc(sizeof(DataAttribute));
-          if (newAttribute == NULL)
-          {
-            errorMessage("allocation failure", REPLACE);
-            errorMessage(name, PREPEND);
-            return (GET_QUERY_ALLOCATION_ERROR);
-          } /*  end of if ( attribute == NULL ) */
+                  newAttribute = (DataAttribute *)malloc(sizeof(DataAttribute));
+                  if (newAttribute == NULL)
+                    {
+                      errorMessage("allocation failure", REPLACE);
+                      errorMessage(name, PREPEND);
+                      return (GET_QUERY_ALLOCATION_ERROR);
+                    } /*  end of if ( attribute == NULL ) */
 
-          newAttribute->code = attributeCode;
-          newAttribute->attribute.value.nonKey = value;
+                  newAttribute->code = attributeCode;
+                  newAttribute->attribute.value.nonKey = value;
 
-          newAttribute->next = *searchNonKey;
-          *searchNonKey = newAttribute;
-        }
-        else if (returnCode == GET_NON_KEY_ATTRIBUTE_EOI)
+                  newAttribute->next = *searchNonKey;
+                  *searchNonKey = newAttribute;
+                }
+              else if (returnCode == GET_NON_KEY_ATTRIBUTE_EOI)
+                {
+                  errorMessage("improper format - early EOI", REPLACE);
+                  errorMessage(name, PREPEND);
+                  return (GET_QUERY_EARLY_EOI);
+                } /*  end of if returnCode == GET_NON_KEY_ATTRIBUTE_EOI */
+              else if (returnCode == GET_NON_KEY_ATTRIBUTE_ALLOCATION_FAILURE)
+                {
+                  errorMessage("allocation of non-key attribute", REPLACE);
+                  errorMessage(name, PREPEND);
+                  return (GET_QUERY_ALLOCATION_ERROR);
+                } /*  end of if ( returnCode == ALLOCATION_FAILURE )  */
+            } /*  end of non-key attribute    */
+        } /*  end of if ( returnCode == GET_INT_SUCCESS ) */
+      else if (returnCode == GET_INT_EOI)
         {
-          errorMessage("improper format - early EOI", REPLACE);
-          errorMessage(name, PREPEND);
-          return (GET_QUERY_EARLY_EOI);
-        } /*  end of if returnCode == GET_NON_KEY_ATTRIBUTE_EOI */
-        else if (returnCode == GET_NON_KEY_ATTRIBUTE_ALLOCATION_FAILURE)
-        {
-          errorMessage("allocation of non-key attribute", REPLACE);
-          errorMessage(name, PREPEND);
-          return (GET_QUERY_ALLOCATION_ERROR);
-        } /*  end of if ( returnCode == ALLOCATION_FAILURE )  */
-      }   /*  end of non-key attribute    */
-    }     /*  end of if ( returnCode == GET_INT_SUCCESS ) */
-    else if (returnCode == GET_INT_EOI)
-    {
-      /*
+          /*
        *  empty
        */
-    } /*  end of if ( returnCode == GET_INT_EOI ) */
-    else if (returnCode == GET_INT_RANGE_EXCEEDED)
-    {
-      return (GET_QUERY_INVALID_CODE_ERROR);
-    } /*  end of if ( error == GET_INT_RANGE_EXCEEDED )  */
-    else if (returnCode == GET_INT_BAD_CONVERSION)
-    {
-      return (GET_QUERY_INVALID_CODE_ERROR);
-    } /*  end of if ( error == GET_INT_BAD_CONVERSION )  */
-  }
+        } /*  end of if ( returnCode == GET_INT_EOI ) */
+      else if (returnCode == GET_INT_RANGE_EXCEEDED)
+        {
+          return (GET_QUERY_INVALID_CODE_ERROR);
+        } /*  end of if ( error == GET_INT_RANGE_EXCEEDED )  */
+      else if (returnCode == GET_INT_BAD_CONVERSION)
+        {
+          return (GET_QUERY_INVALID_CODE_ERROR);
+        } /*  end of if ( error == GET_INT_BAD_CONVERSION )  */
+    }
 
   return (GET_QUERY_SUCCESS);
 } /*  end of getQueryCommand()    */

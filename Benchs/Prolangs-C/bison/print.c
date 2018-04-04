@@ -48,9 +48,9 @@ void print_actions(int state);
 void terse(void)
 {
   if (any_conflicts)
-  {
-    conflict_log();
-  }
+    {
+      conflict_log();
+    }
 }
 
 void verbose(void)
@@ -58,35 +58,35 @@ void verbose(void)
   register int i;
 
   if (any_conflicts)
-  {
-    verbose_conflict_log();
-  }
+    {
+      verbose_conflict_log();
+    }
 
   fprintf(foutput, "\n\ntoken types:\n");
   print_token(-1, 0);
   if (translations)
-  {
-    for (i = 0; i <= max_user_token_number; i++)
     {
-      /* Don't mention all the meaningless ones.  */
-      if (token_translations[i] != 2)
-      {
-        print_token(i, token_translations[i]);
-      }
+      for (i = 0; i <= max_user_token_number; i++)
+        {
+          /* Don't mention all the meaningless ones.  */
+          if (token_translations[i] != 2)
+            {
+              print_token(i, token_translations[i]);
+            }
+        }
     }
-  }
   else
-  {
-    for (i = 1; i < ntokens; i++)
     {
-      print_token(i, i);
+      for (i = 1; i < ntokens; i++)
+        {
+          print_token(i, i);
+        }
     }
-  }
 
   for (i = 0; i < nstates; i++)
-  {
-    print_state(i);
-  }
+    {
+      print_state(i);
+    }
 }
 
 void print_token(int extnum, int token)
@@ -114,38 +114,38 @@ void print_core(int state)
   k = statep->nitems;
 
   if (k == 0)
-  {
-    return;
-  }
+    {
+      return;
+    }
 
   for (i = 0; i < k; i++)
-  {
-    sp1 = sp = ritem + statep->items[i];
-
-    while (*sp > 0)
     {
-      sp++;
+      sp1 = sp = ritem + statep->items[i];
+
+      while (*sp > 0)
+        {
+          sp++;
+        }
+
+      rule = -(*sp);
+      fprintf(foutput, "    %s  ->  ", tags[rlhs[rule]]);
+
+      for (sp = ritem + rrhs[rule]; sp < sp1; sp++)
+        {
+          fprintf(foutput, "%s ", tags[*sp]);
+        }
+
+      putc('.', foutput);
+
+      while (*sp > 0)
+        {
+          fprintf(foutput, " %s", tags[*sp]);
+          sp++;
+        }
+
+      fprintf(foutput, "   (%d)", rule);
+      putc('\n', foutput);
     }
-
-    rule = -(*sp);
-    fprintf(foutput, "    %s  ->  ", tags[rlhs[rule]]);
-
-    for (sp = ritem + rrhs[rule]; sp < sp1; sp++)
-    {
-      fprintf(foutput, "%s ", tags[*sp]);
-    }
-
-    putc('.', foutput);
-
-    while (*sp > 0)
-    {
-      fprintf(foutput, " %s", tags[*sp]);
-      sp++;
-    }
-
-    fprintf(foutput, "   (%d)", rule);
-    putc('\n', foutput);
-  }
 
   putc('\n', foutput);
 }
@@ -166,87 +166,87 @@ void print_actions(int state)
   errp = err_table[state];
 
   if (!shiftp && !redp)
-  {
-    fprintf(foutput, "    NO ACTIONS\n");
-    return;
-  }
+    {
+      fprintf(foutput, "    NO ACTIONS\n");
+      return;
+    }
 
   if (shiftp)
-  {
-    k = shiftp->nshifts;
-
-    for (i = 0; i < k; i++)
     {
-      if (!shiftp->shifts[i])
-      {
-        continue;
-      }
-      state1 = shiftp->shifts[i];
-      symbol = accessing_symbol[state1];
-      /*	  if (ISVAR(symbol)) break;  */
-      fprintf(foutput, "    %-4s\tshift  %d\n", tags[symbol], state1);
-    }
+      k = shiftp->nshifts;
 
-    if (i > 0)
-    {
-      putc('\n', foutput);
+      for (i = 0; i < k; i++)
+        {
+          if (!shiftp->shifts[i])
+            {
+              continue;
+            }
+          state1 = shiftp->shifts[i];
+          symbol = accessing_symbol[state1];
+          /*	  if (ISVAR(symbol)) break;  */
+          fprintf(foutput, "    %-4s\tshift  %d\n", tags[symbol], state1);
+        }
+
+      if (i > 0)
+        {
+          putc('\n', foutput);
+        }
     }
-  }
   else
-  {
-    i = 0;
-    k = 0;
-  }
+    {
+      i = 0;
+      k = 0;
+    }
 
   if (errp)
-  {
-    k = errp->nerrs;
-
-    for (i = 0; i < k; i++)
     {
-      if (!errp->errs[i])
-      {
-        continue;
-      }
-      symbol = errp->errs[i];
-      fprintf(foutput, "    %-4s\terror (nonassociative)\n", tags[symbol]);
-    }
+      k = errp->nerrs;
 
-    if (i > 0)
-    {
-      putc('\n', foutput);
+      for (i = 0; i < k; i++)
+        {
+          if (!errp->errs[i])
+            {
+              continue;
+            }
+          symbol = errp->errs[i];
+          fprintf(foutput, "    %-4s\terror (nonassociative)\n", tags[symbol]);
+        }
+
+      if (i > 0)
+        {
+          putc('\n', foutput);
+        }
     }
-  }
   else
-  {
-    i = 0;
-    k = 0;
-  }
+    {
+      i = 0;
+      k = 0;
+    }
 
   if (consistent[state] && redp)
-  {
-    rule = redp->rules[0];
-    symbol = rlhs[rule];
-    fprintf(foutput, "    $default\treduce  %d  (%s)\n\n", rule, tags[symbol]);
-  }
-  else if (redp)
-  {
-    print_reductions(state);
-  }
-
-  if (i < k)
-  {
-    for (; i < k; i++)
     {
-      if (!shiftp->shifts[i])
-      {
-        continue;
-      }
-      state1 = shiftp->shifts[i];
-      symbol = accessing_symbol[state1];
-      fprintf(foutput, "    %-4s\tgoto  %d\n", tags[symbol], state1);
+      rule = redp->rules[0];
+      symbol = rlhs[rule];
+      fprintf(foutput, "    $default\treduce  %d  (%s)\n\n", rule, tags[symbol]);
+    }
+  else if (redp)
+    {
+      print_reductions(state);
     }
 
-    putc('\n', foutput);
-  }
+  if (i < k)
+    {
+      for (; i < k; i++)
+        {
+          if (!shiftp->shifts[i])
+            {
+              continue;
+            }
+          state1 = shiftp->shifts[i];
+          symbol = accessing_symbol[state1];
+          fprintf(foutput, "    %-4s\tgoto  %d\n", tags[symbol], state1);
+        }
+
+      putc('\n', foutput);
+    }
 }

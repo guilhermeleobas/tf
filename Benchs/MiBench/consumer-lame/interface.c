@@ -32,12 +32,12 @@ void ExitMP3(struct mpstr *mp)
 
   b = mp->tail;
   while (b)
-  {
-    free(b->pnt);
-    bn = b->next;
-    free(b);
-    b = bn;
-  }
+    {
+      free(b->pnt);
+      bn = b->next;
+      free(b);
+      b = bn;
+    }
 }
 
 static struct buf *addbuf(struct mpstr *mp, char *buf, int size)
@@ -46,16 +46,16 @@ static struct buf *addbuf(struct mpstr *mp, char *buf, int size)
 
   nbuf = (struct buf *)malloc(sizeof(struct buf));
   if (!nbuf)
-  {
-    fprintf(stderr, "Out of memory!\n");
-    return NULL;
-  }
+    {
+      fprintf(stderr, "Out of memory!\n");
+      return NULL;
+    }
   nbuf->pnt = (unsigned char *)malloc(size);
   if (!nbuf->pnt)
-  {
-    free(nbuf);
-    return NULL;
-  }
+    {
+      free(nbuf);
+      return NULL;
+    }
   nbuf->size = size;
   memcpy(nbuf->pnt, buf, size);
   nbuf->next = NULL;
@@ -63,13 +63,13 @@ static struct buf *addbuf(struct mpstr *mp, char *buf, int size)
   nbuf->pos = 0;
 
   if (!mp->tail)
-  {
-    mp->tail = nbuf;
-  }
+    {
+      mp->tail = nbuf;
+    }
   else
-  {
-    mp->head->next = nbuf;
-  }
+    {
+      mp->head->next = nbuf;
+    }
 
   mp->head = nbuf;
   mp->bsize += size;
@@ -85,9 +85,9 @@ static void remove_buf(struct mpstr *mp)
   if (mp->tail)
     mp->tail->prev = NULL;
   else
-  {
-    mp->tail = mp->head = NULL;
-  }
+    {
+      mp->tail = mp->head = NULL;
+    }
 
   free(buf->pnt);
   free(buf);
@@ -101,15 +101,15 @@ static int read_buf_byte(struct mpstr *mp)
 
   pos = mp->tail->pos;
   while (pos >= mp->tail->size)
-  {
-    remove_buf(mp);
-    pos = mp->tail->pos;
-    if (!mp->tail)
     {
-      fprintf(stderr, "Fatal error!\n");
-      exit(1);
+      remove_buf(mp);
+      pos = mp->tail->pos;
+      if (!mp->tail)
+        {
+          fprintf(stderr, "Fatal error!\n");
+          exit(1);
+        }
     }
-  }
 
   b = mp->tail->pnt[pos];
   mp->bsize--;
@@ -141,65 +141,65 @@ int decodeMP3(struct mpstr *mp, char *in, int isize, char *out, int osize,
   gmp = mp;
 
   if (osize < 4608)
-  {
-    fprintf(stderr, "To less out space\n");
-    return MP3_ERR;
-  }
-
-  if (in)
-  {
-    if (addbuf(mp, in, isize) == NULL)
     {
+      fprintf(stderr, "To less out space\n");
       return MP3_ERR;
     }
-  }
+
+  if (in)
+    {
+      if (addbuf(mp, in, isize) == NULL)
+        {
+          return MP3_ERR;
+        }
+    }
 
   /* First decode header */
   if (mp->framesize == 0)
-  {
-    if (mp->bsize < 4)
     {
-      return MP3_NEED_MORE;
+      if (mp->bsize < 4)
+        {
+          return MP3_NEED_MORE;
+        }
+      read_head(mp);
+      decode_header(&mp->fr, mp->header);
+      mp->framesize = mp->fr.framesize;
     }
-    read_head(mp);
-    decode_header(&mp->fr, mp->header);
-    mp->framesize = mp->fr.framesize;
-  }
 
   /*	  printf(" fr.framesize = %i \n",mp->fr.framesize);
             printf(" bsize        = %i \n",mp->bsize);
   */
 
   if (mp->fr.framesize > mp->bsize)
-  {
-    return MP3_NEED_MORE;
-  }
+    {
+      return MP3_NEED_MORE;
+    }
   wordpointer = mp->bsspace[mp->bsnum] + 512;
   mp->bsnum = (mp->bsnum + 1) & 0x1;
   bitindex = 0;
 
   len = 0;
   while (len < mp->framesize)
-  {
-    int nlen;
-    int blen = mp->tail->size - mp->tail->pos;
-    if ((mp->framesize - len) <= blen)
     {
-      nlen = mp->framesize - len;
+      int nlen;
+      int blen = mp->tail->size - mp->tail->pos;
+      if ((mp->framesize - len) <= blen)
+        {
+          nlen = mp->framesize - len;
+        }
+      else
+        {
+          nlen = blen;
+        }
+      memcpy(wordpointer + len, mp->tail->pnt + mp->tail->pos, nlen);
+      len += nlen;
+      mp->tail->pos += nlen;
+      mp->bsize -= nlen;
+      if (mp->tail->pos == mp->tail->size)
+        {
+          remove_buf(mp);
+        }
     }
-    else
-    {
-      nlen = blen;
-    }
-    memcpy(wordpointer + len, mp->tail->pnt + mp->tail->pos, nlen);
-    len += nlen;
-    mp->tail->pos += nlen;
-    mp->bsize -= nlen;
-    if (mp->tail->pos == mp->tail->size)
-    {
-      remove_buf(mp);
-    }
-  }
 
   *done = 0;
   if (mp->fr.error_protection) getbits(16);
@@ -214,10 +214,10 @@ int set_pointer(long backstep)
 {
   unsigned char *bsbufold;
   if (gmp->fsizeold < 0 && backstep > 0)
-  {
-    fprintf(stderr, "Can't step back %ld!\n", backstep);
-    return MP3_ERR;
-  }
+    {
+      fprintf(stderr, "Can't step back %ld!\n", backstep);
+      return MP3_ERR;
+    }
   bsbufold = gmp->bsspace[gmp->bsnum] + 512;
   wordpointer -= backstep;
   if (backstep)

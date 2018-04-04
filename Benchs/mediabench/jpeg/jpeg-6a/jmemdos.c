@@ -128,25 +128,25 @@ select_file_name(char *fname)
 
   /* Keep generating file names till we find one that's not in use */
   for (;;)
-  {
-    /* Get temp directory name from environment TMP or TEMP variable;
+    {
+      /* Get temp directory name from environment TMP or TEMP variable;
      * if none, use "."
      */
-    if ((env = (const char *)getenv("TMP")) == NULL)
-      if ((env = (const char *)getenv("TEMP")) == NULL) env = ".";
-    if (*env == '\0') /* null string means "." */
-      env = ".";
-    ptr = fname; /* copy name to fname */
-    while (*env != '\0') *ptr++ = *env++;
-    if (ptr[-1] != '\\' && ptr[-1] != '/')
-      *ptr++ = '\\'; /* append backslash if not in env variable */
-    /* Append a suitable file name */
-    next_file_num++; /* advance counter */
-    sprintf(ptr, "JPG%03d.TMP", next_file_num);
-    /* Probe to see if file name is already in use */
-    if ((tfile = fopen(fname, READ_BINARY)) == NULL) break;
-    fclose(tfile); /* oops, it's there; close tfile & try again */
-  }
+      if ((env = (const char *)getenv("TMP")) == NULL)
+        if ((env = (const char *)getenv("TEMP")) == NULL) env = ".";
+      if (*env == '\0') /* null string means "." */
+        env = ".";
+      ptr = fname; /* copy name to fname */
+      while (*env != '\0') *ptr++ = *env++;
+      if (ptr[-1] != '\\' && ptr[-1] != '/')
+        *ptr++ = '\\'; /* append backslash if not in env variable */
+      /* Append a suitable file name */
+      next_file_num++; /* advance counter */
+      sprintf(ptr, "JPG%03d.TMP", next_file_num);
+      /* Probe to see if file name is already in use */
+      if ((tfile = fopen(fname, READ_BINARY)) == NULL) break;
+      fclose(tfile); /* oops, it's there; close tfile & try again */
+    }
 }
 
 /*
@@ -190,7 +190,7 @@ jpeg_free_large(j_common_ptr cinfo, void FAR *object, size_t sizeofobject)
  * a slop factor of 5% or so.
  */
 
-#ifndef DEFAULT_MAX_MEM         /* so can override from makefile */
+#ifndef DEFAULT_MAX_MEM /* so can override from makefile */
 #define DEFAULT_MAX_MEM 300000L /* for total usage about 450K */
 #endif
 
@@ -258,7 +258,7 @@ METHODDEF(void)
 close_file_store(j_common_ptr cinfo, backing_store_ptr info)
 {
   jdos_close(info->handle.file_handle); /* close the file */
-  remove(info->temp_name);              /* delete the file */
+  remove(info->temp_name); /* delete the file */
   /* If your system doesn't have remove(), try unlink() instead.
    * remove() is the ANSI-standard name for this function, but
    * unlink() was more common in pre-ANSI systems.
@@ -274,11 +274,11 @@ open_file_store(j_common_ptr cinfo, backing_store_ptr info,
 
   select_file_name(info->temp_name);
   if (jdos_open((short far *)&handle, (char far *)info->temp_name))
-  {
-    /* might as well exit since jpeg_open_backing_store will fail anyway */
-    ERREXITS(cinfo, JERR_TFILE_CREATE, info->temp_name);
-    return FALSE;
-  }
+    {
+      /* might as well exit since jpeg_open_backing_store will fail anyway */
+      ERREXITS(cinfo, JERR_TFILE_CREATE, info->temp_name);
+      return FALSE;
+    }
   info->handle.file_handle = handle;
   info->read_backing_store = read_file_store;
   info->write_backing_store = write_file_store;
@@ -295,7 +295,8 @@ open_file_store(j_common_ptr cinfo, backing_store_ptr info,
 
 static XMSDRIVER xms_driver; /* saved address of XMS driver */
 
-typedef union { /* either long offset or real-mode pointer */
+typedef union
+{ /* either long offset or real-mode pointer */
   long offset;
   void far *ptr;
 } XMSPTR;
@@ -335,11 +336,11 @@ read_xms_store(j_common_ptr cinfo, backing_store_ptr info,
   if (ctx.ax != 1) ERREXIT(cinfo, JERR_XMS_READ);
 
   if (ODD(byte_count))
-  {
-    read_xms_store(cinfo, info, (void FAR *)endbuffer,
-                   file_offset + byte_count - 1L, 2L);
-    ((char FAR *)buffer_address)[byte_count - 1L] = endbuffer[0];
-  }
+    {
+      read_xms_store(cinfo, info, (void FAR *)endbuffer,
+                     file_offset + byte_count - 1L, 2L);
+      ((char FAR *)buffer_address)[byte_count - 1L] = endbuffer[0];
+    }
 }
 
 METHODDEF(void)
@@ -366,13 +367,13 @@ write_xms_store(j_common_ptr cinfo, backing_store_ptr info,
   if (ctx.ax != 1) ERREXIT(cinfo, JERR_XMS_WRITE);
 
   if (ODD(byte_count))
-  {
-    read_xms_store(cinfo, info, (void FAR *)endbuffer,
-                   file_offset + byte_count - 1L, 2L);
-    endbuffer[0] = ((char FAR *)buffer_address)[byte_count - 1L];
-    write_xms_store(cinfo, info, (void FAR *)endbuffer,
-                    file_offset + byte_count - 1L, 2L);
-  }
+    {
+      read_xms_store(cinfo, info, (void FAR *)endbuffer,
+                     file_offset + byte_count - 1L, 2L);
+      endbuffer[0] = ((char FAR *)buffer_address)[byte_count - 1L];
+      write_xms_store(cinfo, info, (void FAR *)endbuffer,
+                      file_offset + byte_count - 1L, 2L);
+    }
 }
 
 METHODDEF(void)
@@ -436,8 +437,9 @@ open_xms_store(j_common_ptr cinfo, backing_store_ptr info,
 
 typedef void far *EMSPTR;
 
-typedef union {   /* EMS move specification structure */
-  long length;    /* It's easy to access first 4 bytes */
+typedef union
+{ /* EMS move specification structure */
+  long length; /* It's easy to access first 4 bytes */
   char bytes[18]; /* Misaligned fields in here! */
 } EMSspec;
 
@@ -579,7 +581,7 @@ jpeg_open_backing_store(j_common_ptr cinfo, backing_store_ptr info,
 GLOBAL(long)
 jpeg_mem_init(j_common_ptr cinfo)
 {
-  next_file_num = 0;      /* initialize temp file name generator */
+  next_file_num = 0; /* initialize temp file name generator */
   return DEFAULT_MAX_MEM; /* default for max_memory_to_use */
 }
 

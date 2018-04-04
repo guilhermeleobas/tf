@@ -13,18 +13,19 @@ precision ppowmod(u, v, m) precision u, v, m;
   pset(&j, pone);
 
   do
-  {
-    if (podd(n))
     {
-      pset(&j, pmod(pmul(i, j), m));
+      if (podd(n))
+        {
+          pset(&j, pmod(pmul(i, j), m));
+        }
+      pset(&n, phalf(n));
+      if (peqz(n))
+        {
+          break;
+        }
+      pset(&i, pmod(pmul(i, i), m));
     }
-    pset(&n, phalf(n));
-    if (peqz(n))
-    {
-      break;
-    }
-    pset(&i, pmod(pmul(i, i), m));
-  } while (1);
+  while (1);
 
   pdestroy(i);
   pdestroy(n);

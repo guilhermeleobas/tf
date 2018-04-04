@@ -42,9 +42,9 @@ HistogramElement *HistogramElement_new(int length)
 {
   HistogramElement *new = malloc(sizeof(HistogramElement));
   if (!new)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
   new->length = length;
   new->count = 1;
   new->next = NULL;
@@ -60,41 +60,41 @@ bool HistogramElement_updateList(HistogramElement **head, int length)
 
   prev = head;
   for (current = *head; current != NULL; current = current->next)
-  {
-    if (current->length < length)
     {
-      prev = &current->next;
-      continue; /* iterate down the histogram linked list */
+      if (current->length < length)
+        {
+          prev = &current->next;
+          continue; /* iterate down the histogram linked list */
+        }
+      if (current->length == length)
+        {
+          ++current->count;
+          histogramInsert = true;
+          break;
+        }
+      if (current->length > length)
+        {
+          /* we are logging a new length, need to allocate and insert */
+          new = HistogramElement_new(length);
+          if (!new)
+            {
+              return (false);
+            }
+          new->next = current;
+          (*prev) = new;
+          histogramInsert = true;
+          break;
+        }
     }
-    if (current->length == length)
-    {
-      ++current->count;
-      histogramInsert = true;
-      break;
-    }
-    if (current->length > length)
-    {
-      /* we are logging a new length, need to allocate and insert */
-      new = HistogramElement_new(length);
-      if (!new)
-      {
-        return (false);
-      }
-      new->next = current;
-      (*prev) = new;
-      histogramInsert = true;
-      break;
-    }
-  }
 
   if (!histogramInsert) /* this element belongs at the end of the chain */
-  {
-    (*prev) = HistogramElement_new(length);
-    if ((*prev) == NULL)
     {
-      return (false);
+      (*prev) = HistogramElement_new(length);
+      if ((*prev) == NULL)
+        {
+          return (false);
+        }
     }
-  }
 
   return (true);
 }
@@ -103,40 +103,40 @@ Stats *Stats_new()
 {
   Stats *new = malloc(sizeof(Stats));
   if (new)
-  {
-    new->pathLengths =
-        IntVector_new(16);  // Arbitrary, multiple of 8 for vectorization
-    new->averageLength = 0.0;
-    new->standardDeviation = 0.0;
-    new->minLength = INT_MAX;
-    new->maxLength = 0;
-    new->histogram = NULL;
-    if (new->pathLengths)
     {
-      return (new);
+      new->pathLengths =
+          IntVector_new(16);  // Arbitrary, multiple of 8 for vectorization
+      new->averageLength = 0.0;
+      new->standardDeviation = 0.0;
+      new->minLength = INT_MAX;
+      new->maxLength = 0;
+      new->histogram = NULL;
+      if (new->pathLengths)
+        {
+          return (new);
+        }
+      else
+        {
+          free(new);
+          return (NULL);
+        }
     }
-    else
+  else
     {
-      free(new);
       return (NULL);
     }
-  }
-  else
-  {
-    return (NULL);
-  }
 }
 
 void Stats_delete(Stats *stats)
 {
   if (stats)
-  {
-    if (stats->pathLengths)
     {
-      free(stats->pathLengths);
+      if (stats->pathLengths)
+        {
+          free(stats->pathLengths);
+        }
+      free(stats);
     }
-    free(stats);
-  }
 }
 
 bool Stats_logPath(Stats *stats, NodePtrVec *path)
@@ -148,19 +148,19 @@ bool Stats_logPath(Stats *stats, NodePtrVec *path)
   int length;
 
   if (!stats || !stats->pathLengths || !path)
-  {
-    return (false);
-  }
+    {
+      return (false);
+    }
 
   length = path->contentSize;
   if (length < stats->minLength)
-  {
-    stats->minLength = length;
-  }
+    {
+      stats->minLength = length;
+    }
   if (length > stats->maxLength)
-  {
-    stats->maxLength = length;
-  }
+    {
+      stats->maxLength = length;
+    }
   return (IntVector_insertEnd(stats->pathLengths, length));
 }
 
@@ -173,45 +173,45 @@ void Stats_calculate(Stats *stats)
 
   /* a little basic error checking */
   if (!stats || !stats->pathLengths || stats->pathLengths == 0)
-  {
-    return;
-  }
+    {
+      return;
+    }
   stats->histogram = calloc((stats->maxLength + 1), sizeof(int));
   if (!stats->histogram)
-  {
-    return;
-  }
+    {
+      return;
+    }
 
   for (i = 0; i < stats->pathLengths->size; ++i)
-  {
-    if (stats->pathLengths->vector[i] > 0)
     {
-      length = stats->pathLengths->vector[i];
-      sum += (double)length;
-      /* While we're iterating through the list, let's build our histogram... */
-      /* HistogramElement_updateList(&stats->histogram, length); */
-      stats->histogram[length] += 1;
+      if (stats->pathLengths->vector[i] > 0)
+        {
+          length = stats->pathLengths->vector[i];
+          sum += (double)length;
+          /* While we're iterating through the list, let's build our histogram... */
+          /* HistogramElement_updateList(&stats->histogram, length); */
+          stats->histogram[length] += 1;
+        }
     }
-  }
   if (i > 0)
-  {
-    stats->averageLength = sum / (double)i;
-  }
+    {
+      stats->averageLength = sum / (double)i;
+    }
 
   sum = 0.0;
   for (i = 0; i < stats->pathLengths->size; ++i)
-  {
-    if (stats->pathLengths->vector[i] > 0)
     {
-      diff = (double)stats->pathLengths->vector[i] - stats->averageLength;
-      sum += diff * diff;
+      if (stats->pathLengths->vector[i] > 0)
+        {
+          diff = (double)stats->pathLengths->vector[i] - stats->averageLength;
+          sum += diff * diff;
+        }
     }
-  }
 
   if (i > 0)
-  {
-    stats->standardDeviation = sqrt(sum / (double)i);
-  }
+    {
+      stats->standardDeviation = sqrt(sum / (double)i);
+    }
 }
 
 void testStats()
@@ -221,10 +221,10 @@ void testStats()
   NodePtrVec bogon;
 
   for (i = 2; i < 10; ++i)
-  {
-    bogon.contentSize = i;
-    Stats_logPath(test, &bogon);
-  }
+    {
+      bogon.contentSize = i;
+      Stats_logPath(test, &bogon);
+    }
 
   /* Throw in some more silly data */
   bogon.contentSize = 1;
@@ -255,7 +255,7 @@ void testStats()
          test->standardDeviation);
   printf("Histogram:\n");
   for (i = test->minLength; i < test->maxLength; ++i)
-  {
-    printf("\tlength %d appeared %d times\n", i, test->histogram[i]);
-  }
+    {
+      printf("\tlength %d appeared %d times\n", i, test->histogram[i]);
+    }
 }

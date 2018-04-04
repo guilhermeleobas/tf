@@ -52,35 +52,35 @@ flow_t feas_tol;
 
   /**/
   if ((bea->tail == jplus && sigma < 0) || (bea->tail == iplus && sigma > 0))
-  {
-    sigma = ABS(sigma);
-  }
+    {
+      sigma = ABS(sigma);
+    }
   else
-  {
-    sigma = -(ABS(sigma));
-  }
+    {
+      sigma = -(ABS(sigma));
+    }
 
   father = iminus;
   father->potential += sigma;
 RECURSION:
   temp = father->child;
   if (temp)
-  {
-  ITERATION:
-    temp->potential += sigma;
-    father = temp;
-    goto RECURSION;
-  }
+    {
+    ITERATION:
+      temp->potential += sigma;
+      father = temp;
+      goto RECURSION;
+    }
 TEST:
   if (father == iminus)
-  {
-    goto CONTINUE;
-  }
+    {
+      goto CONTINUE;
+    }
   temp = father->sibling;
   if (temp)
-  {
-    goto ITERATION;
-  }
+    {
+      goto ITERATION;
+    }
   father = father->pred;
   goto TEST;
 
@@ -93,91 +93,91 @@ CONTINUE:
   new_pred = jplus;
   new_basic_arc = bea;
   while (temp != jminus)
-  {
-    if (temp->sibling)
     {
-      temp->sibling->sibling_prev = temp->sibling_prev;
-    }
-    if (temp->sibling_prev)
-    {
-      temp->sibling_prev->sibling = temp->sibling;
-    }
-    else
-    {
-      father->child = temp->sibling;
-    }
+      if (temp->sibling)
+        {
+          temp->sibling->sibling_prev = temp->sibling_prev;
+        }
+      if (temp->sibling_prev)
+        {
+          temp->sibling_prev->sibling = temp->sibling;
+        }
+      else
+        {
+          father->child = temp->sibling;
+        }
 
-    temp->pred = new_pred;
-    temp->sibling = new_pred->child;
-    if (temp->sibling)
-    {
-      temp->sibling->sibling_prev = temp;
-    }
-    new_pred->child = temp;
-    temp->sibling_prev = 0;
+      temp->pred = new_pred;
+      temp->sibling = new_pred->child;
+      if (temp->sibling)
+        {
+          temp->sibling->sibling_prev = temp;
+        }
+      new_pred->child = temp;
+      temp->sibling_prev = 0;
 
-    orientation_temp = !(temp->orientation);
-    if (orientation_temp == cycle_ori)
-    {
-      flow_temp = temp->flow + delta;
-    }
-    else
-    {
-      flow_temp = temp->flow - delta;
-    }
-    basic_arc_temp = temp->basic_arc;
-    depth_temp = temp->depth;
+      orientation_temp = !(temp->orientation);
+      if (orientation_temp == cycle_ori)
+        {
+          flow_temp = temp->flow + delta;
+        }
+      else
+        {
+          flow_temp = temp->flow - delta;
+        }
+      basic_arc_temp = temp->basic_arc;
+      depth_temp = temp->depth;
 
-    temp->orientation = new_orientation;
-    temp->flow = new_flow;
-    temp->basic_arc = new_basic_arc;
-    temp->depth = new_depth;
+      temp->orientation = new_orientation;
+      temp->flow = new_flow;
+      temp->basic_arc = new_basic_arc;
+      temp->depth = new_depth;
 
-    new_pred = temp;
-    new_orientation = orientation_temp;
-    new_flow = flow_temp;
-    new_basic_arc = basic_arc_temp;
-    new_depth = depth_iminus - depth_temp;
-    temp = father;
-    father = temp->pred;
-  }
+      new_pred = temp;
+      new_orientation = orientation_temp;
+      new_flow = flow_temp;
+      new_basic_arc = basic_arc_temp;
+      new_depth = depth_iminus - depth_temp;
+      temp = father;
+      father = temp->pred;
+    }
 
   if (delta > feas_tol)
-  {
-    for (temp = jminus; temp != w; temp = temp->pred)
     {
-      temp->depth -= depth_iminus;
-      if (temp->orientation != cycle_ori)
-      {
-        temp->flow += delta;
-      }
-      else
-      {
-        temp->flow -= delta;
-      }
+      for (temp = jminus; temp != w; temp = temp->pred)
+        {
+          temp->depth -= depth_iminus;
+          if (temp->orientation != cycle_ori)
+            {
+              temp->flow += delta;
+            }
+          else
+            {
+              temp->flow -= delta;
+            }
+        }
+      for (temp = jplus; temp != w; temp = temp->pred)
+        {
+          temp->depth += depth_iminus;
+          if (temp->orientation == cycle_ori)
+            {
+              temp->flow += delta;
+            }
+          else
+            {
+              temp->flow -= delta;
+            }
+        }
     }
-    for (temp = jplus; temp != w; temp = temp->pred)
-    {
-      temp->depth += depth_iminus;
-      if (temp->orientation == cycle_ori)
-      {
-        temp->flow += delta;
-      }
-      else
-      {
-        temp->flow -= delta;
-      }
-    }
-  }
   else
-  {
-    for (temp = jminus; temp != w; temp = temp->pred)
     {
-      temp->depth -= depth_iminus;
+      for (temp = jminus; temp != w; temp = temp->pred)
+        {
+          temp->depth -= depth_iminus;
+        }
+      for (temp = jplus; temp != w; temp = temp->pred)
+        {
+          temp->depth += depth_iminus;
+        }
     }
-    for (temp = jplus; temp != w; temp = temp->pred)
-    {
-      temp->depth += depth_iminus;
-    }
-  }
 }

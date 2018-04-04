@@ -15,31 +15,31 @@ bool adjust_labels;
   char scratch[1000], **oldlabel, *var1, *var1bar, *var2, *var2bar;
 
   if (adjust_labels)
-  {
-    makeup_labels(PLA);
-  }
+    {
+      makeup_labels(PLA);
+    }
 
   /* Check the pair structure for valid entries and see which binary
       variables are left unpaired
   */
   paired = ALLOC(bool, cube.num_binary_vars);
   for (var = 0; var < cube.num_binary_vars; var++)
-  {
-    paired[var] = FALSE;
-  }
+    {
+      paired[var] = FALSE;
+    }
   for (i = 0; i < pair->cnt; i++)
-  {
-    if ((pair->var1[i] > 0 && pair->var1[i] <= cube.num_binary_vars) &&
-        (pair->var2[i] > 0 && pair->var2[i] <= cube.num_binary_vars))
     {
-      paired[pair->var1[i] - 1] = TRUE;
-      paired[pair->var2[i] - 1] = TRUE;
+      if ((pair->var1[i] > 0 && pair->var1[i] <= cube.num_binary_vars) &&
+          (pair->var2[i] > 0 && pair->var2[i] <= cube.num_binary_vars))
+        {
+          paired[pair->var1[i] - 1] = TRUE;
+          paired[pair->var2[i] - 1] = TRUE;
+        }
+      else
+        {
+          fatal("can only pair binary-valued variables");
+        }
     }
-    else
-    {
-      fatal("can only pair binary-valued variables");
-    }
-  }
 
   PLA->F = delvar(pairvar(PLA->F, pair), paired);
   PLA->R = delvar(pairvar(PLA->R, pair), paired);
@@ -53,21 +53,21 @@ bool adjust_labels;
   /* Create the new cube.part_size vector and setup the cube structure */
   new_num_binary_vars = 0;
   for (var = 0; var < old_num_binary_vars; var++)
-  {
-    new_num_binary_vars += (paired[var] == FALSE);
-  }
+    {
+      new_num_binary_vars += (paired[var] == FALSE);
+    }
   new_num_vars = new_num_binary_vars + pair->cnt;
   new_num_vars += old_num_vars - old_num_binary_vars;
   new_part_size = ALLOC(int, new_num_vars);
   for (var = 0; var < pair->cnt; var++)
-  {
-    new_part_size[new_num_binary_vars + var] = 4;
-  }
+    {
+      new_part_size[new_num_binary_vars + var] = 4;
+    }
   for (var = 0; var < old_num_vars - old_num_binary_vars; var++)
-  {
-    new_part_size[new_num_binary_vars + pair->cnt + var] =
-        cube.part_size[old_num_binary_vars + var];
-  }
+    {
+      new_part_size[new_num_binary_vars + pair->cnt + var] =
+          cube.part_size[old_num_binary_vars + var];
+    }
   setdown_cube();
   FREE(cube.part_size);
   cube.num_vars = new_num_vars;
@@ -77,60 +77,60 @@ bool adjust_labels;
 
   /* hack with the labels to get them correct */
   if (adjust_labels)
-  {
-    oldlabel = PLA->label;
-    PLA->label = ALLOC(char *, cube.size);
-    for (var = 0; var < pair->cnt; var++)
     {
-      newvar = cube.num_binary_vars * 2 + var * 4;
-      var1 = oldlabel[(pair->var1[var] - 1) * 2 + 1];
-      var2 = oldlabel[(pair->var2[var] - 1) * 2 + 1];
-      var1bar = oldlabel[(pair->var1[var] - 1) * 2];
-      var2bar = oldlabel[(pair->var2[var] - 1) * 2];
-      (void)sprintf(scratch, "%s+%s", var1bar, var2bar);
-      PLA->label[newvar] = util_strsav(scratch);
-      (void)sprintf(scratch, "%s+%s", var1bar, var2);
-      PLA->label[newvar + 1] = util_strsav(scratch);
-      (void)sprintf(scratch, "%s+%s", var1, var2bar);
-      PLA->label[newvar + 2] = util_strsav(scratch);
-      (void)sprintf(scratch, "%s+%s", var1, var2);
-      PLA->label[newvar + 3] = util_strsav(scratch);
+      oldlabel = PLA->label;
+      PLA->label = ALLOC(char *, cube.size);
+      for (var = 0; var < pair->cnt; var++)
+        {
+          newvar = cube.num_binary_vars * 2 + var * 4;
+          var1 = oldlabel[(pair->var1[var] - 1) * 2 + 1];
+          var2 = oldlabel[(pair->var2[var] - 1) * 2 + 1];
+          var1bar = oldlabel[(pair->var1[var] - 1) * 2];
+          var2bar = oldlabel[(pair->var2[var] - 1) * 2];
+          (void)sprintf(scratch, "%s+%s", var1bar, var2bar);
+          PLA->label[newvar] = util_strsav(scratch);
+          (void)sprintf(scratch, "%s+%s", var1bar, var2);
+          PLA->label[newvar + 1] = util_strsav(scratch);
+          (void)sprintf(scratch, "%s+%s", var1, var2bar);
+          PLA->label[newvar + 2] = util_strsav(scratch);
+          (void)sprintf(scratch, "%s+%s", var1, var2);
+          PLA->label[newvar + 3] = util_strsav(scratch);
+        }
+      /* Copy the old labels for the unpaired binary vars */
+      i = 0;
+      for (var = 0; var < old_num_binary_vars; var++)
+        {
+          if (paired[var] == FALSE)
+            {
+              PLA->label[2 * i] = oldlabel[2 * var];
+              PLA->label[2 * i + 1] = oldlabel[2 * var + 1];
+              oldlabel[2 * var] = oldlabel[2 * var + 1] = (char *)NULL;
+              i++;
+            }
+        }
+      /* Copy the old labels for the remaining unpaired vars */
+      new_mv_start = cube.num_binary_vars * 2 + pair->cnt * 4;
+      for (i = old_mv_start; i < old_size; i++)
+        {
+          PLA->label[new_mv_start + i - old_mv_start] = oldlabel[i];
+          oldlabel[i] = (char *)NULL;
+        }
+      /* free remaining entries in oldlabel */
+      for (i = 0; i < old_size; i++)
+        {
+          if (oldlabel[i] != (char *)NULL)
+            {
+              FREE(oldlabel[i]);
+            }
+        }
+      FREE(oldlabel);
     }
-    /* Copy the old labels for the unpaired binary vars */
-    i = 0;
-    for (var = 0; var < old_num_binary_vars; var++)
-    {
-      if (paired[var] == FALSE)
-      {
-        PLA->label[2 * i] = oldlabel[2 * var];
-        PLA->label[2 * i + 1] = oldlabel[2 * var + 1];
-        oldlabel[2 * var] = oldlabel[2 * var + 1] = (char *)NULL;
-        i++;
-      }
-    }
-    /* Copy the old labels for the remaining unpaired vars */
-    new_mv_start = cube.num_binary_vars * 2 + pair->cnt * 4;
-    for (i = old_mv_start; i < old_size; i++)
-    {
-      PLA->label[new_mv_start + i - old_mv_start] = oldlabel[i];
-      oldlabel[i] = (char *)NULL;
-    }
-    /* free remaining entries in oldlabel */
-    for (i = 0; i < old_size; i++)
-    {
-      if (oldlabel[i] != (char *)NULL)
-      {
-        FREE(oldlabel[i]);
-      }
-    }
-    FREE(oldlabel);
-  }
 
   /* the paired variables should not be sparse (cf. mv_reduce/raise_in)*/
   for (var = 0; var < pair->cnt; var++)
-  {
-    cube.sparse[cube.num_binary_vars + var] = 0;
-  }
+    {
+      cube.sparse[cube.num_binary_vars + var] = 0;
+    }
   FREE(paired);
 }
 
@@ -150,35 +150,35 @@ ppair pair;
   foreach_set(A, last, p)
   {
     for (pairnum = 0; pairnum < pair->cnt; pairnum++)
-    {
-      p1 = cube.first_part[pair->var1[pairnum] - 1];
-      p2 = cube.first_part[pair->var2[pairnum] - 1];
-      b1 = is_in_set(p, p2 + 1);
-      b0 = is_in_set(p, p2);
-      val = insert_col + pairnum * 4;
-      if (/* a0 */ is_in_set(p, p1))
       {
-        if (b0)
-        {
-          set_insert(p, val + 3);
-        }
-        if (b1)
-        {
-          set_insert(p, val + 2);
-        }
+        p1 = cube.first_part[pair->var1[pairnum] - 1];
+        p2 = cube.first_part[pair->var2[pairnum] - 1];
+        b1 = is_in_set(p, p2 + 1);
+        b0 = is_in_set(p, p2);
+        val = insert_col + pairnum * 4;
+        if (/* a0 */ is_in_set(p, p1))
+          {
+            if (b0)
+              {
+                set_insert(p, val + 3);
+              }
+            if (b1)
+              {
+                set_insert(p, val + 2);
+              }
+          }
+        if (/* a1 */ is_in_set(p, p1 + 1))
+          {
+            if (b0)
+              {
+                set_insert(p, val + 1);
+              }
+            if (b1)
+              {
+                set_insert(p, val);
+              }
+          }
       }
-      if (/* a1 */ is_in_set(p, p1 + 1))
-      {
-        if (b0)
-        {
-          set_insert(p, val + 1);
-        }
-        if (b1)
-        {
-          set_insert(p, val);
-        }
-      }
-    }
   }
   return A;
 }
@@ -193,31 +193,31 @@ bool paired[];
   run = FALSE;
   run_length = 0;
   for (var = 0; var < cube.num_binary_vars; var++)
-  {
-    if (paired[var])
     {
-      if (run)
-      {
-        run_length += cube.part_size[var];
-      }
-      else
-      {
-        run = TRUE;
-        first_run = cube.first_part[var];
-        run_length = cube.part_size[var];
-      }
+      if (paired[var])
+        {
+          if (run)
+            {
+              run_length += cube.part_size[var];
+            }
+          else
+            {
+              run = TRUE;
+              first_run = cube.first_part[var];
+              run_length = cube.part_size[var];
+            }
+        }
+      else if (run)
+        {
+          A = sf_delcol(A, first_run - offset, run_length);
+          run = FALSE;
+          offset += run_length;
+        }
     }
-    else if (run)
+  if (run)
     {
       A = sf_delcol(A, first_run - offset, run_length);
-      run = FALSE;
-      offset += run_length;
     }
-  }
-  if (run)
-  {
-    A = sf_delcol(A, first_run - offset, run_length);
-  }
   return A;
 }
 
@@ -262,39 +262,39 @@ int strategy;
   cost_array = find_pairing_cost(PLA, strategy);
 
   if (summary)
-  {
-    printf("    ");
-    for (i = 0; i < cube.num_binary_vars; i++)
     {
-      printf("%3d ", i + 1);
-    }
-    printf("\n");
-    for (i = 0; i < cube.num_binary_vars; i++)
-    {
-      printf("%3d ", i + 1);
-      for (j = 0; j < cube.num_binary_vars; j++)
-      {
-        printf("%3d ", cost_array[i][j]);
-      }
+      printf("    ");
+      for (i = 0; i < cube.num_binary_vars; i++)
+        {
+          printf("%3d ", i + 1);
+        }
       printf("\n");
+      for (i = 0; i < cube.num_binary_vars; i++)
+        {
+          printf("%3d ", i + 1);
+          for (j = 0; j < cube.num_binary_vars; j++)
+            {
+              printf("%3d ", cost_array[i][j]);
+            }
+          printf("\n");
+        }
     }
-  }
 
   if (cube.num_binary_vars <= 14)
-  {
-    PLA->pair = pair_best_cost(cost_array);
-  }
+    {
+      PLA->pair = pair_best_cost(cost_array);
+    }
   else
-  {
-    (void)greedy_best_cost(cost_array, &(PLA->pair));
-  }
+    {
+      (void)greedy_best_cost(cost_array, &(PLA->pair));
+    }
   printf("# ");
   print_pair(PLA->pair);
 
   for (i = 0; i < cube.num_binary_vars; i++)
-  {
-    FREE(cost_array[i]);
-  }
+    {
+      FREE(cost_array[i]);
+    }
   FREE(cost_array);
 
   set_pair(PLA);
@@ -313,100 +313,100 @@ int strategy;
   /* data is returned in the cost array */
   cost_array = ALLOC(int *, cube.num_binary_vars);
   for (i = 0; i < cube.num_binary_vars; i++)
-  {
-    cost_array[i] = ALLOC(int, cube.num_binary_vars);
-  }
-  for (i = 0; i < cube.num_binary_vars; i++)
-  {
-    for (j = 0; j < cube.num_binary_vars; j++)
     {
-      cost_array[i][j] = 0;
+      cost_array[i] = ALLOC(int, cube.num_binary_vars);
     }
-  }
+  for (i = 0; i < cube.num_binary_vars; i++)
+    {
+      for (j = 0; j < cube.num_binary_vars; j++)
+        {
+          cost_array[i][j] = 0;
+        }
+    }
 
   /* Setup the pair structure for pairing variables together */
   PLA->pair = pair_new(1);
   PLA->pair->cnt = 1;
 
   for (var1 = 0; var1 < cube.num_binary_vars - 1; var1++)
-  {
-    for (var2 = var1 + 1; var2 < cube.num_binary_vars; var2++)
     {
-      /* if anything but simple strategy, perform setup */
-      if (strategy > 0)
-      {
-        /* save the original covers */
-        Fsave = sf_save(PLA->F);
-        Dsave = sf_save(PLA->D);
-        Rsave = sf_save(PLA->R);
-
-        /* save the original cube structure */
-        xnum_binary_vars = cube.num_binary_vars;
-        xnum_vars = cube.num_vars;
-        xpart_size = ALLOC(int, cube.num_vars);
-        for (i = 0; i < cube.num_vars; i++)
+      for (var2 = var1 + 1; var2 < cube.num_binary_vars; var2++)
         {
-          xpart_size[i] = cube.part_size[i];
+          /* if anything but simple strategy, perform setup */
+          if (strategy > 0)
+            {
+              /* save the original covers */
+              Fsave = sf_save(PLA->F);
+              Dsave = sf_save(PLA->D);
+              Rsave = sf_save(PLA->R);
+
+              /* save the original cube structure */
+              xnum_binary_vars = cube.num_binary_vars;
+              xnum_vars = cube.num_vars;
+              xpart_size = ALLOC(int, cube.num_vars);
+              for (i = 0; i < cube.num_vars; i++)
+                {
+                  xpart_size[i] = cube.part_size[i];
+                }
+
+              /* pair two variables together */
+              PLA->pair->var1[0] = var1 + 1;
+              PLA->pair->var2[0] = var2 + 1;
+              set_pair1(PLA, /* adjust_labels */ FALSE);
+            }
+
+          /* decide how to best estimate worth of this pairing */
+          switch (strategy)
+            {
+              case 3:
+                /*s = "exact minimization";*/
+                PLA->F = minimize_exact(PLA->F, PLA->D, PLA->R, 1);
+                cost = Fsave->count - PLA->F->count;
+                break;
+              case 2:
+                /*s = "full minimization";*/
+                PLA->F = espresso(PLA->F, PLA->D, PLA->R);
+                cost = Fsave->count - PLA->F->count;
+                break;
+              case 1:
+                /*s = "strong division";*/
+                PLA->F = reduce(PLA->F, PLA->D);
+                PLA->F = expand(PLA->F, PLA->R, FALSE);
+                PLA->F = irredundant(PLA->F, PLA->D);
+                cost = Fsave->count - PLA->F->count;
+                break;
+              case 0:
+                /*s = "weak division";*/
+                mask = new_cube();
+                set_or(mask, cube.var_mask[var1], cube.var_mask[var2]);
+                T = dist_merge(sf_save(PLA->F), mask);
+                cost = PLA->F->count - T->count;
+                sf_free(T);
+                set_free(mask);
+            }
+
+          cost_array[var1][var2] = cost;
+
+          if (strategy > 0)
+            {
+              /* restore the original cube structure -- free the new ones */
+              setdown_cube();
+              FREE(cube.part_size);
+              cube.num_binary_vars = xnum_binary_vars;
+              cube.num_vars = xnum_vars;
+              cube.part_size = xpart_size;
+              cube_setup();
+
+              /* restore the original cover(s) -- free the new ones */
+              sf_free(PLA->F);
+              sf_free(PLA->D);
+              sf_free(PLA->R);
+              PLA->F = Fsave;
+              PLA->D = Dsave;
+              PLA->R = Rsave;
+            }
         }
-
-        /* pair two variables together */
-        PLA->pair->var1[0] = var1 + 1;
-        PLA->pair->var2[0] = var2 + 1;
-        set_pair1(PLA, /* adjust_labels */ FALSE);
-      }
-
-      /* decide how to best estimate worth of this pairing */
-      switch (strategy)
-      {
-        case 3:
-          /*s = "exact minimization";*/
-          PLA->F = minimize_exact(PLA->F, PLA->D, PLA->R, 1);
-          cost = Fsave->count - PLA->F->count;
-          break;
-        case 2:
-          /*s = "full minimization";*/
-          PLA->F = espresso(PLA->F, PLA->D, PLA->R);
-          cost = Fsave->count - PLA->F->count;
-          break;
-        case 1:
-          /*s = "strong division";*/
-          PLA->F = reduce(PLA->F, PLA->D);
-          PLA->F = expand(PLA->F, PLA->R, FALSE);
-          PLA->F = irredundant(PLA->F, PLA->D);
-          cost = Fsave->count - PLA->F->count;
-          break;
-        case 0:
-          /*s = "weak division";*/
-          mask = new_cube();
-          set_or(mask, cube.var_mask[var1], cube.var_mask[var2]);
-          T = dist_merge(sf_save(PLA->F), mask);
-          cost = PLA->F->count - T->count;
-          sf_free(T);
-          set_free(mask);
-      }
-
-      cost_array[var1][var2] = cost;
-
-      if (strategy > 0)
-      {
-        /* restore the original cube structure -- free the new ones */
-        setdown_cube();
-        FREE(cube.part_size);
-        cube.num_binary_vars = xnum_binary_vars;
-        cube.num_vars = xnum_vars;
-        cube.part_size = xpart_size;
-        cube_setup();
-
-        /* restore the original cover(s) -- free the new ones */
-        sf_free(PLA->F);
-        sf_free(PLA->D);
-        sf_free(PLA->R);
-        PLA->F = Fsave;
-        PLA->D = Dsave;
-        PLA->R = Rsave;
-      }
     }
-  }
 
   pair_free(PLA->pair);
   PLA->pair = NULL;
@@ -427,9 +427,9 @@ print_pair(pair) ppair pair;
 
   printf("pair is");
   for (i = 0; i < pair->cnt; i++)
-  {
-    printf(" (%d %d)", pair->var1[i], pair->var2[i]);
-  }
+    {
+      printf(" (%d %d)", pair->var1[i], pair->var2[i]);
+    }
   printf("\n");
 }
 
@@ -445,33 +445,33 @@ ppair *pair_p;
   total_cost = 0;
 
   while (set_ord(cand) >= 2)
-  {
-    maxcost = -1;
-    for (i = 0; i < cube.num_binary_vars; i++)
     {
-      if (is_in_set(cand, i))
-      {
-        for (j = i + 1; j < cube.num_binary_vars; j++)
+      maxcost = -1;
+      for (i = 0; i < cube.num_binary_vars; i++)
         {
-          if (is_in_set(cand, j))
-          {
-            if (cost_array_local[i][j] > maxcost)
+          if (is_in_set(cand, i))
             {
-              maxcost = cost_array_local[i][j];
-              besti = i;
-              bestj = j;
+              for (j = i + 1; j < cube.num_binary_vars; j++)
+                {
+                  if (is_in_set(cand, j))
+                    {
+                      if (cost_array_local[i][j] > maxcost)
+                        {
+                          maxcost = cost_array_local[i][j];
+                          besti = i;
+                          bestj = j;
+                        }
+                    }
+                }
             }
-          }
         }
-      }
+      pair->var1[pair->cnt] = besti + 1;
+      pair->var2[pair->cnt] = bestj + 1;
+      pair->cnt++;
+      set_remove(cand, besti);
+      set_remove(cand, bestj);
+      total_cost += maxcost;
     }
-    pair->var1[pair->cnt] = besti + 1;
-    pair->var2[pair->cnt] = bestj + 1;
-    pair->cnt++;
-    set_remove(cand, besti);
-    set_remove(cand, bestj);
-    total_cost += maxcost;
-  }
   set_free(cand);
   *pair_p = pair;
   return total_cost;
@@ -500,19 +500,19 @@ int find_best_cost(pair) register ppair pair;
 
   cost = 0;
   for (i = 0; i < pair->cnt; i++)
-  {
-    cost += cost_array[pair->var1[i] - 1][pair->var2[i] - 1];
-  }
+    {
+      cost += cost_array[pair->var1[i] - 1][pair->var2[i] - 1];
+    }
   if (cost > best_cost)
-  {
-    best_cost = cost;
-    best_pair = pair_save(pair, pair->cnt);
-  }
+    {
+      best_cost = cost;
+      best_pair = pair_save(pair, pair->cnt);
+    }
   if ((debug & MINCOV) && trace)
-  {
-    printf("cost is %d ", cost);
-    print_pair(pair);
-  }
+    {
+      printf("cost is %d ", cost);
+      print_pair(pair);
+    }
 }
 
 /*
@@ -580,9 +580,9 @@ int minimize_pair(pair) ppair pair;
   xnum_vars = cube.num_vars;
   xpart_size = ALLOC(int, cube.num_vars);
   for (i = 0; i < cube.num_vars; i++)
-  {
-    xpart_size[i] = cube.part_size[i];
-  }
+    {
+      xpart_size[i] = cube.part_size[i];
+    }
 
   /* setup the paired variables */
   global_PLA->pair = pair;
@@ -590,54 +590,54 @@ int minimize_pair(pair) ppair pair;
 
   /* call the minimizer */
   if (summary)
-  {
-    print_pair(pair);
-  }
+    {
+      print_pair(pair);
+    }
   switch (pair_minim_strategy)
-  {
-    case 2:
-      EXEC_S(phase_assignment(global_PLA, 0), "OPO       ", global_PLA->F);
-      if (summary)
-      {
-        printf("# phase is %s\n", pc1(global_PLA->phase));
-      }
-      break;
-    case 1:
-      EXEC_S(global_PLA->F =
-                 minimize_exact(global_PLA->F, global_PLA->D, global_PLA->R, 1),
-             "EXACT     ", global_PLA->F);
-      break;
-    case 0:
-      EXEC_S(
-          global_PLA->F = espresso(global_PLA->F, global_PLA->D, global_PLA->R),
-          "ESPRESSO  ", global_PLA->F);
-      break;
-    default:
-      break;
-  }
+    {
+      case 2:
+        EXEC_S(phase_assignment(global_PLA, 0), "OPO       ", global_PLA->F);
+        if (summary)
+          {
+            printf("# phase is %s\n", pc1(global_PLA->phase));
+          }
+        break;
+      case 1:
+        EXEC_S(global_PLA->F =
+                   minimize_exact(global_PLA->F, global_PLA->D, global_PLA->R, 1),
+               "EXACT     ", global_PLA->F);
+        break;
+      case 0:
+        EXEC_S(
+            global_PLA->F = espresso(global_PLA->F, global_PLA->D, global_PLA->R),
+            "ESPRESSO  ", global_PLA->F);
+        break;
+      default:
+        break;
+    }
 
   /* see if we have a new best solution */
   if (global_PLA->F->count < best_cost)
-  {
-    best_cost = global_PLA->F->count;
-    best_pair = pair_save(pair, pair->cnt);
-    best_phase = global_PLA->phase != NULL ? set_save(global_PLA->phase) : NULL;
-    if (best_F != NULL)
     {
-      sf_free(best_F);
+      best_cost = global_PLA->F->count;
+      best_pair = pair_save(pair, pair->cnt);
+      best_phase = global_PLA->phase != NULL ? set_save(global_PLA->phase) : NULL;
+      if (best_F != NULL)
+        {
+          sf_free(best_F);
+        }
+      if (best_D != NULL)
+        {
+          sf_free(best_D);
+        }
+      if (best_R != NULL)
+        {
+          sf_free(best_R);
+        }
+      best_F = sf_save(global_PLA->F);
+      best_D = sf_save(global_PLA->D);
+      best_R = sf_save(global_PLA->R);
     }
-    if (best_D != NULL)
-    {
-      sf_free(best_D);
-    }
-    if (best_R != NULL)
-    {
-      sf_free(best_R);
-    }
-    best_F = sf_save(global_PLA->F);
-    best_D = sf_save(global_PLA->D);
-    best_R = sf_save(global_PLA->R);
-  }
 
   /* restore the original cube structure -- free the new ones */
   setdown_cube();
@@ -668,53 +668,53 @@ int (*action)();
   ppair recur_pair;
 
   if (set_ord(candidate) < 2)
-  {
-    (*action)(pair);
-    return 0;
-  }
+    {
+      (*action)(pair);
+      return 0;
+    }
 
   recur_pair = pair_save(pair, n);
   recur_candidate = set_save(candidate);
 
   /* Find first variable still in the candidate set */
   for (i = 0; i < n; i++)
-  {
-    if (is_in_set(candidate, i))
     {
-      break;
+      if (is_in_set(candidate, i))
+        {
+          break;
+        }
     }
-  }
 
   /* Try all pairs of i with other variables */
   for (j = i + 1; j < n; j++)
-  {
-    if (is_in_set(candidate, j))
     {
-      /* pair (i j) -- remove from candidate set for future pairings */
-      set_remove(recur_candidate, i);
-      set_remove(recur_candidate, j);
+      if (is_in_set(candidate, j))
+        {
+          /* pair (i j) -- remove from candidate set for future pairings */
+          set_remove(recur_candidate, i);
+          set_remove(recur_candidate, j);
 
-      /* add to the pair array */
-      recur_pair->var1[recur_pair->cnt] = i + 1;
-      recur_pair->var2[recur_pair->cnt] = j + 1;
-      recur_pair->cnt++;
+          /* add to the pair array */
+          recur_pair->var1[recur_pair->cnt] = i + 1;
+          recur_pair->var2[recur_pair->cnt] = j + 1;
+          recur_pair->cnt++;
 
-      /* recur looking for the end ... */
-      generate_all_pairs(recur_pair, n, recur_candidate, action);
+          /* recur looking for the end ... */
+          generate_all_pairs(recur_pair, n, recur_candidate, action);
 
-      /* now break this pair, and restore candidate set */
-      recur_pair->cnt--;
-      set_insert(recur_candidate, i);
-      set_insert(recur_candidate, j);
+          /* now break this pair, and restore candidate set */
+          recur_pair->cnt--;
+          set_insert(recur_candidate, i);
+          set_insert(recur_candidate, j);
+        }
     }
-  }
 
   /* if odd, generate all pairs which do NOT include i */
   if ((set_ord(candidate) % 2) == 1)
-  {
-    set_remove(recur_candidate, i);
-    generate_all_pairs(recur_pair, n, recur_candidate, action);
-  }
+    {
+      set_remove(recur_candidate, i);
+      generate_all_pairs(recur_pair, n, recur_candidate, action);
+    }
 
   pair_free(recur_pair);
   set_free(recur_candidate);
@@ -740,10 +740,10 @@ register int n;
   pair1 = pair_new(n);
   pair1->cnt = pair->cnt;
   for (k = 0; k < pair->cnt; k++)
-  {
-    pair1->var1[k] = pair->var1[k];
-    pair1->var2[k] = pair->var2[k];
-  }
+    {
+      pair1->var1[k] = pair->var1[k];
+      pair1->var2[k] = pair->var2[k];
+    }
   return pair1;
 }
 

@@ -44,32 +44,32 @@ long primal_start_artificial(net) network_t *net;
 
   stop = (void *)net->stop_arcs;
   for (arc = net->arcs; arc != (arc_t *)stop; arc++)
-  {
-    if (arc->ident != FIXED)
     {
-      arc->ident = AT_LOWER;
+      if (arc->ident != FIXED)
+        {
+          arc->ident = AT_LOWER;
+        }
     }
-  }
 
   arc = net->dummy_arcs;
   for (stop = (void *)net->stop_nodes; node != (node_t *)stop; arc++, node++)
-  {
-    node->basic_arc = arc;
-    node->pred = root;
-    node->child = NULL;
-    node->sibling = node + 1;
-    node->sibling_prev = node - 1;
-    node->depth = 1;
+    {
+      node->basic_arc = arc;
+      node->pred = root;
+      node->child = NULL;
+      node->sibling = node + 1;
+      node->sibling_prev = node - 1;
+      node->depth = 1;
 
-    arc->cost = (cost_t)MAX_ART_COST;
-    arc->ident = BASIC;
+      arc->cost = (cost_t)MAX_ART_COST;
+      arc->ident = BASIC;
 
-    node->orientation = UP;
-    node->potential = ZERO;
-    arc->tail = node;
-    arc->head = root;
-    node->flow = (flow_t)0;
-  }
+      node->orientation = UP;
+      node->potential = ZERO;
+      arc->tail = node;
+      arc->head = root;
+      node->flow = (flow_t)0;
+    }
 
   node--;
   root++;

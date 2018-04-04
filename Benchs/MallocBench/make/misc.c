@@ -26,9 +26,9 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 int alpha_compare(s1, s2) char **s1, **s2;
 {
   if (**s1 != **s2)
-  {
-    return **s1 - **s2;
-  }
+    {
+      return **s1 - **s2;
+    }
   return strcmp(*s1, *s2);
 }
 
@@ -44,95 +44,95 @@ void collapse_continuations(line) char *line;
 
   in = index(line, '\n');
   if (in == 0)
-  {
-    return;
-  }
+    {
+      return;
+    }
 
   out = in;
   if (out > line)
-  {
-    while (out[-1] == '\\')
     {
-      --out;
+      while (out[-1] == '\\')
+        {
+          --out;
+        }
     }
-  }
 
   while (*in != '\0')
-  {
-    /* BS_WRITE gets the number of quoted backslashes at
+    {
+      /* BS_WRITE gets the number of quoted backslashes at
        the end just before IN, and BACKSLASH gets nonzero
        if the next character is quoted.  */
-    backslash = 0;
-    bs_write = 0;
-    for (p = in - 1; p >= line && *p == '\\'; --p)
-    {
-      if (backslash)
-      {
-        ++bs_write;
-      }
-      backslash = !backslash;
+      backslash = 0;
+      bs_write = 0;
+      for (p = in - 1; p >= line && *p == '\\'; --p)
+        {
+          if (backslash)
+            {
+              ++bs_write;
+            }
+          backslash = !backslash;
 
-      /* It should be impossible to go back this far without exiting,
+          /* It should be impossible to go back this far without exiting,
          but if we do, we can't get the right answer.  */
-      if (in == out - 1)
-      {
-        abort();
-      }
-    }
+          if (in == out - 1)
+            {
+              abort();
+            }
+        }
 
-    /* Output the appropriate number of backslashes.  */
-    while (bs_write-- > 0)
-    {
-      *out++ = '\\';
+      /* Output the appropriate number of backslashes.  */
+      while (bs_write-- > 0)
+        {
+          *out++ = '\\';
 
-      /* Skip the newline.  */
-    }
-    ++in;
+          /* Skip the newline.  */
+        }
+      ++in;
 
-    /* If the newline is quoted, discard following whitespace
+      /* If the newline is quoted, discard following whitespace
        and any preceding whitespace; leave just one space.  */
-    if (backslash)
-    {
-      in = next_token(in);
-      while (out > line && isblank(out[-1]))
-      {
-        --out;
-      }
-      *out++ = ' ';
-    }
-    else
-    {
-      /* If the newline isn't quoted, put it in the output.  */
-      *out++ = '\n';
-
-      /* Now copy the following line to the output.
-         Stop when we find backslashes followed by a newline.  */
-    }
-    while (*in != '\0')
-    {
-      if (*in == '\\')
-      {
-        p = in + 1;
-        while (*p == '\\')
+      if (backslash)
         {
-          ++p;
+          in = next_token(in);
+          while (out > line && isblank(out[-1]))
+            {
+              --out;
+            }
+          *out++ = ' ';
         }
-        if (*p == '\n')
-        {
-          in = p;
-          break;
-        }
-        while (in < p)
-        {
-          *out++ = *in++;
-        }
-      }
       else
-      {
-        *out++ = *in++;
-      }
+        {
+          /* If the newline isn't quoted, put it in the output.  */
+          *out++ = '\n';
+
+          /* Now copy the following line to the output.
+         Stop when we find backslashes followed by a newline.  */
+        }
+      while (*in != '\0')
+        {
+          if (*in == '\\')
+            {
+              p = in + 1;
+              while (*p == '\\')
+                {
+                  ++p;
+                }
+              if (*p == '\n')
+                {
+                  in = p;
+                  break;
+                }
+              while (in < p)
+                {
+                  *out++ = *in++;
+                }
+            }
+          else
+            {
+              *out++ = *in++;
+            }
+        }
     }
-  }
 
   *out = '\0';
 }
@@ -147,35 +147,35 @@ void remove_comments(line) char *line;
   register unsigned int bs_write;
 
   while (1)
-  {
-    p = index(line, '#');
-    if (p == 0)
     {
-      break;
-    }
+      p = index(line, '#');
+      if (p == 0)
+        {
+          break;
+        }
 
-    backslash = 0;
-    bs_write = 0;
-    for (p2 = p - 1; p2 > line && *p2 == '\\'; --p2)
-    {
-      if (backslash)
-      {
-        ++bs_write;
-      }
-      backslash = !backslash;
-    }
+      backslash = 0;
+      bs_write = 0;
+      for (p2 = p - 1; p2 > line && *p2 == '\\'; --p2)
+        {
+          if (backslash)
+            {
+              ++bs_write;
+            }
+          backslash = !backslash;
+        }
 
-    if (!backslash)
-    {
-      /* Cut off the line at the #.  */
-      *p = '\0';
-      break;
-    }
+      if (!backslash)
+        {
+          /* Cut off the line at the #.  */
+          *p = '\0';
+          break;
+        }
 
-    /* strcpy better copy left to right.  */
-    line = p;
-    strcpy(p2 + 1 + bs_write, line);
-  }
+      /* strcpy better copy left to right.  */
+      line = p;
+      strcpy(p2 + 1 + bs_write, line);
+    }
 }
 
 /* Print N spaces (used by DEBUGPR for target-depth).  */
@@ -183,9 +183,9 @@ void remove_comments(line) char *line;
 void print_spaces(n) register unsigned int n;
 {
   while (n-- > 0)
-  {
-    putchar(' ');
-  }
+    {
+      putchar(' ');
+    }
 }
 
 /* Return a newly-allocated string whose contents
@@ -203,17 +203,17 @@ char *concat(s1, s2, s3) register char *s1, *s2, *s3;
   result = (char *)xmalloc(len1 + len2 + len3 + 1);
 
   if (*s1 != '\0')
-  {
-    bcopy(s1, result, len1);
-  }
+    {
+      bcopy(s1, result, len1);
+    }
   if (*s2 != '\0')
-  {
-    bcopy(s2, result + len1, len2);
-  }
+    {
+      bcopy(s2, result + len1, len2);
+    }
   if (*s3 != '\0')
-  {
-    bcopy(s3, result + len1 + len2, len3);
-  }
+    {
+      bcopy(s3, result + len1 + len2, len3);
+    }
   *(result + len1 + len2 + len3) = '\0';
 
   return result;
@@ -224,13 +224,13 @@ char *concat(s1, s2, s3) register char *s1, *s2, *s3;
 void message(s1, s2, s3, s4, s5, s6) char *s1, *s2, *s3, *s4, *s5, *s6;
 {
   if (makelevel == 0)
-  {
-    printf("%s: ", program);
-  }
+    {
+      printf("%s: ", program);
+    }
   else
-  {
-    printf("%s[%u]: ", program, makelevel);
-  }
+    {
+      printf("%s[%u]: ", program, makelevel);
+    }
   printf(s1, s2, s3, s4, s5, s6);
   putchar('\n');
   fflush(stdout);
@@ -242,13 +242,13 @@ void message(s1, s2, s3, s4, s5, s6) char *s1, *s2, *s3, *s4, *s5, *s6;
 void fatal(s1, s2, s3, s4, s5, s6) char *s1, *s2, *s3, *s4, *s5, *s6;
 {
   if (makelevel == 0)
-  {
-    fprintf(stderr, "%s: ", program);
-  }
+    {
+      fprintf(stderr, "%s: ", program);
+    }
   else
-  {
-    fprintf(stderr, "%s[%u]: ", program, makelevel);
-  }
+    {
+      fprintf(stderr, "%s[%u]: ", program, makelevel);
+    }
   fprintf(stderr, s1, s2, s3, s4, s5, s6);
   fputs(".  Stop.\n", stderr);
 
@@ -262,13 +262,13 @@ void fatal(s1, s2, s3, s4, s5, s6) char *s1, *s2, *s3, *s4, *s5, *s6;
 void error(s1, s2, s3, s4, s5, s6) char *s1, *s2, *s3, *s4, *s5, *s6;
 {
   if (makelevel == 0)
-  {
-    fprintf(stderr, "%s: ", program);
-  }
+    {
+      fprintf(stderr, "%s: ", program);
+    }
   else
-  {
-    fprintf(stderr, "%s[%u]: ", program, makelevel);
-  }
+    {
+      fprintf(stderr, "%s[%u]: ", program, makelevel);
+    }
   fprintf(stderr, s1, s2, s3, s4, s5, s6);
   putc('\n', stderr);
   fflush(stderr);
@@ -300,13 +300,13 @@ char *s1, *s2, *s3, *s4, *s5, *s6;
 void perror_with_name(str, name) char *str, *name;
 {
   if (errno < sys_nerr)
-  {
-    error("%s%s: %s", str, name, sys_errlist[errno]);
-  }
+    {
+      error("%s%s: %s", str, name, sys_errlist[errno]);
+    }
   else
-  {
-    error("%s%s: Unknown error %d", str, name, errno);
-  }
+    {
+      error("%s%s: Unknown error %d", str, name, errno);
+    }
 }
 
 /* Print an error message from errno and exit.  */
@@ -314,13 +314,13 @@ void perror_with_name(str, name) char *str, *name;
 void pfatal_with_name(name) char *name;
 {
   if (errno < sys_nerr)
-  {
-    fatal("%s: %s", name, sys_errlist[errno]);
-  }
+    {
+      fatal("%s: %s", name, sys_errlist[errno]);
+    }
   else
-  {
-    fatal("%s: Unknown error %d", name, errno);
-  }
+    {
+      fatal("%s: Unknown error %d", name, errno);
+    }
 
   /* NOTREACHED */
 }
@@ -334,9 +334,9 @@ char *xmalloc(size) unsigned int size;
 {
   char *result = malloc(size);
   if (result == 0)
-  {
-    fatal("virtual memory exhausted");
-  }
+    {
+      fatal("virtual memory exhausted");
+    }
   return result;
 }
 
@@ -345,9 +345,9 @@ unsigned int size;
 {
   char *result = realloc(ptr, size);
   if (result == 0)
-  {
-    fatal("virtual memory exhausted");
-  }
+    {
+      fatal("virtual memory exhausted");
+    }
   return result;
 }
 
@@ -356,9 +356,9 @@ unsigned int length;
 {
   register char *out = (char *)xmalloc(length + 1);
   if (length > 0)
-  {
-    bcopy(str, out, length);
-  }
+    {
+      bcopy(str, out, length);
+    }
   out[length] = '\0';
   return out;
 }
@@ -375,21 +375,21 @@ unsigned int slen;
   register unsigned int b;
 
   if (blen < 1)
-  {
-    blen = strlen(big);
-  }
+    {
+      blen = strlen(big);
+    }
   if (slen < 1)
-  {
-    slen = strlen(small);
-  }
+    {
+      slen = strlen(small);
+    }
 
   for (b = 0; b < blen; ++b)
-  {
-    if (big[b] == *small && !strncmp(&big[b + 1], small + 1, slen - 1))
     {
-      return (&big[b]);
+      if (big[b] == *small && !strncmp(&big[b + 1], small + 1, slen - 1))
+        {
+          return (&big[b]);
+        }
     }
-  }
 
   return 0;
 }
@@ -404,12 +404,12 @@ char *lindex(s, limit, c) register char *s, *limit;
 int c;
 {
   while (s < limit)
-  {
-    if (*s++ == c)
     {
-      return s - 1;
+      if (*s++ == c)
+        {
+          return s - 1;
+        }
     }
-  }
 
   return 0;
 }
@@ -422,21 +422,21 @@ char *end_of_token(s) char *s;
   register int backslash = 0;
 
   while (*p != '\0' && (backslash || !isblank(*p)))
-  {
-    if (*p++ == '\\')
     {
-      backslash = !backslash;
-      while (*p == '\\')
-      {
-        backslash = !backslash;
-        ++p;
-      }
+      if (*p++ == '\\')
+        {
+          backslash = !backslash;
+          while (*p == '\\')
+            {
+              backslash = !backslash;
+              ++p;
+            }
+        }
+      else
+        {
+          backslash = 0;
+        }
     }
-    else
-    {
-      backslash = 0;
-    }
-  }
 
   return p;
 }
@@ -448,9 +448,9 @@ char *next_token(s) char *s;
   register char *p = s;
 
   while (isblank(*p))
-  {
-    ++p;
-  }
+    {
+      ++p;
+    }
   return p;
 }
 
@@ -464,15 +464,15 @@ unsigned int *lengthptr;
   char *end;
 
   if (*p == '\0')
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
 
   *ptr = end = end_of_token(p);
   if (lengthptr != 0)
-  {
-    *lengthptr = end - p;
-  }
+    {
+      *lengthptr = end - p;
+    }
   return p;
 }
 
@@ -486,25 +486,25 @@ struct dep *copy_dep_chain(d) register struct dep *d;
   struct dep *lastnew;
 
   while (d != 0)
-  {
-    c = (struct dep *)xmalloc(sizeof(struct dep));
-    bcopy((char *)d, (char *)c, sizeof(struct dep));
-    if (c->name != 0)
     {
-      c->name = savestring(c->name, strlen(c->name));
-    }
-    c->next = 0;
-    if (firstnew == 0)
-    {
-      firstnew = lastnew = c;
-    }
-    else
-    {
-      lastnew = lastnew->next = c;
-    }
+      c = (struct dep *)xmalloc(sizeof(struct dep));
+      bcopy((char *)d, (char *)c, sizeof(struct dep));
+      if (c->name != 0)
+        {
+          c->name = savestring(c->name, strlen(c->name));
+        }
+      c->next = 0;
+      if (firstnew == 0)
+        {
+          firstnew = lastnew = c;
+        }
+      else
+        {
+          lastnew = lastnew->next = c;
+        }
 
-    d = d->next;
-  }
+      d = d->next;
+    }
 
   return firstnew;
 }
@@ -531,7 +531,8 @@ extern int setreuid(), setregid();
 /* Keep track of the user and group IDs for user- and make- access.  */
 static int user_uid = -1, user_gid = -1, make_uid = -1, make_gid = -1;
 #define access_inited (user_uid != -1)
-static enum { make, user } current_access;
+static enum { make,
+              user } current_access;
 
 static void init_access()
 {
@@ -543,9 +544,9 @@ static void init_access()
 
   /* Do these ever fail?  */
   if (user_uid == -1 || user_gid == -1 || make_uid == -1 || make_gid == -1)
-  {
-    pfatal_with_name("get{e}[gu]id");
-  }
+    {
+      pfatal_with_name("get{e}[gu]id");
+    }
 
   current_access = make;
 }
@@ -555,16 +556,16 @@ static void init_access()
 void user_access()
 {
   if (!access_inited)
-  {
-    init_access();
-  }
+    {
+      init_access();
+    }
 
   if (current_access == user)
-  {
-    return;
-  }
+    {
+      return;
+    }
 
-/* We are in "make access" mode.  This means that the effective user and
+    /* We are in "make access" mode.  This means that the effective user and
    group IDs are those of make (if it was installed setuid or setgid).
    We now want to set the effective user and group IDs to the real IDs,
    which are the IDs of the process that exec'd make.  */
@@ -587,13 +588,13 @@ void user_access()
      you can toggle between your two alternatives by swapping the values in a
      single setreuid or setregid call.  */
   if (setreuid(make_uid, user_uid) < 0)
-  {
-    pfatal_with_name("setreuid");
-  }
+    {
+      pfatal_with_name("setreuid");
+    }
   if (setregid(make_gid, user_gid) < 0)
-  {
-    pfatal_with_name("setregid");
-  }
+    {
+      pfatal_with_name("setregid");
+    }
 #endif
 
   current_access = user;
@@ -604,29 +605,29 @@ void user_access()
 void make_access()
 {
   if (!access_inited)
-  {
-    init_access();
-  }
+    {
+      init_access();
+    }
 
   if (current_access == make)
-  {
-    return;
-  }
+    {
+      return;
+    }
 
-/* See comments in user_access, above.  */
+    /* See comments in user_access, above.  */
 
 #if defined(USG) || defined(POSIX)
   if (setuid(make_uid) < 0) pfatal_with_name("setuid");
   if (setgid(make_gid) < 0) pfatal_with_name("setgid");
 #else
   if (setreuid(user_uid, make_uid) < 0)
-  {
-    pfatal_with_name("setreuid");
-  }
+    {
+      pfatal_with_name("setreuid");
+    }
   if (setregid(user_gid, make_gid) < 0)
-  {
-    pfatal_with_name("setregid");
-  }
+    {
+      pfatal_with_name("setregid");
+    }
 #endif
 
   current_access = make;
@@ -640,11 +641,11 @@ void child_access()
      They cannot be changed back to make's.  */
 
   if (setuid(user_uid) < 0)
-  {
-    pfatal_with_name("setuid");
-  }
+    {
+      pfatal_with_name("setuid");
+    }
   if (setgid(user_gid) < 0)
-  {
-    pfatal_with_name("setgid");
-  }
+    {
+      pfatal_with_name("setgid");
+    }
 }

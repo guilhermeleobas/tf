@@ -69,39 +69,39 @@ double Random_nextDouble(Random R)
 
   k = m[I] - m[J];
   if (k < 0)
-  {
-    k += m1;
-  }
+    {
+      k += m1;
+    }
   R->m[J] = k;
 
   if (I == 0)
-  {
-    I = 16;
-  }
+    {
+      I = 16;
+    }
   else
-  {
-    I--;
-  }
+    {
+      I--;
+    }
   R->i = I;
 
   if (J == 0)
-  {
-    J = 16;
-  }
+    {
+      J = 16;
+    }
   else
-  {
-    J--;
-  }
+    {
+      J--;
+    }
   R->j = J;
 
   if (R->haveRange)
-  {
-    return R->left + dm1 * (double)k * R->width;
-  }
+    {
+      return R->left + dm1 * (double)k * R->width;
+    }
   else
-  {
-    return dm1 * (double)k;
-  }
+    {
+      return dm1 * (double)k;
+    }
 }
 
 /*--------------------------------------------------------------------
@@ -117,25 +117,25 @@ static void initialize(Random R, int seed)
   R->seed = seed;
 
   if (seed < 0)
-  {
-    seed = -seed; /* seed = abs(seed) */
-  }
+    {
+      seed = -seed; /* seed = abs(seed) */
+    }
   jseed = (seed < m1 ? seed : m1); /* jseed = min(seed, m1) */
   if (jseed % 2 == 0)
-  {
-    --jseed;
-  }
+    {
+      --jseed;
+    }
   k0 = 9069 % m2;
   k1 = 9069 / m2;
   j0 = jseed % m2;
   j1 = jseed / m2;
   for (iloop = 0; iloop < 17; ++iloop)
-  {
-    jseed = j0 * k0;
-    j1 = (jseed / m2 + j0 * k1 + j1 * k0) % (m2 / 2);
-    j0 = jseed % m2;
-    R->m[iloop] = j0 + m2 * j1;
-  }
+    {
+      jseed = j0 * k0;
+      j1 = (jseed / m2 + j0 * k1 + j1 * k0) % (m2 / 2);
+      j0 = jseed % m2;
+      R->m[iloop] = j0 + m2 * j1;
+    }
   R->i = 4;
   R->j = 16;
 }
@@ -146,9 +146,9 @@ double *RandomVector(int N, Random R)
   double *x = (double *)malloc(sizeof(double) * N);
 
   for (i = 0; i < N; i++)
-  {
-    x[i] = Random_nextDouble(R);
-  }
+    {
+      x[i] = Random_nextDouble(R);
+    }
 
   return x;
 }
@@ -163,22 +163,22 @@ double **RandomMatrix(int M, int N, Random R)
   double **A = (double **)malloc(sizeof(double *) * M);
 
   if (A == NULL)
-  {
-    return NULL;
-  }
-
-  for (i = 0; i < M; i++)
-  {
-    A[i] = (double *)malloc(sizeof(double) * N);
-    if (A[i] == NULL)
     {
-      free(A);
       return NULL;
     }
-    for (j = 0; j < N; j++)
+
+  for (i = 0; i < M; i++)
     {
-      A[i][j] = Random_nextDouble(R);
+      A[i] = (double *)malloc(sizeof(double) * N);
+      if (A[i] == NULL)
+        {
+          free(A);
+          return NULL;
+        }
+      for (j = 0; j < N; j++)
+        {
+          A[i][j] = Random_nextDouble(R);
+        }
     }
-  }
   return A;
 }

@@ -22,14 +22,14 @@ pcover cb_sharp(c, T) pcube c;
 pcover T;
 {
   if (T->count == 0)
-  {
-    T = sf_addset(new_cover(1), c);
-  }
+    {
+      T = sf_addset(new_cover(1), c);
+    }
   else
-  {
-    start_time = ptime();
-    T = cb_recur_sharp(c, T, 0, T->count - 1, 0);
-  }
+    {
+      start_time = ptime();
+      T = cb_recur_sharp(c, T, 0, T->count - 1, 0);
+    }
   return T;
 }
 
@@ -42,24 +42,24 @@ int first, last, level;
   int middle;
 
   if (first == last)
-  {
-    temp = sharp(c, GETSET(T, first));
-  }
-  else
-  {
-    middle = (first + last) / 2;
-    left = cb_recur_sharp(c, T, first, middle, level + 1);
-    right = cb_recur_sharp(c, T, middle + 1, last, level + 1);
-    temp = cv_intersect(left, right);
-    if ((debug & SHARP) && level < 4)
     {
-      printf("# SHARP[%d]: %4d = %4d x %4d, time = %s\n", level, temp->count,
-             left->count, right->count, print_time(ptime() - start_time));
-      (void)fflush(stdout);
+      temp = sharp(c, GETSET(T, first));
     }
-    free_cover(left);
-    free_cover(right);
-  }
+  else
+    {
+      middle = (first + last) / 2;
+      left = cb_recur_sharp(c, T, first, middle, level + 1);
+      right = cb_recur_sharp(c, T, middle + 1, last, level + 1);
+      temp = cv_intersect(left, right);
+      if ((debug & SHARP) && level < 4)
+        {
+          printf("# SHARP[%d]: %4d = %4d x %4d, time = %s\n", level, temp->count,
+                 left->count, right->count, print_time(ptime() - start_time));
+          (void)fflush(stdout);
+        }
+      free_cover(left);
+      free_cover(right);
+    }
   return temp;
 }
 
@@ -71,21 +71,21 @@ pcover sharp(a, b) pcube a, b;
   pcover r = new_cover(cube.num_vars);
 
   if (cdist0(a, b))
-  {
-    set_diff(d, a, b);
-    for (var = 0; var < cube.num_vars; var++)
     {
-      if (!setp_empty(set_and(temp, d, cube.var_mask[var])))
-      {
-        set_diff(temp1, a, cube.var_mask[var]);
-        set_or(GETSET(r, r->count++), temp, temp1);
-      }
+      set_diff(d, a, b);
+      for (var = 0; var < cube.num_vars; var++)
+        {
+          if (!setp_empty(set_and(temp, d, cube.var_mask[var])))
+            {
+              set_diff(temp1, a, cube.var_mask[var]);
+              set_or(GETSET(r, r->count++), temp, temp1);
+            }
+        }
     }
-  }
   else
-  {
-    r = sf_addset(r, a);
-  }
+    {
+      r = sf_addset(r, a);
+    }
   return r;
 }
 
@@ -134,20 +134,20 @@ pcover T;
   pcover Y, Y1;
 
   if (T->count == 0)
-  {
-    Y = sf_addset(new_cover(1), c);
-  }
-  else
-  {
-    Y = new_cover(T->count);
-    set_copy(GETSET(Y, Y->count++), c);
-    foreach_set(T, last, p)
     {
-      Y1 = cb1_dsharp(Y, p);
-      free_cover(Y);
-      Y = Y1;
+      Y = sf_addset(new_cover(1), c);
     }
-  }
+  else
+    {
+      Y = new_cover(T->count);
+      set_copy(GETSET(Y, Y->count++), c);
+      foreach_set(T, last, p)
+      {
+        Y1 = cb1_dsharp(Y, p);
+        free_cover(Y);
+        Y = Y1;
+      }
+    }
   return Y;
 }
 
@@ -161,37 +161,37 @@ pcover dsharp(a, b) pcube a, b;
   r = new_cover(cube.num_vars);
 
   if (cdist0(a, b))
-  {
-    diff = set_diff(new_cube(), a, b);
-    and = set_and(new_cube(), a, b);
-    mask = new_cube();
-    for (var = 0; var < cube.num_vars; var++)
     {
-      /* check if position var of "a and not b" is not empty */
-      if (!setp_disjoint(diff, cube.var_mask[var]))
-      {
-        /* coordinate var equals the difference between a and b */
-        temp = GETSET(r, r->count++);
-        (void)set_and(temp, diff, cube.var_mask[var]);
+      diff = set_diff(new_cube(), a, b);
+      and = set_and(new_cube(), a, b);
+      mask = new_cube();
+      for (var = 0; var < cube.num_vars; var++)
+        {
+          /* check if position var of "a and not b" is not empty */
+          if (!setp_disjoint(diff, cube.var_mask[var]))
+            {
+              /* coordinate var equals the difference between a and b */
+              temp = GETSET(r, r->count++);
+              (void)set_and(temp, diff, cube.var_mask[var]);
 
-        /* coordinates 0 ... var-1 equal the intersection */
-        INLINEset_and(temp1, and, mask);
-        INLINEset_or(temp, temp, temp1);
+              /* coordinates 0 ... var-1 equal the intersection */
+              INLINEset_and(temp1, and, mask);
+              INLINEset_or(temp, temp, temp1);
 
-        /* coordinates var+1 .. cube.num_vars equal a */
-        set_or(mask, mask, cube.var_mask[var]);
-        INLINEset_diff(temp1, a, mask);
-        INLINEset_or(temp, temp, temp1);
-      }
+              /* coordinates var+1 .. cube.num_vars equal a */
+              set_or(mask, mask, cube.var_mask[var]);
+              INLINEset_diff(temp1, a, mask);
+              INLINEset_or(temp, temp, temp1);
+            }
+        }
+      free_cube(diff);
+      free_cube(and);
+      free_cube(mask);
     }
-    free_cube(diff);
-    free_cube(and);
-    free_cube(mask);
-  }
   else
-  {
-    r = sf_addset(r, a);
-  }
+    {
+      r = sf_addset(r, a);
+    }
   return r;
 }
 
@@ -214,36 +214,36 @@ pcover cv_intersect(A, B) pcover A, B;
     foreach_set(B, lastj, pj)
     {
       if (cdist0(pi, pj))
-      {
-        (void)set_and(pt, pi, pj);
-        if (++T->count >= T->capacity)
         {
-          if (Tsave == NULL)
-          {
-            Tsave = sf_contain(T);
-          }
+          (void)set_and(pt, pi, pj);
+          if (++T->count >= T->capacity)
+            {
+              if (Tsave == NULL)
+                {
+                  Tsave = sf_contain(T);
+                }
+              else
+                {
+                  Tsave = sf_union(Tsave, sf_contain(T));
+                }
+              T = new_cover(MAGIC);
+              pt = T->data;
+            }
           else
-          {
-            Tsave = sf_union(Tsave, sf_contain(T));
-          }
-          T = new_cover(MAGIC);
-          pt = T->data;
+            {
+              pt += T->wsize;
+            }
         }
-        else
-        {
-          pt += T->wsize;
-        }
-      }
     }
   }
 
   if (Tsave == NULL)
-  {
-    Tsave = sf_contain(T);
-  }
+    {
+      Tsave = sf_contain(T);
+    }
   else
-  {
-    Tsave = sf_union(Tsave, sf_contain(T));
-  }
+    {
+      Tsave = sf_union(Tsave, sf_contain(T));
+    }
   return Tsave;
 }

@@ -12,10 +12,10 @@
  *	Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include "errorMessage.h"   /* for PREPEND and REPLACE definitions           */
-#include <stdio.h>          /* for fprintf() and fflush() definitions        */
-#include <stdlib.h>         /* for NULL definition                           */
-#include <string.h>         /* for strlen(), strcpy(), strcat() definitions  */
+#include "errorMessage.h" /* for PREPEND and REPLACE definitions           */
+#include <stdio.h> /* for fprintf() and fflush() definitions        */
+#include <stdlib.h> /* for NULL definition                           */
+#include <string.h> /* for strlen(), strcpy(), strcat() definitions  */
 #include "dataManagement.h" /* for primitive type definitions                */
 
 /*
@@ -54,61 +54,61 @@ static Char errorBuffer[ERROR_BUFFER_LENGTH + 1] = "\0";
  *              Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-void errorMessage(Char *message,   /*  message to prepend      */
+void errorMessage(Char *message, /*  message to prepend      */
                   Boolean prepend) /*  flag to clear buffer    */
-{                                  /*  beginning of errorMessage() */
-                                   /*
+{ /*  beginning of errorMessage() */
+  /*
                                     *  If prepend flag is not set, replace current buffer with input message.
                                     *  If prepend flag is set, then check if adding message to current buffer
                                     *  will exceed maximum.  If it does exceed limit, flush output.
                                     *  Otherwise, pre-pend message to current buffer.
                                     */
   if (prepend == REPLACE)
-  {
-    /*
+    {
+      /*
      *  Check if message is too large for buffer
      */
-    if (strlen(message) > ERROR_BUFFER_LENGTH)
-    {
-      /*
+      if (strlen(message) > ERROR_BUFFER_LENGTH)
+        {
+          /*
        *  Message is too large for buffer. Flush message immediately.
        */
-      fprintf(stderr, "Error Message Too Large for Buffer: flushing\n");
-      fprintf(stderr, "unconnected: %s\n", message);
-    } /*  end of if strlen( message ) > ERROR_BUFFER_LENGTH */
-    else
-    {
-      strcpy(errorBuffer, message);
-    } /*  end of if strlen( message ) <= ERROR_BUFFER_LENGTH */
-  }   /* end of prepend = REPLACE */
+          fprintf(stderr, "Error Message Too Large for Buffer: flushing\n");
+          fprintf(stderr, "unconnected: %s\n", message);
+        } /*  end of if strlen( message ) > ERROR_BUFFER_LENGTH */
+      else
+        {
+          strcpy(errorBuffer, message);
+        } /*  end of if strlen( message ) <= ERROR_BUFFER_LENGTH */
+    } /* end of prepend = REPLACE */
   else
-  {
-    /*
+    {
+      /*
      *  Check if buffer is large enough
      */
-    if (strlen(errorBuffer) + strlen(message) > ERROR_BUFFER_LENGTH)
-    {
-      /*
+      if (strlen(errorBuffer) + strlen(message) > ERROR_BUFFER_LENGTH)
+        {
+          /*
        *  Current buffer plus message is too large.  Flush everything.
        */
-      fprintf(stderr, "Error Message Buffer full: flushing\n");
-      fprintf(stderr, "unconnected: %s: %s\n", message, errorBuffer);
+          fprintf(stderr, "Error Message Buffer full: flushing\n");
+          fprintf(stderr, "unconnected: %s: %s\n", message, errorBuffer);
 
-      errorMessage("unconnected", REPLACE);
-    } /* end of if strlen( errorBuffer + message ) > ERROR_BUFFER_LENGTH */
-    else
-    {
-      /*
+          errorMessage("unconnected", REPLACE);
+        } /* end of if strlen( errorBuffer + message ) > ERROR_BUFFER_LENGTH */
+      else
+        {
+          /*
        *  Pre-pend message to current buffer
        */
-      Char tempBuffer[ERROR_BUFFER_LENGTH + 1];
+          Char tempBuffer[ERROR_BUFFER_LENGTH + 1];
 
-      strcpy(tempBuffer, message);
-      strcat(tempBuffer, ": ");
-      strcat(tempBuffer, errorBuffer);
-      strcpy(errorBuffer, tempBuffer);
-    } /* end of if strlen( errorBuffer + message ) <= ERROR_BUFFER_LENGTH */
-  }   /* end of prepend == PREPEND */
+          strcpy(tempBuffer, message);
+          strcat(tempBuffer, ": ");
+          strcat(tempBuffer, errorBuffer);
+          strcpy(errorBuffer, tempBuffer);
+        } /* end of if strlen( errorBuffer + message ) <= ERROR_BUFFER_LENGTH */
+    } /* end of prepend == PREPEND */
 
   return;
 } /*  end of errorMessage()   */
@@ -136,10 +136,10 @@ void flushErrorMessage(void)
    *  Place current error Buffer in stderr stream
    */
   if (strlen(errorBuffer) > 0)
-  {
-    fprintf(stderr, "%s\n", errorBuffer);
-    fflush(stderr);
-  } /* end of if strlen( errorBuffer ) > 0 */
+    {
+      fprintf(stderr, "%s\n", errorBuffer);
+      fflush(stderr);
+    } /* end of if strlen( errorBuffer ) > 0 */
 
   return;
 } /*  end of flushErrorMessage()   */

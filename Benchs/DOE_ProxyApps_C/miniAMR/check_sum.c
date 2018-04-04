@@ -41,25 +41,25 @@ double check_sum(int var)
 
   sum = 0.0;
   for (in = 0; in < sorted_index[num_refine + 1]; in++)
-  {
-    n = sorted_list[in].n;
-    bp = &blocks[n];
-    if (bp->number >= 0)
     {
-      block_sum = 0.0;
-      for (i = 1; i <= x_block_size; i++)
-      {
-        for (j = 1; j <= y_block_size; j++)
+      n = sorted_list[in].n;
+      bp = &blocks[n];
+      if (bp->number >= 0)
         {
-          for (k = 1; k <= z_block_size; k++)
-          {
-            block_sum += bp->array[var][i][j][k];
-          }
+          block_sum = 0.0;
+          for (i = 1; i <= x_block_size; i++)
+            {
+              for (j = 1; j <= y_block_size; j++)
+                {
+                  for (k = 1; k <= z_block_size; k++)
+                    {
+                      block_sum += bp->array[var][i][j][k];
+                    }
+                }
+            }
+          sum += block_sum;
         }
-      }
-      sum += block_sum;
     }
-  }
 
   t2 = timer();
   timer_cs_calc += t2 - t1;

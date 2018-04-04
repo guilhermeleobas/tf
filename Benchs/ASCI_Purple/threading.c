@@ -53,28 +53,28 @@ int HYPRE_InitPthreads(int num_threads)
   initial_thread = pthread_self();
 
   if (hypre_qptr != NULL)
-  {
-    pthread_mutex_init(&hypre_qptr->lock, NULL);
-    pthread_cond_init(&hypre_qptr->work_wait, NULL);
-    pthread_cond_init(&hypre_qptr->finish_wait, NULL);
-    hypre_qptr->n_working = hypre_qptr->n_waiting = hypre_qptr->n_queue = 0;
-    hypre_qptr->inp = hypre_qptr->outp = 0;
-    for (i = 0; i < hypre_NumThreads; i++)
     {
+      pthread_mutex_init(&hypre_qptr->lock, NULL);
+      pthread_cond_init(&hypre_qptr->work_wait, NULL);
+      pthread_cond_init(&hypre_qptr->finish_wait, NULL);
+      hypre_qptr->n_working = hypre_qptr->n_waiting = hypre_qptr->n_queue = 0;
+      hypre_qptr->inp = hypre_qptr->outp = 0;
+      for (i = 0; i < hypre_NumThreads; i++)
+        {
 #ifdef HYPRE_USE_UMALLOC
-      /* Get initial area to start heap */
-      assert((_uinitial_block[i] = malloc(INITIAL_HEAP_SIZE)) != NULL);
+          /* Get initial area to start heap */
+          assert((_uinitial_block[i] = malloc(INITIAL_HEAP_SIZE)) != NULL);
 
-      /* Create a user heap */
-      assert((_uparam[i].myheap =
-                  _ucreate(initial_block[i], INITIAL_HEAP_SIZE, _BLOCK_CLEAN,
-                           _HEAP_REGULAR, _uget_fn, _urelease_fn)) != NULL);
+          /* Create a user heap */
+          assert((_uparam[i].myheap =
+                      _ucreate(initial_block[i], INITIAL_HEAP_SIZE, _BLOCK_CLEAN,
+                               _HEAP_REGULAR, _uget_fn, _urelease_fn)) != NULL);
 #endif
-      err = pthread_create(&hypre_thread[i], NULL,
-                           (void *(*)(void *))hypre_pthread_worker, (void *)i);
-      assert(err == 0);
+          err = pthread_create(&hypre_thread[i], NULL,
+                               (void *(*)(void *))hypre_pthread_worker, (void *)i);
+          assert(err == 0);
+        }
     }
-  }
 
   pthread_mutex_init(&hypre_mutex_boxloops, NULL);
   pthread_mutex_init(&mpi_mtx, NULL);
@@ -94,15 +94,15 @@ void HYPRE_DestroyPthreads(void)
   void *status;
 
   for (i = 0; i < hypre_NumThreads; i++)
-  {
-    hypre_work_put(hypre_StopWorker, (void *)&i);
-  }
+    {
+      hypre_work_put(hypre_StopWorker, (void *)&i);
+    }
 
 #ifdef HYPRE_USE_UMALLOC
   for (i = 0; i < hypre_NumThreads; i++)
-  {
-    _udestroy(_uparam[i].myheap, _FORCE);
-  }
+    {
+      _udestroy(_uparam[i].myheap, _FORCE);
+    }
 #endif
 
   for (i = 0; i < hypre_NumThreads; i++) pthread_join(hypre_thread[i], &status);
@@ -127,40 +127,40 @@ void hypre_pthread_worker(int threadid)
   hypre_qptr->n_working++;
 
   while (work_continue)
-  {
-    while (hypre_qptr->n_queue == 0)
     {
-      if (--hypre_qptr->n_working == 0)
-        pthread_cond_signal(&hypre_qptr->finish_wait);
-      hypre_qptr->n_waiting++;
-      pthread_cond_wait(&hypre_qptr->work_wait, &hypre_qptr->lock);
-      hypre_qptr->n_waiting--;
-      hypre_qptr->n_working++;
+      while (hypre_qptr->n_queue == 0)
+        {
+          if (--hypre_qptr->n_working == 0)
+            pthread_cond_signal(&hypre_qptr->finish_wait);
+          hypre_qptr->n_waiting++;
+          pthread_cond_wait(&hypre_qptr->work_wait, &hypre_qptr->lock);
+          hypre_qptr->n_waiting--;
+          hypre_qptr->n_working++;
+        }
+      hypre_qptr->n_queue--;
+      funcptr = hypre_qptr->worker_proc_queue[hypre_qptr->outp];
+      argptr = hypre_qptr->argqueue[hypre_qptr->outp];
+
+      hypre_qptr->outp = (hypre_qptr->outp + 1) % MAX_QUEUE;
+
+      pthread_mutex_unlock(&hypre_qptr->lock);
+
+      (*funcptr)(argptr);
+
+      hypre_barrier(&worker_mtx, 0);
+
+      if (work_continue) pthread_mutex_lock(&hypre_qptr->lock);
     }
-    hypre_qptr->n_queue--;
-    funcptr = hypre_qptr->worker_proc_queue[hypre_qptr->outp];
-    argptr = hypre_qptr->argqueue[hypre_qptr->outp];
-
-    hypre_qptr->outp = (hypre_qptr->outp + 1) % MAX_QUEUE;
-
-    pthread_mutex_unlock(&hypre_qptr->lock);
-
-    (*funcptr)(argptr);
-
-    hypre_barrier(&worker_mtx, 0);
-
-    if (work_continue) pthread_mutex_lock(&hypre_qptr->lock);
-  }
 }
 
 void hypre_work_put(hypre_work_proc_t funcptr, void *argptr)
 {
   pthread_mutex_lock(&hypre_qptr->lock);
   if (hypre_qptr->n_waiting)
-  {
-    /* idle workers to be awakened */
-    pthread_cond_signal(&hypre_qptr->work_wait);
-  }
+    {
+      /* idle workers to be awakened */
+      pthread_cond_signal(&hypre_qptr->work_wait);
+    }
   assert(hypre_qptr->n_queue != MAX_QUEUE);
 
   hypre_qptr->n_queue++;
@@ -207,31 +207,31 @@ static volatile int thb_release = 0;
 void hypre_barrier(pthread_mutex_t *mtx, int unthreaded)
 {
   if (!unthreaded)
-  {
-    pthread_mutex_lock(mtx);
-    thb_count++;
-
-    if (thb_count < hypre_NumThreads)
     {
-      pthread_mutex_unlock(mtx);
-      while (!thb_release)
-        ;
       pthread_mutex_lock(mtx);
-      thb_count--;
-      pthread_mutex_unlock(mtx);
-      while (thb_release)
-        ;
+      thb_count++;
+
+      if (thb_count < hypre_NumThreads)
+        {
+          pthread_mutex_unlock(mtx);
+          while (!thb_release)
+            ;
+          pthread_mutex_lock(mtx);
+          thb_count--;
+          pthread_mutex_unlock(mtx);
+          while (thb_release)
+            ;
+        }
+      else if (thb_count == hypre_NumThreads)
+        {
+          thb_count--;
+          pthread_mutex_unlock(mtx);
+          thb_release++;
+          while (thb_count)
+            ;
+          thb_release = 0;
+        }
     }
-    else if (thb_count == hypre_NumThreads)
-    {
-      thb_count--;
-      pthread_mutex_unlock(mtx);
-      thb_release++;
-      while (thb_count)
-        ;
-      thb_release = 0;
-    }
-  }
 }
 
 int hypre_GetThreadID(void)
@@ -241,9 +241,9 @@ int hypre_GetThreadID(void)
   if (pthread_equal(pthread_self(), initial_thread)) return hypre_NumThreads;
 
   for (i = 0; i < hypre_NumThreads; i++)
-  {
-    if (pthread_equal(pthread_self(), hypre_thread[i])) return i;
-  }
+    {
+      if (pthread_equal(pthread_self(), hypre_thread[i])) return i;
+    }
 
   return -1;
 }

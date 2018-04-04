@@ -90,50 +90,50 @@ int wcmatch(char *s, char *template)
   *p++ = '^';
 
   while (*template)
-  {
-    if (*template == '*')
     {
-      *(p++) = '.';
-      *(p++) = *(template ++);
+      if (*template == '*')
+        {
+          *(p++) = '.';
+          *(p++) = *(template ++);
+        }
+      else if (*template == '?')
+        {
+          *(p++) = '.';
+          template ++;
+        }
+      else if (*template == '.')
+        {
+          *(p++) = '\\';
+          *(p++) = '.';
+          template ++;
+        }
+      else if (*template == '[')
+        {
+          *(p++) = '\\';
+          *(p++) = '[';
+          template ++;
+        }
+      else if (*template == '$')
+        {
+          *(p++) = '\\';
+          *(p++) = '$';
+          template ++;
+        }
+      else if (*template == '^')
+        {
+          *(p++) = '\\';
+          *(p++) = '^';
+          template ++;
+        }
+      else if (*template == '\\')
+        {
+          *(p++) = '\\';
+          *(p++) = '\\';
+          template ++;
+        }
+      else
+        *(p++) = *(template ++);
     }
-    else if (*template == '?')
-    {
-      *(p++) = '.';
-      template ++;
-    }
-    else if (*template == '.')
-    {
-      *(p++) = '\\';
-      *(p++) = '.';
-      template ++;
-    }
-    else if (*template == '[')
-    {
-      *(p++) = '\\';
-      *(p++) = '[';
-      template ++;
-    }
-    else if (*template == '$')
-    {
-      *(p++) = '\\';
-      *(p++) = '$';
-      template ++;
-    }
-    else if (*template == '^')
-    {
-      *(p++) = '\\';
-      *(p++) = '^';
-      template ++;
-    }
-    else if (*template == '\\')
-    {
-      *(p++) = '\\';
-      *(p++) = '\\';
-      template ++;
-    }
-    else
-      *(p++) = *(template ++);
-  }
 
   *p++ = '$';
   *p++ = '\0';
@@ -176,68 +176,68 @@ int ul_insert(VLINK ul, VDIR1 vd, VLINK p)
 
   /* This is the first ul in the directory */
   if (vd->ulinks == NULL)
-  {
-    vd->ulinks = ul;
-    ul->previous = NULL;
-    ul->next = NULL;
-    return (PSUCCESS);
-  }
+    {
+      vd->ulinks = ul;
+      ul->previous = NULL;
+      ul->next = NULL;
+      return (PSUCCESS);
+    }
 
   /* This ul will go at the head of the list */
   if (p == (VLINK)vd)
-  {
-    ul->next = vd->ulinks;
-    ul->next->previous = ul;
-    vd->ulinks = ul;
-    ul->previous = NULL;
-  }
+    {
+      ul->next = vd->ulinks;
+      ul->next->previous = ul;
+      vd->ulinks = ul;
+      ul->previous = NULL;
+    }
   /* Otherwise, decide if it must be inserted at all  */
   /* If an identical link appears before the position */
   /* at which the new one is to be inserted, we can   */
   /* return without inserting it 			    */
   else
-  {
-    current = vd->ulinks;
-
-    while (current)
     {
-      /* p == NULL means we insert after last link */
-      if (!p && (current->next == NULL)) p = current;
+      current = vd->ulinks;
 
-      if (vl_comp(current, ul) == 0)
-      {
-        vlfree(ul);
-        return (UL_INSERT_ALREADY_THERE);
-      }
+      while (current)
+        {
+          /* p == NULL means we insert after last link */
+          if (!p && (current->next == NULL)) p = current;
 
-      if (current == p) break;
-      current = current->next;
+          if (vl_comp(current, ul) == 0)
+            {
+              vlfree(ul);
+              return (UL_INSERT_ALREADY_THERE);
+            }
+
+          if (current == p) break;
+          current = current->next;
+        }
+
+      /* If current is null, p was not found */
+      if (current == NULL) return (UL_INSERT_POS_NOTFOUND);
+
+      /* Insert ul */
+      ul->next = p->next;
+      p->next = ul;
+      ul->previous = p;
+      if (ul->next) ul->next->previous = ul;
     }
-
-    /* If current is null, p was not found */
-    if (current == NULL) return (UL_INSERT_POS_NOTFOUND);
-
-    /* Insert ul */
-    ul->next = p->next;
-    p->next = ul;
-    ul->previous = p;
-    if (ul->next) ul->next->previous = ul;
-  }
 
   /* Check for identical links after ul */
   current = ul->next;
 
   while (current)
-  {
-    if (vl_comp(current, ul) == 0)
     {
-      current->previous->next = current->next;
-      if (current->next) current->next->previous = current->previous;
-      vlfree(current);
-      return (UL_INSERT_SUPERSEDING);
+      if (vl_comp(current, ul) == 0)
+        {
+          current->previous->next = current->next;
+          if (current->next) current->next->previous = current->previous;
+          vlfree(current);
+          return (UL_INSERT_SUPERSEDING);
+        }
+      current = current->next;
     }
-    current = current->next;
-  }
 
   return (PSUCCESS);
 }
@@ -274,96 +274,96 @@ int ul_insert(VLINK ul, VDIR1 vd, VLINK p)
 int vl_insert(VLINK vl, VDIR1 vd, int allow_conflict)
 {
   VLINK current; /* To step through list		     */
-  VLINK crep;    /* To step through list of replicas  */
-  int retval;    /* Temp for checking returned values */
+  VLINK crep; /* To step through list of replicas  */
+  int retval; /* Temp for checking returned values */
 
   /* This can also be used to insert union links at end of list */
   if (vl->linktype == 'U') return (ul_insert(vl, vd, NULL));
 
   /* If this is the first link in the directory */
   if (vd->links == NULL)
-  {
-    vd->links = vl;
-    vl->previous = NULL;
-    vl->next = NULL;
-    vd->lastlink = vl;
-    return (PSUCCESS);
-  }
+    {
+      vd->links = vl;
+      vl->previous = NULL;
+      vl->next = NULL;
+      vd->lastlink = vl;
+      return (PSUCCESS);
+    }
 
   /* If no sorting is to be done, just insert at end of list */
   if (allow_conflict == VLI_NOSORT)
-  {
-    vd->lastlink->next = vl;
-    vl->previous = vd->lastlink;
-    vl->next = NULL;
-    vd->lastlink = vl;
-    return (PSUCCESS);
-  }
+    {
+      vd->lastlink->next = vl;
+      vl->previous = vd->lastlink;
+      vl->next = NULL;
+      vd->lastlink = vl;
+      return (PSUCCESS);
+    }
 
   /* If it is to be inserted at start of list */
   if (vl_comp(vl, vd->links) < 0)
-  {
-    vl->next = vd->links;
-    vl->previous = NULL;
-    vl->next->previous = vl;
-    vd->links = vl;
-    return (PSUCCESS);
-  }
+    {
+      vl->next = vd->links;
+      vl->previous = NULL;
+      vl->next->previous = vl;
+      vd->links = vl;
+      return (PSUCCESS);
+    }
 
   current = vd->links;
 
   /* Otherwise, we must find the right spot to insert it */
   while ((retval = vl_comp(vl, current)) > 0)
-  {
-    if (!current->next)
     {
-      /* insert at end */
-      vl->previous = current;
-      vl->next = NULL;
-      current->next = vl;
-      vd->lastlink = vl;
-      return (PSUCCESS);
+      if (!current->next)
+        {
+          /* insert at end */
+          vl->previous = current;
+          vl->next = NULL;
+          current->next = vl;
+          vd->lastlink = vl;
+          return (PSUCCESS);
+        }
+      current = current->next;
     }
-    current = current->next;
-  }
 
   /* If we found an equivilant entry already in list */
   if (!retval)
-  {
-    if (vl_equal(vl, current))
     {
-      vlfree(vl);
-      return (VL_INSERT_ALREADY_THERE);
+      if (vl_equal(vl, current))
+        {
+          vlfree(vl);
+          return (VL_INSERT_ALREADY_THERE);
+        }
+      if ((allow_conflict == VLI_NOCONFLICT) &&
+          ((vl->f_magic_no != current->f_magic_no) || (vl->f_magic_no == 0)))
+        return (VL_INSERT_CONFLICT);
+      /* Insert the link into the list of "replicas" */
+      /* If magic is 0, then create a pseudo magic number */
+      if (vl->f_magic_no == 0) vl->f_magic_no = -1;
+      crep = current->replicas;
+      if (!crep)
+        {
+          current->replicas = vl;
+          vl->next = NULL;
+          vl->previous = NULL;
+        }
+      else
+        {
+          while (crep->next)
+            {
+              /* If magic was 0, then we need a unique magic number */
+              if ((crep->f_magic_no < 0) && (vl->f_magic_no < 1)) (vl->f_magic_no)--;
+              crep = crep->next;
+            }
+          /* If magic was 0, then we need a unique magic number */
+          if ((crep->f_magic_no < 0) && (vl->f_magic_no < 1)) (vl->f_magic_no)--;
+          crep->next = vl;
+          vl->previous = crep;
+          vl->next = NULL;
+        }
+      return (PSUCCESS);
     }
-    if ((allow_conflict == VLI_NOCONFLICT) &&
-        ((vl->f_magic_no != current->f_magic_no) || (vl->f_magic_no == 0)))
-      return (VL_INSERT_CONFLICT);
-    /* Insert the link into the list of "replicas" */
-    /* If magic is 0, then create a pseudo magic number */
-    if (vl->f_magic_no == 0) vl->f_magic_no = -1;
-    crep = current->replicas;
-    if (!crep)
-    {
-      current->replicas = vl;
-      vl->next = NULL;
-      vl->previous = NULL;
-    }
-    else
-    {
-      while (crep->next)
-      {
-        /* If magic was 0, then we need a unique magic number */
-        if ((crep->f_magic_no < 0) && (vl->f_magic_no < 1)) (vl->f_magic_no)--;
-        crep = crep->next;
-      }
-      /* If magic was 0, then we need a unique magic number */
-      if ((crep->f_magic_no < 0) && (vl->f_magic_no < 1)) (vl->f_magic_no)--;
-      crep->next = vl;
-      vl->previous = crep;
-      vl->next = NULL;
-    }
-    return (PSUCCESS);
-  }
 
   /* We found the spot where vl is to be inserted */
   vl->next = current;
@@ -400,10 +400,10 @@ char *nlsindex(char *s1, char *s2)
 
   /* Check remaining lines of s1 */
   while ((curline = strchr(curline, (int)'\n')) != NULL)
-  {
-    curline++;
-    if (strncmp(curline, s2, s2len) == 0) return (curline);
-  }
+    {
+      curline++;
+      if (strncmp(curline, s2, s2len) == 0) return (curline);
+    }
 
   /* We didn't find it */
   return (NULL);
@@ -449,10 +449,10 @@ char *sindex(char *s1, char *s2)
 
   /* Check for first character of s2 */
   while ((s = strchr(s, (int)*s2)) != NULL)
-  {
-    if (strncmp(s, s2, s2len) == 0) return (s);
-    s++;
-  }
+    {
+      if (strncmp(s, s2, s2len) == 0) return (s);
+      s++;
+    }
 
   /* We didn't find it */
   return (NULL);
@@ -465,56 +465,56 @@ int scan_error(char *erst)
   if (strncmp(erst, "NOT-A-DIRECTORY", 15) == 0) return (DIRSRV_NOT_DIRECTORY);
 
   if (strncmp(erst, "UNIMPLEMENTED", 13) == 0)
-  {
-    perrno = DIRSRV_UNIMPLEMENTED;
-    sscanf(erst + 13, "%*[^\n \t\r]%*[ \t]%[^\n]", p_err_string);
-    return (perrno);
-  }
+    {
+      perrno = DIRSRV_UNIMPLEMENTED;
+      sscanf(erst + 13, "%*[^\n \t\r]%*[ \t]%[^\n]", p_err_string);
+      return (perrno);
+    }
 
   if (strncmp(erst, "WARNING ", 8) == 0)
-  {
-    erst += 8;
-    *p_warn_string = '\0';
-    sscanf(erst, "%*[^\n \t\r]%*[ \t]%[^\n]", p_warn_string);
-    /* Return values for warnings are negative */
-    if (strncmp(erst, "OUT-OF-DATE", 11) == 0)
     {
-      pwarn = PWARN_OUT_OF_DATE;
+      erst += 8;
+      *p_warn_string = '\0';
+      sscanf(erst, "%*[^\n \t\r]%*[ \t]%[^\n]", p_warn_string);
+      /* Return values for warnings are negative */
+      if (strncmp(erst, "OUT-OF-DATE", 11) == 0)
+        {
+          pwarn = PWARN_OUT_OF_DATE;
+          return (PSUCCESS);
+        }
+      if (strncmp(erst, "MESSAGE", 7) == 0)
+        {
+          pwarn = PWARN_MSG_FROM_SERVER;
+          return (PSUCCESS);
+        }
+      pwarn = PWARNING;
+      sscanf(erst, "%[^\n]", p_warn_string);
       return (PSUCCESS);
     }
-    if (strncmp(erst, "MESSAGE", 7) == 0)
-    {
-      pwarn = PWARN_MSG_FROM_SERVER;
-      return (PSUCCESS);
-    }
-    pwarn = PWARNING;
-    sscanf(erst, "%[^\n]", p_warn_string);
-    return (PSUCCESS);
-  }
   else if (strncmp(erst, "ERROR", 5) == 0)
-  {
-    if (*(erst + 5)) sscanf(erst + 6, "%[^\n]", p_err_string);
-    perrno = DIRSRV_ERROR;
-    return (perrno);
-  }
+    {
+      if (*(erst + 5)) sscanf(erst + 6, "%[^\n]", p_err_string);
+      perrno = DIRSRV_ERROR;
+      return (perrno);
+    }
   /* The rest start with "FAILURE" */
   else if (strncmp(erst, "FAILURE", 7) != 0)
-  {
-    /* Unrecognized - Give warning, but return PSUCCESS */
-    if (pwarn == 0)
     {
-      *p_warn_string = '\0';
-      pwarn = PWARN_UNRECOGNIZED_RESP;
-      sscanf(erst, "%[^\n]", p_warn_string);
+      /* Unrecognized - Give warning, but return PSUCCESS */
+      if (pwarn == 0)
+        {
+          *p_warn_string = '\0';
+          pwarn = PWARN_UNRECOGNIZED_RESP;
+          sscanf(erst, "%[^\n]", p_warn_string);
+        }
+      return (PSUCCESS);
     }
-    return (PSUCCESS);
-  }
 
   if (strncmp(erst, "FAILURE ", 8) != 0)
-  {
-    perrno = PFAILURE;
-    return (perrno);
-  }
+    {
+      perrno = PFAILURE;
+      return (perrno);
+    }
   erst += 8;
 
   sscanf(erst, "%*[^\n \t\r]%*[ \t]%[^\n]", p_err_string);
@@ -554,65 +554,65 @@ PATTRIB parse_attribute(char *line)
   tmp = sscanf(line, "OBJECT-INFO %s %s %[^\n]", l_name, l_type, l_value);
 
   if (tmp < 3)
-  {
-    tmp = sscanf(line, "LINK-INFO %s %s %s %[^\n]", l_precedence, l_name,
-                 l_type, l_value);
-    if (tmp < 4)
     {
-      perrno = DIRSRV_BAD_FORMAT;
-      return (NULL);
+      tmp = sscanf(line, "LINK-INFO %s %s %s %[^\n]", l_precedence, l_name,
+                   l_type, l_value);
+      if (tmp < 4)
+        {
+          perrno = DIRSRV_BAD_FORMAT;
+          return (NULL);
+        }
     }
-  }
 
   at = atalloc();
 
   if (tmp == 4)
-  {
-    if (strcmp(l_precedence, "CACHED") == 0)
-      at->precedence = ATR_PREC_CACHED;
-    else if (strcmp(l_precedence, "LINK") == 0)
-      at->precedence = ATR_PREC_LINK;
-    else if (strcmp(l_precedence, "REPLACEMENT") == 0)
-      at->precedence = ATR_PREC_REPLACE;
-    else if (strcmp(l_precedence, "ADDITIONAL") == 0)
-      at->precedence = ATR_PREC_ADD;
-  }
+    {
+      if (strcmp(l_precedence, "CACHED") == 0)
+        at->precedence = ATR_PREC_CACHED;
+      else if (strcmp(l_precedence, "LINK") == 0)
+        at->precedence = ATR_PREC_LINK;
+      else if (strcmp(l_precedence, "REPLACEMENT") == 0)
+        at->precedence = ATR_PREC_REPLACE;
+      else if (strcmp(l_precedence, "ADDITIONAL") == 0)
+        at->precedence = ATR_PREC_ADD;
+    }
 
   at->aname = stcopy(l_name);
   at->avtype = stcopy(l_type);
   if (strcmp(l_type, "ASCII") == 0)
     at->value.ascii = stcopy(l_value);
   else if (strcmp(l_type, "LINK") == 0)
-  {
-    char ftype[MAX_DIR_LINESIZE];
-    char lname[MAX_DIR_LINESIZE];
-    char htype[MAX_DIR_LINESIZE];
-    char host[MAX_DIR_LINESIZE];
-    char ntype[MAX_DIR_LINESIZE];
-    char fname[MAX_DIR_LINESIZE];
-    VLINK al;
-
-    al = vlalloc();
-    at->value.link = al;
-
-    tmp = sscanf(l_value, "%c %s %s %s %s %s %s %d %d", &(al->linktype), ftype,
-                 lname, htype, host, ntype, fname, &(al->version),
-                 &(al->f_magic_no));
-    if (tmp == 9)
     {
-      al->type = stcopyr(ftype, al->type);
-      al->name = stcopyr(unquote(lname), al->name);
-      al->hosttype = stcopyr(htype, al->hosttype);
-      al->host = stcopyr(host, al->host);
-      al->nametype = stcopyr(ntype, al->nametype);
-      al->filename = stcopyr(fname, al->filename);
+      char ftype[MAX_DIR_LINESIZE];
+      char lname[MAX_DIR_LINESIZE];
+      char htype[MAX_DIR_LINESIZE];
+      char host[MAX_DIR_LINESIZE];
+      char ntype[MAX_DIR_LINESIZE];
+      char fname[MAX_DIR_LINESIZE];
+      VLINK al;
+
+      al = vlalloc();
+      at->value.link = al;
+
+      tmp = sscanf(l_value, "%c %s %s %s %s %s %s %d %d", &(al->linktype), ftype,
+                   lname, htype, host, ntype, fname, &(al->version),
+                   &(al->f_magic_no));
+      if (tmp == 9)
+        {
+          al->type = stcopyr(ftype, al->type);
+          al->name = stcopyr(unquote(lname), al->name);
+          al->hosttype = stcopyr(htype, al->hosttype);
+          al->host = stcopyr(host, al->host);
+          al->nametype = stcopyr(ntype, al->nametype);
+          al->filename = stcopyr(fname, al->filename);
+        }
+      else
+        {
+          perrno = DIRSRV_BAD_FORMAT;
+          return (NULL);
+        }
     }
-    else
-    {
-      perrno = DIRSRV_BAD_FORMAT;
-      return (NULL);
-    }
-  }
 
   return (at);
 }
@@ -664,10 +664,10 @@ char *unquote(char *s)
   /* This should really treat a quote followed by other */
   /* than a quote or a null as an error                 */
   while (*s)
-  {
-    if (*s == '\'') s++;
-    if (*s) *c++ = *s++;
-  }
+    {
+      if (*s == '\'') s++;
+      if (*s) *c++ = *s++;
+    }
 
   *c++ = '\0';
 
@@ -691,23 +691,23 @@ char *unquote(char *s)
 
 int strspn(char *s, char *chrs)
 {
-  char *cp;  /* Pointer to the current character in chrs */
+  char *cp; /* Pointer to the current character in chrs */
   int count; /* Count of characters seen so far          */
 
   count = 0;
 
   while (*s)
-  {
-    for (cp = chrs; *cp; cp++)
-      if (*cp == *s)
-      {
-        s++;
-        count++;
-        goto done;
-      }
-    return (count);
-  done:;
-  }
+    {
+      for (cp = chrs; *cp; cp++)
+        if (*cp == *s)
+          {
+            s++;
+            count++;
+            goto done;
+          }
+      return (count);
+    done:;
+    }
   return (count);
 }
 #endif
@@ -744,36 +744,36 @@ struct hostent *gethostbyname(char *name)
 
   mp = Shostlook(name);
   if (!mp || (!mp->hostip[0]))
-  { /* DNS lookup */
+    { /* DNS lookup */
 #ifdef DEBUG
-    if (pfs_debug) fprintf(stderr, "Domain name lookup of %s\n", name);
+      if (pfs_debug) fprintf(stderr, "Domain name lookup of %s\n", name);
 #endif
-    mnum = Sdomain(name); /* start a DNS lookup */
-    now = time(NULL) + NS_TIMEOUT;
-    while (now > time(NULL))
-    {
-      int i, class, dat;
+      mnum = Sdomain(name); /* start a DNS lookup */
+      now = time(NULL) + NS_TIMEOUT;
+      while (now > time(NULL))
+        {
+          int i, class, dat;
 
-      Stask();
-      i = Sgetevent(USERCLASS, &class, &dat);
-      if (i == DOMOK)
-      { /* domain lookup ok */
-        mp = Slooknum(mnum);
+          Stask();
+          i = Sgetevent(USERCLASS, &class, &dat);
+          if (i == DOMOK)
+            { /* domain lookup ok */
+              mp = Slooknum(mnum);
 #ifdef DEBUG
-        if (pfs_debug)
-          fprintf(stderr, "Domain name lookup of %s Completed OK\n", name);
+              if (pfs_debug)
+                fprintf(stderr, "Domain name lookup of %s Completed OK\n", name);
 #endif
-        break;
-      }
-    }
-    if (!mp)
-    { /* get here if timeout */
+              break;
+            }
+        }
+      if (!mp)
+        { /* get here if timeout */
 #ifdef DEBUG
-      if (pfs_debug) fprintf(stderr, "Domain name lookup of %s Failed\n", name);
+          if (pfs_debug) fprintf(stderr, "Domain name lookup of %s Failed\n", name);
 #endif
-      return (NULL);
+          return (NULL);
+        }
     }
-  }
   ht.h_addr = *((unsigned long *)mp->hostip);
   ht.h_length = 4;
   ht.h_addrtype = AF_INET;
@@ -842,10 +842,10 @@ char *_findenv(register char *name, int *offset)
   for (P = environ; *P; ++P)
     if (!strncmp(*P, name, len))
       if (*(C = *P + len) == '=')
-      {
-        *offset = P - environ;
-        return (++C);
-      }
+        {
+          *offset = P - environ;
+          return (++C);
+        }
   return (NULL);
 }
 #endif

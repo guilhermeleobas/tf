@@ -29,16 +29,16 @@ VLINK vlalloc(void)
 {
   VLINK vl;
   if (lfree)
-  {
-    vl = lfree;
-    lfree = lfree->next;
-  }
+    {
+      vl = lfree;
+      lfree = lfree->next;
+    }
   else
-  {
-    vl = (VLINK)malloc(sizeof(VLINK_ST));
-    if (!vl) return (NULL);
-    vlink_max++;
-  }
+    {
+      vl = (VLINK)malloc(sizeof(VLINK_ST));
+      if (!vl) return (NULL);
+      vlink_max++;
+    }
 
   vlink_count++;
 
@@ -102,9 +102,9 @@ void vllfree(VLINK vl)
   VLINK nxt;
 
   while ((vl != NULL) && !vl->dontfree)
-  {
-    nxt = vl->next;
-    vlfree(vl);
-    vl = nxt;
-  }
+    {
+      nxt = vl->next;
+      vlfree(vl);
+      vl = nxt;
+    }
 }

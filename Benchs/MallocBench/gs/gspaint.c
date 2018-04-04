@@ -48,19 +48,19 @@ int gs_fill_trim(gs_state *pgs, fixed trim)
   /* If we're inside a charpath, just merge the current path */
   /* into the parent's path. */
   if (pgs->in_charpath)
-  {
-    code = gx_path_merge(pgs->path, pgs->saved->path);
-  }
+    {
+      code = gx_path_merge(pgs->path, pgs->saved->path);
+    }
   else
-  {
-    gx_color_render(pgs->color, pgs->dev_color, pgs);
-    code = gx_fill_path(pgs->path, pgs->dev_color, pgs, gx_rule_winding_number,
-                        trim);
-  }
+    {
+      gx_color_render(pgs->color, pgs->dev_color, pgs);
+      code = gx_fill_path(pgs->path, pgs->dev_color, pgs, gx_rule_winding_number,
+                          trim);
+    }
   if (!code)
-  {
-    gs_newpath(pgs);
-  }
+    {
+      gs_newpath(pgs);
+    }
   return code;
 }
 
@@ -72,19 +72,19 @@ int gs_eofill(gs_state *pgs)
   /* If we're inside a charpath, just merge the current path */
   /* into the parent's path. */
   if (pgs->in_charpath)
-  {
-    code = gx_path_merge(pgs->path, pgs->saved->path);
-  }
+    {
+      code = gx_path_merge(pgs->path, pgs->saved->path);
+    }
   else
-  {
-    gx_color_render(pgs->color, pgs->dev_color, pgs);
-    code = gx_fill_path(pgs->path, pgs->dev_color, pgs, gx_rule_even_odd,
-                        (fixed)0);
-  }
+    {
+      gx_color_render(pgs->color, pgs->dev_color, pgs);
+      code = gx_fill_path(pgs->path, pgs->dev_color, pgs, gx_rule_even_odd,
+                          (fixed)0);
+    }
   if (!code)
-  {
-    gs_newpath(pgs);
-  }
+    {
+      gs_newpath(pgs);
+    }
   return code;
 }
 
@@ -95,18 +95,18 @@ int gs_stroke(gs_state *pgs)
   /* If we're inside a charpath, just merge the current path */
   /* into the parent's path. */
   if (pgs->in_charpath)
-  {
-    code = gx_path_merge(pgs->path, pgs->saved->path);
-  }
+    {
+      code = gx_path_merge(pgs->path, pgs->saved->path);
+    }
   else
-  {
-    gx_color_render(pgs->color, pgs->dev_color, pgs);
-    code = gx_stroke_fill(pgs->path, pgs);
-  }
+    {
+      gx_color_render(pgs->color, pgs->dev_color, pgs);
+      code = gx_stroke_fill(pgs->path, pgs);
+    }
   if (!code)
-  {
-    gs_newpath(pgs);
-  }
+    {
+      gs_newpath(pgs);
+    }
   return code;
 }
 
@@ -118,9 +118,9 @@ int gs_strokepath(gs_state *pgs)
   gx_path_init(&spath, &pgs->memory_procs);
   code = gx_stroke_add(pgs->path, &spath, pgs);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   gx_path_release(pgs->path);
   *pgs->path = spath;
   return 0;
@@ -133,29 +133,30 @@ int gs_colorimage(gs_state *pgs, int width, int height, int bps, int spp,
   gs_image_enum ienum;
   int code;
   if ((code = gs_image_init(&ienum, pgs, width, height, bps, spp, pmat)) < 0)
-  {
-    return code;
-  }
-  if (spp > 0)
-  {
-    uint size = (((uint)width * bps * spp + 7) >> 3) * (uint)height;
-    code = gs_image_next(&ienum, data, size);
-  }
-  else
-  { /* Deliver the colors separately */
-    uint plane_size = (((uint)width * bps + 7) >> 3) * (uint)height;
-    byte *plane_data = data;
-    int count = spp;
-    do
     {
-      code = gs_image_next(&ienum, plane_data, plane_size);
-      if (code < 0)
-      {
-        return code;
-      }
-      plane_data += plane_size;
-    } while (++count);
-  }
+      return code;
+    }
+  if (spp > 0)
+    {
+      uint size = (((uint)width * bps * spp + 7) >> 3) * (uint)height;
+      code = gs_image_next(&ienum, data, size);
+    }
+  else
+    { /* Deliver the colors separately */
+      uint plane_size = (((uint)width * bps + 7) >> 3) * (uint)height;
+      byte *plane_data = data;
+      int count = spp;
+      do
+        {
+          code = gs_image_next(&ienum, plane_data, plane_size);
+          if (code < 0)
+            {
+              return code;
+            }
+          plane_data += plane_size;
+        }
+      while (++count);
+    }
   return (code < 0 ? code : 0);
 }
 int gs_image(gs_state *pgs, int width, int height, int bps, gs_matrix *pmat,
@@ -172,9 +173,9 @@ int gs_imagemask(gs_state *pgs, int width, int height, int invert,
   int code;
   uint size = (((uint)width + 7) >> 3) * (uint)height;
   if ((code = gs_imagemask_init(&ienum, pgs, width, height, invert, pmat)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   code = gs_image_next(&ienum, data, size);
   return (code < 0 ? code : 0);
 }

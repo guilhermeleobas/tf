@@ -36,19 +36,19 @@ static GdkPixmap **findpixmap(GtkWidget *widget)
   for (i = 0; i < num_plotwindows && widget != pixmapboxes[i]; i++)
     ;
   if (i >= num_plotwindows)
-  {
-    g_print("findpixmap(): bad argument widget \n");
-    return NULL;
-  }
+    {
+      g_print("findpixmap(): bad argument widget \n");
+      return NULL;
+    }
   return &pixmaps[i];
 }
 
-void gpk_graph_draw(GtkWidget *widget,              /* plot on this widged */
-                    int n,                          /* number of data points */
+void gpk_graph_draw(GtkWidget *widget, /* plot on this widged */
+                    int n, /* number of data points */
                     gdouble *xcord, gdouble *ycord, /* data */
-                    gdouble xmn, gdouble ymn,       /* coordinates of corners */
+                    gdouble xmn, gdouble ymn, /* coordinates of corners */
                     gdouble xmx, gdouble ymx,
-                    int clear,   /* clear old plot first */
+                    int clear, /* clear old plot first */
                     char *title, /* add a title (only if clear=1) */
                     GdkColor *color)
 {
@@ -63,37 +63,37 @@ void gpk_graph_draw(GtkWidget *widget,              /* plot on this widged */
   gdk_gc_set_foreground(gc, color);
 
   if ((ppixmap = findpixmap(widget)))
-  {
-    width = widget->allocation.width;
-    height = widget->allocation.height;
-
-    if (clear)
     {
-      /* white background */
-      gdk_draw_rectangle(*ppixmap, widget->style->white_gc, TRUE, 0, 0, width,
-                         height);
+      width = widget->allocation.width;
+      height = widget->allocation.height;
+
+      if (clear)
+        {
+          /* white background */
+          gdk_draw_rectangle(*ppixmap, widget->style->white_gc, TRUE, 0, 0, width,
+                             height);
 /* title */
 #ifndef _WIN32
-      fixed_font = gdk_font_load("-misc-fixed-medium-r-*-*-*-100-*-*-*-*-*-*");
+          fixed_font = gdk_font_load("-misc-fixed-medium-r-*-*-*-100-*-*-*-*-*-*");
 #else
-      fixed_font = gdk_font_load("-misc-fixed-large-r-*-*-*-100-*-*-*-*-*-*");
+          fixed_font = gdk_font_load("-misc-fixed-large-r-*-*-*-100-*-*-*-*-*-*");
 #endif
 
-      gdk_draw_text(*ppixmap, fixed_font,
-                    widget->style->fg_gc[GTK_WIDGET_STATE(widget)], 0, 10,
-                    title, strlen(title));
-    }
+          gdk_draw_text(*ppixmap, fixed_font,
+                        widget->style->fg_gc[GTK_WIDGET_STATE(widget)], 0, 10,
+                        title, strlen(title));
+        }
 
-    points = g_malloc(n * sizeof(GdkPoint));
-    for (i = 0; i < n; i++)
-    {
-      points[i].x = .5 + ((xcord[i] - xmn) * (width - 1) / (xmx - xmn));
-      points[i].y = .5 + ((ycord[i] - ymx) * (height - 1) / (ymn - ymx));
+      points = g_malloc(n * sizeof(GdkPoint));
+      for (i = 0; i < n; i++)
+        {
+          points[i].x = .5 + ((xcord[i] - xmn) * (width - 1) / (xmx - xmn));
+          points[i].y = .5 + ((ycord[i] - ymx) * (height - 1) / (ymn - ymx));
+        }
+      gdk_draw_lines(*ppixmap, gc, points, n);
+      g_free(points);
+      gpk_redraw(*ppixmap, widget);
     }
-    gdk_draw_lines(*ppixmap, gc, points, n);
-    g_free(points);
-    gpk_redraw(*ppixmap, widget);
-  }
   gdk_gc_destroy(gc);
 }
 
@@ -112,31 +112,31 @@ void gpk_rectangle_draw(GtkWidget *widget, /* plot on this widged */
   gdk_gc_set_foreground(gc, color);
 
   if ((ppixmap = findpixmap(widget)))
-  {
-    width = widget->allocation.width;
-    height = widget->allocation.height;
-
-    for (i = 0; i < 2; i++)
     {
-      points[i].x = .5 + ((xcord[i] - xmn) * (width - 1) / (xmx - xmn));
-      points[i].y = .5 + ((ycord[i] - ymx) * (height - 1) / (ymn - ymx));
+      width = widget->allocation.width;
+      height = widget->allocation.height;
+
+      for (i = 0; i < 2; i++)
+        {
+          points[i].x = .5 + ((xcord[i] - xmn) * (width - 1) / (xmx - xmn));
+          points[i].y = .5 + ((ycord[i] - ymx) * (height - 1) / (ymn - ymx));
+        }
+      width = points[1].x - points[0].x + 1;
+      height = points[1].y - points[0].y + 1;
+      gdk_draw_rectangle(*ppixmap, gc, TRUE, points[0].x, points[0].y, width,
+                         height);
+      gpk_redraw(*ppixmap, widget);
     }
-    width = points[1].x - points[0].x + 1;
-    height = points[1].y - points[0].y + 1;
-    gdk_draw_rectangle(*ppixmap, gc, TRUE, points[0].x, points[0].y, width,
-                       height);
-    gpk_redraw(*ppixmap, widget);
-  }
   gdk_gc_destroy(gc);
 }
 
 void gpk_bargraph_draw(
-    GtkWidget *widget,                   /* plot on this widged */
-    int n,                               /* number of data points */
-    gdouble *xcord, gdouble *ycord,      /* data */
-    gdouble xmn, gdouble ymn,            /* coordinates of corners */
+    GtkWidget *widget, /* plot on this widged */
+    int n, /* number of data points */
+    gdouble *xcord, gdouble *ycord, /* data */
+    gdouble xmn, gdouble ymn, /* coordinates of corners */
     gdouble xmx, gdouble ymx, int clear, /* clear old plot first */
-    char *title,                         /* add a title (only if clear=1) */
+    char *title, /* add a title (only if clear=1) */
     int barwidth, /* bar width. 0=compute based on window size */
     GdkColor *color)
 {
@@ -151,45 +151,45 @@ void gpk_bargraph_draw(
   gdk_gc_set_foreground(gc, color);
 
   if ((ppixmap = findpixmap(widget)))
-  {
-    width = widget->allocation.width;
-    height = widget->allocation.height;
-
-    if (clear)
     {
-      /* white background */
-      gdk_draw_rectangle(*ppixmap, widget->style->white_gc, TRUE, 0, 0, width,
-                         height);
+      width = widget->allocation.width;
+      height = widget->allocation.height;
+
+      if (clear)
+        {
+          /* white background */
+          gdk_draw_rectangle(*ppixmap, widget->style->white_gc, TRUE, 0, 0, width,
+                             height);
 /* title */
 #ifndef _WIN32
-      fixed_font = gdk_font_load("-misc-fixed-medium-r-*-*-*-100-*-*-*-*-*-*");
+          fixed_font = gdk_font_load("-misc-fixed-medium-r-*-*-*-100-*-*-*-*-*-*");
 #else
-      fixed_font = gdk_font_load("-misc-fixed-large-r-*-*-*-100-*-*-*-*-*-*");
+          fixed_font = gdk_font_load("-misc-fixed-large-r-*-*-*-100-*-*-*-*-*-*");
 #endif
 
-      gdk_draw_text(*ppixmap, fixed_font,
-                    widget->style->fg_gc[GTK_WIDGET_STATE(widget)], 0, 10,
-                    title, strlen(title));
-    }
+          gdk_draw_text(*ppixmap, fixed_font,
+                        widget->style->fg_gc[GTK_WIDGET_STATE(widget)], 0, 10,
+                        title, strlen(title));
+        }
 
-    for (i = 0; i < n; i++)
-    {
-      points[1].x = .5 + ((xcord[i] - xmn) * (width - 1) / (xmx - xmn));
-      points[1].y = .5 + ((ycord[i] - ymx) * (height - 1) / (ymn - ymx));
-      points[0].x = points[1].x;
-      points[0].y = height - 1;
+      for (i = 0; i < n; i++)
+        {
+          points[1].x = .5 + ((xcord[i] - xmn) * (width - 1) / (xmx - xmn));
+          points[1].y = .5 + ((ycord[i] - ymx) * (height - 1) / (ymn - ymx));
+          points[0].x = points[1].x;
+          points[0].y = height - 1;
 
-      x = .5 + ((xcord[i] - xmn) * (width - 1) / (xmx - xmn));
-      y = .5 + ((ycord[i] - ymx) * (height - 1) / (ymn - ymx));
-      if (!barwidth) barwidth = (width / (n + 1)) - 1;
-      barwidth = barwidth > 5 ? 5 : barwidth;
-      barwidth = barwidth < 1 ? 1 : barwidth;
-      barheight = height - 1 - y;
-      /* gdk_draw_lines(*ppixmap,gc,points,2); */
-      gdk_draw_rectangle(*ppixmap, gc, TRUE, x, y, barwidth, barheight);
+          x = .5 + ((xcord[i] - xmn) * (width - 1) / (xmx - xmn));
+          y = .5 + ((ycord[i] - ymx) * (height - 1) / (ymn - ymx));
+          if (!barwidth) barwidth = (width / (n + 1)) - 1;
+          barwidth = barwidth > 5 ? 5 : barwidth;
+          barwidth = barwidth < 1 ? 1 : barwidth;
+          barheight = height - 1 - y;
+          /* gdk_draw_lines(*ppixmap,gc,points,2); */
+          gdk_draw_rectangle(*ppixmap, gc, TRUE, x, y, barwidth, barheight);
+        }
+      gpk_redraw(*ppixmap, widget);
     }
-    gpk_redraw(*ppixmap, widget);
-  }
   gdk_gc_destroy(gc);
 }
 
@@ -199,13 +199,13 @@ static gint configure_event(GtkWidget *widget, GdkEventConfigure *event,
 {
   GdkPixmap **ppixmap;
   if ((ppixmap = findpixmap(widget)))
-  {
-    if (*ppixmap) gdk_pixmap_unref(*ppixmap);
-    *ppixmap = gdk_pixmap_new(widget->window, widget->allocation.width,
-                              widget->allocation.height, -1);
-    gdk_draw_rectangle(*ppixmap, widget->style->white_gc, TRUE, 0, 0,
-                       widget->allocation.width, widget->allocation.height);
-  }
+    {
+      if (*ppixmap) gdk_pixmap_unref(*ppixmap);
+      *ppixmap = gdk_pixmap_new(widget->window, widget->allocation.width,
+                                widget->allocation.height, -1);
+      gdk_draw_rectangle(*ppixmap, widget->style->white_gc, TRUE, 0, 0,
+                         widget->allocation.width, widget->allocation.height);
+    }
   return TRUE;
 }
 
@@ -215,12 +215,12 @@ static gint expose_event(GtkWidget *widget, GdkEventExpose *event,
 {
   GdkPixmap **ppixmap;
   if ((ppixmap = findpixmap(widget)))
-  {
-    gdk_draw_pixmap(widget->window,
-                    widget->style->fg_gc[GTK_WIDGET_STATE(widget)], *ppixmap,
-                    event->area.x, event->area.y, event->area.x, event->area.y,
-                    event->area.width, event->area.height);
-  }
+    {
+      gdk_draw_pixmap(widget->window,
+                      widget->style->fg_gc[GTK_WIDGET_STATE(widget)], *ppixmap,
+                      event->area.x, event->area.y, event->area.x, event->area.y,
+                      event->area.width, event->area.height);
+    }
 
   return FALSE;
 }
@@ -238,15 +238,15 @@ GtkWidget *gpk_plot_new(int width, int height)
   gtk_widget_set_events(pixmapbox, GDK_EXPOSURE_MASK);
 
   if (num_plotwindows < max_plotwindows)
-  {
-    pixmapboxes[num_plotwindows] = pixmapbox;
-    pixmaps[num_plotwindows] = NULL;
-    num_plotwindows++;
-  }
+    {
+      pixmapboxes[num_plotwindows] = pixmapbox;
+      pixmaps[num_plotwindows] = NULL;
+      num_plotwindows++;
+    }
   else
-  {
-    g_print("gtk_plotarea_new(): exceeded maximum of 10 plotarea windows\n");
-  }
+    {
+      g_print("gtk_plotarea_new(): exceeded maximum of 10 plotarea windows\n");
+    }
 
   return pixmapbox;
 }

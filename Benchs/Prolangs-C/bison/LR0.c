@@ -88,14 +88,14 @@ void allocate_itemsets(void)
   itemp = ritem;
   symbol = *itemp++;
   while (symbol)
-  {
-    if (symbol > 0)
     {
-      count++;
-      symbol_count[symbol]++;
+      if (symbol > 0)
+        {
+          count++;
+          symbol_count[symbol]++;
+        }
+      symbol = *itemp++;
     }
-    symbol = *itemp++;
-  }
 
   /* see comments before new-itemset.  All the vectors of items
      live inside kernel_items.  The number of active items after
@@ -109,14 +109,14 @@ void allocate_itemsets(void)
   count = 0;
   max = 0;
   for (i = 0; i < nsyms; i++)
-  {
-    kernel_base[i] = kernel_items + count;
-    count += symbol_count[i];
-    if (max < symbol_count[i])
     {
-      max = symbol_count[i];
+      kernel_base[i] = kernel_items + count;
+      count += symbol_count[i];
+      if (max < symbol_count[i])
+        {
+          max = symbol_count[i];
+        }
     }
-  }
 
   shift_symbol = symbol_count;
   kernel_end = NEW2(nsyms, short *);
@@ -152,28 +152,28 @@ void generate_states(void)
   initialize_states();
 
   while (this_state)
-  {
-    /* Set up ruleset and itemset for the transitions out of this state.
+    {
+      /* Set up ruleset and itemset for the transitions out of this state.
        ruleset gets a 1 bit for each rule that could reduce now.
        itemset gets a vector of all the items that could be accepted next.  */
-    closure(this_state->items, this_state->nitems);
-    /* record the reductions allowed out of this state */
-    save_reductions();
-    /* find the itemsets of the states that shifts can reach */
-    new_itemsets();
-    /* find or create the core structures for those states */
-    append_states();
+      closure(this_state->items, this_state->nitems);
+      /* record the reductions allowed out of this state */
+      save_reductions();
+      /* find the itemsets of the states that shifts can reach */
+      new_itemsets();
+      /* find or create the core structures for those states */
+      append_states();
 
-    /* create the shifts structures for the shifts to those states,
+      /* create the shifts structures for the shifts to those states,
        now that the state numbers transitioning to are known */
-    if (nshifts > 0)
-    {
-      save_shifts();
-    }
+      if (nshifts > 0)
+        {
+          save_shifts();
+        }
 
-    /* states are queued when they are created; process them all */
-    this_state = this_state->next;
-  }
+      /* states are queued when they are created; process them all */
+      this_state = this_state->next;
+    }
 
   /* discard various storage */
   finalize_closure();
@@ -204,32 +204,32 @@ void new_itemsets(void)
 #endif
 
   for (i = 0; i < nsyms; i++)
-  {
-    kernel_end[i] = NULL;
-  }
+    {
+      kernel_end[i] = NULL;
+    }
 
   shiftcount = 0;
 
   isp = itemset;
 
   while (isp < itemsetend)
-  {
-    i = *isp++;
-    symbol = ritem[i];
-    if (symbol > 0)
     {
-      ksp = kernel_end[symbol];
+      i = *isp++;
+      symbol = ritem[i];
+      if (symbol > 0)
+        {
+          ksp = kernel_end[symbol];
 
-      if (!ksp)
-      {
-        shift_symbol[shiftcount++] = symbol;
-        ksp = kernel_base[symbol];
-      }
+          if (!ksp)
+            {
+              shift_symbol[shiftcount++] = symbol;
+              ksp = kernel_base[symbol];
+            }
 
-      *ksp++ = i + 1;
-      kernel_end[symbol] = ksp;
+          *ksp++ = i + 1;
+          kernel_end[symbol] = ksp;
+        }
     }
-  }
 
   nshifts = shiftcount;
 }
@@ -252,22 +252,22 @@ void append_states(void)
   /* first sort shift_symbol into increasing order */
 
   for (i = 1; i < nshifts; i++)
-  {
-    symbol = shift_symbol[i];
-    j = i;
-    while (j > 0 && shift_symbol[j - 1] > symbol)
     {
-      shift_symbol[j] = shift_symbol[j - 1];
-      j--;
+      symbol = shift_symbol[i];
+      j = i;
+      while (j > 0 && shift_symbol[j - 1] > symbol)
+        {
+          shift_symbol[j] = shift_symbol[j - 1];
+          j--;
+        }
+      shift_symbol[j] = symbol;
     }
-    shift_symbol[j] = symbol;
-  }
 
   for (i = 0; i < nshifts; i++)
-  {
-    symbol = shift_symbol[i];
-    shiftset[i] = get_state(symbol);
-  }
+    {
+      symbol = shift_symbol[i];
+      shiftset[i] = get_state(symbol);
+    }
 }
 
 /* find the state number for the state we would get to
@@ -297,52 +297,52 @@ int get_state(int symbol)
   /* add up the target state's active item numbers to get a hash key */
   key = 0;
   while (isp1 < iend)
-  {
-    key += *isp1++;
-  }
+    {
+      key += *isp1++;
+    }
 
   key = key % STATE_TABLE_SIZE;
 
   sp = state_table[key];
 
   if (sp)
-  {
-    found = 0;
-    while (!found)
     {
-      if (sp->nitems == n)
-      {
-        found = 1;
-        isp1 = kernel_base[symbol];
-        isp2 = sp->items;
+      found = 0;
+      while (!found)
+        {
+          if (sp->nitems == n)
+            {
+              found = 1;
+              isp1 = kernel_base[symbol];
+              isp2 = sp->items;
 
-        while (found && isp1 < iend)
-        {
-          if (*isp1++ != *isp2++)
-          {
-            found = 0;
-          }
-        }
-      }
+              while (found && isp1 < iend)
+                {
+                  if (*isp1++ != *isp2++)
+                    {
+                      found = 0;
+                    }
+                }
+            }
 
-      if (!found)
-      {
-        if (sp->link)
-        {
-          sp = sp->link;
+          if (!found)
+            {
+              if (sp->link)
+                {
+                  sp = sp->link;
+                }
+              else /* bucket exhausted and no match */
+                {
+                  sp = sp->link = new_state(symbol);
+                  found = 1;
+                }
+            }
         }
-        else /* bucket exhausted and no match */
-        {
-          sp = sp->link = new_state(symbol);
-          found = 1;
-        }
-      }
     }
-  }
   else /* bucket is empty */
-  {
-    state_table[key] = sp = new_state(symbol);
-  }
+    {
+      state_table[key] = sp = new_state(symbol);
+    }
 
   return (sp->number);
 }
@@ -363,9 +363,9 @@ core *new_state(int symbol)
 #endif
 
   if (nstates >= MAXSHORT)
-  {
-    toomany("states");
-  }
+    {
+      toomany("states");
+    }
 
   isp1 = kernel_base[symbol];
   iend = kernel_end[symbol];
@@ -378,9 +378,9 @@ core *new_state(int symbol)
 
   isp2 = p->items;
   while (isp1 < iend)
-  {
-    *isp2++ = *isp1++;
-  }
+    {
+      *isp2++ = *isp1++;
+    }
 
   last_state->next = p;
   last_state = p;
@@ -420,20 +420,20 @@ void save_shifts(void)
   send = shiftset + nshifts;
 
   while (sp1 < send)
-  {
-    *sp2++ = *sp1++;
-  }
+    {
+      *sp2++ = *sp1++;
+    }
 
   if (last_shift)
-  {
-    last_shift->next = p;
-    last_shift = p;
-  }
+    {
+      last_shift->next = p;
+      last_shift = p;
+    }
   else
-  {
-    first_shift = p;
-    last_shift = p;
-  }
+    {
+      first_shift = p;
+      last_shift = p;
+    }
 }
 
 /* find which rules can be used for reduction transitions from the current state
@@ -455,44 +455,44 @@ void save_reductions(void)
 
   count = 0;
   for (isp = itemset; isp < itemsetend; isp++)
-  {
-    item = ritem[*isp];
-    if (item < 0)
     {
-      redset[count++] = -item;
+      item = ritem[*isp];
+      if (item < 0)
+        {
+          redset[count++] = -item;
+        }
     }
-  }
 
   /* make a reductions structure and copy the data into it.  */
 
   if (count)
-  {
-    p = (reductions *)mallocate(
-        (unsigned)(sizeof(reductions) + (count - 1) * sizeof(short)));
-
-    p->number = this_state->number;
-    p->nreds = count;
-
-    rp1 = redset;
-    rp2 = p->rules;
-    rend = rp1 + count;
-
-    while (rp1 < rend)
     {
-      *rp2++ = *rp1++;
-    }
+      p = (reductions *)mallocate(
+          (unsigned)(sizeof(reductions) + (count - 1) * sizeof(short)));
 
-    if (last_reduction)
-    {
-      last_reduction->next = p;
-      last_reduction = p;
+      p->number = this_state->number;
+      p->nreds = count;
+
+      rp1 = redset;
+      rp2 = p->rules;
+      rend = rp1 + count;
+
+      while (rp1 < rend)
+        {
+          *rp2++ = *rp1++;
+        }
+
+      if (last_reduction)
+        {
+          last_reduction->next = p;
+          last_reduction = p;
+        }
+      else
+        {
+          first_reduction = p;
+          last_reduction = p;
+        }
     }
-    else
-    {
-      first_reduction = p;
-      last_reduction = p;
-    }
-  }
 }
 
 /* Make sure that the initial state has a shift that accepts the
@@ -514,114 +514,114 @@ void augment_automaton(void)
   sp = first_shift;
 
   if (sp)
-  {
-    if (sp->number == 0)
     {
-      k = sp->nshifts;
-      statep = first_state->next;
-
-      while (statep->accessing_symbol < start_symbol && statep->number < k)
-      {
-        statep = statep->next;
-      }
-
-      if (statep->accessing_symbol == start_symbol)
-      {
-        k = statep->number;
-
-        while (sp->number < k)
+      if (sp->number == 0)
         {
-          sp1 = sp;
-          sp = sp->next;
-        }
+          k = sp->nshifts;
+          statep = first_state->next;
 
-        if (sp->number == k)
-        {
-          sp2 = (shifts *)mallocate(
-              (unsigned)(sizeof(shifts) + sp->nshifts * sizeof(short)));
-          sp2->next = sp->next;
-          sp2->number = k;
-          sp2->nshifts = sp->nshifts + 1;
-          sp2->shifts[0] = nstates;
-          for (i = sp->nshifts; i > 0; i--)
-          {
-            sp2->shifts[i] = sp->shifts[i - 1];
-          }
+          while (statep->accessing_symbol < start_symbol && statep->number < k)
+            {
+              statep = statep->next;
+            }
 
-          sp1->next = sp2;
-          FREE(sp);
-        }
-        else
-        {
-          sp2 = NEW(shifts);
-          sp2->next = sp;
-          sp2->number = k;
-          sp2->nshifts = 1;
-          sp2->shifts[0] = nstates;
+          if (statep->accessing_symbol == start_symbol)
+            {
+              k = statep->number;
 
-          sp1->next = sp2;
-          if (!sp)
-          {
-            last_shift = sp2;
-          }
+              while (sp->number < k)
+                {
+                  sp1 = sp;
+                  sp = sp->next;
+                }
+
+              if (sp->number == k)
+                {
+                  sp2 = (shifts *)mallocate(
+                      (unsigned)(sizeof(shifts) + sp->nshifts * sizeof(short)));
+                  sp2->next = sp->next;
+                  sp2->number = k;
+                  sp2->nshifts = sp->nshifts + 1;
+                  sp2->shifts[0] = nstates;
+                  for (i = sp->nshifts; i > 0; i--)
+                    {
+                      sp2->shifts[i] = sp->shifts[i - 1];
+                    }
+
+                  sp1->next = sp2;
+                  FREE(sp);
+                }
+              else
+                {
+                  sp2 = NEW(shifts);
+                  sp2->next = sp;
+                  sp2->number = k;
+                  sp2->nshifts = 1;
+                  sp2->shifts[0] = nstates;
+
+                  sp1->next = sp2;
+                  if (!sp)
+                    {
+                      last_shift = sp2;
+                    }
+                }
+            }
+          else
+            {
+              k = statep->number;
+              sp = first_shift;
+
+              sp2 = (shifts *)mallocate(
+                  (unsigned)(sizeof(shifts) + sp->nshifts * sizeof(short)));
+              sp2->next = sp->next;
+              sp2->nshifts = sp->nshifts + 1;
+
+              for (i = 0; i < k; i++)
+                {
+                  sp2->shifts[i] = sp->shifts[i];
+                }
+
+              sp2->shifts[k] = nstates;
+
+              for (i = k; i < sp->nshifts; i++)
+                {
+                  sp2->shifts[i + 1] = sp->shifts[i];
+                }
+
+              first_shift = sp2;
+              if (last_shift == sp)
+                {
+                  last_shift = sp2;
+                }
+
+              FREE(sp);
+
+              insert_start_shift();
+            }
         }
-      }
       else
-      {
-        k = statep->number;
-        sp = first_shift;
-
-        sp2 = (shifts *)mallocate(
-            (unsigned)(sizeof(shifts) + sp->nshifts * sizeof(short)));
-        sp2->next = sp->next;
-        sp2->nshifts = sp->nshifts + 1;
-
-        for (i = 0; i < k; i++)
         {
-          sp2->shifts[i] = sp->shifts[i];
+          sp = NEW(shifts);
+          sp->next = first_shift;
+          sp->nshifts = 1;
+          sp->shifts[0] = nstates;
+
+          first_shift = sp;
+
+          insert_start_shift();
         }
-
-        sp2->shifts[k] = nstates;
-
-        for (i = k; i < sp->nshifts; i++)
-        {
-          sp2->shifts[i + 1] = sp->shifts[i];
-        }
-
-        first_shift = sp2;
-        if (last_shift == sp)
-        {
-          last_shift = sp2;
-        }
-
-        FREE(sp);
-
-        insert_start_shift();
-      }
     }
-    else
+  else
     {
       sp = NEW(shifts);
-      sp->next = first_shift;
       sp->nshifts = 1;
       sp->shifts[0] = nstates;
 
       first_shift = sp;
+      last_shift = sp;
 
       insert_start_shift();
     }
-  }
-  else
-  {
-    sp = NEW(shifts);
-    sp->nshifts = 1;
-    sp->shifts[0] = nstates;
-
-    first_shift = sp;
-    last_shift = sp;
-
-    insert_start_shift();
-  }
 
   statep = (core *)mallocate((unsigned)(sizeof(core) - sizeof(short)));
   statep->number = nstates;

@@ -17,14 +17,14 @@
 /* MAX_RECORD_SIZE_1                      Largest size of ANY record.        */
 #define MAX_RECORD_SIZE_1 80
 
-char RECORD[MAX_RECORD_SIZE_1 + 1];      /* The current record creating      */
+char RECORD[MAX_RECORD_SIZE_1 + 1]; /* The current record creating      */
 char INIT_RECORD[MAX_RECORD_SIZE_1 + 1]; /* The intial configuration         */
-int NEXT_COL;                            /* Where the next thing will go into*/
-                                         /* the record.                      */
-int MAX_SIZE;                            /* The maximum size of THIS record  */
-int LOCATION = 0;                        /* Where in SICs main memory does   */
-                                         /* this record start. Only TEXT     */
-                                         /* records.                         */
+int NEXT_COL; /* Where the next thing will go into*/
+/* the record.                      */
+int MAX_SIZE; /* The maximum size of THIS record  */
+int LOCATION = 0; /* Where in SICs main memory does   */
+/* this record start. Only TEXT     */
+/* records.                         */
 
 /* IS_INITIALIZED                         Has the record been initialized?   */
 #define NOT_INIT_2 0
@@ -36,17 +36,17 @@ int IS_INITIALIZED = NOT_INIT_2;
 void INITIALIZE_RECORD(char *VAL, int SIZE)
 {
   if ((SIZE > MAX_RECORD_SIZE_1) || (strlen(VAL) > SIZE) || IS_INITIALIZED)
-  {
-    (void)printf("INITIALIZE_RECORD called illegally.\n");
-  }
+    {
+      (void)printf("INITIALIZE_RECORD called illegally.\n");
+    }
   else
-  {
-    (void)strcpy(INIT_RECORD, VAL);
-    (void)strcpy(RECORD, VAL);
-    MAX_SIZE = SIZE;
-    NEXT_COL = strlen(RECORD);
-    IS_INITIALIZED = INITIALIZED_2;
-  }
+    {
+      (void)strcpy(INIT_RECORD, VAL);
+      (void)strcpy(RECORD, VAL);
+      MAX_SIZE = SIZE;
+      NEXT_COL = strlen(RECORD);
+      IS_INITIALIZED = INITIALIZED_2;
+    }
 }
 
 /* ------------------------- PRT_RECORD ------------------------------------ */
@@ -54,17 +54,17 @@ void INITIALIZE_RECORD(char *VAL, int SIZE)
 void PRT_RECORD(FILE *OUTPUT)
 {
   if (!IS_INITIALIZED)
-  {
-    (void)printf("PRT_RECORD called illegally.\n");
-  }
-  else
-  {
-    if (strcmp(RECORD, INIT_RECORD))
     {
-      (void)fprintf(OUTPUT, "%s\n", RECORD);
+      (void)printf("PRT_RECORD called illegally.\n");
     }
-    IS_INITIALIZED = NOT_INIT_2;
-  }
+  else
+    {
+      if (strcmp(RECORD, INIT_RECORD))
+        {
+          (void)fprintf(OUTPUT, "%s\n", RECORD);
+        }
+      IS_INITIALIZED = NOT_INIT_2;
+    }
 }
 
 /* ------------------------- ADD_TO_RECORD --------------------------------- */
@@ -72,32 +72,32 @@ void PRT_RECORD(FILE *OUTPUT)
 /* stream OUTPUT.                                                            */
 void ADD_TO_RECORD(char *VAL, FILE *OUTPUT)
 {
-  int LENGTH;          /* Stores legth of the record                 */
+  int LENGTH; /* Stores legth of the record                 */
   int ERROR = FALSE_1; /* Has an error been detected.                */
 
   if (!IS_INITIALIZED)
-  {
-    ERROR = 1;
-  }
-  else if ((NEXT_COL + (LENGTH = strlen(VAL))) > MAX_SIZE)
-  {
-    /* ---------- Output current record, but VAL onto next record. */
-    PRT_RECORD(OUTPUT);
-    INITIALIZE_RECORD(INIT_RECORD, MAX_SIZE);
-    if ((NEXT_COL + LENGTH) > MAX_SIZE)
     {
       ERROR = 1;
     }
-  }
+  else if ((NEXT_COL + (LENGTH = strlen(VAL))) > MAX_SIZE)
+    {
+      /* ---------- Output current record, but VAL onto next record. */
+      PRT_RECORD(OUTPUT);
+      INITIALIZE_RECORD(INIT_RECORD, MAX_SIZE);
+      if ((NEXT_COL + LENGTH) > MAX_SIZE)
+        {
+          ERROR = 1;
+        }
+    }
   if (!ERROR)
-  {
-    (void)strcpy(&(RECORD[NEXT_COL]), VAL);
-    NEXT_COL += LENGTH;
-  }
+    {
+      (void)strcpy(&(RECORD[NEXT_COL]), VAL);
+      NEXT_COL += LENGTH;
+    }
   else
-  {
-    (void)printf("ADD_TO_RECORD called illegally.\n");
-  }
+    {
+      (void)printf("ADD_TO_RECORD called illegally.\n");
+    }
 }
 
 /* --------------------- INITITIALIZE_TEXT_RECORD -------------------------- */
@@ -114,20 +114,20 @@ void INITIALIZE_TEXT_RECORD(void)
 void PRT_TEXT_RECORD(FILE *OUTPUT)
 {
   if (!IS_INITIALIZED)
-  {
-    (void)printf("PRT_TEXT_RECORD called illegally.\n");
-  }
-  else
-  {
-    if (strcmp(RECORD, INIT_RECORD))
     {
-      (void)fprintf(OUTPUT, "T");
-      PRT_NUM(LOCATION, 16, 6, OUTPUT);
-      PRT_NUM((NEXT_COL / HEX_CHAR_PER_BYTE_1), 16, 2, OUTPUT);
-      (void)fprintf(OUTPUT, "%s\n", RECORD);
+      (void)printf("PRT_TEXT_RECORD called illegally.\n");
     }
-    IS_INITIALIZED = NOT_INIT_2;
-  }
+  else
+    {
+      if (strcmp(RECORD, INIT_RECORD))
+        {
+          (void)fprintf(OUTPUT, "T");
+          PRT_NUM(LOCATION, 16, 6, OUTPUT);
+          PRT_NUM((NEXT_COL / HEX_CHAR_PER_BYTE_1), 16, 2, OUTPUT);
+          (void)fprintf(OUTPUT, "%s\n", RECORD);
+        }
+      IS_INITIALIZED = NOT_INIT_2;
+    }
 }
 
 /* ------------------------- ADD_TO_TEXT_RECORD ---------------------------- */
@@ -143,32 +143,32 @@ void ADD_TO_TEXT_RECORD(char *VAL, int PUT_AT, FILE *OUTPUT)
   LEN = strlen(VAL);
 
   if (!IS_INITIALIZED || (LEN > MAX_SIZE))
-  {
-    ERROR = 1;
-  }
-  else
-  {
-    if (!ERROR && ((LOCATION + NEXT_COL / HEX_CHAR_PER_BYTE_1) != PUT_AT))
     {
-      PRT_TEXT_RECORD(OUTPUT);
-      LOCATION = PUT_AT;
-      INITIALIZE_TEXT_RECORD();
+      ERROR = 1;
     }
+  else
+    {
+      if (!ERROR && ((LOCATION + NEXT_COL / HEX_CHAR_PER_BYTE_1) != PUT_AT))
+        {
+          PRT_TEXT_RECORD(OUTPUT);
+          LOCATION = PUT_AT;
+          INITIALIZE_TEXT_RECORD();
+        }
 
-    if (!ERROR && ((NEXT_COL + LEN) > MAX_SIZE))
-    {
-      PRT_TEXT_RECORD(OUTPUT);
-      LOCATION += strlen(RECORD) / HEX_CHAR_PER_BYTE_1;
-      INITIALIZE_TEXT_RECORD();
+      if (!ERROR && ((NEXT_COL + LEN) > MAX_SIZE))
+        {
+          PRT_TEXT_RECORD(OUTPUT);
+          LOCATION += strlen(RECORD) / HEX_CHAR_PER_BYTE_1;
+          INITIALIZE_TEXT_RECORD();
+        }
     }
-  }
   if (!ERROR)
-  {
-    (void)strcpy(&(RECORD[NEXT_COL]), VAL);
-    NEXT_COL += LEN;
-  }
+    {
+      (void)strcpy(&(RECORD[NEXT_COL]), VAL);
+      NEXT_COL += LEN;
+    }
   else
-  {
-    (void)printf("ADD_TO_TEXT_RECORD called illegally.\n");
-  }
+    {
+      (void)printf("ADD_TO_TEXT_RECORD called illegally.\n");
+    }
 }

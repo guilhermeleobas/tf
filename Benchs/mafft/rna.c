@@ -16,26 +16,26 @@ static float singleribosumscore(int n1, int n2, char **s1, char **s2,
 
   val = 0.0;
   for (i = 0; i < n1; i++)
-  {
-    for (j = 0; j < n2; j++)
     {
-      code1 = amino_n[(int)s1[i][p1]];
-      if (code1 > 3)
-      {
-        code1 = 36;
-      }
-      code2 = amino_n[(int)s2[j][p2]];
-      if (code2 > 3)
-      {
-        code2 = 36;
-      }
+      for (j = 0; j < n2; j++)
+        {
+          code1 = amino_n[(int)s1[i][p1]];
+          if (code1 > 3)
+            {
+              code1 = 36;
+            }
+          code2 = amino_n[(int)s2[j][p2]];
+          if (code2 > 3)
+            {
+              code2 = 36;
+            }
 
-      //		fprintf( stderr, "'l'%c-%c: %f\n", s1[i][p1], s2[j][p2],
-      //(float)ribosumdis[code1][code2] );
+          //		fprintf( stderr, "'l'%c-%c: %f\n", s1[i][p1], s2[j][p2],
+          //(float)ribosumdis[code1][code2] );
 
-      val += (float)ribosumdis[code1][code2] * eff1[i] * eff2[j];
+          val += (float)ribosumdis[code1][code2] * eff1[i] * eff2[j];
+        }
     }
-  }
   return (val);
 }
 static float pairedribosumscore53(int n1, int n2, char **s1, char **s2,
@@ -48,52 +48,52 @@ static float pairedribosumscore53(int n1, int n2, char **s1, char **s2,
 
   val = 0.0;
   for (i = 0; i < n1; i++)
-  {
-    for (j = 0; j < n2; j++)
     {
-      code1o = amino_n[(int)s1[i][p1]];
-      code1u = amino_n[(int)s1[i][c1]];
-      if (code1o > 3)
-      {
-        code1 = code1o = 36;
-      }
-      else if (code1u > 3)
-      {
-        code1 = 36;
-      }
-      else
-      {
-        code1 = 4 + code1o * 4 + code1u;
-      }
+      for (j = 0; j < n2; j++)
+        {
+          code1o = amino_n[(int)s1[i][p1]];
+          code1u = amino_n[(int)s1[i][c1]];
+          if (code1o > 3)
+            {
+              code1 = code1o = 36;
+            }
+          else if (code1u > 3)
+            {
+              code1 = 36;
+            }
+          else
+            {
+              code1 = 4 + code1o * 4 + code1u;
+            }
 
-      code2o = amino_n[(int)s2[j][p2]];
-      code2u = amino_n[(int)s2[j][c2]];
-      if (code2o > 3)
-      {
-        code2 = code1o = 36;
-      }
-      else if (code2u > 3)
-      {
-        code2 = 36;
-      }
-      else
-      {
-        code2 = 4 + code2o * 4 + code2u;
-      }
+          code2o = amino_n[(int)s2[j][p2]];
+          code2u = amino_n[(int)s2[j][c2]];
+          if (code2o > 3)
+            {
+              code2 = code1o = 36;
+            }
+          else if (code2u > 3)
+            {
+              code2 = 36;
+            }
+          else
+            {
+              code2 = 4 + code2o * 4 + code2u;
+            }
 
-      //		fprintf( stderr, "%c%c-%c%c: %f\n", s1[i][p1],
-      //s1[i][c1], s2[j][p2], s2[j][c2], (float)ribosumdis[code1][code2] );
+          //		fprintf( stderr, "%c%c-%c%c: %f\n", s1[i][p1],
+          //s1[i][c1], s2[j][p2], s2[j][c2], (float)ribosumdis[code1][code2] );
 
-      if (code1 == 36 || code2 == 36)
-      {
-        val += (float)n_dis[code1o][code2o] * eff1[i] * eff2[j];
-      }
-      else
-      {
-        val += (float)ribosumdis[code1][code2] * eff1[i] * eff2[j];
-      }
+          if (code1 == 36 || code2 == 36)
+            {
+              val += (float)n_dis[code1o][code2o] * eff1[i] * eff2[j];
+            }
+          else
+            {
+              val += (float)ribosumdis[code1][code2] * eff1[i] * eff2[j];
+            }
+        }
     }
-  }
   return (val);
 }
 
@@ -107,52 +107,52 @@ static float pairedribosumscore35(int n1, int n2, char **s1, char **s2,
 
   val = 0.0;
   for (i = 0; i < n1; i++)
-  {
-    for (j = 0; j < n2; j++)
     {
-      code1o = amino_n[(int)s1[i][p1]];
-      code1u = amino_n[(int)s1[i][c1]];
-      if (code1o > 3)
-      {
-        code1 = code1o = 36;
-      }
-      else if (code1u > 3)
-      {
-        code1 = 36;
-      }
-      else
-      {
-        code1 = 4 + code1u * 4 + code1o;
-      }
+      for (j = 0; j < n2; j++)
+        {
+          code1o = amino_n[(int)s1[i][p1]];
+          code1u = amino_n[(int)s1[i][c1]];
+          if (code1o > 3)
+            {
+              code1 = code1o = 36;
+            }
+          else if (code1u > 3)
+            {
+              code1 = 36;
+            }
+          else
+            {
+              code1 = 4 + code1u * 4 + code1o;
+            }
 
-      code2o = amino_n[(int)s2[j][p2]];
-      code2u = amino_n[(int)s2[j][c2]];
-      if (code2o > 3)
-      {
-        code2 = code1o = 36;
-      }
-      else if (code2u > 3)
-      {
-        code2 = 36;
-      }
-      else
-      {
-        code2 = 4 + code2u * 4 + code2o;
-      }
+          code2o = amino_n[(int)s2[j][p2]];
+          code2u = amino_n[(int)s2[j][c2]];
+          if (code2o > 3)
+            {
+              code2 = code1o = 36;
+            }
+          else if (code2u > 3)
+            {
+              code2 = 36;
+            }
+          else
+            {
+              code2 = 4 + code2u * 4 + code2o;
+            }
 
-      //		fprintf( stderr, "%c%c-%c%c: %f\n", s1[i][p1],
-      //s1[i][c1], s2[j][p2], s2[j][c2], (float)ribosumdis[code1][code2] );
+          //		fprintf( stderr, "%c%c-%c%c: %f\n", s1[i][p1],
+          //s1[i][c1], s2[j][p2], s2[j][c2], (float)ribosumdis[code1][code2] );
 
-      if (code1 == 36 || code2 == 36)
-      {
-        val += (float)n_dis[code1o][code2o] * eff1[i] * eff2[j];
-      }
-      else
-      {
-        val += (float)ribosumdis[code1][code2] * eff1[i] * eff2[j];
-      }
+          if (code1 == 36 || code2 == 36)
+            {
+              val += (float)n_dis[code1o][code2o] * eff1[i] * eff2[j];
+            }
+          else
+            {
+              val += (float)ribosumdis[code1][code2] * eff1[i] * eff2[j];
+            }
+        }
     }
-  }
   return (val);
 }
 
@@ -171,80 +171,80 @@ static void mccaskillextract(char **seq, char **nogap, int nseq,
   lgth = strlen(seq[0]);
   pairnum = calloc(lgth, sizeof(int));
   for (i = 0; i < lgth; i++)
-  {
-    pairnum[i] = 0;
-  }
+    {
+      pairnum[i] = 0;
+    }
 
   for (i = 0; i < nseq; i++)
-  {
-    nogaplgth = strlen(nogap[i]);
-    for (j = 0; j < nogaplgth; j++)
     {
-      for (pt = single[i][j]; pt->bestpos != -1; pt++)
-      {
-        left = sgapmap[i][j];
-        right = sgapmap[i][pt->bestpos];
-        prob = pt->bestscore;
-
-        for (pt2 = pairprob[left]; pt2->bestpos != -1; pt2++)
+      nogaplgth = strlen(nogap[i]);
+      for (j = 0; j < nogaplgth; j++)
         {
-          if (pt2->bestpos == right)
-          {
-            break;
-          }
-        }
+          for (pt = single[i][j]; pt->bestpos != -1; pt++)
+            {
+              left = sgapmap[i][j];
+              right = sgapmap[i][pt->bestpos];
+              prob = pt->bestscore;
 
-        //			fprintf( stderr, "i,j=%d,%d, left=%d, right=%d,
-        //pt=%d, pt2->bestpos = %d\n", i, j, left, right, pt-single[i][j],
-        //pt2->bestpos );
-        if (pt2->bestpos == -1)
-        {
-          pairprob[left] = (RNApair *)realloc(
-              pairprob[left], (pairnum[left] + 2) * sizeof(RNApair));
-          adpos = pairnum[left];
-          pairnum[left]++;
-          pairprob[left][adpos].bestscore = 0.0;
-          pairprob[left][adpos].bestpos = right;
-          pairprob[left][adpos + 1].bestscore = -1.0;
-          pairprob[left][adpos + 1].bestpos = -1;
-          pt2 = pairprob[left] + adpos;
-        }
-        else
-        {
-          adpos = pt2 - pairprob[left];
-        }
+              for (pt2 = pairprob[left]; pt2->bestpos != -1; pt2++)
+                {
+                  if (pt2->bestpos == right)
+                    {
+                      break;
+                    }
+                }
 
-        pt2->bestscore += prob * eff[i];
+              //			fprintf( stderr, "i,j=%d,%d, left=%d, right=%d,
+              //pt=%d, pt2->bestpos = %d\n", i, j, left, right, pt-single[i][j],
+              //pt2->bestpos );
+              if (pt2->bestpos == -1)
+                {
+                  pairprob[left] = (RNApair *)realloc(
+                      pairprob[left], (pairnum[left] + 2) * sizeof(RNApair));
+                  adpos = pairnum[left];
+                  pairnum[left]++;
+                  pairprob[left][adpos].bestscore = 0.0;
+                  pairprob[left][adpos].bestpos = right;
+                  pairprob[left][adpos + 1].bestscore = -1.0;
+                  pairprob[left][adpos + 1].bestpos = -1;
+                  pt2 = pairprob[left] + adpos;
+                }
+              else
+                {
+                  adpos = pt2 - pairprob[left];
+                }
 
-        if (pt2->bestpos != right)
-        {
-          fprintf(stderr, "okashii!\n");
-          exit(1);
+              pt2->bestscore += prob * eff[i];
+
+              if (pt2->bestpos != right)
+                {
+                  fprintf(stderr, "okashii!\n");
+                  exit(1);
+                }
+              //			fprintf( stderr, "adding %d-%d, %f\n", left, right,
+              //prob );
+              //			fprintf( stderr, "pairprob[0][0].bestpos=%d\n",
+              //pairprob[0][0].bestpos );
+              //			fprintf( stderr, "pairprob[0][0].bestscore=%f\n",
+              //pairprob[0][0].bestscore );
+            }
         }
-        //			fprintf( stderr, "adding %d-%d, %f\n", left, right,
-        //prob );
-        //			fprintf( stderr, "pairprob[0][0].bestpos=%d\n",
-        //pairprob[0][0].bestpos );
-        //			fprintf( stderr, "pairprob[0][0].bestscore=%f\n",
-        //pairprob[0][0].bestscore );
-      }
     }
-  }
 
   //	fprintf( stderr, "before taikakuka\n" );
   for (i = 0; i < lgth; i++)
-  {
-    for (j = 0; j < pairnum[i]; j++)
     {
-      if (pairprob[i][j].bestpos > -1)
-      {
-        //			pairprob[i][j].bestscore /= (float)nseq;
-        //			fprintf( stderr, "pair of %d = %d (%f) %c:%c\n", i,
-        //pairprob[i][j].bestpos, pairprob[i][j].bestscore, seq[0][i],
-        //seq[0][pairprob[i][j].bestpos] );
-      }
+      for (j = 0; j < pairnum[i]; j++)
+        {
+          if (pairprob[i][j].bestpos > -1)
+            {
+              //			pairprob[i][j].bestscore /= (float)nseq;
+              //			fprintf( stderr, "pair of %d = %d (%f) %c:%c\n", i,
+              //pairprob[i][j].bestpos, pairprob[i][j].bestscore, seq[0][i],
+              //seq[0][pairprob[i][j].bestpos] );
+            }
+        }
     }
-  }
 
 #if 0
 	for( i=0; i<lgth; i++ ) for( j=0; j<pairnum[i]; j++ )
@@ -281,29 +281,29 @@ void rnaalifoldcall(char **seq, int nseq, RNApair **pairprob)
 
   lgth = strlen(seq[0]);
   if (order == NULL)
-  {
-    pid = (int)getpid();
-    sprintf(fnamein, "/tmp/_rnaalifoldin.%d", pid);
-    order = AllocateIntVec(njob);
-    name = AllocateCharMtx(njob, 10);
-    for (i = 0; i < njob; i++)
     {
-      order[i] = i;
-      sprintf(name[i], "seq%d", i);
+      pid = (int)getpid();
+      sprintf(fnamein, "/tmp/_rnaalifoldin.%d", pid);
+      order = AllocateIntVec(njob);
+      name = AllocateCharMtx(njob, 10);
+      for (i = 0; i < njob; i++)
+        {
+          order[i] = i;
+          sprintf(name[i], "seq%d", i);
+        }
     }
-  }
   pairnum = calloc(lgth, sizeof(int));
   for (i = 0; i < lgth; i++)
-  {
-    pairnum[i] = 0;
-  }
+    {
+      pairnum[i] = 0;
+    }
 
   fp = fopen(fnamein, "w");
   if (!fp)
-  {
-    fprintf(stderr, "Cannot open /tmp/_rnaalifoldin\n");
-    exit(1);
-  }
+    {
+      fprintf(stderr, "Cannot open /tmp/_rnaalifoldin\n");
+      exit(1);
+    }
   clustalout_pointer(fp, nseq, lgth, seq, name, NULL, NULL, order);
   fclose(fp);
 
@@ -312,10 +312,10 @@ void rnaalifoldcall(char **seq, int nseq, RNApair **pairprob)
 
   fp = fopen("alifold.out", "r");
   if (!fp)
-  {
-    fprintf(stderr, "Cannot open /tmp/_rnaalifoldin\n");
-    exit(1);
-  }
+    {
+      fprintf(stderr, "Cannot open /tmp/_rnaalifoldin\n");
+      exit(1);
+    }
 
 #if 0
 	for( i=0; i<lgth; i++ ) // atode kesu
@@ -327,32 +327,32 @@ void rnaalifoldcall(char **seq, int nseq, RNApair **pairprob)
 #endif
 
   while (1)
-  {
-    fgets(gett, 999, fp);
-    if (gett[0] == '(')
     {
-      break;
-    }
-    if (gett[0] == '{')
-    {
-      break;
-    }
-    if (gett[0] == '.')
-    {
-      break;
-    }
-    if (gett[0] == ',')
-    {
-      break;
-    }
-    if (gett[0] != ' ')
-    {
-      continue;
-    }
+      fgets(gett, 999, fp);
+      if (gett[0] == '(')
+        {
+          break;
+        }
+      if (gett[0] == '{')
+        {
+          break;
+        }
+      if (gett[0] == '.')
+        {
+          break;
+        }
+      if (gett[0] == ',')
+        {
+          break;
+        }
+      if (gett[0] != ' ')
+        {
+          continue;
+        }
 
-    sscanf(gett, "%d %d %d %f", &left, &right, &dumm, &prob);
-    left--;
-    right--;
+      sscanf(gett, "%d %d %d %f", &left, &right, &dumm, &prob);
+      left--;
+      right--;
 
 #if 0
 		if( prob > 50.0 && prob > pairprob[left][0].bestscore )
@@ -360,40 +360,40 @@ void rnaalifoldcall(char **seq, int nseq, RNApair **pairprob)
 			pairprob[left][0].bestscore = prob;
 			pairprob[left][0].bestpos = right;
 #else
-    if (prob > 0.0)
-    {
-      pairprob[left] = (RNApair *)realloc(
-          pairprob[left], (pairnum[left] + 2) * sizeof(RNApair));
-      pairprob[left][pairnum[left]].bestscore = prob / 100.0;
-      pairprob[left][pairnum[left]].bestpos = right;
-      pairnum[left]++;
-      pairprob[left][pairnum[left]].bestscore = -1.0;
-      pairprob[left][pairnum[left]].bestpos = -1;
-      fprintf(stderr, "%d-%d, %f\n", left, right, prob);
+      if (prob > 0.0)
+        {
+          pairprob[left] = (RNApair *)realloc(
+              pairprob[left], (pairnum[left] + 2) * sizeof(RNApair));
+          pairprob[left][pairnum[left]].bestscore = prob / 100.0;
+          pairprob[left][pairnum[left]].bestpos = right;
+          pairnum[left]++;
+          pairprob[left][pairnum[left]].bestscore = -1.0;
+          pairprob[left][pairnum[left]].bestpos = -1;
+          fprintf(stderr, "%d-%d, %f\n", left, right, prob);
 
-      pairprob[right] = (RNApair *)realloc(
-          pairprob[right], (pairnum[right] + 2) * sizeof(RNApair));
-      pairprob[right][pairnum[right]].bestscore = prob / 100.0;
-      pairprob[right][pairnum[right]].bestpos = left;
-      pairnum[right]++;
-      pairprob[right][pairnum[right]].bestscore = -1.0;
-      pairprob[right][pairnum[right]].bestpos = -1;
-      fprintf(stderr, "%d-%d, %f\n", left, right, prob);
+          pairprob[right] = (RNApair *)realloc(
+              pairprob[right], (pairnum[right] + 2) * sizeof(RNApair));
+          pairprob[right][pairnum[right]].bestscore = prob / 100.0;
+          pairprob[right][pairnum[right]].bestpos = left;
+          pairnum[right]++;
+          pairprob[right][pairnum[right]].bestscore = -1.0;
+          pairprob[right][pairnum[right]].bestpos = -1;
+          fprintf(stderr, "%d-%d, %f\n", left, right, prob);
 #endif
-  }
+    }
 }
 fclose(fp);
 sprintf(cmd, "rm -f %s", fnamein);
 system(cmd);
 
 for (i = 0; i < lgth; i++)
-{
-  if ((right = pairprob[i][0].bestpos) > -1)
   {
-    pairprob[right][0].bestpos = i;
-    pairprob[right][0].bestscore = pairprob[i][0].bestscore;
+    if ((right = pairprob[i][0].bestpos) > -1)
+      {
+        pairprob[right][0].bestpos = i;
+        pairprob[right][0].bestscore = pairprob[i][0].bestscore;
+      }
   }
-}
 
 #if 0
 	for( i=0; i<lgth; i++ ) // atode kesu
@@ -415,39 +415,39 @@ static void utot(int n, int l, char **s)
 {
   int i, j;
   for (i = 0; i < l; i++)
-  {
-    for (j = 0; j < n; j++)
     {
-      if (s[j][i] == 'a')
-      {
-        s[j][i] = 'a';
-      }
-      else if (s[j][i] == 't')
-      {
-        s[j][i] = 't';
-      }
-      else if (s[j][i] == 'u')
-      {
-        s[j][i] = 't';
-      }
-      else if (s[j][i] == 'g')
-      {
-        s[j][i] = 'g';
-      }
-      else if (s[j][i] == 'c')
-      {
-        s[j][i] = 'c';
-      }
-      else if (s[j][i] == '-')
-      {
-        s[j][i] = '-';
-      }
-      else
-      {
-        s[j][i] = 'n';
-      }
+      for (j = 0; j < n; j++)
+        {
+          if (s[j][i] == 'a')
+            {
+              s[j][i] = 'a';
+            }
+          else if (s[j][i] == 't')
+            {
+              s[j][i] = 't';
+            }
+          else if (s[j][i] == 'u')
+            {
+              s[j][i] = 't';
+            }
+          else if (s[j][i] == 'g')
+            {
+              s[j][i] = 'g';
+            }
+          else if (s[j][i] == 'c')
+            {
+              s[j][i] = 'c';
+            }
+          else if (s[j][i] == '-')
+            {
+              s[j][i] = '-';
+            }
+          else
+            {
+              s[j][i] = 'n';
+            }
+        }
     }
-  }
 }
 
 void foldrna(int nseq1, int nseq2, char **seq1, char **seq2, double *eff1,
@@ -492,43 +492,43 @@ void foldrna(int nseq1, int nseq2, char **seq1, char **seq2, double *eff1,
   tbppmtx = AllocateFloatMtx(lgth1, lgth2);
 
   for (i = 0; i < nseq1; i++)
-  {
-    strcpy(useq1[i], seq1[i]);
-  }
+    {
+      strcpy(useq1[i], seq1[i]);
+    }
   for (i = 0; i < nseq2; i++)
-  {
-    strcpy(useq2[i], seq2[i]);
-  }
+    {
+      strcpy(useq2[i], seq2[i]);
+    }
   for (i = 0; i < nseq1; i++)
-  {
-    strcpy(oseq1[i], seq1[i]);
-  }
+    {
+      strcpy(oseq1[i], seq1[i]);
+    }
   for (i = 0; i < nseq2; i++)
-  {
-    strcpy(oseq2[i], seq2[i]);
-  }
+    {
+      strcpy(oseq2[i], seq2[i]);
+    }
 
   for (i = 0; i < nseq1; i++)
-  {
-    commongappick_record(1, useq1 + i, sgapmap1[i]);
-  }
+    {
+      commongappick_record(1, useq1 + i, sgapmap1[i]);
+    }
   for (i = 0; i < nseq2; i++)
-  {
-    commongappick_record(1, useq2 + i, sgapmap2[i]);
-  }
+    {
+      commongappick_record(1, useq2 + i, sgapmap2[i]);
+    }
 
   for (i = 0; i < lgth1; i++)
-  {
-    pairprob1[i] = (RNApair *)calloc(1, sizeof(RNApair));
-    pairprob1[i][0].bestpos = -1;
-    pairprob1[i][0].bestscore = -1;
-  }
+    {
+      pairprob1[i] = (RNApair *)calloc(1, sizeof(RNApair));
+      pairprob1[i][0].bestpos = -1;
+      pairprob1[i][0].bestscore = -1;
+    }
   for (i = 0; i < lgth2; i++)
-  {
-    pairprob2[i] = (RNApair *)calloc(1, sizeof(RNApair));
-    pairprob2[i][0].bestpos = -1;
-    pairprob2[i][0].bestscore = -1;
-  }
+    {
+      pairprob2[i] = (RNApair *)calloc(1, sizeof(RNApair));
+      pairprob2[i][0].bestpos = -1;
+      pairprob2[i][0].bestscore = -1;
+    }
 
   utot(nseq1, lgth1, oseq1);
   utot(nseq2, lgth2, oseq2);
@@ -538,26 +538,26 @@ void foldrna(int nseq1, int nseq2, char **seq1, char **seq2, double *eff1,
 
   /* base-pairing probability of group 1 */
   if (rnaprediction == 'r')
-  {
-    rnaalifoldcall(oseq1, nseq1, pairprob1);
-  }
+    {
+      rnaalifoldcall(oseq1, nseq1, pairprob1);
+    }
   else
-  {
-    mccaskillextract(oseq1, useq1, nseq1, pairprob1, grouprna1, sgapmap1, eff1);
-  }
+    {
+      mccaskillextract(oseq1, useq1, nseq1, pairprob1, grouprna1, sgapmap1, eff1);
+    }
 
   //	fprintf( stderr, "folding group2\n" );
   //	rnalocal( oseq2, useq2, eff2, eff2, nseq2, nseq2, lgth2+10, pair2 );
 
   /* base-pairing probability of group 2 */
   if (rnaprediction == 'r')
-  {
-    rnaalifoldcall(oseq2, nseq2, pairprob2);
-  }
+    {
+      rnaalifoldcall(oseq2, nseq2, pairprob2);
+    }
   else
-  {
-    mccaskillextract(oseq2, useq2, nseq2, pairprob2, grouprna2, sgapmap2, eff2);
-  }
+    {
+      mccaskillextract(oseq2, useq2, nseq2, pairprob2, grouprna2, sgapmap2, eff2);
+    }
 
 #if 0
 	makerseq( oseq1, oseq1r, odir1, pairprob1, nseq1, lgth1 );
@@ -577,134 +577,130 @@ void foldrna(int nseq1, int nseq2, char **seq1, char **seq2, double *eff1,
                  NULL, NULL, map);
 
   if (1)
-  {
-    if (RNAscoremtx == 'n')
     {
-      for (i = 0; i < lgth1; i++)
-      {
-        for (j = 0; j < lgth2; j++)
+      if (RNAscoremtx == 'n')
         {
-          //				impmtx2[i][j] = osoiaveragescore( nseq1, nseq2,
-          //oseq1, oseq2, eff1, eff2, i, j ) * consweight_multi;
-          impmtx2[i][j] = 0.0;
+          for (i = 0; i < lgth1; i++)
+            {
+              for (j = 0; j < lgth2; j++)
+                {
+                  //				impmtx2[i][j] = osoiaveragescore( nseq1, nseq2,
+                  //oseq1, oseq2, eff1, eff2, i, j ) * consweight_multi;
+                  impmtx2[i][j] = 0.0;
+                }
+            }
         }
-      }
-    }
-    else if (RNAscoremtx == 'r')
-    {
-      for (i = 0; i < lgth1; i++)
-      {
-        for (j = 0; j < lgth2; j++)
+      else if (RNAscoremtx == 'r')
         {
-          tbppmtx[i][j] = 1.0;
-          impmtx2[i][j] = 0.0;
+          for (i = 0; i < lgth1; i++)
+            {
+              for (j = 0; j < lgth2; j++)
+                {
+                  tbppmtx[i][j] = 1.0;
+                  impmtx2[i][j] = 0.0;
+                }
+            }
+          for (i = 0; i < lgth1; i++)
+            {
+              for (pairpt1 = pairprob1[i]; pairpt1->bestpos != -1; pairpt1++)
+                {
+                  for (j = 0; j < lgth2; j++)
+                    {
+                      for (pairpt2 = pairprob2[j]; pairpt2->bestpos != -1; pairpt2++)
+                        {
+                          uido = pairpt1->bestpos;
+                          ujdo = pairpt2->bestpos;
+                          prob = pairpt1->bestscore * pairpt2->bestscore;
+                          if (uido > -1 && ujdo > -1)
+                            {
+                              if (uido > i && j > ujdo)
+                                {
+                                  impmtx2[i][j] += prob * pairedribosumscore53(nseq1, nseq2, oseq1, oseq2, eff1, eff2, i, j, uido, ujdo) *
+                                                   consweight_multi;
+                                  tbppmtx[i][j] -= prob;
+                                }
+                              else if (i < uido && j < ujdo)
+                                {
+                                  impmtx2[i][j] += prob * pairedribosumscore35(nseq1, nseq2, oseq1, oseq2, eff1, eff2, i, j, uido, ujdo) *
+                                                   consweight_multi;
+                                  tbppmtx[i][j] -= prob;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+          for (i = 0; i < lgth1; i++)
+            {
+              for (j = 0; j < lgth2; j++)
+                {
+                  impmtx2[i][j] +=
+                      tbppmtx[i][j] *
+                      singleribosumscore(nseq1, nseq2, oseq1, oseq2, eff1, eff2, i, j) *
+                      consweight_multi;
+                }
+            }
         }
-      }
+
+      /* four-way consistency */
+
       for (i = 0; i < lgth1; i++)
-      {
-        for (pairpt1 = pairprob1[i]; pairpt1->bestpos != -1; pairpt1++)
+        {
+          for (pairpt1 = pairprob1[i]; pairpt1->bestpos != -1; pairpt1++)
+            {
+              //			if( pairprob1[i] == NULL ) continue;
+
+              for (j = 0; j < lgth2; j++)
+                {
+                  for (pairpt2 = pairprob2[j]; pairpt2->bestpos != -1; pairpt2++)
+                    {
+                      //				fprintf( stderr, "i=%d, j=%d, pn1=%d, pn2=%d\n", i, j,
+                      //pairpt1-pairprob1[i], pairpt2-pairprob2[j] );
+                      //				if( pairprob2[j] == NULL ) continue;
+
+                      uido = pairpt1->bestpos;
+                      ujdo = pairpt2->bestpos;
+                      prob = pairpt1->bestscore * pairpt2->bestscore;
+                      //				prob = 1.0;
+                      //				fprintf( stderr, "i=%d->uido=%d, j=%d->ujdo=%d\n", i,
+                      //uido, j, ujdo );
+
+                      //				fprintf( stderr, "impmtx2[%d][%d] = %f\n", i, j,
+                      //impmtx2[i][j] );
+
+                      //				if( i < uido && j > ujdo ) continue;
+                      //				if( i > uido && j < ujdo ) continue;
+
+                      //				posdistj = abs( ujdo-j );
+
+                      //				if( uido > -1 && ujdo > -1 )
+                      if (uido > -1 && ujdo > -1 &&
+                          ((i > uido && j > ujdo) || (i < uido && j < ujdo)))
+                        {
+                          {
+                            impmtx2[i][j] += MAX(0, map[uido][ujdo]) * consweight_rna *
+                                             600 * prob;  // osoi
+                          }
+                        }
+                    }
+                }
+            }
+        }
+      for (i = 0; i < lgth1; i++)
         {
           for (j = 0; j < lgth2; j++)
-          {
-            for (pairpt2 = pairprob2[j]; pairpt2->bestpos != -1; pairpt2++)
             {
-              uido = pairpt1->bestpos;
-              ujdo = pairpt2->bestpos;
-              prob = pairpt1->bestscore * pairpt2->bestscore;
-              if (uido > -1 && ujdo > -1)
-              {
-                if (uido > i && j > ujdo)
-                {
-                  impmtx2[i][j] += prob * pairedribosumscore53(
-                                              nseq1, nseq2, oseq1, oseq2, eff1,
-                                              eff2, i, j, uido, ujdo) *
-                                   consweight_multi;
-                  tbppmtx[i][j] -= prob;
-                }
-                else if (i < uido && j < ujdo)
-                {
-                  impmtx2[i][j] += prob * pairedribosumscore35(
-                                              nseq1, nseq2, oseq1, oseq2, eff1,
-                                              eff2, i, j, uido, ujdo) *
-                                   consweight_multi;
-                  tbppmtx[i][j] -= prob;
-                }
-              }
+              impmtx[i][j] += impmtx2[i][j];
+              //			fprintf( stderr, "fastathreshold=%f,
+              //consweight_multi=%f, consweight_rna=%f\n", fastathreshold,
+              //consweight_multi, consweight_rna );
+              //			impmtx[i][j] *= 0.5;
             }
-          }
         }
-      }
 
-      for (i = 0; i < lgth1; i++)
-      {
-        for (j = 0; j < lgth2; j++)
-        {
-          impmtx2[i][j] +=
-              tbppmtx[i][j] *
-              singleribosumscore(nseq1, nseq2, oseq1, oseq2, eff1, eff2, i, j) *
-              consweight_multi;
-        }
-      }
-    }
-
-    /* four-way consistency */
-
-    for (i = 0; i < lgth1; i++)
-    {
-      for (pairpt1 = pairprob1[i]; pairpt1->bestpos != -1; pairpt1++)
-      {
-        //			if( pairprob1[i] == NULL ) continue;
-
-        for (j = 0; j < lgth2; j++)
-        {
-          for (pairpt2 = pairprob2[j]; pairpt2->bestpos != -1; pairpt2++)
-          {
-            //				fprintf( stderr, "i=%d, j=%d, pn1=%d, pn2=%d\n", i, j,
-            //pairpt1-pairprob1[i], pairpt2-pairprob2[j] );
-            //				if( pairprob2[j] == NULL ) continue;
-
-            uido = pairpt1->bestpos;
-            ujdo = pairpt2->bestpos;
-            prob = pairpt1->bestscore * pairpt2->bestscore;
-            //				prob = 1.0;
-            //				fprintf( stderr, "i=%d->uido=%d, j=%d->ujdo=%d\n", i,
-            //uido, j, ujdo );
-
-            //				fprintf( stderr, "impmtx2[%d][%d] = %f\n", i, j,
-            //impmtx2[i][j] );
-
-            //				if( i < uido && j > ujdo ) continue;
-            //				if( i > uido && j < ujdo ) continue;
-
-            //				posdistj = abs( ujdo-j );
-
-            //				if( uido > -1 && ujdo > -1 )
-            if (uido > -1 && ujdo > -1 &&
-                ((i > uido && j > ujdo) || (i < uido && j < ujdo)))
-            {
-              {
-                impmtx2[i][j] += MAX(0, map[uido][ujdo]) * consweight_rna *
-                                 600 * prob;  // osoi
-              }
-            }
-          }
-        }
-      }
-    }
-    for (i = 0; i < lgth1; i++)
-    {
-      for (j = 0; j < lgth2; j++)
-      {
-        impmtx[i][j] += impmtx2[i][j];
-        //			fprintf( stderr, "fastathreshold=%f,
-        //consweight_multi=%f, consweight_rna=%f\n", fastathreshold,
-        //consweight_multi, consweight_rna );
-        //			impmtx[i][j] *= 0.5;
-      }
-    }
-
-//		impmtx[0][0] += 10000.0;
-//		impmtx[lgth1-1][lgth2-1] += 10000.0;
+        //		impmtx[0][0] += 10000.0;
+        //		impmtx[lgth1-1][lgth2-1] += 10000.0;
 
 #if 0
 		fprintf( stdout, "#impmtx2 = \n" );
@@ -718,7 +714,7 @@ void foldrna(int nseq1, int nseq2, char **seq1, char **seq2, double *eff1,
 		}
 		exit( 1 );
 #endif
-  }
+    }
 
   FreeCharMtx(useq1);
   FreeCharMtx(useq2);
@@ -735,13 +731,13 @@ void foldrna(int nseq1, int nseq2, char **seq1, char **seq2, double *eff1,
   FreeFloatMtx(tbppmtx);
 
   for (i = 0; i < lgth1; i++)
-  {
-    free(pairprob1[i]);
-  }
+    {
+      free(pairprob1[i]);
+    }
   for (i = 0; i < lgth2; i++)
-  {
-    free(pairprob2[i]);
-  }
+    {
+      free(pairprob2[i]);
+    }
   free(pairprob1);
   free(pairprob2);
 }

@@ -28,7 +28,7 @@ static char bits[256] = {
     2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, /* 192 - 207 */
     3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, /* 208 - 223 */
     3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, /* 224 - 239 */
-    4, 5, 5, 6, 5, 6, 6, 7, 5, 6, 6, 7, 6, 7, 7, 8  /* 240 - 255 */
+    4, 5, 5, 6, 5, 6, 6, 7, 5, 6, 6, 7, 6, 7, 7, 8 /* 240 - 255 */
 };
 
 /*
@@ -58,7 +58,8 @@ int CDECL ntbl_bitcount(long int x)
 int CDECL BW_btbl_bitcount(long int x)
 {
   int xi = (int)x;
-  union {
+  union
+  {
     unsigned char ch[4];
     int y;
   } U;
@@ -97,15 +98,15 @@ main(int argc, char *argv[])
   long n;
 
   while (--argc)
-  {
-    int i;
+    {
+      int i;
 
-    n = atol(*++argv);
-    i = BW_btbl_bitcount(n);
-    printf("%ld contains %d bit%s set\n", n, i, plural_text(i));
-    i = AR_btbl_bitcount(n);
-    printf("%ld contains %d bit%s set\n", n, i, plural_text(i));
-  }
+      n = atol(*++argv);
+      i = BW_btbl_bitcount(n);
+      printf("%ld contains %d bit%s set\n", n, i, plural_text(i));
+      i = AR_btbl_bitcount(n);
+      printf("%ld contains %d bit%s set\n", n, i, plural_text(i));
+    }
   return 0;
 }
 

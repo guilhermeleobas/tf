@@ -50,38 +50,38 @@ IntVector *IntVector_new(int size)
 {
   IntVector *new = malloc(sizeof(IntVector));
   if (new)
-  {
-    int *vector = malloc(size * sizeof(int));
-    if (vector)
     {
-      new->vector = vector;
-      new->size = 0;
-      new->allocatedSize = size;
-      return (new);
+      int *vector = malloc(size * sizeof(int));
+      if (vector)
+        {
+          new->vector = vector;
+          new->size = 0;
+          new->allocatedSize = size;
+          return (new);
+        }
+      else
+        {
+          free(new);
+          return (NULL);
+        }
     }
-    else
+  else
     {
-      free(new);
       return (NULL);
     }
-  }
-  else
-  {
-    return (NULL);
-  }
 }
 
 /* destructor */
 void IntVector_delete(IntVector *trash)
 {
   if (trash)
-  {
-    if (trash->vector)
     {
-      free(trash->vector);
+      if (trash->vector)
+        {
+          free(trash->vector);
+        }
+      free(trash);
     }
-    free(trash);
-  }
 }
 
 /* inserts a new integer at the tail of the vector */
@@ -92,27 +92,27 @@ bool IntVector_insertEnd(IntVector *vector, int datum)
 
   /* some basic error checking */
   if (!vector)
-  {
-    return (false);
-  }
+    {
+      return (false);
+    }
 
   current = vector->size;
   max = vector->allocatedSize;
 
   if (current == max) /* we're full */
-  {
-    vector->vector = realloc(vector->vector, 2 * max * sizeof(int));
-    if (vector->vector)
     {
-      vector->allocatedSize = 2 * max;
+      vector->vector = realloc(vector->vector, 2 * max * sizeof(int));
+      if (vector->vector)
+        {
+          vector->allocatedSize = 2 * max;
+        }
+      else
+        {
+          fprintf(stderr, "\n\nIntVector_insertEnd failed realloc size = %d\n",
+                  current * 2);
+          return (false);
+        }
     }
-    else
-    {
-      fprintf(stderr, "\n\nIntVector_insertEnd failed realloc size = %d\n",
-              current * 2);
-      return (false);
-    }
-  }
 
   vector->vector[current] = datum;
   vector->size += 1;
@@ -133,47 +133,48 @@ bool IntVector_insertEnd(IntVector *vector, int datum)
 static char *findNextNumber(char *input)
 {
   if (isdigit((int)input[0]))
-  {
-    /* scream through the string to find a non-digit */
-    ++input;
-    while (isdigit((int)input[0]) && *input != '\0')
     {
+      /* scream through the string to find a non-digit */
       ++input;
+      while (isdigit((int)input[0]) && *input != '\0')
+        {
+          ++input;
+        }
+      if (input[0] == '\0')
+        {
+          return (NULL);
+        }
+      else
+        {
+          /* now find the next digit */
+          while (!isdigit((int)input[0]) && *input != '\0')
+            {
+              ++input;
+            }
+        }
+      if (input[0] == '\0')
+        {
+          return (NULL);
+        }
+      else
+        {
+          return (input);
+        }
     }
-    if (input[0] == '\0')
+  else
     {
-      return (NULL);
-    }
-    else
-    {
-      /* now find the next digit */
-      while (!isdigit((int)input[0]) && *input != '\0')
-      {
-        ++input;
-      }
-    }
-    if (input[0] == '\0')
-    {
-      return (NULL);
-    }
-    else
-    {
+      /* find the first digit character */
+      do
+        {
+          if (input[0] == '\0')
+            {
+              return (NULL);
+            }
+          ++input;
+        }
+      while (!isdigit((int)input[0]));
       return (input);
     }
-  }
-  else
-  {
-    /* find the first digit character */
-    do
-    {
-      if (input[0] == '\0')
-      {
-        return (NULL);
-      }
-      ++input;
-    } while (!isdigit((int)input[0]));
-    return (input);
-  }
 }
 
 /*
@@ -187,27 +188,27 @@ int IntVector_createFromString(IntVector *vector, char *inputString)
 
   /* make sure we have valid pointers passed in*/
   if (!vector || !inputString)
-  {
-    return (0);
-  }
+    {
+      return (0);
+    }
 
   /* make sure we're pointing to a digit */
   if (!isdigit((int)inputString[0]))
-  {
-    inputString = findNextNumber(inputString);
-  }
+    {
+      inputString = findNextNumber(inputString);
+    }
 
   /* ok, at this point, we know we're pointing at a number */
   while (inputString) /* set to NULL when there are no more numbers. */
-  {
-    datum = atoi(inputString);
-    inputString = findNextNumber(inputString);
-    if (!IntVector_insertEnd(vector, datum))
     {
-      return (0); /* realloc failure */
+      datum = atoi(inputString);
+      inputString = findNextNumber(inputString);
+      if (!IntVector_insertEnd(vector, datum))
+        {
+          return (0); /* realloc failure */
+        }
+      ++dataCount;
     }
-    ++dataCount;
-  }
 
   return (dataCount);
 }
@@ -217,38 +218,38 @@ CharVector *CharVector_new(int size)
 {
   CharVector *new = malloc(sizeof(CharVector));
   if (new)
-  {
-    char *string = malloc(size * sizeof(char));
-    if (string)
     {
-      new->string = string;
-      new->size = 0;
-      new->allocatedSize = size;
-      return (new);
+      char *string = malloc(size * sizeof(char));
+      if (string)
+        {
+          new->string = string;
+          new->size = 0;
+          new->allocatedSize = size;
+          return (new);
+        }
+      else
+        {
+          free(new);
+          return (NULL);
+        }
     }
-    else
+  else
     {
-      free(new);
       return (NULL);
     }
-  }
-  else
-  {
-    return (NULL);
-  }
 }
 
 /* destructor */
 void CharVector_delete(CharVector *trash)
 {
   if (trash)
-  {
-    if (trash->string)
     {
-      free(trash->string);
+      if (trash->string)
+        {
+          free(trash->string);
+        }
+      free(trash);
     }
-    free(trash);
-  }
 }
 
 bool CharVector_insertEnd(CharVector *vector, char c)
@@ -258,27 +259,27 @@ bool CharVector_insertEnd(CharVector *vector, char c)
 
   /* some basic error checking */
   if (!vector)
-  {
-    return (false);
-  }
+    {
+      return (false);
+    }
 
   size = vector->size;
   max = vector->allocatedSize;
 
   if (size == max) /* we're full */
-  {
-    vector->string = realloc(vector->string, 2 * size * sizeof(char));
-    if (vector->string)
     {
-      vector->allocatedSize = size * 2;
+      vector->string = realloc(vector->string, 2 * size * sizeof(char));
+      if (vector->string)
+        {
+          vector->allocatedSize = size * 2;
+        }
+      else
+        {
+          fprintf(stderr, "\n\nIntVector_insertEnd failed realloc size = %d\n",
+                  size * 2);
+          return (false);
+        }
     }
-    else
-    {
-      fprintf(stderr, "\n\nIntVector_insertEnd failed realloc size = %d\n",
-              size * 2);
-      return (false);
-    }
-  }
 
   vector->string[size] = c;
   vector->size += 1;
@@ -292,31 +293,32 @@ int CharVector_getLineFromFile(CharVector *vector, FILE *input)
 
   /* Some basic error checking */
   if (!vector || !input)
-  {
-    return (-1);
-  }
+    {
+      return (-1);
+    }
 
   vector->size = 0; /* reset the vector prior to filling */
 
   /* get to the next digit */
   do
-  {
-    c = fgetc(input);
-    if (feof(input) || c == '\n')
     {
-      notDoneYet = false;
+      c = fgetc(input);
+      if (feof(input) || c == '\n')
+        {
+          notDoneYet = false;
+        }
+      else if (!CharVector_insertEnd(vector, c))
+        {
+          return (-1); /* CharVector_insertEnd reached a memory limit. Fail */
+        }
     }
-    else if (!CharVector_insertEnd(vector, c))
-    {
-      return (-1); /* CharVector_insertEnd reached a memory limit. Fail */
-    }
-  } while (notDoneYet);
+  while (notDoneYet);
 
   /* make the data a c-string */
   if (!CharVector_insertEnd(vector, '\0'))
-  {
-    return (-1); /* CharVector_insertEnd reached a memory limit. Fail */
-  }
+    {
+      return (-1); /* CharVector_insertEnd reached a memory limit. Fail */
+    }
   return (vector->size);
 }
 
@@ -333,18 +335,18 @@ NodePtrVec *NodePtrVec_new(int initialSize)
 
   vector = malloc(initialSize * sizeof(Node *));
   if (!vector)
-  {
-    printf("Malloc failure in NodePtrVec creation\n");
-    return (NULL);
-  }
+    {
+      printf("Malloc failure in NodePtrVec creation\n");
+      return (NULL);
+    }
 
   newVector = malloc(sizeof(NodePtrVec));
   if (!newVector)
-  {
-    free(vector);
-    printf("Malloc failure in NodePtrVec storage creation\n");
-    return (NULL);
-  }
+    {
+      free(vector);
+      printf("Malloc failure in NodePtrVec storage creation\n");
+      return (NULL);
+    }
 
   newVector->allocatedSize = initialSize;
   newVector->contentSize = 0;
@@ -356,13 +358,13 @@ NodePtrVec *NodePtrVec_new(int initialSize)
 void NodePtrVec_delete(NodePtrVec *trash)
 {
   if (trash)
-  {
-    if (trash->vector)
     {
-      free(trash->vector);
+      if (trash->vector)
+        {
+          free(trash->vector);
+        }
+      free(trash);
     }
-    free(trash);
-  }
 }
 
 /* creates duplicate vector (not duplicate nodes!). If exact_copy is true, the
@@ -374,21 +376,21 @@ NodePtrVec *NodePtrVec_copy(NodePtrVec *from, bool exact_copy)
   int i;
 
   if (!from)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
 
   NodePtrVec *to = exact_copy ? NodePtrVec_new(from->allocatedSize)
                               : NodePtrVec_new(from->contentSize);
   if (!to)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
 
   for (i = 0; i < from->contentSize; ++i)
-  {
-    to->vector[i] = from->vector[i];
-  }
+    {
+      to->vector[i] = from->vector[i];
+    }
   to->contentSize = from->contentSize;
   return to;
 }
@@ -403,36 +405,36 @@ bool NodePtrVec_push(NodePtrVec *vector, Node *node)
 
   /* some basic error checking */
   if (!vector)
-  {
-    return false;
-  }
+    {
+      return false;
+    }
 
   current = vector->contentSize;
   max = vector->allocatedSize;
 
   /* see if our vector is full */
   if (current == max)
-  {
-    vector->vector = realloc(vector->vector, 2 * max * sizeof(Node *));
-    if (vector->vector)
     {
-      vector->allocatedSize = 2 * max;
-    }
-    else
-    {
-      printf("\n\nNodePtrVec_push failed malloc(%d). Node: %d", 2 * max,
-             node->id);
-      if (node->label)
-      {
-        printf(", label: %s\n", node->label);
-      }
+      vector->vector = realloc(vector->vector, 2 * max * sizeof(Node *));
+      if (vector->vector)
+        {
+          vector->allocatedSize = 2 * max;
+        }
       else
-      {
-        printf("\n\n");
-      }
-      return false;
+        {
+          printf("\n\nNodePtrVec_push failed malloc(%d). Node: %d", 2 * max,
+                 node->id);
+          if (node->label)
+            {
+              printf(", label: %s\n", node->label);
+            }
+          else
+            {
+              printf("\n\n");
+            }
+          return false;
+        }
     }
-  }
 
   /* do the actual pushing */
   vector->vector[current] = node;
@@ -448,15 +450,15 @@ Node *NodePtrVec_pop(NodePtrVec *vector)
 
   /* some basic error checking */
   if (!vector)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
 
   if (vector->contentSize > 0)
-  {
-    vector->contentSize -= 1;
-    top = vector->vector[vector->contentSize];
-  }
+    {
+      vector->contentSize -= 1;
+      top = vector->vector[vector->contentSize];
+    }
 
   return top;
 }
@@ -471,17 +473,17 @@ bool NodePtrVec_find(NodePtrVec *vector, Node *node)
 
   /* some basic error checking */
   if (!vector)
-  {
-    return false;
-  }
+    {
+      return false;
+    }
 
   for (i = 0; i < vector->contentSize; ++i)
-  {
-    if (vector->vector[i] == node)
     {
-      return true;
+      if (vector->vector[i] == node)
+        {
+          return true;
+        }
     }
-  }
 
   return false;
 }
@@ -495,17 +497,17 @@ bool NodePtrVec_findReverse(NodePtrVec *vector, Node *node)
 
   /* some basic error checking */
   if (!vector || !vector->vector || !node)
-  {
-    return false;
-  }
+    {
+      return false;
+    }
 
   for (i = vector->contentSize - 1; i >= 0; --i)
-  {
-    if (vector->vector[i] == node)
     {
-      return true;
+      if (vector->vector[i] == node)
+        {
+          return true;
+        }
     }
-  }
 
   return false;
 }
@@ -524,23 +526,23 @@ void NodePtrVec_appendVectors(NodePtrVec *first, NodePtrVec *second,
 
   /* Some basic error checking */
   if (!first || !second)
-  {
-    return;
-  }
+    {
+      return;
+    }
 
   if (keepFirst)
-  {
-    i = 0;
-  }
+    {
+      i = 0;
+    }
   else
-  {
-    i = 1;
-  }
+    {
+      i = 1;
+    }
 
   for (; i < second->contentSize; ++i)
-  {
-    NodePtrVec_push(first, second->vector[i]);
-  }
+    {
+      NodePtrVec_push(first, second->vector[i]);
+    }
 }
 
 /* -------------------------------------------
@@ -557,20 +559,20 @@ NodeVecVec *NodeVecVec_new(int initialSize)
 
   vector = malloc(initialSize * sizeof(NodePtrVec *));
   if (!vector)
-  {
-    printf("Malloc failure in NodeVecVec storage creation\n");
-    fflush(stdout);
-    return (NULL);
-  }
+    {
+      printf("Malloc failure in NodeVecVec storage creation\n");
+      fflush(stdout);
+      return (NULL);
+    }
 
   newVector = malloc(sizeof(NodeVecVec));
   if (!newVector)
-  {
-    free(vector);
-    printf("Malloc failure in NodeVecVec creation\n");
-    fflush(stdout);
-    return (NULL);
-  }
+    {
+      free(vector);
+      printf("Malloc failure in NodeVecVec creation\n");
+      fflush(stdout);
+      return (NULL);
+    }
 
   newVector->allocatedSize = initialSize;
   newVector->contentSize = 0;
@@ -583,17 +585,17 @@ void NodeVecVec_delete(NodeVecVec *trash)
 {
   int i;
   if (trash)
-  {
-    for (i = 0; i < trash->contentSize; ++i)
     {
-      NodePtrVec_delete(trash->vector[i]);
+      for (i = 0; i < trash->contentSize; ++i)
+        {
+          NodePtrVec_delete(trash->vector[i]);
+        }
+      if (trash->vector)
+        {
+          free(trash->vector);
+        }
+      free(trash);
     }
-    if (trash->vector)
-    {
-      free(trash->vector);
-    }
-    free(trash);
-  }
 }
 
 /* pushes a copy of the element if it can. If a memory allocation is required
@@ -608,28 +610,28 @@ bool NodeVecVec_insert(NodeVecVec *vector, NodePtrVec *path)
 
   /* some basic error checking */
   if (!vector || !path || !copy)
-  {
-    return false;
-  }
+    {
+      return false;
+    }
 
   current = vector->contentSize;
   max = vector->allocatedSize;
 
   /* see if our vector is full */
   if (current == max)
-  {
-    vector->vector = realloc(vector->vector, 2 * max * sizeof(Node *));
-    if (vector->vector)
     {
-      vector->allocatedSize = 2 * max;
+      vector->vector = realloc(vector->vector, 2 * max * sizeof(Node *));
+      if (vector->vector)
+        {
+          vector->allocatedSize = 2 * max;
+        }
+      else
+        {
+          printf("\n\nNodeVecVec_push failed malloc\n");
+          fflush(stdout);
+          return false;
+        }
     }
-    else
-    {
-      printf("\n\nNodeVecVec_push failed malloc\n");
-      fflush(stdout);
-      return false;
-    }
-  }
 
   /* do the actual pushing */
   vector->vector[current] = copy;

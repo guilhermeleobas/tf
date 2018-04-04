@@ -21,8 +21,8 @@
 
 static void Weighting_filter P2(
     (e, x), register word* e, /* signal [-5..0.39.44]	IN  */
-    word* x                   /* signal [0..39]	OUT */
-    )
+    word* x /* signal [0..39]	OUT */
+)
 /*
  *  The coefficients of the weighting filter are stored in a table
  *  (see table 4.4).  The following scaling is used:
@@ -50,10 +50,10 @@ static void Weighting_filter P2(
   /*  Compute the signal x[0..39]
    */
   for (k = 0; k <= 39; k++)
-  {
-    L_result = 8192 >> 1;
+    {
+      L_result = 8192 >> 1;
 
-/* for (i = 0; i <= 10; i++) {
+      /* for (i = 0; i <= 10; i++) {
  *	L_temp   = GSM_L_MULT( wt[k+i], gsm_H[i] );
  *	L_result = GSM_L_ADD( L_result, L_temp );
  * }
@@ -62,55 +62,55 @@ static void Weighting_filter P2(
 #undef STEP
 #define STEP(i, H) (e[k + i] * (longword)H)
 
-/*  Every one of these multiplications is done twice --
+      /*  Every one of these multiplications is done twice --
  *  but I don't see an elegant way to optimize this.
  *  Do you?
  */
 
 #ifdef STUPID_COMPILER
-    L_result += STEP(0, -134);
-    L_result += STEP(1, -374);
-    /* + STEP(	2, 	0    )  */
-    L_result += STEP(3, 2054);
-    L_result += STEP(4, 5741);
-    L_result += STEP(5, 8192);
-    L_result += STEP(6, 5741);
-    L_result += STEP(7, 2054);
-    /* + STEP(	8, 	0    )  */
-    L_result += STEP(9, -374);
-    L_result += STEP(10, -134);
+      L_result += STEP(0, -134);
+      L_result += STEP(1, -374);
+      /* + STEP(	2, 	0    )  */
+      L_result += STEP(3, 2054);
+      L_result += STEP(4, 5741);
+      L_result += STEP(5, 8192);
+      L_result += STEP(6, 5741);
+      L_result += STEP(7, 2054);
+      /* + STEP(	8, 	0    )  */
+      L_result += STEP(9, -374);
+      L_result += STEP(10, -134);
 #else
-    L_result += STEP(0, -134) + STEP(1, -374)
-                /* + STEP(	2, 	0    )  */
-                + STEP(3, 2054) + STEP(4, 5741) + STEP(5, 8192) +
-                STEP(6, 5741) + STEP(7, 2054)
-                /* + STEP(	8, 	0    )  */
-                + STEP(9, -374) + STEP(10, -134);
+      L_result += STEP(0, -134) + STEP(1, -374)
+                  /* + STEP(	2, 	0    )  */
+                  + STEP(3, 2054) + STEP(4, 5741) + STEP(5, 8192) +
+                  STEP(6, 5741) + STEP(7, 2054)
+                  /* + STEP(	8, 	0    )  */
+                  + STEP(9, -374) + STEP(10, -134);
 #endif
 
-    /* L_result = GSM_L_ADD( L_result, L_result ); (* scaling(x2) *)
+      /* L_result = GSM_L_ADD( L_result, L_result ); (* scaling(x2) *)
      * L_result = GSM_L_ADD( L_result, L_result ); (* scaling(x4) *)
      *
      * x[k] = SASR( L_result, 16 );
      */
 
-    /* 2 adds vs. >>16 => 14, minus one shift to compensate for
+      /* 2 adds vs. >>16 => 14, minus one shift to compensate for
      * those we lost when replacing L_MULT by '*'.
      */
 
-    L_result = SASR(L_result, 13);
-    x[k] = (L_result < MIN_WORD ? MIN_WORD
-                                : (L_result > MAX_WORD ? MAX_WORD : L_result));
-  }
+      L_result = SASR(L_result, 13);
+      x[k] = (L_result < MIN_WORD ? MIN_WORD
+                                  : (L_result > MAX_WORD ? MAX_WORD : L_result));
+    }
 }
 
 /* 4.2.14 */
 
 static void RPE_grid_selection P3((x, xM, Mc_out),
-                                  word* x,     /* [0..39]		IN  */
-                                  word* xM,    /* [0..12]		OUT */
+                                  word* x, /* [0..39]		IN  */
+                                  word* xM, /* [0..12]		OUT */
                                   word* Mc_out /*			OUT */
-                                  )
+)
 /*
  *  The signal x[0..39] is used to select the RPE grid which is
  *  represented by Mc.
@@ -127,7 +127,7 @@ static void RPE_grid_selection P3((x, xM, Mc_out),
   EM = 0;
   Mc = 0;
 
-/* for (m = 0; m <= 3; m++) {
+  /* for (m = 0; m <= 3; m++) {
  *	L_result = 0;
  *
  *
@@ -194,10 +194,10 @@ static void RPE_grid_selection P3((x, xM, Mc_out),
   STEP(1, 12);
   L_result <<= 1;
   if (L_result > EM)
-  {
-    Mc = 1;
-    EM = L_result;
-  }
+    {
+      Mc = 1;
+      EM = L_result;
+    }
 
   /* i = 2 */
 
@@ -217,10 +217,10 @@ static void RPE_grid_selection P3((x, xM, Mc_out),
   STEP(2, 12);
   L_result <<= 1;
   if (L_result > EM)
-  {
-    Mc = 2;
-    EM = L_result;
-  }
+    {
+      Mc = 2;
+      EM = L_result;
+    }
 
   /* i = 3 */
 
@@ -228,10 +228,10 @@ static void RPE_grid_selection P3((x, xM, Mc_out),
   STEP(3, 12);
   L_result <<= 1;
   if (L_result > EM)
-  {
-    Mc = 3;
-    EM = L_result;
-  }
+    {
+      Mc = 3;
+      EM = L_result;
+    }
 
   /**/
 
@@ -239,9 +239,9 @@ static void RPE_grid_selection P3((x, xM, Mc_out),
    *  RPE sequence.
    */
   for (i = 0; i <= 12; i++)
-  {
-    xM[i] = x[Mc + 3 * i];
-  }
+    {
+      xM[i] = x[Mc + 3 * i];
+    }
   *Mc_out = Mc;
 }
 
@@ -249,8 +249,8 @@ static void RPE_grid_selection P3((x, xM, Mc_out),
 
 static void APCM_quantization_xmaxc_to_exp_mant
 P3((xmaxc, exp_out, mant_out), word xmaxc, /* IN 	*/
-   word* exp_out,                          /* OUT	*/
-   word* mant_out)                         /* OUT  */
+   word* exp_out, /* OUT	*/
+   word* mant_out) /* OUT  */
 {
   word exp, mant;
 
@@ -259,25 +259,25 @@ P3((xmaxc, exp_out, mant_out), word xmaxc, /* IN 	*/
 
   exp = 0;
   if (xmaxc > 15)
-  {
-    exp = SASR(xmaxc, 3) - 1;
-  }
+    {
+      exp = SASR(xmaxc, 3) - 1;
+    }
   mant = xmaxc - (exp << 3);
 
   if (mant == 0)
-  {
-    exp = -4;
-    mant = 7;
-  }
-  else
-  {
-    while (mant <= 7)
     {
-      mant = mant << 1 | 1;
-      exp--;
+      exp = -4;
+      mant = 7;
     }
-    mant -= 8;
-  }
+  else
+    {
+      while (mant <= 7)
+        {
+          mant = mant << 1 | 1;
+          exp--;
+        }
+      mant -= 8;
+    }
 
   assert(exp >= -4 && exp <= 6);
   assert(mant >= 0 && mant <= 7);
@@ -290,11 +290,11 @@ static void APCM_quantization P5(
     (xM, xMc, mant_out, exp_out, xmaxc_out),
     word* xM, /* [0..12]		IN	*/
 
-    word* xMc,      /* [0..12]		OUT	*/
+    word* xMc, /* [0..12]		OUT	*/
     word* mant_out, /* 			OUT	*/
-    word* exp_out,  /*			OUT	*/
+    word* exp_out, /*			OUT	*/
     word* xmaxc_out /*			OUT	*/
-    )
+)
 {
   int i, itest;
 
@@ -306,14 +306,14 @@ static void APCM_quantization P5(
 
   xmax = 0;
   for (i = 0; i <= 12; i++)
-  {
-    temp = xM[i];
-    temp = GSM_ABS(temp);
-    if (temp > xmax)
     {
-      xmax = temp;
+      temp = xM[i];
+      temp = GSM_ABS(temp);
+      if (temp > xmax)
+        {
+          xmax = temp;
+        }
     }
-  }
 
   /*  Qantizing and coding of xmax to get xmaxc.
    */
@@ -323,16 +323,16 @@ static void APCM_quantization P5(
   itest = 0;
 
   for (i = 0; i <= 5; i++)
-  {
-    itest |= (temp <= 0);
-    temp = SASR(temp, 1);
-
-    assert(exp <= 5);
-    if (itest == 0)
     {
-      exp++; /* exp = add (exp, 1) */
+      itest |= (temp <= 0);
+      temp = SASR(temp, 1);
+
+      assert(exp <= 5);
+      if (itest == 0)
+        {
+          exp++; /* exp = add (exp, 1) */
+        }
     }
-  }
 
   assert(exp <= 6 && exp >= 0);
   temp = exp + 5;
@@ -362,18 +362,18 @@ static void APCM_quantization P5(
   assert(exp <= 4096 && exp >= -4096);
   assert(mant >= 0 && mant <= 7);
 
-  temp1 = 6 - exp;         /* normalization by the exponent */
+  temp1 = 6 - exp; /* normalization by the exponent */
   temp2 = gsm_NRFAC[mant]; /* inverse mantissa 		 */
 
   for (i = 0; i <= 12; i++)
-  {
-    assert(temp1 >= 0 && temp1 < 16);
+    {
+      assert(temp1 >= 0 && temp1 < 16);
 
-    temp = xM[i] << temp1;
-    temp = GSM_MULT(temp, temp2);
-    temp = SASR(temp, 12);
-    xMc[i] = temp + 4; /* see note below */
-  }
+      temp = xM[i] << temp1;
+      temp = GSM_MULT(temp, temp2);
+      temp = SASR(temp, 12);
+      xMc[i] = temp + 4; /* see note below */
+    }
 
   /*  NOTE: This equation is used to make all the xMc[i] positive.
    */
@@ -390,7 +390,7 @@ P4((xMc, mant, exp, xMp),
    register word* xMc, /* [0..12]			IN 	*/
    word mant, word exp,
    register word* xMp) /* [0..12]			OUT 	*/
-                       /*
+/*
                         *  This part is for decoding the RPE sequence of coded xMc[0..12]
                         *  samples to obtain the xMp[0..12] array.  Table 4.6 is used to get
                         *  the mantissa of xmaxc (FAC[0..7]).
@@ -402,32 +402,32 @@ P4((xMc, mant, exp, xMp),
 
   assert(mant >= 0 && mant <= 7);
 
-  temp1 = gsm_FAC[mant];   /* see 4.2-15 for mant */
+  temp1 = gsm_FAC[mant]; /* see 4.2-15 for mant */
   temp2 = gsm_sub(6, exp); /* see 4.2-15 for exp  */
   temp3 = gsm_asl(1, gsm_sub(temp2, 1));
 
   for (i = 13; i--;)
-  {
-    assert(*xMc <= 7 && *xMc >= 0); /* 3 bit unsigned */
+    {
+      assert(*xMc <= 7 && *xMc >= 0); /* 3 bit unsigned */
 
-    /* temp = gsm_sub( *xMc++ << 1, 7 ); */
-    temp = (*xMc++ << 1) - 7;        /* restore sign   */
-    assert(temp <= 7 && temp >= -7); /* 4 bit signed   */
+      /* temp = gsm_sub( *xMc++ << 1, 7 ); */
+      temp = (*xMc++ << 1) - 7; /* restore sign   */
+      assert(temp <= 7 && temp >= -7); /* 4 bit signed   */
 
-    temp <<= 12; /* 16 bit signed  */
-    temp = GSM_MULT_R(temp1, temp);
-    temp = GSM_ADD(temp, temp3);
-    *xMp++ = gsm_asr(temp, temp2);
-  }
+      temp <<= 12; /* 16 bit signed  */
+      temp = GSM_MULT_R(temp1, temp);
+      temp = GSM_ADD(temp, temp3);
+      *xMp++ = gsm_asr(temp, temp2);
+    }
 }
 
 /* 4.2.17 */
 
 static void RPE_grid_positioning P3(
     (Mc, xMp, ep), word Mc, /* grid position	IN	*/
-    register word* xMp,     /* [0..12]		IN	*/
-    register word* ep       /* [0..39]		OUT	*/
-    )
+    register word* xMp, /* [0..12]		IN	*/
+    register word* ep /* [0..39]		OUT	*/
+)
 /*
  *  This procedure computes the reconstructed long term residual signal
  *  ep[0..39] for the LTP analysis filter.  The inputs are the Mc
@@ -441,23 +441,24 @@ static void RPE_grid_positioning P3(
   assert(0 <= Mc && Mc <= 3);
 
   switch (Mc)
-  {
-    case 3:
-      *ep++ = 0;
-    case 2:
-      do
-      {
+    {
+      case 3:
         *ep++ = 0;
-        case 1:
-          *ep++ = 0;
-        case 0:
-          *ep++ = *xMp++;
-      } while (--i);
-  }
+      case 2:
+        do
+          {
+            *ep++ = 0;
+            case 1:
+              *ep++ = 0;
+            case 0:
+              *ep++ = *xMp++;
+          }
+        while (--i);
+    }
   while (++Mc < 4)
-  {
-    *ep++ = 0;
-  }
+    {
+      *ep++ = 0;
+    }
 
   /*
 
@@ -478,7 +479,7 @@ static void RPE_grid_positioning P3(
  *  array dp[-120..-41] is updated.
  */
 
-#if 0  /* Has been inlined in code.c */
+#if 0 /* Has been inlined in code.c */
 void Gsm_Update_of_reconstructed_short_time_residual_signal P3((dpp, ep, dp),
 	word	* dpp,		/* [0...39]	IN	*/
 	word	* ep,		/* [0...39]	IN	*/
@@ -498,10 +499,10 @@ void Gsm_RPE_Encoding P5((S, e, xmaxc, Mc, xMc),
 
                          struct gsm_state* S,
 
-                         word* e,     /* -5..-1][0..39][40..44	IN/OUT  */
+                         word* e, /* -5..-1][0..39][40..44	IN/OUT  */
                          word* xmaxc, /* 				OUT */
-                         word* Mc,    /* 			  	OUT */
-                         word* xMc)   /* [0..12]			OUT */
+                         word* Mc, /* 			  	OUT */
+                         word* xMc) /* [0..12]			OUT */
 {
   word x[40];
   word xM[13], xMp[13];
@@ -521,8 +522,8 @@ void Gsm_RPE_Decoding P5(
 
     word xmaxcr, word Mcr,
     word* xMcr, /* [0..12], 3 bits 		IN	*/
-    word* erp   /* [0..39]			OUT 	*/
-    )
+    word* erp /* [0..39]			OUT 	*/
+)
 {
   word exp, mant;
   word xMp[13];

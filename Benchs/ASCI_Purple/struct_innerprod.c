@@ -88,10 +88,10 @@ double hypre_StructInnerProd(hypre_StructVector *x, hypre_StructVector *y)
 
 #ifdef HYPRE_USE_PTHREADS
   if (threadid != hypre_NumThreads)
-  {
-    for (i = 0; i < hypre_NumThreads; i++)
-      process_result += *local_result_ref[i];
-  }
+    {
+      for (i = 0; i < hypre_NumThreads; i++)
+        process_result += *local_result_ref[i];
+    }
   else
     process_result = *local_result_ref[threadid];
 #else

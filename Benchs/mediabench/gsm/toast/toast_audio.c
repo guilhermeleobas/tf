@@ -33,9 +33,9 @@ static int put_u32 P2((f, u), FILE *f, unsigned long u)
       putc((char)((u >> 16) & 0x0FF), f) == EOF ||
       putc((char)((u >> 8) & 0x0FF), f) == EOF ||
       putc((char)(u & 0x0FF), f) == EOF)
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
 
   return 0;
 }
@@ -50,9 +50,9 @@ static int get_u32 P2((f, up), FILE *f, unsigned long *up)
   if ((i = getc(f)) == EOF || ((u = (unsigned char)i), (i = getc(f)) == EOF) ||
       ((u = (u << 8) | (unsigned char)i), (i = getc(f)) == EOF) ||
       ((u = (u << 8) | (unsigned char)i), (i = getc(f)) == EOF))
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
   *up = (u << 8) | (unsigned char)i;
   return 0;
 }
@@ -64,33 +64,33 @@ int audio_init_input P0()
   if (fgetc(in) != '.' || fgetc(in) != 's' || fgetc(in) != 'n' ||
       fgetc(in) != 'd' || get_u32(in, &len) || get_u32(in, &enc) /* skip this */
       || get_u32(in, &enc) || fseek(in, (long)(len - 4 * 4), 1) < 0)
-  {
-    fprintf(stderr,
-            "%s: bad (missing?) header in Sun audio file \"%s\";\n\
+    {
+      fprintf(stderr,
+              "%s: bad (missing?) header in Sun audio file \"%s\";\n\
 	Try one of -u, -a, -l instead (%s -h for help).\n",
-            progname, inname ? inname : "stdin", progname);
-    return -1;
-  }
+              progname, inname ? inname : "stdin", progname);
+      return -1;
+    }
 
   switch (enc)
-  {
-    case 1:
-      input = ulaw_input;
-      break;
-    case 2:
-      input = alaw_input;
-      break;
-    case 3:
-      input = linear_input;
-      break;
-    default:
-      fprintf(stderr,
-              "%s: warning: file format #%lu for %s not implemented, "
-              "defaulting to u-law.\n",
-              progname, enc, inname);
-      input = ulaw_input;
-      break;
-  }
+    {
+      case 1:
+        input = ulaw_input;
+        break;
+      case 2:
+        input = alaw_input;
+        break;
+      case 3:
+        input = linear_input;
+        break;
+      default:
+        fprintf(stderr,
+                "%s: warning: file format #%lu for %s not implemented, "
+                "defaulting to u-law.\n",
+                progname, enc, inname);
+        input = ulaw_input;
+        break;
+    }
   return 0;
 }
 
@@ -100,9 +100,9 @@ int audio_init_output P0()
       put_u32(out, ~(unsigned long)0) || put_u32(out, 1) ||
       put_u32(out, 8000) || put_u32(out, 1) || put_u32(out, 0) ||
       put_u32(out, 0))
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
 
   return 0;
 }

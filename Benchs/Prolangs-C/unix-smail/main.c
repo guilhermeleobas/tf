@@ -44,16 +44,16 @@ int unix_smail_getopt();
 
 int exitstat = 0; /* exit status, set by resolve, deliver	*/
 
-enum edebug debug = NO;          /* set by -d or -v option		*/
-enum ehandle handle = HANDLE;    /* which mail we can handle, see defs.h	*/
+enum edebug debug = NO; /* set by -d or -v option		*/
+enum ehandle handle = HANDLE; /* which mail we can handle, see defs.h	*/
 enum erouting routing = ROUTING; /* to route or not to route, see defs.h */
 
-char hostname[SMLBUF] = "";   /* set by -h, defaults in defs.h 	*/
+char hostname[SMLBUF] = ""; /* set by -h, defaults in defs.h 	*/
 char hostdomain[SMLBUF] = ""; /* set by -H, defaults in defs.h 	*/
-char hostuucp[SMLBUF] = "";   /* built with hostname+".UUCP"	 	*/
+char hostuucp[SMLBUF] = ""; /* built with hostname+".UUCP"	 	*/
 
 char *pathfile = PATHS; /* or set by -p 			*/
-char *uuxargs = NULL;   /* or set by -u				*/
+char *uuxargs = NULL; /* or set by -u				*/
 
 char *aliasfile =
 #ifdef ALIAS
@@ -69,8 +69,8 @@ char *fnlist =
     NULL;
 #endif
 
-int queuecost = QUEUECOST;   /* or set by -q				*/
-char *from_addr = NULL;      /* or set by -F				*/
+int queuecost = QUEUECOST; /* or set by -q				*/
+char *from_addr = NULL; /* or set by -F				*/
 int maxnoqueue = MAXNOQUEUE; /* or set by -m                         */
 
 int getcost =
@@ -81,8 +81,8 @@ int getcost =
 #endif
 
 char *spoolfile = NULL; /* name of the file containing letter   */
-FILE *spoolfp;          /* file pointer to spoolfile		*/
-int spoolmaster = 0;    /* indicates 'control' of spoolfile     */
+FILE *spoolfp; /* file pointer to spoolfile		*/
+int spoolmaster = 0; /* indicates 'control' of spoolfile     */
 
 void spool();
 int map();
@@ -101,9 +101,9 @@ int deliver();
 
 int main(int argc, char *argv[])
 {
-  char *hostv[MAXARGS];      /* UUCP neighbor 		*/
-  char *userv[MAXARGS];      /* address given to host 	*/
-  int costv[MAXARGS];        /* cost of resolved route	*/
+  char *hostv[MAXARGS]; /* UUCP neighbor 		*/
+  char *userv[MAXARGS]; /* address given to host 	*/
+  int costv[MAXARGS]; /* cost of resolved route	*/
   enum eform formv[MAXARGS]; /* invalid, local, or uucp 	*/
   char *p;
   int c;
@@ -119,94 +119,94 @@ int main(int argc, char *argv[])
   **  see if we aren't invoked as rmail
   */
   if ((p = rindex(argv[0], '/')) == NULL)
-  {
-    p = argv[0];
-  }
+    {
+      p = argv[0];
+    }
   else
-  {
-    p++;
-  }
+    {
+      p++;
+    }
 
   if (*p != 'r')
-  {
-    handle = ALL;
-  }
+    {
+      handle = ALL;
+    }
 
   /*
   **  Process command line arguments
   */
   while ((c = unix_smail_getopt(argc, argv, optstr)) != EOF)
-  {
-    switch (c)
     {
-      case 'd':
-        debug = YES;
-        break;
-      case 'v':
-        debug = VERBOSE;
-        break;
-      case 'A':
-        printaddr = 1;
-        break;
-      case 'F':
-        from_addr = optarg;
-        break;
-      case 'r':
-        routing = ALWAYS;
-        break;
-      case 'R':
-        routing = REROUTE;
-        break;
-      case 'l':
-        handle = JUSTUUCP;
-        break;
-      case 'L':
-        handle = NONE;
-        break;
-      case 'f':
-        spoolfile = optarg;
-        break;
-      case 'p':
-        pathfile = optarg;
-        break;
-      case 'u':
-        uuxargs = optarg;
-        break;
-      case 'a':
-        aliasfile = optarg;
-        break;
-      case 'n':
-        fnlist = optarg;
-        break;
-      case 'H':
-        (void)strcpy(hostdomain, optarg);
-        break;
-      case 'h':
-        (void)strcpy(hostname, optarg);
-        break;
-      case 'm':
-        if (isdigit(*optarg))
+      switch (c)
         {
-          maxnoqueue = atoi(optarg);
+          case 'd':
+            debug = YES;
+            break;
+          case 'v':
+            debug = VERBOSE;
+            break;
+          case 'A':
+            printaddr = 1;
+            break;
+          case 'F':
+            from_addr = optarg;
+            break;
+          case 'r':
+            routing = ALWAYS;
+            break;
+          case 'R':
+            routing = REROUTE;
+            break;
+          case 'l':
+            handle = JUSTUUCP;
+            break;
+          case 'L':
+            handle = NONE;
+            break;
+          case 'f':
+            spoolfile = optarg;
+            break;
+          case 'p':
+            pathfile = optarg;
+            break;
+          case 'u':
+            uuxargs = optarg;
+            break;
+          case 'a':
+            aliasfile = optarg;
+            break;
+          case 'n':
+            fnlist = optarg;
+            break;
+          case 'H':
+            (void)strcpy(hostdomain, optarg);
+            break;
+          case 'h':
+            (void)strcpy(hostname, optarg);
+            break;
+          case 'm':
+            if (isdigit(*optarg))
+              {
+                maxnoqueue = atoi(optarg);
+              }
+            break;
+          case 'c':
+            getcost = 1;
+            break;
+          case 'q':
+            if (isdigit(*optarg))
+              {
+                queuecost = atoi(optarg);
+              }
+            break;
+          default:
+            error(EX_USAGE, "valid flags are %s\n", optstr);
         }
-        break;
-      case 'c':
-        getcost = 1;
-        break;
-      case 'q':
-        if (isdigit(*optarg))
-        {
-          queuecost = atoi(optarg);
-        }
-        break;
-      default:
-        error(EX_USAGE, "valid flags are %s\n", optstr);
     }
-  }
   if (argc <= unix_smail_optind)
-  {
-    error(EX_USAGE, "usage: %s [flags] address...\n", "smail");
-  }
+    {
+      error(EX_USAGE, "usage: %s [flags] address...\n", "smail");
+    }
 
   /*
   **  Get our default hostname and hostdomain.
@@ -218,9 +218,9 @@ int main(int argc, char *argv[])
   */
   nargc = argc - unix_smail_optind;
   if (printaddr == 0)
-  {
-    spool(nargc, &argv[unix_smail_optind]);
-  }
+    {
+      spool(nargc, &argv[unix_smail_optind]);
+    }
 
   /*
   ** Do aliasing and fullname resolution
@@ -235,28 +235,28 @@ int main(int argc, char *argv[])
   **  If all we want it mapped addresses, print them and exit.
   */
   if (printaddr)
-  {
-    int i;
-    char abuf[SMLBUF];
-    for (i = nargc - 1; i >= 0; i--)
     {
-      if (formv[i] == ERROR)
-      {
-        (void)strcpy(abuf, nargv[i]);
-      }
-      else
-      {
-        build(hostv[i], userv[i], formv[i], abuf);
-      }
-      (void)fputs(abuf, stdout);
-      if (i != 0)
-      {
-        (void)putchar(' ');
-      }
+      int i;
+      char abuf[SMLBUF];
+      for (i = nargc - 1; i >= 0; i--)
+        {
+          if (formv[i] == ERROR)
+            {
+              (void)strcpy(abuf, nargv[i]);
+            }
+          else
+            {
+              build(hostv[i], userv[i], formv[i], abuf);
+            }
+          (void)fputs(abuf, stdout);
+          if (i != 0)
+            {
+              (void)putchar(' ');
+            }
+        }
+      (void)putchar('\n');
+      exit(0);
     }
-    (void)putchar('\n');
-    exit(0);
-  }
   /*
   **  Deliver.
   */

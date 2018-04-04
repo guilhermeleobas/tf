@@ -23,11 +23,11 @@ Copyright (c) 2003-2005 Andreas Loebel.
 #define TEST_MIN(nod, ex, comp, op) \
   {                                 \
     if (*delta op(comp))            \
-    {                               \
-      iminus = nod;                 \
-      *delta = (comp);              \
-      *xchange = ex;                \
-    }                               \
+      {                             \
+        iminus = nod;               \
+        *delta = (comp);            \
+        *xchange = ex;              \
+      }                             \
   }
 
 #ifdef _PROTO_
@@ -43,24 +43,24 @@ node_t **w;
   node_t *iminus = NULL;
 
   while (iplus != jplus)
-  {
-    if (iplus->depth < jplus->depth)
     {
-      if (iplus->orientation)
-        TEST_MIN(iplus, 0, iplus->flow, >)
-      else if (iplus->pred->pred)
-        TEST_MIN(iplus, 0, (flow_t)1 - iplus->flow, >)
-      iplus = iplus->pred;
+      if (iplus->depth < jplus->depth)
+        {
+          if (iplus->orientation)
+            TEST_MIN(iplus, 0, iplus->flow, >)
+          else if (iplus->pred->pred)
+            TEST_MIN(iplus, 0, (flow_t)1 - iplus->flow, >)
+          iplus = iplus->pred;
+        }
+      else
+        {
+          if (!jplus->orientation)
+            TEST_MIN(jplus, 1, jplus->flow, >=)
+          else if (jplus->pred->pred)
+            TEST_MIN(jplus, 1, (flow_t)1 - jplus->flow, >=)
+          jplus = jplus->pred;
+        }
     }
-    else
-    {
-      if (!jplus->orientation)
-        TEST_MIN(jplus, 1, jplus->flow, >=)
-      else if (jplus->pred->pred)
-        TEST_MIN(jplus, 1, (flow_t)1 - jplus->flow, >=)
-      jplus = jplus->pred;
-    }
-  }
 
   *w = iplus;
 

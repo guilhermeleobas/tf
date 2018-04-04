@@ -45,7 +45,7 @@ typedef struct
   /* Per-component upsampling method pointers */
   upsample1_ptr methods[MAX_COMPONENTS];
 
-  int next_row_out;      /* counts rows emitted from color_buf */
+  int next_row_out; /* counts rows emitted from color_buf */
   JDIMENSION rows_to_go; /* counts rows remaining in image */
 
   /* Height of an input row group for each component. */
@@ -96,20 +96,20 @@ sep_upsample(j_decompress_ptr cinfo, JSAMPIMAGE input_buf,
 
   /* Fill the conversion buffer, if it's empty */
   if (upsample->next_row_out >= cinfo->max_v_samp_factor)
-  {
-    for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
-         ci++, compptr++)
     {
-      /* Invoke per-component upsample method.  Notice we pass a POINTER
+      for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
+           ci++, compptr++)
+        {
+          /* Invoke per-component upsample method.  Notice we pass a POINTER
        * to color_buf[ci], so that fullsize_upsample can change it.
        */
-      (*upsample->methods[ci])(
-          cinfo, compptr,
-          input_buf[ci] + (*in_row_group_ctr * upsample->rowgroup_height[ci]),
-          upsample->color_buf + ci);
+          (*upsample->methods[ci])(
+              cinfo, compptr,
+              input_buf[ci] + (*in_row_group_ctr * upsample->rowgroup_height[ci]),
+              upsample->color_buf + ci);
+        }
+      upsample->next_row_out = 0;
     }
-    upsample->next_row_out = 0;
-  }
 
   /* Color-convert and emit rows */
 
@@ -119,15 +119,15 @@ sep_upsample(j_decompress_ptr cinfo, JSAMPIMAGE input_buf,
    * in case the image height is not a multiple of max_v_samp_factor:
    */
   if (num_rows > upsample->rows_to_go)
-  {
-    num_rows = upsample->rows_to_go;
-  }
+    {
+      num_rows = upsample->rows_to_go;
+    }
   /* And not more than what the client can accept: */
   out_rows_avail -= *out_row_ctr;
   if (num_rows > out_rows_avail)
-  {
-    num_rows = out_rows_avail;
-  }
+    {
+      num_rows = out_rows_avail;
+    }
 
   (*cinfo->cconvert->color_convert)(cinfo, upsample->color_buf,
                                     (JDIMENSION)upsample->next_row_out,
@@ -139,9 +139,9 @@ sep_upsample(j_decompress_ptr cinfo, JSAMPIMAGE input_buf,
   upsample->next_row_out += num_rows;
   /* When the buffer is emptied, declare this input row group consumed */
   if (upsample->next_row_out >= cinfo->max_v_samp_factor)
-  {
-    (*in_row_group_ctr)++;
-  }
+    {
+      (*in_row_group_ctr)++;
+    }
 }
 
 /*
@@ -204,28 +204,28 @@ int_upsample(j_decompress_ptr cinfo, jpeg_component_info *compptr,
 
   inrow = outrow = 0;
   while (outrow < cinfo->max_v_samp_factor)
-  {
-    /* Generate one output row with proper horizontal expansion */
-    inptr = input_data[inrow];
-    outptr = output_data[outrow];
-    outend = outptr + cinfo->output_width;
-    while (outptr < outend)
     {
-      invalue = *inptr++; /* don't need GETJSAMPLE() here */
-      for (h = h_expand; h > 0; h--)
-      {
-        *outptr++ = invalue;
-      }
+      /* Generate one output row with proper horizontal expansion */
+      inptr = input_data[inrow];
+      outptr = output_data[outrow];
+      outend = outptr + cinfo->output_width;
+      while (outptr < outend)
+        {
+          invalue = *inptr++; /* don't need GETJSAMPLE() here */
+          for (h = h_expand; h > 0; h--)
+            {
+              *outptr++ = invalue;
+            }
+        }
+      /* Generate any additional output rows by duplicating the first one */
+      if (v_expand > 1)
+        {
+          jcopy_sample_rows(output_data, outrow, output_data, outrow + 1,
+                            v_expand - 1, cinfo->output_width);
+        }
+      inrow++;
+      outrow += v_expand;
     }
-    /* Generate any additional output rows by duplicating the first one */
-    if (v_expand > 1)
-    {
-      jcopy_sample_rows(output_data, outrow, output_data, outrow + 1,
-                        v_expand - 1, cinfo->output_width);
-    }
-    inrow++;
-    outrow += v_expand;
-  }
 }
 
 /*
@@ -244,17 +244,17 @@ h2v1_upsample(j_decompress_ptr cinfo, jpeg_component_info *compptr,
   int inrow;
 
   for (inrow = 0; inrow < cinfo->max_v_samp_factor; inrow++)
-  {
-    inptr = input_data[inrow];
-    outptr = output_data[inrow];
-    outend = outptr + cinfo->output_width;
-    while (outptr < outend)
     {
-      invalue = *inptr++; /* don't need GETJSAMPLE() here */
-      *outptr++ = invalue;
-      *outptr++ = invalue;
+      inptr = input_data[inrow];
+      outptr = output_data[inrow];
+      outend = outptr + cinfo->output_width;
+      while (outptr < outend)
+        {
+          invalue = *inptr++; /* don't need GETJSAMPLE() here */
+          *outptr++ = invalue;
+          *outptr++ = invalue;
+        }
     }
-  }
 }
 
 /*
@@ -274,21 +274,21 @@ h2v2_upsample(j_decompress_ptr cinfo, jpeg_component_info *compptr,
 
   inrow = outrow = 0;
   while (outrow < cinfo->max_v_samp_factor)
-  {
-    inptr = input_data[inrow];
-    outptr = output_data[outrow];
-    outend = outptr + cinfo->output_width;
-    while (outptr < outend)
     {
-      invalue = *inptr++; /* don't need GETJSAMPLE() here */
-      *outptr++ = invalue;
-      *outptr++ = invalue;
+      inptr = input_data[inrow];
+      outptr = output_data[outrow];
+      outend = outptr + cinfo->output_width;
+      while (outptr < outend)
+        {
+          invalue = *inptr++; /* don't need GETJSAMPLE() here */
+          *outptr++ = invalue;
+          *outptr++ = invalue;
+        }
+      jcopy_sample_rows(output_data, outrow, output_data, outrow + 1, 1,
+                        cinfo->output_width);
+      inrow++;
+      outrow += 2;
     }
-    jcopy_sample_rows(output_data, outrow, output_data, outrow + 1, 1,
-                      cinfo->output_width);
-    inrow++;
-    outrow += 2;
-  }
 }
 
 /*
@@ -317,27 +317,27 @@ h2v1_fancy_upsample(j_decompress_ptr cinfo, jpeg_component_info *compptr,
   int inrow;
 
   for (inrow = 0; inrow < cinfo->max_v_samp_factor; inrow++)
-  {
-    inptr = input_data[inrow];
-    outptr = output_data[inrow];
-    /* Special case for first column */
-    invalue = GETJSAMPLE(*inptr++);
-    *outptr++ = (JSAMPLE)invalue;
-    *outptr++ = (JSAMPLE)((invalue * 3 + GETJSAMPLE(*inptr) + 2) >> 2);
-
-    for (colctr = compptr->downsampled_width - 2; colctr > 0; colctr--)
     {
-      /* General case: 3/4 * nearer pixel + 1/4 * further pixel */
-      invalue = GETJSAMPLE(*inptr++) * 3;
-      *outptr++ = (JSAMPLE)((invalue + GETJSAMPLE(inptr[-2]) + 1) >> 2);
-      *outptr++ = (JSAMPLE)((invalue + GETJSAMPLE(*inptr) + 2) >> 2);
-    }
+      inptr = input_data[inrow];
+      outptr = output_data[inrow];
+      /* Special case for first column */
+      invalue = GETJSAMPLE(*inptr++);
+      *outptr++ = (JSAMPLE)invalue;
+      *outptr++ = (JSAMPLE)((invalue * 3 + GETJSAMPLE(*inptr) + 2) >> 2);
 
-    /* Special case for last column */
-    invalue = GETJSAMPLE(*inptr);
-    *outptr++ = (JSAMPLE)((invalue * 3 + GETJSAMPLE(inptr[-1]) + 1) >> 2);
-    *outptr++ = (JSAMPLE)invalue;
-  }
+      for (colctr = compptr->downsampled_width - 2; colctr > 0; colctr--)
+        {
+          /* General case: 3/4 * nearer pixel + 1/4 * further pixel */
+          invalue = GETJSAMPLE(*inptr++) * 3;
+          *outptr++ = (JSAMPLE)((invalue + GETJSAMPLE(inptr[-2]) + 1) >> 2);
+          *outptr++ = (JSAMPLE)((invalue + GETJSAMPLE(*inptr) + 2) >> 2);
+        }
+
+      /* Special case for last column */
+      invalue = GETJSAMPLE(*inptr);
+      *outptr++ = (JSAMPLE)((invalue * 3 + GETJSAMPLE(inptr[-1]) + 1) >> 2);
+      *outptr++ = (JSAMPLE)invalue;
+    }
 }
 
 /*
@@ -364,46 +364,46 @@ h2v2_fancy_upsample(j_decompress_ptr cinfo, jpeg_component_info *compptr,
 
   inrow = outrow = 0;
   while (outrow < cinfo->max_v_samp_factor)
-  {
-    for (v = 0; v < 2; v++)
     {
-      /* inptr0 points to nearest input row, inptr1 points to next nearest */
-      inptr0 = input_data[inrow];
-      if (v == 0)
-      { /* next nearest is row above */
-        inptr1 = input_data[inrow - 1];
-      }
-      else
-      { /* next nearest is row below */
-        inptr1 = input_data[inrow + 1];
-      }
-      outptr = output_data[outrow++];
+      for (v = 0; v < 2; v++)
+        {
+          /* inptr0 points to nearest input row, inptr1 points to next nearest */
+          inptr0 = input_data[inrow];
+          if (v == 0)
+            { /* next nearest is row above */
+              inptr1 = input_data[inrow - 1];
+            }
+          else
+            { /* next nearest is row below */
+              inptr1 = input_data[inrow + 1];
+            }
+          outptr = output_data[outrow++];
 
-      /* Special case for first column */
-      thiscolsum = GETJSAMPLE(*inptr0++) * 3 + GETJSAMPLE(*inptr1++);
-      nextcolsum = GETJSAMPLE(*inptr0++) * 3 + GETJSAMPLE(*inptr1++);
-      *outptr++ = (JSAMPLE)((thiscolsum * 4 + 8) >> 4);
-      *outptr++ = (JSAMPLE)((thiscolsum * 3 + nextcolsum + 7) >> 4);
-      lastcolsum = thiscolsum;
-      thiscolsum = nextcolsum;
+          /* Special case for first column */
+          thiscolsum = GETJSAMPLE(*inptr0++) * 3 + GETJSAMPLE(*inptr1++);
+          nextcolsum = GETJSAMPLE(*inptr0++) * 3 + GETJSAMPLE(*inptr1++);
+          *outptr++ = (JSAMPLE)((thiscolsum * 4 + 8) >> 4);
+          *outptr++ = (JSAMPLE)((thiscolsum * 3 + nextcolsum + 7) >> 4);
+          lastcolsum = thiscolsum;
+          thiscolsum = nextcolsum;
 
-      for (colctr = compptr->downsampled_width - 2; colctr > 0; colctr--)
-      {
-        /* General case: 3/4 * nearer pixel + 1/4 * further pixel in each */
-        /* dimension, thus 9/16, 3/16, 3/16, 1/16 overall */
-        nextcolsum = GETJSAMPLE(*inptr0++) * 3 + GETJSAMPLE(*inptr1++);
-        *outptr++ = (JSAMPLE)((thiscolsum * 3 + lastcolsum + 8) >> 4);
-        *outptr++ = (JSAMPLE)((thiscolsum * 3 + nextcolsum + 7) >> 4);
-        lastcolsum = thiscolsum;
-        thiscolsum = nextcolsum;
-      }
+          for (colctr = compptr->downsampled_width - 2; colctr > 0; colctr--)
+            {
+              /* General case: 3/4 * nearer pixel + 1/4 * further pixel in each */
+              /* dimension, thus 9/16, 3/16, 3/16, 1/16 overall */
+              nextcolsum = GETJSAMPLE(*inptr0++) * 3 + GETJSAMPLE(*inptr1++);
+              *outptr++ = (JSAMPLE)((thiscolsum * 3 + lastcolsum + 8) >> 4);
+              *outptr++ = (JSAMPLE)((thiscolsum * 3 + nextcolsum + 7) >> 4);
+              lastcolsum = thiscolsum;
+              thiscolsum = nextcolsum;
+            }
 
-      /* Special case for last column */
-      *outptr++ = (JSAMPLE)((thiscolsum * 3 + lastcolsum + 8) >> 4);
-      *outptr++ = (JSAMPLE)((thiscolsum * 4 + 7) >> 4);
+          /* Special case for last column */
+          *outptr++ = (JSAMPLE)((thiscolsum * 3 + lastcolsum + 8) >> 4);
+          *outptr++ = (JSAMPLE)((thiscolsum * 4 + 7) >> 4);
+        }
+      inrow++;
     }
-    inrow++;
-  }
 }
 
 /*
@@ -427,9 +427,9 @@ jinit_upsampler(j_decompress_ptr cinfo)
   upsample->pub.need_context_rows = FALSE; /* until we find out differently */
 
   if (cinfo->CCIR601_sampling)
-  { /* this isn't supported */
-    ERREXIT(cinfo, JERR_CCIR601_NOTIMPL);
-  }
+    { /* this isn't supported */
+      ERREXIT(cinfo, JERR_CCIR601_NOTIMPL);
+    }
 
   /* jdmainct.c doesn't support context rows when min_DCT_scaled_size = 1,
    * so don't ask for it.
@@ -441,73 +441,73 @@ jinit_upsampler(j_decompress_ptr cinfo)
    */
   for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
        ci++, compptr++)
-  {
-    /* Compute size of an "input group" after IDCT scaling.  This many samples
+    {
+      /* Compute size of an "input group" after IDCT scaling.  This many samples
      * are to be converted to max_h_samp_factor * max_v_samp_factor pixels.
      */
-    h_in_group = (compptr->h_samp_factor * compptr->DCT_scaled_size) /
-                 cinfo->min_DCT_scaled_size;
-    v_in_group = (compptr->v_samp_factor * compptr->DCT_scaled_size) /
-                 cinfo->min_DCT_scaled_size;
-    h_out_group = cinfo->max_h_samp_factor;
-    v_out_group = cinfo->max_v_samp_factor;
-    upsample->rowgroup_height[ci] = v_in_group; /* save for use later */
-    need_buffer = TRUE;
-    if (!compptr->component_needed)
-    {
-      /* Don't bother to upsample an uninteresting component. */
-      upsample->methods[ci] = noop_upsample;
-      need_buffer = FALSE;
-    }
-    else if (h_in_group == h_out_group && v_in_group == v_out_group)
-    {
-      /* Fullsize components can be processed without any work. */
-      upsample->methods[ci] = fullsize_upsample;
-      need_buffer = FALSE;
-    }
-    else if (h_in_group * 2 == h_out_group && v_in_group == v_out_group)
-    {
-      /* Special cases for 2h1v upsampling */
-      if (do_fancy && compptr->downsampled_width > 2)
-      {
-        upsample->methods[ci] = h2v1_fancy_upsample;
-      }
+      h_in_group = (compptr->h_samp_factor * compptr->DCT_scaled_size) /
+                   cinfo->min_DCT_scaled_size;
+      v_in_group = (compptr->v_samp_factor * compptr->DCT_scaled_size) /
+                   cinfo->min_DCT_scaled_size;
+      h_out_group = cinfo->max_h_samp_factor;
+      v_out_group = cinfo->max_v_samp_factor;
+      upsample->rowgroup_height[ci] = v_in_group; /* save for use later */
+      need_buffer = TRUE;
+      if (!compptr->component_needed)
+        {
+          /* Don't bother to upsample an uninteresting component. */
+          upsample->methods[ci] = noop_upsample;
+          need_buffer = FALSE;
+        }
+      else if (h_in_group == h_out_group && v_in_group == v_out_group)
+        {
+          /* Fullsize components can be processed without any work. */
+          upsample->methods[ci] = fullsize_upsample;
+          need_buffer = FALSE;
+        }
+      else if (h_in_group * 2 == h_out_group && v_in_group == v_out_group)
+        {
+          /* Special cases for 2h1v upsampling */
+          if (do_fancy && compptr->downsampled_width > 2)
+            {
+              upsample->methods[ci] = h2v1_fancy_upsample;
+            }
+          else
+            {
+              upsample->methods[ci] = h2v1_upsample;
+            }
+        }
+      else if (h_in_group * 2 == h_out_group && v_in_group * 2 == v_out_group)
+        {
+          /* Special cases for 2h2v upsampling */
+          if (do_fancy && compptr->downsampled_width > 2)
+            {
+              upsample->methods[ci] = h2v2_fancy_upsample;
+              upsample->pub.need_context_rows = TRUE;
+            }
+          else
+            {
+              upsample->methods[ci] = h2v2_upsample;
+            }
+        }
+      else if ((h_out_group % h_in_group) == 0 && (v_out_group % v_in_group) == 0)
+        {
+          /* Generic integral-factors upsampling method */
+          upsample->methods[ci] = int_upsample;
+          upsample->h_expand[ci] = (UINT8)(h_out_group / h_in_group);
+          upsample->v_expand[ci] = (UINT8)(v_out_group / v_in_group);
+        }
       else
-      {
-        upsample->methods[ci] = h2v1_upsample;
-      }
+        {
+          ERREXIT(cinfo, JERR_FRACT_SAMPLE_NOTIMPL);
+        }
+      if (need_buffer)
+        {
+          upsample->color_buf[ci] = (*cinfo->mem->alloc_sarray)(
+              (j_common_ptr)cinfo, JPOOL_IMAGE,
+              (JDIMENSION)jround_up((long)cinfo->output_width,
+                                    (long)cinfo->max_h_samp_factor),
+              (JDIMENSION)cinfo->max_v_samp_factor);
+        }
     }
-    else if (h_in_group * 2 == h_out_group && v_in_group * 2 == v_out_group)
-    {
-      /* Special cases for 2h2v upsampling */
-      if (do_fancy && compptr->downsampled_width > 2)
-      {
-        upsample->methods[ci] = h2v2_fancy_upsample;
-        upsample->pub.need_context_rows = TRUE;
-      }
-      else
-      {
-        upsample->methods[ci] = h2v2_upsample;
-      }
-    }
-    else if ((h_out_group % h_in_group) == 0 && (v_out_group % v_in_group) == 0)
-    {
-      /* Generic integral-factors upsampling method */
-      upsample->methods[ci] = int_upsample;
-      upsample->h_expand[ci] = (UINT8)(h_out_group / h_in_group);
-      upsample->v_expand[ci] = (UINT8)(v_out_group / v_in_group);
-    }
-    else
-    {
-      ERREXIT(cinfo, JERR_FRACT_SAMPLE_NOTIMPL);
-    }
-    if (need_buffer)
-    {
-      upsample->color_buf[ci] = (*cinfo->mem->alloc_sarray)(
-          (j_common_ptr)cinfo, JPOOL_IMAGE,
-          (JDIMENSION)jround_up((long)cinfo->output_width,
-                                (long)cinfo->max_h_samp_factor),
-          (JDIMENSION)cinfo->max_v_samp_factor);
-    }
-  }
 }

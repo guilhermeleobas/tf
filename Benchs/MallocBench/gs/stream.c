@@ -72,9 +72,9 @@ int ssavailable(stream *s, long *pl)
 {
   *pl = sbufavailable(s);
   if (*pl == 0)
-  {
-    *pl = -1; /* EOF */
-  }
+    {
+      *pl = -1; /* EOF */
+    }
   return 0;
 }
 
@@ -98,9 +98,9 @@ private
 int ssseek(register stream *s, long pos)
 {
   if (pos < 0 || pos > s->bsize)
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
   s->cptr = s->cbuf + pos - 1;
   return 0;
 }
@@ -134,64 +134,64 @@ int sfread(register stream *s)
 {
   int nread;
   if (s->eof)
-  {
-    s->cptr = s->endptr;
-    return EOFC;
-  }
+    {
+      s->cptr = s->endptr;
+      return EOFC;
+    }
   if (s->position >= 0)
-  { /* file is positionable */
-    s->position = ftell(s->file);
-  }
+    { /* file is positionable */
+      s->position = ftell(s->file);
+    }
   nread = fread(s->cbuf, 1, s->bsize, s->file);
   s->cptr = s->cbuf - 1;
   s->eof = feof(s->file);
   if (nread > 0)
-  {
-    s->endptr = s->cptr + nread;
-    return (int)*++(s->cptr); /* don't understand why the cast is needed.... */
-  }
+    {
+      s->endptr = s->cptr + nread;
+      return (int)*++(s->cptr); /* don't understand why the cast is needed.... */
+    }
   else if (nread == 0)
-  {
-    s->endptr = s->cptr;
-    s->eof = 1;
-    return EOFC;
-  }
+    {
+      s->endptr = s->cptr;
+      s->eof = 1;
+      return EOFC;
+    }
   else /* error, now what?? */
-  {
-    s->endptr = s->cptr;
-    return 0;
-  }
+    {
+      s->endptr = s->cptr;
+      return 0;
+    }
 }
 private
 int sfavailable(register stream *s, long *pl)
 {
   *pl = sbufavailable(s);
   if (sseekable(s))
-  {
-    long pos, end;
-    pos = ftell(s->file);
-    if (fseek(s->file, 0L, 2))
     {
-      return -1;
+      long pos, end;
+      pos = ftell(s->file);
+      if (fseek(s->file, 0L, 2))
+        {
+          return -1;
+        }
+      end = ftell(s->file);
+      if (fseek(s->file, pos, 0))
+        {
+          return -1;
+        }
+      *pl += end - pos;
+      if (*pl == 0)
+        {
+          *pl = -1; /* EOF */
+        }
     }
-    end = ftell(s->file);
-    if (fseek(s->file, pos, 0))
-    {
-      return -1;
-    }
-    *pl += end - pos;
-    if (*pl == 0)
-    {
-      *pl = -1; /* EOF */
-    }
-  }
   else
-  {
-    if (*pl == 0 && feof(s->file))
     {
-      *pl = -1; /* EOF */
+      if (*pl == 0 && feof(s->file))
+        {
+          *pl = -1; /* EOF */
+        }
     }
-  }
   return 0;
 }
 private
@@ -200,14 +200,14 @@ int srseek(register stream *s, long pos)
   uint end = s->endptr - s->cbuf + 1;
   long offset = pos - s->position;
   if (offset >= 0 && offset <= end)
-  { /* Staying within the same buffer */
-    s->cptr = s->cbuf + offset - 1;
-    return 0;
-  }
+    { /* Staying within the same buffer */
+      s->cptr = s->cbuf + offset - 1;
+      return 0;
+    }
   if (fseek(s->file, pos, 0) != 0)
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
   s->endptr = s->cptr = s->cbuf - 1;
   s->eof = 0;
   return 0;
@@ -217,7 +217,7 @@ int srclose(stream *s) { return fclose(s->file); }
 /* Initialize a stream for writing an OS file. */
 void swrite_file(register stream *s, FILE *file, byte *buf, uint len)
 {
-  static stream_procs p = {NULL,   sfwrite, snoavailable,
+  static stream_procs p = {NULL, sfwrite, snoavailable,
                            swseek, swflush, swclose};
   sfinit(s, file, buf, len, &p);
   s->writing = 1;
@@ -230,15 +230,18 @@ int sfwrite(register stream *s, byte c)
 {
   fwrite_buf(s);
   if (s->position >= 0)
-  { /* file is positionable */
-    s->position = ftell(s->file);
-  }
+    { /* file is positionable */
+      s->position = ftell(s->file);
+    }
   s->cptr = s->cbuf - 1;
   s->endptr = s->cptr + s->bsize;
   return sputc(s, c);
 }
 private
-int swseek(stream *s, long pos) { /* Output files are not positionable */ return -1; }
+int swseek(stream *s, long pos)
+{ /* Output files are not positionable */
+  return -1;
+}
 private
 int swflush(register stream *s)
 {
@@ -295,38 +298,38 @@ int sxread(register stream *s)
 top:
   nread = sgets(s->strm, buf, s->bsize);
   if (nread == 0) /* end of stream */
-  {
-    s->endptr = s->cptr;
-    s->eof = 1;
-    return EOFC;
-  }
-  else
-  { /* Decrypt the buffer.  The buffer consists of information */
-    /* in the form suitable for readhexstring. */
-    stream sst;
-    sread_string(&sst, buf, nread);
-    sreadhex(&sst, buf, nread, &nread, &s->odd);
-    if (nread == 0)
     {
-      goto top; /* try again */
+      s->endptr = s->cptr;
+      s->eof = 1;
+      return EOFC;
     }
-    gs_type1_decrypt(buf, buf, nread, (crypt_state *)&s->cstate);
-    s->endptr = s->cptr + nread;
-    return (int)*++(s->cptr); /* don't understand why the cast is needed.... */
-  }
+  else
+    { /* Decrypt the buffer.  The buffer consists of information */
+      /* in the form suitable for readhexstring. */
+      stream sst;
+      sread_string(&sst, buf, nread);
+      sreadhex(&sst, buf, nread, &nread, &s->odd);
+      if (nread == 0)
+        {
+          goto top; /* try again */
+        }
+      gs_type1_decrypt(buf, buf, nread, (crypt_state *)&s->cstate);
+      s->endptr = s->cptr + nread;
+      return (int)*++(s->cptr); /* don't understand why the cast is needed.... */
+    }
 }
 /* Estimate the number of remaining bytes in a decrypting stream. */
 private
 int sxavailable(stream *s, long *pl)
 {
   if (savailable(s->strm, pl) < 0)
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
   if (*pl >= 0)
-  {
-    *pl /= 2;
-  }
+    {
+      *pl /= 2;
+    }
   return 0;
 }
 
@@ -343,9 +346,9 @@ int snoavailable(stream *s, long *pl) { return -1; }
 int sungetc(register stream *s, byte c)
 {
   if (s->writing || s->cptr < s->cbuf)
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
   *(s->cptr)-- = c;
   return 0;
 }
@@ -356,30 +359,30 @@ uint sgets(register stream *s, byte *str, uint rlen)
 {
   uint len = rlen;
   while (len > 0)
-  {
-    uint count = sbufavailable(s);
-    if (count > 0)
     {
-      if (count > len)
-      {
-        count = len;
-      }
-      memcpy(str, s->cptr + 1, count);
-      s->cptr += count;
-      str += count;
-      len -= count;
+      uint count = sbufavailable(s);
+      if (count > 0)
+        {
+          if (count > len)
+            {
+              count = len;
+            }
+          memcpy(str, s->cptr + 1, count);
+          s->cptr += count;
+          str += count;
+          len -= count;
+        }
+      else
+        {
+          int ch = sgetc(s);
+          if (s->eof)
+            {
+              return rlen - len;
+            }
+          *str++ = ch;
+          len--;
+        }
     }
-    else
-    {
-      int ch = sgetc(s);
-      if (s->eof)
-      {
-        return rlen - len;
-      }
-      *str++ = ch;
-      len--;
-    }
-  }
   return rlen;
 }
 
@@ -389,30 +392,30 @@ uint sputs(register stream *s, byte *str, uint wlen)
 {
   uint len = wlen;
   while (len > 0)
-  {
-    uint count = sbufavailable(s);
-    if (count > 0)
     {
-      if (count > len)
-      {
-        count = len;
-      }
-      memcpy(s->cptr + 1, str, count);
-      s->cptr += count;
-      str += count;
-      len -= count;
+      uint count = sbufavailable(s);
+      if (count > 0)
+        {
+          if (count > len)
+            {
+              count = len;
+            }
+          memcpy(s->cptr + 1, str, count);
+          s->cptr += count;
+          str += count;
+          len -= count;
+        }
+      else
+        {
+          byte ch = *str++;
+          sputc(s, ch);
+          if (s->eof)
+            {
+              return wlen - len;
+            }
+          len--;
+        }
     }
-    else
-    {
-      byte ch = *str++;
-      sputc(s, ch);
-      if (s->eof)
-      {
-        return wlen - len;
-      }
-      len--;
-    }
-  }
   return wlen;
 }
 
@@ -437,37 +440,37 @@ int sreadhex(register stream *s, byte *str, uint rlen, uint *nread,
   register byte *decoder = scan_char_decoder;
 #endif
   if (rlen == 0)
-  {
-    *nread = 0;
-    return 0;
-  }
+    {
+      *nread = 0;
+      return 0;
+    }
   if (val1 <= 0xf)
-  {
-    goto d2;
-  }
+    {
+      goto d2;
+    }
 d1:
   while ((val1 = decoder[sgetc(s)]) > 0xf)
-  {
-    if (val1 == ctype_eof)
     {
-      *odd_digit = -1;
-      goto ended;
+      if (val1 == ctype_eof)
+        {
+          *odd_digit = -1;
+          goto ended;
+        }
     }
-  }
 d2:
   while ((val2 = decoder[sgetc(s)]) > 0xf)
-  {
-    if (val2 == ctype_eof)
     {
-      *odd_digit = val1;
-      goto ended;
+      if (val2 == ctype_eof)
+        {
+          *odd_digit = val1;
+          goto ended;
+        }
     }
-  }
   *ptr++ = (val1 << 4) + val2;
   if (ptr < limit)
-  {
-    goto d1;
-  }
+    {
+      goto d1;
+    }
   *nread = rlen;
   return 0;
 ended:

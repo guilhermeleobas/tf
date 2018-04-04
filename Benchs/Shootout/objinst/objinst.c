@@ -53,17 +53,17 @@ typedef struct NthToggle
 NthToggle *nth_toggle_activate(NthToggle *this)
 {
   if (++this->counter >= this->count_max)
-  {
-    this->base.state = !this->base.state;
-    this->counter = 0;
-  }
+    {
+      this->base.state = !this->base.state;
+      this->counter = 0;
+    }
   return (this);
 }
 NthToggle *init_NthToggle(NthToggle *this, int max_count)
 {
   this->count_max = max_count;
   this->counter = 0;
-  this->base.activate = (Toggle * (*)(Toggle *))nth_toggle_activate;
+  this->base.activate = (Toggle * (*)(Toggle *)) nth_toggle_activate;
   return (this);
 }
 NthToggle *new_NthToggle(char start_state, int max_count)
@@ -86,37 +86,37 @@ int main(int argc, char *argv[])
 
   tog = new_Toggle(true);
   for (i = 0; i < 5; i++)
-  {
-    puts((tog->activate(tog)->value(tog)) ? "true" : "false");
-  }
+    {
+      puts((tog->activate(tog)->value(tog)) ? "true" : "false");
+    }
   DESTROY(tog);
   for (i = 0; i < n; i++)
-  {
-    tog = new_Toggle(true);
-    DESTROY(tog);
-  }
+    {
+      tog = new_Toggle(true);
+      DESTROY(tog);
+    }
 
   puts("");
 
   ntog = new_NthToggle(true, 3);
   for (i = 0; i < 8; i++)
-  {
-    const char *Msg;
-    if (ntog->base.activate((Toggle *)ntog)->value((Toggle *)ntog))
     {
-      Msg = "true";
+      const char *Msg;
+      if (ntog->base.activate((Toggle *)ntog)->value((Toggle *)ntog))
+        {
+          Msg = "true";
+        }
+      else
+        {
+          Msg = "false";
+        }
+      puts(Msg);
     }
-    else
-    {
-      Msg = "false";
-    }
-    puts(Msg);
-  }
   DESTROY(ntog);
   for (i = 0; i < n; i++)
-  {
-    ntog = new_NthToggle(true, 3);
-    DESTROY(ntog);
-  }
+    {
+      ntog = new_NthToggle(true, 3);
+      DESTROY(ntog);
+    }
   return 0;
 }

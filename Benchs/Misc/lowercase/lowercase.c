@@ -19,15 +19,15 @@ static size_t lower_StringImpl(const UChar* __restrict data, size_t length,
   UChar ored = 0;
   size_t i;
   for (i = 0; i < length; i++)
-  {
-    UChar c = data[i];
-    ored |= c;
-    output[i] = toASCIILower(c);
-  }
+    {
+      UChar c = data[i];
+      ored |= c;
+      output[i] = toASCIILower(c);
+    }
   if (!(ored & ~0x7F))
-  {
-    return 1;
-  }
+    {
+      return 1;
+    }
 
   return 0;
 }
@@ -46,9 +46,9 @@ static void doTest(size_t numberOfIterations)
   UChar* testData = malloc(sizeof(UChar) * testDataLength);
   size_t i;
   for (i = 0; i < testDataLength; i += staticDataLength)
-  {
-    memcpy(testData + i, staticData, staticDataLength * sizeof(staticData[0]));
-  }
+    {
+      memcpy(testData + i, staticData, staticDataLength * sizeof(staticData[0]));
+    }
 
   UChar* result = malloc(sizeof(UChar) * testDataLength);
   printf("iterations (%ld characters)\n", numberOfIterations,
@@ -59,7 +59,7 @@ static void doTest(size_t numberOfIterations)
   for (i = 0; i < 100000; i++)
 #else
   for (i = 0; i < 10000000; i++)
-  {
+    {
 #endif
     lower_StringImpl(testData, numberOfCharacters, result);
 }
@@ -69,9 +69,9 @@ int main(int argc, char** argv)
 {
   size_t i;
   for (i = 0; i < 32; i++)
-  {
-    doTest(i);
-  }
+    {
+      doTest(i);
+    }
 
   return 0;
 }

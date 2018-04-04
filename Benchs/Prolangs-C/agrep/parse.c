@@ -41,19 +41,19 @@ Re_node mk_leaf(short opval, short type, char ch, Ch_Set cset)
   l = (Re_Lit)new_node(l);
   node = (Re_node)new_node(node);
   if (l == NULL || node == NULL)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
   lit_type(l) = type;
   lit_pos(l) = pos_cnt++;
   if (type == C_SET)
-  {
-    lit_cset(l) = cset;
-  }
+    {
+      lit_cset(l) = cset;
+    }
   else
-  {
-    lit_char(l) = ch; /* type == C_LIT */
-  }
+    {
+      lit_char(l) = ch; /* type == C_LIT */
+    }
   Op(node) = opval;
   Lit(node) = l;
   Nullable(node) = FALSE;
@@ -73,54 +73,54 @@ Re_node parse_cset(char **s)
   Ch_Range range;
 
   if (Unexpected(s, ']'))
-  {
-    return NULL;
-  }
-  curr_ptr = (Ch_Set)new_node(curr_ptr);
-  cs_ptr = curr_ptr;
-  while (!Unexpected(s, ']'))
-  {
-    range = (Ch_Range)new_node(range);
-    curr_ptr->elt = range;
-    ch = NextChar(s);
-    if (ch == '-')
-    {
-      return NULL; /* invalid range */
-    }
-    range->low_bd = ch;
-    if (**s == NUL)
     {
       return NULL;
     }
-    else if (**s == '-')
-    { /* character range */
-      (*s)++;
-      if (Invalid_range(**s, ch))
-      {
-        return NULL;
-      }
-      else
-      {
-        range->hi_bd = NextChar(s);
-      }
-    }
-    else
+  curr_ptr = (Ch_Set)new_node(curr_ptr);
+  cs_ptr = curr_ptr;
+  while (!Unexpected(s, ']'))
     {
-      range->hi_bd = ch;
-    }
-    prev_ptr = curr_ptr;
-    curr_ptr = (Ch_Set)new_node(curr_ptr);
-    prev_ptr->rest = curr_ptr;
-  };
+      range = (Ch_Range)new_node(range);
+      curr_ptr->elt = range;
+      ch = NextChar(s);
+      if (ch == '-')
+        {
+          return NULL; /* invalid range */
+        }
+      range->low_bd = ch;
+      if (**s == NUL)
+        {
+          return NULL;
+        }
+      else if (**s == '-')
+        { /* character range */
+          (*s)++;
+          if (Invalid_range(**s, ch))
+            {
+              return NULL;
+            }
+          else
+            {
+              range->hi_bd = NextChar(s);
+            }
+        }
+      else
+        {
+          range->hi_bd = ch;
+        }
+      prev_ptr = curr_ptr;
+      curr_ptr = (Ch_Set)new_node(curr_ptr);
+      prev_ptr->rest = curr_ptr;
+    };
   if (**s == ']')
-  {
-    prev_ptr->rest = NULL;
-    return mk_leaf(LITERAL, C_SET, NUL, cs_ptr);
-  }
+    {
+      prev_ptr->rest = NULL;
+      return mk_leaf(LITERAL, C_SET, NUL, cs_ptr);
+    }
   else
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
 } /* parse_cset */
 
 /* parse_wildcard() "parses" a wildcard -- a wildcard is treated as a
@@ -134,7 +134,7 @@ Re_node parse_wildcard(void)
 
   r = (Ch_Range)new_node(r);
   r->low_bd = ASCII_MIN; /* smallest ASCII value */
-  r->hi_bd = ASCII_MAX;  /* greatest ASCII value */
+  r->hi_bd = ASCII_MAX; /* greatest ASCII value */
   s = (Ch_Set)new_node(s);
   s->elt = r;
   s->rest = NULL;
@@ -148,13 +148,13 @@ Re_node parse_wildcard(void)
 Re_node parse_chlit(char ch)
 {
   if (ch == NUL)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
   else
-  {
-    return mk_leaf(LITERAL, C_LIT, ch, NULL);
-  }
+    {
+      return mk_leaf(LITERAL, C_LIT, ch, NULL);
+    }
 }
 
 /* get_token() returns the next token -- this may be a character
@@ -169,63 +169,63 @@ Tok_node get_token(char **s)
   Tok_node rn = NULL;
 
   if (s == NULL || *s == NULL)
-  {
-    return NULL; /* error */
-  }
+    {
+      return NULL; /* error */
+    }
   rn = (Tok_node)new_node(rn);
   if (**s == NUL)
-  {
-    tok_type(rn) = EOS; /* end of string */
-  }
-  else
-  {
-    switch (**s)
     {
-      case '.': /* wildcard */
-        tok_type(rn) = LITERAL;
-        tok_val(rn) = parse_wildcard();
-        if (tok_val(rn) == NULL)
+      tok_type(rn) = EOS; /* end of string */
+    }
+  else
+    {
+      switch (**s)
         {
-          return NULL;
-        }
-        break;
-      case '[': /* character set literal */
-        (*s)++;
-        tok_type(rn) = LITERAL;
-        tok_val(rn) = parse_cset(s);
-        if (tok_val(rn) == NULL)
-        {
-          return NULL;
-        }
-        break;
-      case '(':
-        tok_type(rn) = LPAREN;
-        break;
-      case ')':
-        tok_type(rn) = RPAREN;
-        break;
-      case '*':
-        tok_type(rn) = OPSTAR;
-        break;
-      case '|':
-        tok_type(rn) = OPALT;
-        break;
-      case '?':
-        tok_type(rn) = OPOPT;
-        break;
-      case '\\': /* escaped character */
-        (*s)++;
-      default: /* must be ordinary character */
-        tok_type(rn) = LITERAL;
-        tok_val(rn) = parse_chlit(**s);
-        if (tok_val(rn) == NULL)
-        {
-          return NULL;
-        }
-        break;
-    } /* switch (**s) */
-    (*s)++;
-  } /* else */
+          case '.': /* wildcard */
+            tok_type(rn) = LITERAL;
+            tok_val(rn) = parse_wildcard();
+            if (tok_val(rn) == NULL)
+              {
+                return NULL;
+              }
+            break;
+          case '[': /* character set literal */
+            (*s)++;
+            tok_type(rn) = LITERAL;
+            tok_val(rn) = parse_cset(s);
+            if (tok_val(rn) == NULL)
+              {
+                return NULL;
+              }
+            break;
+          case '(':
+            tok_type(rn) = LPAREN;
+            break;
+          case ')':
+            tok_type(rn) = RPAREN;
+            break;
+          case '*':
+            tok_type(rn) = OPSTAR;
+            break;
+          case '|':
+            tok_type(rn) = OPALT;
+            break;
+          case '?':
+            tok_type(rn) = OPOPT;
+            break;
+          case '\\': /* escaped character */
+            (*s)++;
+          default: /* must be ordinary character */
+            tok_type(rn) = LITERAL;
+            tok_val(rn) = parse_chlit(**s);
+            if (tok_val(rn) == NULL)
+              {
+                return NULL;
+              }
+            break;
+        } /* switch (**s) */
+      (*s)++;
+    } /* else */
   return rn;
 }
 
@@ -239,42 +239,42 @@ Stack cat2(Stack *stk)
   Re_node r;
 
   if (stk == NULL)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
   if (*stk == NULL || (*stk)->next == NULL)
-  {
-    return *stk;
-  }
+    {
+      return *stk;
+    }
   r = (Re_node)new_node(r);
   if (r == NULL)
-  {
-    return NULL; /* can't allocate memory */
-  }
+    {
+      return NULL; /* can't allocate memory */
+    }
   Op(r) = OPCAT;
   Rchild(r) = Pop(stk);
   Lchild(r) = Pop(stk);
   if (Push(stk, r) == NULL)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
   Nullable(r) = Nullable(Lchild(r)) && Nullable(Rchild(r));
   if (Nullable(Lchild(r)))
-  {
-    Firstpos(r) = pset_union(Firstpos(Lchild(r)), Firstpos(Rchild(r)));
-  }
+    {
+      Firstpos(r) = pset_union(Firstpos(Lchild(r)), Firstpos(Rchild(r)));
+    }
   else
-  {
-    Firstpos(r) = Firstpos(Lchild(r));
-  }
+    {
+      Firstpos(r) = Firstpos(Lchild(r));
+    }
   if (Nullable(Rchild(r)))
-  {
-    Lastpos(r) = pset_union(Lastpos(Lchild(r)), Lastpos(Rchild(r)));
-  }
+    {
+      Lastpos(r) = pset_union(Lastpos(Lchild(r)), Lastpos(Rchild(r)));
+    }
   else
-  {
-    Lastpos(r) = Lastpos(Rchild(r));
-  }
+    {
+      Lastpos(r) = Lastpos(Rchild(r));
+    }
   return *stk;
 }
 
@@ -287,20 +287,20 @@ Stack wrap(Stack *s, short opv)
   Re_node r;
 
   if (s == NULL || *s == NULL)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
   r = (Re_node)new_node(r);
   if (r == NULL)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
   Op(r) = opv;
   Child(r) = Pop(s);
   if (Push(s, r) == NULL)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
   Nullable(r) = TRUE;
   Firstpos(r) = Firstpos(Child(r));
   Lastpos(r) = Lastpos(Child(r));
@@ -316,21 +316,21 @@ Stack mk_alt(Stack *s, Re_node r)
   Re_node node;
 
   if (s == NULL || *s == NULL || r == NULL)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
   node = (Re_node)new_node(node);
   if (node == NULL)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
   Op(node) = OPALT;
   Lchild(node) = Pop(s);
   Rchild(node) = r;
   if (Push(s, node) == NULL)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
   Nullable(node) = Nullable(Lchild(node)) || Nullable(Rchild(node));
   Firstpos(node) = pset_union(Firstpos(Lchild(node)), Firstpos(Rchild(node)));
   Lastpos(node) = pset_union(Lastpos(Lchild(node)), Lastpos(Rchild(node)));
@@ -348,104 +348,104 @@ Re_node parse_re(char **s, short end)
   Re_node re = NULL;
 
   if (s == NULL || *s == NULL)
-  {
-    return NULL;
-  }
-  while (TRUE)
-  {
-    next_token = get_token(s);
-    if (next_token == NULL)
     {
       return NULL;
     }
-    switch (tok_type(next_token))
+  while (TRUE)
     {
-      case RPAREN:
-        retract_token(s);
-      case EOS:
-        if (end == tok_type(next_token))
-        {
-          return Top(cat2(&stk));
-        }
-        else
+      next_token = get_token(s);
+      if (next_token == NULL)
         {
           return NULL;
         }
-      case LPAREN:
-        re = parse_re(s, RPAREN);
-        if (Push(&stk, re) == NULL)
+      switch (tok_type(next_token))
         {
-          return NULL;
+          case RPAREN:
+            retract_token(s);
+          case EOS:
+            if (end == tok_type(next_token))
+              {
+                return Top(cat2(&stk));
+              }
+            else
+              {
+                return NULL;
+              }
+          case LPAREN:
+            re = parse_re(s, RPAREN);
+            if (Push(&stk, re) == NULL)
+              {
+                return NULL;
+              }
+            if (tok_type(get_token(s)) != RPAREN || re == NULL)
+              {
+                return NULL;
+              }
+            if (Size(stk) > 2)
+              {
+                temp = stk->next;
+                stk->next = cat2(&temp); /* condense CAT nodes */
+                if (stk->next == NULL)
+                  {
+                    return NULL;
+                  }
+                else
+                  {
+                    stk->size = stk->next->size + 1;
+                  }
+              }
+            break;
+          case OPSTAR:
+            if (wrap(&stk, OPSTAR) == NULL)
+              {
+                return NULL;
+              }
+            break;
+          case OPOPT:
+            if (wrap(&stk, OPOPT) == NULL)
+              {
+                return NULL;
+              }
+            break;
+          case OPALT:
+            if (cat2(&stk) == NULL)
+              {
+                return NULL;
+              }
+            re = parse_re(s, end);
+            if (re == NULL)
+              {
+                return NULL;
+              }
+            if (mk_alt(&stk, re) == NULL)
+              {
+                return NULL;
+              }
+            break;
+          case LITERAL:
+            if (Push(&stk, tok_val(next_token)) == NULL)
+              {
+                return NULL;
+              }
+            if (Size(stk) > 2)
+              {
+                temp = stk->next;
+                stk->next = cat2(&temp); /* condense CAT nodes */
+                if (stk->next == NULL)
+                  {
+                    return NULL;
+                  }
+                else
+                  {
+                    stk->size = stk->next->size + 1;
+                  }
+              }
+            break;
+          default:
+            printf("parse_re: unknown token type %d\n", tok_type(next_token));
+            break;
         }
-        if (tok_type(get_token(s)) != RPAREN || re == NULL)
-        {
-          return NULL;
-        }
-        if (Size(stk) > 2)
-        {
-          temp = stk->next;
-          stk->next = cat2(&temp); /* condense CAT nodes */
-          if (stk->next == NULL)
-          {
-            return NULL;
-          }
-          else
-          {
-            stk->size = stk->next->size + 1;
-          }
-        }
-        break;
-      case OPSTAR:
-        if (wrap(&stk, OPSTAR) == NULL)
-        {
-          return NULL;
-        }
-        break;
-      case OPOPT:
-        if (wrap(&stk, OPOPT) == NULL)
-        {
-          return NULL;
-        }
-        break;
-      case OPALT:
-        if (cat2(&stk) == NULL)
-        {
-          return NULL;
-        }
-        re = parse_re(s, end);
-        if (re == NULL)
-        {
-          return NULL;
-        }
-        if (mk_alt(&stk, re) == NULL)
-        {
-          return NULL;
-        }
-        break;
-      case LITERAL:
-        if (Push(&stk, tok_val(next_token)) == NULL)
-        {
-          return NULL;
-        }
-        if (Size(stk) > 2)
-        {
-          temp = stk->next;
-          stk->next = cat2(&temp); /* condense CAT nodes */
-          if (stk->next == NULL)
-          {
-            return NULL;
-          }
-          else
-          {
-            stk->size = stk->next->size + 1;
-          }
-        }
-        break;
-      default:
-        printf("parse_re: unknown token type %d\n", tok_type(next_token));
-        break;
     }
-  }
 }
 
 /* parse() essentially just calls parse_re().  Its purpose is to stick an
@@ -460,14 +460,14 @@ Re_node parse(char *s)
 
   tree = parse_re(&s, NUL);
   if (tree == NULL || Push(&stk, tree) == NULL)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
   temp = mk_leaf(EOS, C_LIT, NUL, NULL);
   if (temp == NULL || Push(&stk, temp) == NULL)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
   final_pos = --pos_cnt;
   return Top(cat2(&stk));
 }

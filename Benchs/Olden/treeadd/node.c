@@ -98,44 +98,44 @@ int main(int argc, char *argv[])
 int TreeAdd(tree_t *t)
 {
   if (t == NULL)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
   else
-  {
+    {
 #ifdef FUTURES
-    future_cell_int leftval;
-    int rightval;
-    tree_t *tleft, *tright;
-    int value;
+      future_cell_int leftval;
+      int rightval;
+      tree_t *tleft, *tright;
+      int value;
 
-    tleft = t->left;
-    RPC(tleft, tleft, TreeAdd, &(leftval));
-    NOTEST();
-    tright = t->right;
-    rightval = TreeAdd(tright);
-    RTOUCH(&leftval);
-    /*chatting("after touch @ 0x%x\n",t);*/
-    value = t->val;
-    /*chatting("returning from treeadd %d\n",*/
-    /*leftval.value + rightval.value + value);*/
-    return leftval.value + rightval + value;
-    RETEST();
+      tleft = t->left;
+      RPC(tleft, tleft, TreeAdd, &(leftval));
+      NOTEST();
+      tright = t->right;
+      rightval = TreeAdd(tright);
+      RTOUCH(&leftval);
+      /*chatting("after touch @ 0x%x\n",t);*/
+      value = t->val;
+      /*chatting("returning from treeadd %d\n",*/
+      /*leftval.value + rightval.value + value);*/
+      return leftval.value + rightval + value;
+      RETEST();
 #else
-    int leftval;
-    int rightval;
-    tree_t *tleft, *tright;
-    int value;
+      int leftval;
+      int rightval;
+      tree_t *tleft, *tright;
+      int value;
 
-    tleft = t->left; /* <---- 57% load penalty */
-    leftval = TreeAdd(tleft);
-    tright = t->right; /* <---- 11.4% load penalty */
-    rightval = TreeAdd(tright);
-    /*chatting("after touch\n");*/
-    value = t->val;
-    /*chatting("returning from treeadd %d\n",*/
-    /*leftval.value + rightval.value + value);*/
-    return leftval + rightval + value;
+      tleft = t->left; /* <---- 57% load penalty */
+      leftval = TreeAdd(tleft);
+      tright = t->right; /* <---- 11.4% load penalty */
+      rightval = TreeAdd(tright);
+      /*chatting("after touch\n");*/
+      value = t->val;
+      /*chatting("returning from treeadd %d\n",*/
+      /*leftval.value + rightval.value + value);*/
+      return leftval + rightval + value;
 #endif
-  }
+    }
 } /* end of TreeAdd */

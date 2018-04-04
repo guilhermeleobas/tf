@@ -42,14 +42,14 @@ void edgeListPrettyPrint(EdgeList *edges, int depth, char *header)
 {
   int i;
   for (i = 0; i < depth; ++i)
-  {
-    printf("\t");
-  }
+    {
+      printf("\t");
+    }
   printf("%s: ", header);
   for (; edges != NULL; edges = edges->nextEdge)
-  {
-    printf(" %d,", edges->targetNodeId);
-  }
+    {
+      printf(" %d,", edges->targetNodeId);
+    }
   printf("\n");
 }
 
@@ -59,31 +59,31 @@ void nodeListPrettyPrint(NodeList *nodes, int depth, char *separator,
   int i;
 
   if (!nodes)
-  {
-    return;
-  }
+    {
+      return;
+    }
 
   if (nodes->node)
-  {
-    printf("%d", nodes->node->id);
-  }
+    {
+      printf("%d", nodes->node->id);
+    }
   if (nodes->nextNode)
-  {
-    if (multiLine)
+    {
+      if (multiLine)
+        {
+          printf("\n");
+          for (i = 0; i < depth; ++i)
+            {
+              printf("    ");
+            }
+        }
+      printf("%s", separator);
+      nodeListPrettyPrint(nodes->nextNode, depth + 1, separator, multiLine);
+    }
+  else
     {
       printf("\n");
-      for (i = 0; i < depth; ++i)
-      {
-        printf("    ");
-      }
     }
-    printf("%s", separator);
-    nodeListPrettyPrint(nodes->nextNode, depth + 1, separator, multiLine);
-  }
-  else
-  {
-    printf("\n");
-  }
 }
 
 void graphPrettyPrint(Graph *graph)
@@ -93,21 +93,21 @@ void graphPrettyPrint(Graph *graph)
 
   for (outerPtr = graph->outerNodes; outerPtr != NULL;
        outerPtr = outerPtr->nextNode)
-  {
-    printf("Outer Node: %d, idx: %d, label: %s (%d)\n", outerPtr->node->id,
-           outerPtr->node->nodeCount,
-           outerPtr->node->label ? outerPtr->node->label : "none",
-           outerPtr->node->labelIdx);
-    edgeListPrettyPrint(outerPtr->node->edges, 1, "Edges");
-    /* Deprecated: edgeListPrettyPrint( outerPtr->node->entranceNodes, 1,
-     * "EntranceNodes" ); */
-    for (innerPtr = outerPtr->node->interiorNodes; innerPtr != NULL;
-         innerPtr = innerPtr->nextNode)
     {
-      printf("\tInner Node: %d\n", innerPtr->node->id);
-      edgeListPrettyPrint(innerPtr->node->edges, 2, "Edges");
+      printf("Outer Node: %d, idx: %d, label: %s (%d)\n", outerPtr->node->id,
+             outerPtr->node->nodeCount,
+             outerPtr->node->label ? outerPtr->node->label : "none",
+             outerPtr->node->labelIdx);
+      edgeListPrettyPrint(outerPtr->node->edges, 1, "Edges");
+      /* Deprecated: edgeListPrettyPrint( outerPtr->node->entranceNodes, 1,
+     * "EntranceNodes" ); */
+      for (innerPtr = outerPtr->node->interiorNodes; innerPtr != NULL;
+           innerPtr = innerPtr->nextNode)
+        {
+          printf("\tInner Node: %d\n", innerPtr->node->id);
+          edgeListPrettyPrint(innerPtr->node->edges, 2, "Edges");
+        }
     }
-  }
 
   printf("\n\n");
 }
@@ -119,27 +119,27 @@ void systemCallMapPrettyPrint(SystemCallMap *map)
   int j = 0;
 
   if (!map)
-  {
-    return;
-  }
+    {
+      return;
+    }
 
   for (i = 0; i < map->contentSize; ++i)
-  {
-    element = map->vector[i];
-    printf("'%s'\n\t:", element->label);
-    for (j = 0; element->nodes && j < element->nodes->contentSize; ++j)
     {
-      printf("%d", element->nodes->vector[j]->id);
-      if (j < element->nodes->contentSize - 1)
-      {
-        printf(", ");
-      }
-      else
-      {
-        printf("\n\n");
-      }
+      element = map->vector[i];
+      printf("'%s'\n\t:", element->label);
+      for (j = 0; element->nodes && j < element->nodes->contentSize; ++j)
+        {
+          printf("%d", element->nodes->vector[j]->id);
+          if (j < element->nodes->contentSize - 1)
+            {
+              printf(", ");
+            }
+          else
+            {
+              printf("\n\n");
+            }
+        }
     }
-  }
 
   printf("\t%d total System Call Map elements\n", map->contentSize);
 }
@@ -157,9 +157,9 @@ bool testGraph()
   Node *innerNode23 = Node_new(23, 6);
 
   if (!graph)
-  {
-    return (false);
-  }
+    {
+      return (false);
+    }
 
   Graph_addOuterNode(graph, outerNode1);
   Graph_addOuterNode(graph, outerNode2);
@@ -180,27 +180,27 @@ bool testGraph()
 void printStack(NodePtrVec *stack)
 {
   if (!stack)
-  {
-    return;
-  }
+    {
+      return;
+    }
   int i;
   // printf ( "stack size %d out of %d max\n", stack->contentSize,
   // stack->allocatedSize );
   for (i = 0; i < stack->contentSize; ++i)
-  {
-    printf("%d", stack->vector[i]->id);
-    fflush(stdout);
-    if (stack->vector[i]->label)
     {
-      printf("(%s)", stack->vector[i]->label);
+      printf("%d", stack->vector[i]->id);
       fflush(stdout);
+      if (stack->vector[i]->label)
+        {
+          printf("(%s)", stack->vector[i]->label);
+          fflush(stdout);
+        }
+      if (i != stack->contentSize - 1)
+        {
+          printf(" : ");
+          fflush(stdout);
+        }
     }
-    if (i != stack->contentSize - 1)
-    {
-      printf(" : ");
-      fflush(stdout);
-    }
-  }
   printf("\n");
   fflush(stdout);
 }

@@ -91,7 +91,7 @@ static p_type m2d(p_type p)
 static int md(p_type p, int maxdep, int dep, int last);
 static int mu(p_type p, int maxdep, int dep, int last)
 {
-  static int near[] = {0x50, 0x70, 0x70, 0x75, 0xf, 0xf,  0xf,  0x70, 0x70,
+  static int near[] = {0x50, 0x70, 0x70, 0x75, 0xf, 0xf, 0xf, 0x70, 0x70,
                        0x70, 0x7d, 0x2b, 0x2f, 0xf, 0x50, 0x64, 0x67, 0xf};
 #define KKK 4
   /* 2 :
@@ -101,56 +101,56 @@ static int mu(p_type p, int maxdep, int dep, int last)
 
   int win;
   if (dep == maxdep - KKK)
-  {
-    if ((B & near[p.b]) == 0) return 0;
-    if ((D & near[p.d]) == 0) return 0;
-    if ((BI & near[p.bi]) == 0) return 0;
-    if ((AR & near[p.ar]) == 0) return 0;
-    if ((A & near[p.a]) == 0) return 0;
-    if ((C & near[p.c]) == 0) return 0;
-    if ((G & near[p.g1]) == 0) return 0;
-    if ((G & near[p.g2]) == 0) return 0;
-    if ((G & near[p.g3]) == 0) return 0;
-  }
+    {
+      if ((B & near[p.b]) == 0) return 0;
+      if ((D & near[p.d]) == 0) return 0;
+      if ((BI & near[p.bi]) == 0) return 0;
+      if ((AR & near[p.ar]) == 0) return 0;
+      if ((A & near[p.a]) == 0) return 0;
+      if ((C & near[p.c]) == 0) return 0;
+      if ((G & near[p.g1]) == 0) return 0;
+      if ((G & near[p.g2]) == 0) return 0;
+      if ((G & near[p.g3]) == 0) return 0;
+    }
   if ((p.a == 5) && (p.b == 6) && (p.c == 12) && (p.d == 13) && (p.bi == 14) &&
       (p.ar == 15) && ((p.g1 + p.g2 + p.g3) == 3))
-  {
-    printf("Gul: %d %d %d\n", p.g1, p.g2, p.g3);
-    printf("bin+art: %d %d\n", p.bi, p.ar);
-    return 1;
-  }
+    {
+      printf("Gul: %d %d %d\n", p.g1, p.g2, p.g3);
+      printf("bin+art: %d %d\n", p.bi, p.ar);
+      return 1;
+    }
   else
-  {
-    if (maxdep <= dep) return 0;
+    {
+      if (maxdep <= dep) return 0;
 
-    win = (last == 0 ? 0 : md(m0u(p), maxdep, dep + 1, 0));
-    if (win == 1)
-    {
-      putchar('0');
-      if ((dep % 4) == 0) putchar(' ');
-      return win;
-    }
-    else
-    {
-      win = (last == 1 ? 0 : md(m1u(p), maxdep, dep + 1, 1));
+      win = (last == 0 ? 0 : md(m0u(p), maxdep, dep + 1, 0));
       if (win == 1)
-      {
-        putchar('1');
-        if ((dep % 4) == 0) putchar(' ');
-        return win;
-      }
-      else
-      {
-        win = (last == 2 ? 0 : md(m2u(p), maxdep, dep + 1, 2));
-        if (win == 1)
         {
-          putchar('2');
+          putchar('0');
           if ((dep % 4) == 0) putchar(' ');
+          return win;
         }
-        return win;
-      }
+      else
+        {
+          win = (last == 1 ? 0 : md(m1u(p), maxdep, dep + 1, 1));
+          if (win == 1)
+            {
+              putchar('1');
+              if ((dep % 4) == 0) putchar(' ');
+              return win;
+            }
+          else
+            {
+              win = (last == 2 ? 0 : md(m2u(p), maxdep, dep + 1, 2));
+              if (win == 1)
+                {
+                  putchar('2');
+                  if ((dep % 4) == 0) putchar(' ');
+                }
+              return win;
+            }
+        }
     }
-  }
 }
 
 static int md(p_type p, int maxdep, int dep, int last)
@@ -161,31 +161,31 @@ static int md(p_type p, int maxdep, int dep, int last)
 
   win = (last == 0 ? 0 : mu(m0d(p), maxdep, dep + 1, 0));
   if (win == 1)
-  {
-    putchar('0');
-    if ((dep % 4) == 0) putchar(' ');
-    return win;
-  }
-  else
-  {
-    win = (last == 1 ? 0 : mu(m1d(p), maxdep, dep + 1, 1));
-    if (win == 1)
     {
-      putchar('1');
+      putchar('0');
       if ((dep % 4) == 0) putchar(' ');
       return win;
     }
-    else
+  else
     {
-      win = (last == 2 ? 0 : mu(m2d(p), maxdep, dep + 1, 2));
+      win = (last == 1 ? 0 : mu(m1d(p), maxdep, dep + 1, 1));
       if (win == 1)
-      {
-        putchar('2');
-        if ((dep % 4) == 0) putchar(' ');
-      }
-      return win;
+        {
+          putchar('1');
+          if ((dep % 4) == 0) putchar(' ');
+          return win;
+        }
+      else
+        {
+          win = (last == 2 ? 0 : mu(m2d(p), maxdep, dep + 1, 2));
+          if (win == 1)
+            {
+              putchar('2');
+              if ((dep % 4) == 0) putchar(' ');
+            }
+          return win;
+        }
     }
-  }
 }
 
 #ifndef BENCHMARK
@@ -205,64 +205,64 @@ int main(int argc, char *argv[])
 
 #ifndef BENCHMARK
   if (argc < 10)
-  {
-    if (argc == 2)
     {
-      prnear(atoi(argv[1]));
+      if (argc == 2)
+        {
+          prnear(atoi(argv[1]));
+        }
+      else
+        {
+          printf("           16 17\n");
+          printf("0  1  2  3  4  5  6\n");
+          printf("7  8  9 10 11 12 13\n");
+          printf("  14 15\n\nEnter A B C D e f G G G :\n");
+          printf("G G G   A B\n");
+          printf("e f     C D\n");
+        }
     }
-    else
-    {
-      printf("           16 17\n");
-      printf("0  1  2  3  4  5  6\n");
-      printf("7  8  9 10 11 12 13\n");
-      printf("  14 15\n\nEnter A B C D e f G G G :\n");
-      printf("G G G   A B\n");
-      printf("e f     C D\n");
-    }
-  }
   else
-  {
-    p.a = atoi(argv[1]);
-    p.b = atoi(argv[2]);
-    p.c = atoi(argv[3]);
-    p.d = atoi(argv[4]);
-    p.bi = atoi(argv[5]);
-    p.ar = atoi(argv[6]);
-    p.g1 = atoi(argv[7]);
-    p.g2 = atoi(argv[8]);
-    p.g3 = atoi(argv[9]);
-
-    for (k = 2;; k += 2)
     {
-      printf("Trying %d\n", k);
-      if (mu(p, k, 0, -1) == 1)
-      {
-        putchar('\n');
-        exit(0);
-      }
+      p.a = atoi(argv[1]);
+      p.b = atoi(argv[2]);
+      p.c = atoi(argv[3]);
+      p.d = atoi(argv[4]);
+      p.bi = atoi(argv[5]);
+      p.ar = atoi(argv[6]);
+      p.g1 = atoi(argv[7]);
+      p.g2 = atoi(argv[8]);
+      p.g3 = atoi(argv[9]);
+
+      for (k = 2;; k += 2)
+        {
+          printf("Trying %d\n", k);
+          if (mu(p, k, 0, -1) == 1)
+            {
+              putchar('\n');
+              exit(0);
+            }
+        }
     }
-  }
 #else /* Run it as a benchmark */
   fp = fopen(argv[1], "r");
   if (fp == NULL)
-  {
-    fprintf(stderr, "ERROR in %s: Could not open datafile %s\n", argv[0],
-            argv[1]);
-    exit(1);
-  }
+    {
+      fprintf(stderr, "ERROR in %s: Could not open datafile %s\n", argv[0],
+              argv[1]);
+      exit(1);
+    }
 
   fscanf(fp, "%d %d %d %d %d %d %d %d %d", &p.a, &p.b, &p.c, &p.d, &p.bi, &p.ar,
          &p.g1, &p.g2, &p.g3);
 
   for (k = 2;; k += 2)
-  {
-    printf("Trying %d\n", k);
-    if (mu(p, k, 0, -1) == 1)
     {
-      putchar('\n');
-      break;
+      printf("Trying %d\n", k);
+      if (mu(p, k, 0, -1) == 1)
+        {
+          putchar('\n');
+          break;
+        }
     }
-  }
 #endif
 
   return 0;
@@ -272,18 +272,18 @@ static int neard(p_type p, int maxdep, int dep, int last, int near[]);
 static int nearu(p_type p, int maxdep, int dep, int last, int near[])
 {
   if (maxdep == dep)
-  {
-    near[p.a] |= A;
-    near[p.b] |= B;
-    near[p.c] |= C;
-    near[p.d] |= D;
-    near[p.bi] |= BI;
-    near[p.ar] |= AR;
-    near[p.g1] |= G;
-    near[p.g2] |= G;
-    near[p.g3] |= G;
-    return 0;
-  }
+    {
+      near[p.a] |= A;
+      near[p.b] |= B;
+      near[p.c] |= C;
+      near[p.d] |= D;
+      near[p.bi] |= BI;
+      near[p.ar] |= AR;
+      near[p.g1] |= G;
+      near[p.g2] |= G;
+      near[p.g3] |= G;
+      return 0;
+    }
 
   if (last != 0) neard(m0u(p), maxdep, dep + 1, 0, near);
   if (last != 1) neard(m1u(p), maxdep, dep + 1, 1, near);

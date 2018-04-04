@@ -26,16 +26,16 @@
  *	Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include <assert.h>         /* for assert()                     */
-#include <stdio.h>          /* for FILE definition and fclose() */
+#include <assert.h> /* for assert()                     */
+#include <stdio.h> /* for FILE definition and fclose() */
 #include "dataManagement.h" /* for primitive data types         */
-#include "errorMessage.h"   /* for errorMessage() definition    */
+#include "errorMessage.h" /* for errorMessage() definition    */
 
-void closeFiles(FILE *inputFile,  /*  input file to close   */
+void closeFiles(FILE *inputFile, /*  input file to close   */
                 FILE *outputFile, /*  output file to close  */
                 FILE *metricFile) /*  metrics file to close */
-{                                 /* beginning of closeFiles() */
-  Int error;                      /* error return from fclose() system call */
+{ /* beginning of closeFiles() */
+  Int error; /* error return from fclose() system call */
 
   static Char name[] = "closeFiles";
 
@@ -50,24 +50,24 @@ void closeFiles(FILE *inputFile,  /*  input file to close   */
    */
   error = fclose(inputFile);
   if (error != 0)
-  {
-    errorMessage("error closing input file", REPLACE);
-    errorMessage(name, PREPEND);
-  } /*  end of if ( error != 0 )    */
+    {
+      errorMessage("error closing input file", REPLACE);
+      errorMessage(name, PREPEND);
+    } /*  end of if ( error != 0 )    */
 
   error = fclose(outputFile);
   if (error != 0)
-  {
-    errorMessage("error closing output file", REPLACE);
-    errorMessage(name, PREPEND);
-  } /*  end of if ( error != 0 )    */
+    {
+      errorMessage("error closing output file", REPLACE);
+      errorMessage(name, PREPEND);
+    } /*  end of if ( error != 0 )    */
 
   error = fclose(metricFile);
   if (error != 0)
-  {
-    errorMessage("error closing metric file", REPLACE);
-    errorMessage(name, PREPEND);
-  } /*  end of if ( error != 0 )    */
+    {
+      errorMessage("error closing metric file", REPLACE);
+      errorMessage(name, PREPEND);
+    } /*  end of if ( error != 0 )    */
 
   return;
 } /* end of closeFiles() */

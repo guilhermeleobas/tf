@@ -29,31 +29,31 @@ char *gets1(char *s)
   iline++;
   p = fgets(s, BUFSIZ, tabin);
   while (p == 0)
-  {
-    if (swapin() == 0)
     {
-      return (0);
+      if (swapin() == 0)
+        {
+          return (0);
+        }
+      p = fgets(s, BUFSIZ, tabin);
     }
-    p = fgets(s, BUFSIZ, tabin);
-  }
 
   while (*s)
-  {
-    s++;
-  }
+    {
+      s++;
+    }
   s--;
   if (*s == '\n')
-  {
-    *s-- = 0;
-  }
+    {
+      *s-- = 0;
+    }
   for (nbl = 0; *s == '\\' && s > p; s--)
-  {
-    nbl++;
-  }
+    {
+      nbl++;
+    }
   if (linstart && nbl % 2)
-  { /* fold escaped nl if in table */
-    gets1(s + 1);
-  }
+    { /* fold escaped nl if in table */
+      gets1(s + 1);
+    }
 
   return (p);
 }
@@ -64,38 +64,38 @@ char *backp = backup;
 void un1getc(int c)
 {
   if (c == '\n')
-  {
-    iline--;
-  }
+    {
+      iline--;
+    }
   *backp++ = c;
   if (backp >= backup + BACKMAX)
-  {
-    error("too much backup");
-  }
+    {
+      error("too much backup");
+    }
 }
 
 int get1char(void)
 {
   int c;
   if (backp > backup)
-  {
-    c = *--backp;
-  }
-  else
-  {
-    c = getc(tabin);
-  }
-  if (c == EOF) /* EOF */
-  {
-    if (swapin() == 0)
     {
-      error("unexpected EOF");
+      c = *--backp;
     }
-    c = getc(tabin);
-  }
+  else
+    {
+      c = getc(tabin);
+    }
+  if (c == EOF) /* EOF */
+    {
+      if (swapin() == 0)
+        {
+          error("unexpected EOF");
+        }
+      c = getc(tabin);
+    }
   if (c == '\n')
-  {
-    iline++;
-  }
+    {
+      iline++;
+    }
   return (c);
 }

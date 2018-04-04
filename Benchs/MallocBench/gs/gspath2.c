@@ -19,8 +19,8 @@ copies.  */
 
 /* gspath2.c */
 /* Non-constructor path routines for GhostScript library */
-#include "gspath.h"
 #include "gserrors.h"
+#include "gspath.h"
 #include "gx.h"
 #include "gxfixed.h"
 #include "gxmatrix.h"
@@ -51,14 +51,14 @@ int gs_flattenpath(gs_state *pgs)
   gx_path fpath;
   int code;
   if (!pgs->path->curve_count)
-  {
-    return 0; /* no curves */
-  }
+    {
+      return 0; /* no curves */
+    }
   code = gx_path_flatten(pgs->path, &fpath, pgs->flatness);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   gx_path_release(pgs->path);
   *pgs->path = fpath;
   return 0;
@@ -77,9 +77,9 @@ int gs_pathbbox(gs_state *pgs, gs_rect *pbox)
   gs_rect dbox;
   int code = gx_path_bbox(pgs->path, &fbox);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   /* Transform the result back to user coordinates. */
   dbox.p.x = fixed2float(fbox.p.x);
   dbox.p.y = fixed2float(fbox.p.y);
@@ -107,43 +107,43 @@ int gs_path_enum_next(gs_path_enum *penum, gs_point ppts[3])
   gs_point pt;
   int code;
   if (pseg == 0)
-  {
-    return 0; /* finished */
-  }
+    {
+      return 0; /* finished */
+    }
   penum->pseg = pseg->next;
   if (pseg->type == s_line_close)
-  {
-    return gs_pe_closepath;
-  }
+    {
+      return gs_pe_closepath;
+    }
   if ((code = gs_itransform(pgs, fixed2float(pseg->pt.x),
                             fixed2float(pseg->pt.y), &pt)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   switch (pseg->type)
-  {
-    case s_start:
-      ppts[0] = pt;
-      return gs_pe_moveto;
-    case s_line:
-      ppts[0] = pt;
-      return gs_pe_lineto;
-    case s_curve:
+    {
+      case s_start:
+        ppts[0] = pt;
+        return gs_pe_moveto;
+      case s_line:
+        ppts[0] = pt;
+        return gs_pe_lineto;
+      case s_curve:
 #define pcurve ((curve_segment *)pseg)
-      if ((code = gs_itransform(pgs, fixed2float(pcurve->p1.x),
-                                fixed2float(pcurve->p1.y), &ppts[0])) < 0 ||
-          (code = gs_itransform(pgs, fixed2float(pcurve->p2.x),
-                                fixed2float(pcurve->p2.y), &ppts[1])) < 0)
-      {
-        return 0;
-      }
-      ppts[2] = pt;
-      return gs_pe_curveto;
+        if ((code = gs_itransform(pgs, fixed2float(pcurve->p1.x),
+                                  fixed2float(pcurve->p1.y), &ppts[0])) < 0 ||
+            (code = gs_itransform(pgs, fixed2float(pcurve->p2.x),
+                                  fixed2float(pcurve->p2.y), &ppts[1])) < 0)
+          {
+            return 0;
+          }
+        ppts[2] = pt;
+        return gs_pe_curveto;
 #undef pcurve
-    default:
-      dprintf1("bad type %x in gs_path_enum_next!\n", pseg->type);
-      exit(1);
-  }
+      default:
+        dprintf1("bad type %x in gs_path_enum_next!\n", pseg->type);
+        exit(1);
+    }
 }
 
 /* ------ Clipping ------ */
@@ -173,10 +173,10 @@ int gx_clip_to_rectangle(gs_state *pgs, fixed x0, fixed y0, fixed x1, fixed y1)
   int code;
   gx_path_init(ppath, &pgs->memory_procs);
   if ((code = gx_path_add_rectangle(ppath, x0, y0, x1, y1)) < 0)
-  {
-    gx_path_release(ppath);
-    return code;
-  }
+    {
+      gx_path_release(ppath);
+      return code;
+    }
   gx_path_release(pgs->clip_path);
   return set_clip_path(pgs, ppath, gx_rule_winding_number);
 }
@@ -188,9 +188,9 @@ int common_clip(gs_state *pgs, int rule)
   gx_path cpath;
   int code = gx_path_flatten(pgs->path, &cpath, pgs->flatness);
   if (!code)
-  {
-    code = set_clip_path(pgs, &cpath, rule);
-  }
+    {
+      code = set_clip_path(pgs, &cpath, rule);
+    }
   return code;
 }
 /* Set the clipping path.  If it is just a rectangle, */
@@ -199,10 +199,10 @@ private
 int set_clip_path(gs_state *pgs, register gx_path *ppath, int rule)
 {
   if (!gx_path_is_rectangle(ppath, &ppath->cbox))
-  { /* Not a rectangle, the quick check must fail */
-    ppath->cbox.p.x = ppath->cbox.p.y = 0;
-    ppath->cbox.q.x = ppath->cbox.q.y = 0;
-  }
+    { /* Not a rectangle, the quick check must fail */
+      ppath->cbox.p.x = ppath->cbox.p.y = 0;
+      ppath->cbox.q.x = ppath->cbox.q.y = 0;
+    }
   /* Update the outer bounding box as well. */
   gx_path_bbox(ppath, &ppath->bbox);
   *pgs->clip_path = *ppath;

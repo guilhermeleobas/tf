@@ -46,42 +46,42 @@ void mk_followpos_1(Re_node e, Pset_array fpos)
   int i;
 
   switch (Op(e))
-  {
-    case EOS:
-      break;
-    case OPSTAR:
-      pos = Lastpos(e);
-      while (pos != NULL)
-      {
-        i = pos->posnum;
-        (*fpos)[i] = pset_union(Firstpos(e), (*fpos)[i]);
-        pos = pos->nextpos;
-      }
-      mk_followpos_1(Child(e), fpos);
-      break;
-    case OPCAT:
-      pos = Lastpos(Lchild(e));
-      while (pos != NULL)
-      {
-        i = pos->posnum;
-        (*fpos)[i] = pset_union(Firstpos(Rchild(e)), (*fpos)[i]);
-        pos = pos->nextpos;
-      }
-      mk_followpos_1(Lchild(e), fpos);
-      mk_followpos_1(Rchild(e), fpos);
-      break;
-    case OPOPT:
-      mk_followpos_1(Child(e), fpos);
-      break;
-    case OPALT:
-      mk_followpos_1(Lchild(e), fpos);
-      mk_followpos_1(Rchild(e), fpos);
-      break;
-    case LITERAL:
-      break;
-    default:
-      printf("mk_followpos: unknown node type %d\n", Op(e));
-  }
+    {
+      case EOS:
+        break;
+      case OPSTAR:
+        pos = Lastpos(e);
+        while (pos != NULL)
+          {
+            i = pos->posnum;
+            (*fpos)[i] = pset_union(Firstpos(e), (*fpos)[i]);
+            pos = pos->nextpos;
+          }
+        mk_followpos_1(Child(e), fpos);
+        break;
+      case OPCAT:
+        pos = Lastpos(Lchild(e));
+        while (pos != NULL)
+          {
+            i = pos->posnum;
+            (*fpos)[i] = pset_union(Firstpos(Rchild(e)), (*fpos)[i]);
+            pos = pos->nextpos;
+          }
+        mk_followpos_1(Lchild(e), fpos);
+        mk_followpos_1(Rchild(e), fpos);
+        break;
+      case OPOPT:
+        mk_followpos_1(Child(e), fpos);
+        break;
+      case OPALT:
+        mk_followpos_1(Lchild(e), fpos);
+        mk_followpos_1(Rchild(e), fpos);
+        break;
+      case LITERAL:
+        break;
+      default:
+        printf("mk_followpos: unknown node type %d\n", Op(e));
+    }
   return;
 }
 
@@ -91,18 +91,18 @@ Pset_array mk_followpos(Re_node tree, int npos)
   Pset_array fpos;
 
   if (tree == NULL || npos < 0)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
   fpos = (Pset_array)malloc((unsigned)(npos + 1) * sizeof(Pset));
   if (fpos == NULL)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
   for (i = 0; i <= npos; i++)
-  {
-    (*fpos)[i] = NULL;
-  }
+    {
+      (*fpos)[i] = NULL;
+    }
   mk_followpos_1(tree, fpos);
   return fpos;
 }
@@ -122,43 +122,43 @@ int init(char *s, int table[32][32])
   int i, j;
 
   if ((e = parse(extend_re(s))) == NULL)
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
   if ((fpos = mk_followpos(e, pos_cnt)) == NULL)
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
   for (i = 0; i <= pos_cnt; i += 1)
-  {
-#ifdef Debug
-    printf("followpos[%d] = ", i);
-#endif
-    l = (*fpos)[i];
-    j = 0;
-    for (; l != NULL; l = l->nextpos)
     {
 #ifdef Debug
-      printf("%d ", l->posnum);
+      printf("followpos[%d] = ", i);
 #endif
-      table[i][j] = l->posnum;
-      j++;
-    }
+      l = (*fpos)[i];
+      j = 0;
+      for (; l != NULL; l = l->nextpos)
+        {
 #ifdef Debug
-    printf("\n");
+          printf("%d ", l->posnum);
 #endif
-  }
+          table[i][j] = l->posnum;
+          j++;
+        }
+#ifdef Debug
+      printf("\n");
+#endif
+    }
 #ifdef Debug
   for (i = 0; i <= pos_cnt; i += 1)
-  {
-    j = 0;
-    while (table[i][j] != 0)
     {
-      printf(" %d ", table[i][j]);
-      j++;
+      j = 0;
+      while (table[i][j] != 0)
+        {
+          printf(" %d ", table[i][j]);
+          j++;
+        }
+      printf("\n");
     }
-    printf("\n");
-  }
 #endif
   return (pos_cnt);
 }

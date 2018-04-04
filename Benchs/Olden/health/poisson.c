@@ -18,9 +18,9 @@ float my_rand(long long idum)
   idum = IA * (idum - k * IQ) - IR * k;
   idum ^= MASK;
   if (idum < 0)
-  {
-    idum += IM;
-  }
+    {
+      idum += IM;
+    }
   answer = AM * idum;
   return answer;
 }

@@ -39,18 +39,18 @@ gsm gsm_create P0()
 
   static int mul_init = 0;
   if (!mul_init)
-  {
-    mul_init = 1;
-    init_umul_table();
-  }
+    {
+      mul_init = 1;
+      init_umul_table();
+    }
 
 #endif
 
   r = (gsm)malloc(sizeof(struct gsm_state));
   if (!r)
-  {
-    return r;
-  }
+    {
+      return r;
+    }
 
   memset((char *)r, 0, sizeof(*r));
   r->nrp = 40;

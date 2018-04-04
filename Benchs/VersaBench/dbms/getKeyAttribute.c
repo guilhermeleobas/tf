@@ -28,16 +28,16 @@
  */
 
 #include "getKeyAttribute.h" /* for getKeyAttribute() return codes         */
-#include <assert.h>          /* for assert()                               */
-#include <stdio.h>           /* for FILE definition                        */
-#include "dataManagement.h"  /* for primitive type definitions             */
-#include "errorMessage.h"    /* for errorMessage() definition              */
-#include "getFloat.h"        /* for getFloat() and return code definitions */
+#include <assert.h> /* for assert()                               */
+#include <stdio.h> /* for FILE definition                        */
+#include "dataManagement.h" /* for primitive type definitions             */
+#include "errorMessage.h" /* for errorMessage() definition              */
+#include "getFloat.h" /* for getFloat() and return code definitions */
 
-Int getKeyAttribute(FILE *file,   /*  input stream to get string from */
+Int getKeyAttribute(FILE *file, /*  input stream to get string from */
                     Float *value) /*  pointer to float storage        */
-{                                 /*  begin getKeyAttribute() */
-  Int returnCode;                 /* return code for this routine */
+{ /*  begin getKeyAttribute() */
+  Int returnCode; /* return code for this routine */
 
   static Char name[] = "getKeyAttribute";
 
@@ -51,20 +51,20 @@ Int getKeyAttribute(FILE *file,   /*  input stream to get string from */
    */
   returnCode = getFloat(file, value);
   if (returnCode == GET_FLOAT_SUCCESS)
-  {
-    returnCode = GET_KEY_ATTRIBUTE_SUCCESS;
-  }
+    {
+      returnCode = GET_KEY_ATTRIBUTE_SUCCESS;
+    }
   else if (returnCode == GET_FLOAT_EOI)
-  {
-    errorMessage(name, PREPEND);
-    returnCode = GET_KEY_ATTRIBUTE_EOI;
-  }
+    {
+      errorMessage(name, PREPEND);
+      returnCode = GET_KEY_ATTRIBUTE_EOI;
+    }
   else if (returnCode == GET_FLOAT_RANGE_EXCEEDED ||
            returnCode == GET_FLOAT_BAD_CONVERSION)
-  {
-    errorMessage(name, PREPEND);
-    returnCode = GET_KEY_ATTRIBUTE_GET_FLOAT_FAILURE;
-  }
+    {
+      errorMessage(name, PREPEND);
+      returnCode = GET_KEY_ATTRIBUTE_GET_FLOAT_FAILURE;
+    }
 
   return (returnCode);
 } /*  end of getKeyAttribute()    */

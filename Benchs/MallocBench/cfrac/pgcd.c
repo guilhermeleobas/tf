@@ -11,11 +11,11 @@ precision pgcd(u, v) precision u, v;
   precision q = pUndef, r = pUndef;
 
   while (pnez(v3))
-  {
-    pdivmod(u3, v3, &q, &r);
-    pset(&u3, v3);
-    pset(&v3, r);
-  }
+    {
+      pdivmod(u3, v3, &q, &r);
+      pset(&u3, v3);
+      pset(&v3, r);
+    }
 
   pdestroy(v3);
   pdestroy(q);

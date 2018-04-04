@@ -189,9 +189,9 @@ int pack_vector(int vector);
 void output_headers(void)
 {
   if (semantic_parser)
-  {
-    fprintf(fguard, GUARDSTR, attrsfile);
-  }
+    {
+      fprintf(fguard, GUARDSTR, attrsfile);
+    }
   fprintf(faction, (semantic_parser ? ACTSTR : ACTSTR_SIMPLE), attrsfile);
   /*  if (semantic_parser)	JF moved this below
       fprintf(ftable, "#include \"%s\"\n", attrsfile);
@@ -201,14 +201,14 @@ void output_headers(void)
 void output_trailers(void)
 {
   if (semantic_parser)
-  {
-    fprintf(fguard, "\n    }\n}\n");
-    fprintf(faction, "\n    }\n}\n");
-  }
+    {
+      fprintf(fguard, "\n    }\n}\n");
+      fprintf(faction, "\n    }\n}\n");
+    }
   else
-  {
-    fprintf(faction, "\n}\n");
-  }
+    {
+      fprintf(faction, "\n}\n");
+    }
 }
 
 void output(void)
@@ -217,23 +217,23 @@ void output(void)
 
   /* output_token_defines(ftable);	JF put out token defines FIRST */
   if (!semantic_parser) /* JF Put out other stuff */
-  {
-    rewind(fattrs);
-    while ((c = getc(fattrs)) != EOF)
     {
-      putc(c, ftable);
+      rewind(fattrs);
+      while ((c = getc(fattrs)) != EOF)
+        {
+          putc(c, ftable);
+        }
     }
-  }
 
   if (debugflag)
-  {
-    fprintf(ftable, "#define YYDEBUG\n");
-  }
+    {
+      fprintf(ftable, "#define YYDEBUG\n");
+    }
 
   if (semantic_parser)
-  {
-    fprintf(ftable, "#include \"%s\"\n", attrsfile);
-  }
+    {
+      fprintf(ftable, "#include \"%s\"\n", attrsfile);
+    }
   fprintf(ftable, "#include <stdio.h>\n\n");
 
   /* Make "const" do nothing if not in ANSI C.  */
@@ -243,14 +243,14 @@ void output(void)
   output_defines();
   output_token_translations();
   if (semantic_parser)
-  {
-    output_gram();
-  }
+    {
+      output_gram();
+    }
   FREE(ritem);
   if (semantic_parser)
-  {
-    output_stos();
-  }
+    {
+      output_stos();
+    }
   output_rule_data();
   output_actions();
   output_parser();
@@ -263,45 +263,45 @@ void output_token_translations(void)
   /*   register short *sp; JF unused */
 
   if (translations)
-  {
-    fprintf(ftable,
-            "\n#define YYTRANSLATE(x) ((unsigned)(x) <= %d ? yytranslate[x] : "
-            "%d)\n",
-            max_user_token_number, nsyms);
-
-    if (ntokens < 127)
-    { /* play it very safe; check maximum element value.  */
-      fprintf(ftable, "\nstatic const char yytranslate[] = {     0");
-    }
-    else
     {
-      fprintf(ftable, "\nstatic const short yytranslate[] = {     0");
-    }
+      fprintf(ftable,
+              "\n#define YYTRANSLATE(x) ((unsigned)(x) <= %d ? yytranslate[x] : "
+              "%d)\n",
+              max_user_token_number, nsyms);
 
-    j = 10;
-    for (i = 1; i <= max_user_token_number; i++)
-    {
-      putc(',', ftable);
-
-      if (j >= 10)
-      {
-        putc('\n', ftable);
-        j = 1;
-      }
+      if (ntokens < 127)
+        { /* play it very safe; check maximum element value.  */
+          fprintf(ftable, "\nstatic const char yytranslate[] = {     0");
+        }
       else
-      {
-        j++;
-      }
+        {
+          fprintf(ftable, "\nstatic const short yytranslate[] = {     0");
+        }
 
-      fprintf(ftable, "%6d", token_translations[i]);
+      j = 10;
+      for (i = 1; i <= max_user_token_number; i++)
+        {
+          putc(',', ftable);
+
+          if (j >= 10)
+            {
+              putc('\n', ftable);
+              j = 1;
+            }
+          else
+            {
+              j++;
+            }
+
+          fprintf(ftable, "%6d", token_translations[i]);
+        }
+
+      fprintf(ftable, "\n};\n");
     }
-
-    fprintf(ftable, "\n};\n");
-  }
   else
-  {
-    fprintf(ftable, "\n#define YYTRANSLATE(x) (x)\n");
-  }
+    {
+      fprintf(ftable, "\n#define YYTRANSLATE(x) (x)\n");
+    }
 }
 
 void output_gram(void)
@@ -314,48 +314,48 @@ void output_gram(void)
 
   j = 10;
   for (i = 1; i <= nrules; i++)
-  {
-    putc(',', ftable);
-
-    if (j >= 10)
     {
-      putc('\n', ftable);
-      j = 1;
-    }
-    else
-    {
-      j++;
-    }
+      putc(',', ftable);
 
-    fprintf(ftable, "%6d", rrhs[i]);
-  }
+      if (j >= 10)
+        {
+          putc('\n', ftable);
+          j = 1;
+        }
+      else
+        {
+          j++;
+        }
+
+      fprintf(ftable, "%6d", rrhs[i]);
+    }
 
   fprintf(ftable, "\n};\n\nstatic const short yyrhs[] = {%6d", ritem[0]);
 
   j = 10;
   for (sp = ritem + 1; *sp; sp++)
-  {
-    putc(',', ftable);
+    {
+      putc(',', ftable);
 
-    if (j >= 10)
-    {
-      putc('\n', ftable);
-      j = 1;
-    }
-    else
-    {
-      j++;
-    }
+      if (j >= 10)
+        {
+          putc('\n', ftable);
+          j = 1;
+        }
+      else
+        {
+          j++;
+        }
 
-    if (*sp > 0)
-    {
-      fprintf(ftable, "%6d", *sp);
+      if (*sp > 0)
+        {
+          fprintf(ftable, "%6d", *sp);
+        }
+      else
+        {
+          fprintf(ftable, "     0");
+        }
     }
-    else
-    {
-      fprintf(ftable, "     0");
-    }
-  }
 
   fprintf(ftable, "\n};\n");
 }
@@ -369,21 +369,21 @@ void output_stos(void)
 
   j = 10;
   for (i = 1; i < nstates; i++)
-  {
-    putc(',', ftable);
-
-    if (j >= 10)
     {
-      putc('\n', ftable);
-      j = 1;
-    }
-    else
-    {
-      j++;
-    }
+      putc(',', ftable);
 
-    fprintf(ftable, "%6d", accessing_symbol[i]);
-  }
+      if (j >= 10)
+        {
+          putc('\n', ftable);
+          j = 1;
+        }
+      else
+        {
+          j++;
+        }
+
+      fprintf(ftable, "%6d", accessing_symbol[i]);
+    }
 
   fprintf(ftable, "\n};\n");
 }
@@ -397,21 +397,21 @@ void output_rule_data(void)
 
   j = 10;
   for (i = 1; i <= nrules; i++)
-  {
-    putc(',', ftable);
-
-    if (j >= 10)
     {
-      putc('\n', ftable);
-      j = 1;
-    }
-    else
-    {
-      j++;
-    }
+      putc(',', ftable);
 
-    fprintf(ftable, "%6d", rline[i]);
-  }
+      if (j >= 10)
+        {
+          putc('\n', ftable);
+          j = 1;
+        }
+      else
+        {
+          j++;
+        }
+
+      fprintf(ftable, "%6d", rline[i]);
+    }
 
   /* Output the table of token names.  */
 
@@ -419,72 +419,72 @@ void output_rule_data(void)
 
   j = 10;
   for (i = 1; i <= ntokens; i++)
-  {
-    register char *p;
-    putc(',', ftable);
-
-    if (j >= 10)
     {
-      putc('\n', ftable);
-      j = 1;
-    }
-    else
-    {
-      j++;
-    }
+      register char *p;
+      putc(',', ftable);
 
-    putc('\"', ftable);
-
-    for (p = tags[i]; *p; p++)
-    {
-      if (*p == '"' || *p == '\\')
-      {
-        fprintf(ftable, "\\%c", *p);
-      }
-      else if (*p == '\n')
-      {
-        fprintf(ftable, "\\n");
-      }
-      else if (*p == '\t')
-      {
-        fprintf(ftable, "\\t");
-      }
-      else if (*p == '\b')
-      {
-        fprintf(ftable, "\\b");
-      }
-      else if (*p < 040 || *p >= 0177)
-      {
-        fprintf(ftable, "\\%03o", *p);
-      }
+      if (j >= 10)
+        {
+          putc('\n', ftable);
+          j = 1;
+        }
       else
-      {
-        putc(*p, ftable);
-      }
-    }
+        {
+          j++;
+        }
 
-    putc('\"', ftable);
-  }
+      putc('\"', ftable);
+
+      for (p = tags[i]; *p; p++)
+        {
+          if (*p == '"' || *p == '\\')
+            {
+              fprintf(ftable, "\\%c", *p);
+            }
+          else if (*p == '\n')
+            {
+              fprintf(ftable, "\\n");
+            }
+          else if (*p == '\t')
+            {
+              fprintf(ftable, "\\t");
+            }
+          else if (*p == '\b')
+            {
+              fprintf(ftable, "\\b");
+            }
+          else if (*p < 040 || *p >= 0177)
+            {
+              fprintf(ftable, "\\%03o", *p);
+            }
+          else
+            {
+              putc(*p, ftable);
+            }
+        }
+
+      putc('\"', ftable);
+    }
 
   fprintf(ftable, "\n};\n\nstatic const short yyr1[] = {     0");
 
   j = 10;
   for (i = 1; i <= nrules; i++)
-  {
-    putc(',', ftable);
-
-    if (j >= 10)
     {
-      putc('\n', ftable);
-      j = 1;
-    }
-    else
-    {
-      j++;
-    }
+      putc(',', ftable);
 
-    fprintf(ftable, "%6d", rlhs[i]);
-  }
+      if (j >= 10)
+        {
+          putc('\n', ftable);
+          j = 1;
+        }
+      else
+        {
+          j++;
+        }
+
+      fprintf(ftable, "%6d", rlhs[i]);
+    }
 
   FREE(rlhs + 1);
 
@@ -492,27 +492,27 @@ void output_rule_data(void)
 
   j = 10;
   for (i = 1; i < nrules; i++)
-  {
-    putc(',', ftable);
-
-    if (j >= 10)
     {
-      putc('\n', ftable);
-      j = 1;
-    }
-    else
-    {
-      j++;
-    }
+      putc(',', ftable);
 
-    fprintf(ftable, "%6d", rrhs[i + 1] - rrhs[i] - 1);
-  }
+      if (j >= 10)
+        {
+          putc('\n', ftable);
+          j = 1;
+        }
+      else
+        {
+          j++;
+        }
+
+      fprintf(ftable, "%6d", rrhs[i + 1] - rrhs[i] - 1);
+    }
 
   putc(',', ftable);
   if (j >= 10)
-  {
-    putc('\n', ftable);
-  }
+    {
+      putc('\n', ftable);
+    }
 
   fprintf(ftable, "%6d\n};\n", nitems - rrhs[nrules] - 1);
   FREE(rrhs + 1);
@@ -577,23 +577,23 @@ void token_actions(void)
 
   j = 10;
   for (i = 1; i < nstates; i++)
-  {
-    putc(',', ftable);
-
-    if (j >= 10)
     {
-      putc('\n', ftable);
-      j = 1;
-    }
-    else
-    {
-      j++;
-    }
+      putc(',', ftable);
 
-    k = action_row(i);
-    fprintf(ftable, "%6d", k);
-    save_row(i);
-  }
+      if (j >= 10)
+        {
+          putc('\n', ftable);
+          j = 1;
+        }
+      else
+        {
+          j++;
+        }
+
+      k = action_row(i);
+      fprintf(ftable, "%6d", k);
+      save_row(i);
+    }
 
   fprintf(ftable, "\n};\n");
   FREE(actrow);
@@ -633,49 +633,49 @@ int action_row(int state)
   int nodefault = 0; /* set nonzero to inhibit having any default reduction */
 
   for (i = 0; i < ntokens; i++)
-  {
-    actrow[i] = 0;
-  }
+    {
+      actrow[i] = 0;
+    }
 
   default_rule = 0;
   nreds = 0;
   redp = reduction_table[state];
 
   if (redp)
-  {
-    nreds = redp->nreds;
-
-    if (nreds >= 1)
     {
-      /* loop over all the rules available here which require lookahead */
-      m = lookaheads[state];
-      n = lookaheads[state + 1];
+      nreds = redp->nreds;
 
-      for (i = n - 1; i >= m; i--)
-      {
-        rule = -LAruleno[i];
-        wordp = LA + i * tokensetsize;
-        mask = 1;
-
-        /* and find each token which the rule finds acceptable to come next */
-        for (j = 0; j < ntokens; j++)
+      if (nreds >= 1)
         {
-          /* and record this rule as the rule to use if that token follows.  */
-          if (mask & *wordp)
-          {
-            actrow[j] = rule;
-          }
+          /* loop over all the rules available here which require lookahead */
+          m = lookaheads[state];
+          n = lookaheads[state + 1];
 
-          mask <<= 1;
-          if (mask == 0)
-          {
-            mask = 1;
-            wordp++;
-          }
+          for (i = n - 1; i >= m; i--)
+            {
+              rule = -LAruleno[i];
+              wordp = LA + i * tokensetsize;
+              mask = 1;
+
+              /* and find each token which the rule finds acceptable to come next */
+              for (j = 0; j < ntokens; j++)
+                {
+                  /* and record this rule as the rule to use if that token follows.  */
+                  if (mask & *wordp)
+                    {
+                      actrow[j] = rule;
+                    }
+
+                  mask <<= 1;
+                  if (mask == 0)
+                    {
+                      mask = 1;
+                      wordp++;
+                    }
+                }
+            }
         }
-      }
     }
-  }
 
   shiftp = shift_table[state];
 
@@ -684,34 +684,34 @@ int action_row(int state)
      reduce.  */
 
   if (shiftp)
-  {
-    k = shiftp->nshifts;
-
-    for (i = 0; i < k; i++)
     {
-      shift_state = shiftp->shifts[i];
-      if (!shift_state)
-      {
-        continue;
-      }
+      k = shiftp->nshifts;
 
-      symbol = accessing_symbol[shift_state];
+      for (i = 0; i < k; i++)
+        {
+          shift_state = shiftp->shifts[i];
+          if (!shift_state)
+            {
+              continue;
+            }
 
-      if (ISVAR(symbol))
-      {
-        break;
-      }
+          symbol = accessing_symbol[shift_state];
 
-      actrow[symbol] = shift_state;
+          if (ISVAR(symbol))
+            {
+              break;
+            }
 
-      /* do not use any default reduction if there is a shift for error */
+          actrow[symbol] = shift_state;
 
-      if (symbol == error_token_number)
-      {
-        nodefault = 1;
-      }
+          /* do not use any default reduction if there is a shift for error */
+
+          if (symbol == error_token_number)
+            {
+              nodefault = 1;
+            }
+        }
     }
-  }
 
   errp = err_table[state];
 
@@ -719,79 +719,79 @@ int action_row(int state)
      (due to %nonassoc).  For them, record MINSHORT as the action.  */
 
   if (errp)
-  {
-    k = errp->nerrs;
-
-    for (i = 0; i < k; i++)
     {
-      symbol = errp->errs[i];
-      actrow[symbol] = MINSHORT;
+      k = errp->nerrs;
+
+      for (i = 0; i < k; i++)
+        {
+          symbol = errp->errs[i];
+          actrow[symbol] = MINSHORT;
+        }
     }
-  }
 
   /* now find the most common reduction and make it the default action for this
    * state.  */
 
   if (nreds >= 1 && !nodefault)
-  {
-    if (consistent[state])
     {
-      default_rule = redp->rules[0];
-    }
-    else
-    {
-      max = 0;
-      for (i = m; i < n; i++)
-      {
-        count = 0;
-        rule = -LAruleno[i];
-
-        for (j = 0; j < ntokens; j++)
+      if (consistent[state])
         {
-          if (actrow[j] == rule)
-          {
-            count++;
-          }
+          default_rule = redp->rules[0];
         }
-
-        if (count > max)
+      else
         {
-          max = count;
-          default_rule = rule;
-        }
-      }
+          max = 0;
+          for (i = m; i < n; i++)
+            {
+              count = 0;
+              rule = -LAruleno[i];
 
-      /* actions which match the default are replaced with zero,
+              for (j = 0; j < ntokens; j++)
+                {
+                  if (actrow[j] == rule)
+                    {
+                      count++;
+                    }
+                }
+
+              if (count > max)
+                {
+                  max = count;
+                  default_rule = rule;
+                }
+            }
+
+          /* actions which match the default are replaced with zero,
          which means "use the default" */
 
-      if (max > 0)
-      {
-        for (j = 0; j < ntokens; j++)
-        {
-          if (actrow[j] == default_rule)
-          {
-            actrow[j] = 0;
-          }
-        }
+          if (max > 0)
+            {
+              for (j = 0; j < ntokens; j++)
+                {
+                  if (actrow[j] == default_rule)
+                    {
+                      actrow[j] = 0;
+                    }
+                }
 
-        default_rule = -default_rule;
-      }
+              default_rule = -default_rule;
+            }
+        }
     }
-  }
 
   /* If have no default rule, the default is an error.
      So replace any action which says "error" with "use default".  */
 
   if (default_rule == 0)
-  {
-    for (j = 0; j < ntokens; j++)
     {
-      if (actrow[j] == MINSHORT)
-      {
-        actrow[j] = 0;
-      }
+      for (j = 0; j < ntokens; j++)
+        {
+          if (actrow[j] == MINSHORT)
+            {
+              actrow[j] = 0;
+            }
+        }
     }
-  }
 
   return (default_rule);
 }
@@ -806,29 +806,29 @@ void save_row(int state)
 
   count = 0;
   for (i = 0; i < ntokens; i++)
-  {
-    if (actrow[i] != 0)
     {
-      count++;
+      if (actrow[i] != 0)
+        {
+          count++;
+        }
     }
-  }
 
   if (count == 0)
-  {
-    return;
-  }
+    {
+      return;
+    }
 
   froms[state] = sp1 = sp = NEW2(count, short);
   tos[state] = sp2 = NEW2(count, short);
 
   for (i = 0; i < ntokens; i++)
-  {
-    if (actrow[i] != 0)
     {
-      *sp1++ = i;
-      *sp2++ = actrow[i];
+      if (actrow[i] != 0)
+        {
+          *sp1++ = i;
+          *sp2++ = actrow[i];
+        }
     }
-  }
 
   tally[state] = count;
   width[state] = sp1[-1] - sp[0] + 1;
@@ -855,23 +855,23 @@ void goto_actions(void)
 
   j = 10;
   for (i = ntokens + 1; i < nsyms; i++)
-  {
-    putc(',', ftable);
-
-    if (j >= 10)
     {
-      putc('\n', ftable);
-      j = 1;
-    }
-    else
-    {
-      j++;
-    }
+      putc(',', ftable);
 
-    k = default_goto(i);
-    fprintf(ftable, "%6d", k);
-    save_column(i, k);
-  }
+      if (j >= 10)
+        {
+          putc('\n', ftable);
+          j = 1;
+        }
+      else
+        {
+          j++;
+        }
+
+      k = default_goto(i);
+      fprintf(ftable, "%6d", k);
+      save_column(i, k);
+    }
 
   fprintf(ftable, "\n};\n");
   FREE(state_count);
@@ -889,31 +889,31 @@ int default_goto(int symbol)
   n = goto_map[symbol + 1];
 
   if (m == n)
-  {
-    return (-1);
-  }
+    {
+      return (-1);
+    }
 
   for (i = 0; i < nstates; i++)
-  {
-    state_count[i] = 0;
-  }
+    {
+      state_count[i] = 0;
+    }
 
   for (i = m; i < n; i++)
-  {
-    state_count[to_state[i]]++;
-  }
+    {
+      state_count[to_state[i]]++;
+    }
 
   max = 0;
   default_state = -1;
 
   for (i = 0; i < nstates; i++)
-  {
-    if (state_count[i] > max)
     {
-      max = state_count[i];
-      default_state = i;
+      if (state_count[i] > max)
+        {
+          max = state_count[i];
+          default_state = i;
+        }
     }
-  }
 
   return (default_state);
 }
@@ -934,17 +934,17 @@ void save_column(int symbol, int default_state)
 
   count = 0;
   for (i = m; i < n; i++)
-  {
-    if (to_state[i] != default_state)
     {
-      count++;
+      if (to_state[i] != default_state)
+        {
+          count++;
+        }
     }
-  }
 
   if (count == 0)
-  {
-    return;
-  }
+    {
+      return;
+    }
 
   symno = symbol - ntokens + nstates;
 
@@ -952,13 +952,13 @@ void save_column(int symbol, int default_state)
   tos[symno] = sp2 = NEW2(count, short);
 
   for (i = m; i < n; i++)
-  {
-    if (to_state[i] != default_state)
     {
-      *sp1++ = from_state[i];
-      *sp2++ = to_state[i];
+      if (to_state[i] != default_state)
+        {
+          *sp1++ = from_state[i];
+          *sp2++ = to_state[i];
+        }
     }
-  }
 
   tally[symno] = count;
   width[symno] = sp1[-1] - sp[0] + 1;
@@ -979,32 +979,32 @@ void sort_actions(void)
   nentries = 0;
 
   for (i = 0; i < nvectors; i++)
-  {
-    if (tally[i] > 0)
     {
-      t = tally[i];
-      w = width[i];
-      j = nentries - 1;
+      if (tally[i] > 0)
+        {
+          t = tally[i];
+          w = width[i];
+          j = nentries - 1;
 
-      while (j >= 0 && (width[order[j]] < w))
-      {
-        j--;
-      }
+          while (j >= 0 && (width[order[j]] < w))
+            {
+              j--;
+            }
 
-      while (j >= 0 && (width[order[j]] == w) && (tally[order[j]] < t))
-      {
-        j--;
-      }
+          while (j >= 0 && (width[order[j]] == w) && (tally[order[j]] < t))
+            {
+              j--;
+            }
 
-      for (k = nentries - 1; k > j; k--)
-      {
-        order[k + 1] = order[k];
-      }
+          for (k = nentries - 1; k > j; k--)
+            {
+              order[k + 1] = order[k];
+            }
 
-      order[j + 1] = i;
-      nentries++;
+          order[j + 1] = i;
+          nentries++;
+        }
     }
-  }
 }
 
 void pack_table(void)
@@ -1022,37 +1022,37 @@ void pack_table(void)
   high = 0;
 
   for (i = 0; i < nvectors; i++)
-  {
-    base[i] = MINSHORT;
-  }
+    {
+      base[i] = MINSHORT;
+    }
 
   for (i = 0; i < MAXTABLE; i++)
-  {
-    check[i] = -1;
-  }
+    {
+      check[i] = -1;
+    }
 
   for (i = 0; i < nentries; i++)
-  {
-    state = matching_state(i);
-
-    if (state < 0)
     {
-      place = pack_vector(i);
-    }
-    else
-    {
-      place = base[state];
-    }
+      state = matching_state(i);
 
-    pos[i] = place;
-    base[order[i]] = place;
-  }
+      if (state < 0)
+        {
+          place = pack_vector(i);
+        }
+      else
+        {
+          place = base[state];
+        }
+
+      pos[i] = place;
+      base[order[i]] = place;
+    }
 
   for (i = 0; i < nvectors; i++)
-  {
-    FREE(froms[i]);
-    FREE(tos[i]);
-  }
+    {
+      FREE(froms[i]);
+      FREE(tos[i]);
+    }
 
   FREE(froms);
   FREE(tos);
@@ -1071,35 +1071,35 @@ int matching_state(int vector)
 
   i = order[vector];
   if (i >= nstates)
-  {
-    return (-1);
-  }
+    {
+      return (-1);
+    }
 
   t = tally[i];
   w = width[i];
 
   for (prev = vector - 1; prev >= 0; prev--)
-  {
-    j = order[prev];
-    if (width[j] != w || tally[j] != t)
     {
-      return (-1);
-    }
+      j = order[prev];
+      if (width[j] != w || tally[j] != t)
+        {
+          return (-1);
+        }
 
-    match = 1;
-    for (k = 0; match && k < t; k++)
-    {
-      if (tos[j][k] != tos[i][k] || froms[j][k] != froms[i][k])
-      {
-        match = 0;
-      }
-    }
+      match = 1;
+      for (k = 0; match && k < t; k++)
+        {
+          if (tos[j][k] != tos[i][k] || froms[j][k] != froms[i][k])
+            {
+              match = 0;
+            }
+        }
 
-    if (match)
-    {
-      return (j);
+      if (match)
+        {
+          return (j);
+        }
     }
-  }
 
   return (-1);
 }
@@ -1119,62 +1119,62 @@ int pack_vector(int vector)
   t = tally[i];
 
   if (t == 0)
-  {
-    berror("pack_vector");
-  }
+    {
+      berror("pack_vector");
+    }
 
   from = froms[i];
   to = tos[i];
 
   for (j = lowzero - from[0]; j < MAXTABLE; j++)
-  {
-    ok = 1;
-
-    for (k = 0; ok && k < t; k++)
     {
-      loc = j + from[k];
-      if (loc > MAXTABLE)
-      {
-        fatals("maximum table size (%d) exceeded", MAXTABLE, 0, 0, 0, 0, 0, 0,
-               0);
-      }
+      ok = 1;
 
-      if (table[loc] != 0)
-      {
-        ok = 0;
-      }
+      for (k = 0; ok && k < t; k++)
+        {
+          loc = j + from[k];
+          if (loc > MAXTABLE)
+            {
+              fatals("maximum table size (%d) exceeded", MAXTABLE, 0, 0, 0, 0, 0, 0,
+                     0);
+            }
+
+          if (table[loc] != 0)
+            {
+              ok = 0;
+            }
+        }
+
+      for (k = 0; ok && k < vector; k++)
+        {
+          if (pos[k] == j)
+            {
+              ok = 0;
+            }
+        }
+
+      if (ok)
+        {
+          for (k = 0; k < t; k++)
+            {
+              loc = j + from[k];
+              table[loc] = to[k];
+              check[loc] = from[k];
+            }
+
+          while (table[lowzero] != 0)
+            {
+              lowzero++;
+            }
+
+          if (loc > high)
+            {
+              high = loc;
+            }
+
+          return (j);
+        }
     }
-
-    for (k = 0; ok && k < vector; k++)
-    {
-      if (pos[k] == j)
-      {
-        ok = 0;
-      }
-    }
-
-    if (ok)
-    {
-      for (k = 0; k < t; k++)
-      {
-        loc = j + from[k];
-        table[loc] = to[k];
-        check[loc] = from[k];
-      }
-
-      while (table[lowzero] != 0)
-      {
-        lowzero++;
-      }
-
-      if (loc > high)
-      {
-        high = loc;
-      }
-
-      return (j);
-    }
-  }
 
   berror("pack_vector");
   return 0; /* JF keep lint happy */
@@ -1192,41 +1192,41 @@ void output_base(void)
 
   j = 10;
   for (i = 1; i < nstates; i++)
-  {
-    putc(',', ftable);
-
-    if (j >= 10)
     {
-      putc('\n', ftable);
-      j = 1;
-    }
-    else
-    {
-      j++;
-    }
+      putc(',', ftable);
 
-    fprintf(ftable, "%6d", base[i]);
-  }
+      if (j >= 10)
+        {
+          putc('\n', ftable);
+          j = 1;
+        }
+      else
+        {
+          j++;
+        }
+
+      fprintf(ftable, "%6d", base[i]);
+    }
 
   fprintf(ftable, "\n};\n\nstatic const short yypgoto[] = {%6d", base[nstates]);
 
   j = 10;
   for (i = nstates + 1; i < nvectors; i++)
-  {
-    putc(',', ftable);
-
-    if (j >= 10)
     {
-      putc('\n', ftable);
-      j = 1;
-    }
-    else
-    {
-      j++;
-    }
+      putc(',', ftable);
 
-    fprintf(ftable, "%6d", base[i]);
-  }
+      if (j >= 10)
+        {
+          putc('\n', ftable);
+          j = 1;
+        }
+      else
+        {
+          j++;
+        }
+
+      fprintf(ftable, "%6d", base[i]);
+    }
 
   fprintf(ftable, "\n};\n");
   FREE(base);
@@ -1242,21 +1242,21 @@ void output_table(void)
 
   j = 10;
   for (i = 1; i <= high; i++)
-  {
-    putc(',', ftable);
-
-    if (j >= 10)
     {
-      putc('\n', ftable);
-      j = 1;
-    }
-    else
-    {
-      j++;
-    }
+      putc(',', ftable);
 
-    fprintf(ftable, "%6d", table[i]);
-  }
+      if (j >= 10)
+        {
+          putc('\n', ftable);
+          j = 1;
+        }
+      else
+        {
+          j++;
+        }
+
+      fprintf(ftable, "%6d", table[i]);
+    }
 
   fprintf(ftable, "\n};\n");
   FREE(table);
@@ -1271,21 +1271,21 @@ void output_check(void)
 
   j = 10;
   for (i = 1; i <= high; i++)
-  {
-    putc(',', ftable);
-
-    if (j >= 10)
     {
-      putc('\n', ftable);
-      j = 1;
-    }
-    else
-    {
-      j++;
-    }
+      putc(',', ftable);
 
-    fprintf(ftable, "%6d", check[i]);
-  }
+      if (j >= 10)
+        {
+          putc('\n', ftable);
+          j = 1;
+        }
+      else
+        {
+          j++;
+        }
+
+      fprintf(ftable, "%6d", check[i]);
+    }
 
   fprintf(ftable, "\n};\n");
   FREE(check);
@@ -1303,13 +1303,13 @@ void output_parser(void)
 #endif
 
   if (pure_parser)
-  {
-    fprintf(ftable, "#define YYIMPURE 1\n\n");
-  }
+    {
+      fprintf(ftable, "#define YYIMPURE 1\n\n");
+    }
   else
-  {
-    fprintf(ftable, "#define YYPURE 1\n\n");
-  }
+    {
+      fprintf(ftable, "#define YYPURE 1\n\n");
+    }
 
 #ifdef DONTDEF /* JF no longer needed 'cuz open_extra_files changes the \
                   currently open parser from bison.simple to bison.hairy */
@@ -1319,86 +1319,86 @@ void output_parser(void)
     fpars = fparser1;
 #endif
   if (!fpars || feof(fpars))
-  {
-    return;
-  }
+    {
+      return;
+    }
   c = getc(fpars);
   while (c != EOF)
-  {
-    /* This is a kludgy but easy-to-write way to delete lines
+    {
+      /* This is a kludgy but easy-to-write way to delete lines
        that start with `#line'.  */
-    if (nolinesflag)
-    {
-      if (c == '\n')
-      {
-        putc(c, ftable);
-        c = getc(fpars);
-        if (c == '#')
+      if (nolinesflag)
         {
-          c = getc(fpars);
-          if (c == 'l')
-          {
-            c = getc(fpars);
-            if (c == 'i')
+          if (c == '\n')
             {
+              putc(c, ftable);
               c = getc(fpars);
-              if (c == 'n')
-              {
-                c = getc(fpars);
-                if (c == 'e')
+              if (c == '#')
                 {
-                  while (1)
-                  {
-                    c = getc(fpars);
-                    if (c == '\n' || c < 0)
-                    {
-                      break;
-                    }
-                  }
                   c = getc(fpars);
+                  if (c == 'l')
+                    {
+                      c = getc(fpars);
+                      if (c == 'i')
+                        {
+                          c = getc(fpars);
+                          if (c == 'n')
+                            {
+                              c = getc(fpars);
+                              if (c == 'e')
+                                {
+                                  while (1)
+                                    {
+                                      c = getc(fpars);
+                                      if (c == '\n' || c < 0)
+                                        {
+                                          break;
+                                        }
+                                    }
+                                  c = getc(fpars);
+                                }
+                              else
+                                {
+                                  fprintf(ftable, "#lin");
+                                }
+                            }
+                          else
+                            {
+                              fprintf(ftable, "#li");
+                            }
+                        }
+                      else
+                        {
+                          fprintf(ftable, "#l");
+                        }
+                    }
+                  else
+                    {
+                      fprintf(ftable, "#");
+                    }
                 }
-                else
-                {
-                  fprintf(ftable, "#lin");
-                }
-              }
-              else
-              {
-                fprintf(ftable, "#li");
-              }
             }
-            else
-            {
-              fprintf(ftable, "#l");
-            }
-          }
-          else
-          {
-            fprintf(ftable, "#");
-          }
         }
-      }
-    }
 
-    if (c == '$')
-    {
+      if (c == '$')
+        {
 #ifdef DONTDEF
-      fprintf(ftable, "#include \"%s\"\n", actfile);
+          fprintf(ftable, "#include \"%s\"\n", actfile);
 #else
-      /* JF don't #include the action file.  Stuff it right in. */
-      rewind(faction);
-      for (c = getc(faction); c != EOF; c = getc(faction))
-      {
-        putc(c, ftable);
-      }
+          /* JF don't #include the action file.  Stuff it right in. */
+          rewind(faction);
+          for (c = getc(faction); c != EOF; c = getc(faction))
+            {
+              putc(c, ftable);
+            }
 #endif
+        }
+      else
+        {
+          putc(c, ftable);
+        }
+      c = getc(fpars);
     }
-    else
-    {
-      putc(c, ftable);
-    }
-    c = getc(fpars);
-  }
 }
 
 static const char *mybasename(const char *str)
@@ -1416,10 +1416,10 @@ void output_program(void)
 
   c = getc(finput);
   while (c != EOF)
-  {
-    putc(c, ftable);
-    c = getc(finput);
-  }
+    {
+      putc(c, ftable);
+      c = getc(finput);
+    }
 }
 
 void free_itemsets(void)
@@ -1429,10 +1429,10 @@ void free_itemsets(void)
   FREE(state_table);
 
   for (cp = first_state; cp; cp = cptmp)
-  {
-    cptmp = cp->next;
-    FREE(cp);
-  }
+    {
+      cptmp = cp->next;
+      FREE(cp);
+    }
 }
 
 void free_shifts(void)
@@ -1442,10 +1442,10 @@ void free_shifts(void)
   FREE(shift_table);
 
   for (sp = first_shift; sp; sp = sptmp)
-  {
-    sptmp = sp->next;
-    FREE(sp);
-  }
+    {
+      sptmp = sp->next;
+      FREE(sp);
+    }
 }
 
 void free_reductions(void)
@@ -1455,8 +1455,8 @@ void free_reductions(void)
   FREE(reduction_table);
 
   for (rp = first_reduction; rp; rp = rptmp)
-  {
-    rptmp = rp->next;
-    FREE(rp);
-  }
+    {
+      rptmp = rp->next;
+      FREE(rp);
+    }
 }

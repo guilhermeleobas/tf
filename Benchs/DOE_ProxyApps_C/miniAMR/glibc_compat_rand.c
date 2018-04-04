@@ -34,9 +34,9 @@ int glibc_compat_rand(void)
 
   ++next;
   if (next >= TABLE_SIZE)
-  {
-    next = 0;
-  }
+    {
+      next = 0;
+    }
 
   return r;
 }
@@ -44,31 +44,31 @@ int glibc_compat_rand(void)
 void glibc_compat_srand(unsigned int seed)
 {
   if (seed == 0)
-  {
-    seed = 1;
-  }
+    {
+      seed = 1;
+    }
 
   table[0] = seed;
 
   for (int i = 1; i < 31; i++)
-  {
-    int r = (16807ll * table[i - 1]) % 2147483647;
-    if (r < 0)
     {
-      r += 2147483647;
+      int r = (16807ll * table[i - 1]) % 2147483647;
+      if (r < 0)
+        {
+          r += 2147483647;
+        }
+
+      table[i] = r;
     }
 
-    table[i] = r;
-  }
-
   for (int i = 31; i < 34; i++)
-  {
-    table[i] = table[i - 31];
-  }
+    {
+      table[i] = table[i - 31];
+    }
   for (int i = 34; i < TABLE_SIZE; i++)
-  {
-    table[i] = table[i - 31] + table[i - 3];
-  }
+    {
+      table[i] = table[i - 31] + table[i - 3];
+    }
 
   next = 0;
 }

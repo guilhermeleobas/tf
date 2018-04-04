@@ -41,10 +41,10 @@ void initmark(void)
   int i, j;
 
   for (i = 0; i < 19; i++)
-  {
-    for (j = 0; j < 19; j++)
     {
-      ma[i][j] = 0;
+      for (j = 0; j < 19; j++)
+        {
+          ma[i][j] = 0;
+        }
     }
-  }
 } /* end initmark */

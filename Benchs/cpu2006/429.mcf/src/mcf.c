@@ -40,63 +40,63 @@ long global_opt()
                        : MAX_NB_ITERATIONS_LARGE_NET;
 
   while (new_arcs)
-  {
+    {
 #ifdef REPORT
-    printf("active arcs                : %ld\n", net.m);
+      printf("active arcs                : %ld\n", net.m);
 #endif
 
-    primal_net_simplex(&net);
+      primal_net_simplex(&net);
 
 #ifdef REPORT
-    printf("simplex iterations         : %ld\n", net.iterations);
-    printf("objective value            : %0.0f\n", flow_cost(&net));
+      printf("simplex iterations         : %ld\n", net.iterations);
+      printf("objective value            : %0.0f\n", flow_cost(&net));
 #endif
 
 #if defined AT_HOME
-    printf("%ld residual iterations\n", residual_nb_it);
+      printf("%ld residual iterations\n", residual_nb_it);
 #endif
 
-    if (!residual_nb_it)
-    {
-      break;
-    }
+      if (!residual_nb_it)
+        {
+          break;
+        }
 
-    if (net.m_impl)
-    {
-      new_arcs = suspend_impl(&net, (cost_t)-1, 0);
+      if (net.m_impl)
+        {
+          new_arcs = suspend_impl(&net, (cost_t)-1, 0);
+
+#ifdef REPORT
+          if (new_arcs)
+            {
+              printf("erased arcs                : %ld\n", new_arcs);
+            }
+#endif
+        }
+
+      new_arcs = price_out_impl(&net);
 
 #ifdef REPORT
       if (new_arcs)
-      {
-        printf("erased arcs                : %ld\n", new_arcs);
-      }
+        {
+          printf("new implicit arcs          : %ld\n", new_arcs);
+        }
 #endif
-    }
 
-    new_arcs = price_out_impl(&net);
-
+      if (new_arcs < 0)
+        {
 #ifdef REPORT
-    if (new_arcs)
-    {
-      printf("new implicit arcs          : %ld\n", new_arcs);
-    }
+          printf("not enough memory, exit(-1)\n");
 #endif
 
-    if (new_arcs < 0)
-    {
-#ifdef REPORT
-      printf("not enough memory, exit(-1)\n");
-#endif
-
-      exit(-1);
-    }
+          exit(-1);
+        }
 
 #ifndef REPORT
-    printf("\n");
+      printf("\n");
 #endif
 
-    residual_nb_it--;
-  }
+      residual_nb_it--;
+    }
 
   printf("checksum                   : %ld\n", net.checksum);
 
@@ -111,9 +111,9 @@ char *argv[];
 #endif
 {
   if (argc < 2)
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
 
   printf("\nMCF SPEC CPU2006 version 1.10\n");
   printf("Copyright (c) 1998-2000 Zuse Institut Berlin (ZIB)\n");
@@ -127,11 +127,11 @@ char *argv[];
   strcpy(net.inputfile, argv[1]);
 
   if (read_min(&net))
-  {
-    printf("read error, exit\n");
-    getfree(&net);
-    return -1;
-  }
+    {
+      printf("read error, exit\n");
+      getfree(&net);
+      return -1;
+    }
 
 #ifdef REPORT
   printf("nodes                      : %ld\n", net.n_trips);
@@ -145,10 +145,10 @@ char *argv[];
 #endif
 
   if (write_circulations("mcf.out", &net))
-  {
-    getfree(&net);
-    return -1;
-  }
+    {
+      getfree(&net);
+      return -1;
+    }
 
   getfree(&net);
   return 0;

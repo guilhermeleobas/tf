@@ -59,72 +59,72 @@ int hypre_SMGDestroy(void *smg_vdata)
   int ierr = 0;
 
   if (smg_data)
-  {
-    if ((smg_data->logging) > 0)
     {
-      hypre_TFree(smg_data->norms);
-      hypre_TFree(smg_data->rel_norms);
-    }
-
-    if ((smg_data->num_levels) > -1)
-    {
-      for (l = 0; l < ((smg_data->num_levels) - 1); l++)
-      {
-        hypre_SMGRelaxDestroy(smg_data->relax_data_l[l]);
-        hypre_SMGResidualDestroy(smg_data->residual_data_l[l]);
-        hypre_SemiRestrictDestroy(smg_data->restrict_data_l[l]);
-        hypre_SemiInterpDestroy(smg_data->interp_data_l[l]);
-      }
-      hypre_SMGRelaxDestroy(smg_data->relax_data_l[l]);
-      if (l == 0)
-      {
-        hypre_SMGResidualDestroy(smg_data->residual_data_l[l]);
-      }
-      hypre_TFree(smg_data->relax_data_l);
-      hypre_TFree(smg_data->residual_data_l);
-      hypre_TFree(smg_data->restrict_data_l);
-      hypre_TFree(smg_data->interp_data_l);
-
-      hypre_StructVectorDestroy(smg_data->tb_l[0]);
-      hypre_StructVectorDestroy(smg_data->tx_l[0]);
-      hypre_StructGridDestroy(smg_data->grid_l[0]);
-      hypre_StructMatrixDestroy(smg_data->A_l[0]);
-      hypre_StructVectorDestroy(smg_data->b_l[0]);
-      hypre_StructVectorDestroy(smg_data->x_l[0]);
-      for (l = 0; l < ((smg_data->num_levels) - 1); l++)
-      {
-        hypre_StructGridDestroy(smg_data->grid_l[l + 1]);
-        hypre_StructGridDestroy(smg_data->PT_grid_l[l + 1]);
-        hypre_StructMatrixDestroy(smg_data->A_l[l + 1]);
-        if (smg_data->PT_l[l] == smg_data->R_l[l])
+      if ((smg_data->logging) > 0)
         {
-          hypre_StructMatrixDestroy(smg_data->PT_l[l]);
+          hypre_TFree(smg_data->norms);
+          hypre_TFree(smg_data->rel_norms);
         }
-        else
-        {
-          hypre_StructMatrixDestroy(smg_data->PT_l[l]);
-          hypre_StructMatrixDestroy(smg_data->R_l[l]);
-        }
-        hypre_StructVectorDestroy(smg_data->b_l[l + 1]);
-        hypre_StructVectorDestroy(smg_data->x_l[l + 1]);
-        hypre_StructVectorDestroy(smg_data->tb_l[l + 1]);
-        hypre_StructVectorDestroy(smg_data->tx_l[l + 1]);
-      }
-      hypre_SharedTFree(smg_data->data);
-      hypre_TFree(smg_data->grid_l);
-      hypre_TFree(smg_data->PT_grid_l);
-      hypre_TFree(smg_data->A_l);
-      hypre_TFree(smg_data->PT_l);
-      hypre_TFree(smg_data->R_l);
-      hypre_TFree(smg_data->b_l);
-      hypre_TFree(smg_data->x_l);
-      hypre_TFree(smg_data->tb_l);
-      hypre_TFree(smg_data->tx_l);
-    }
 
-    hypre_FinalizeTiming(smg_data->time_index);
-    hypre_TFree(smg_data);
-  }
+      if ((smg_data->num_levels) > -1)
+        {
+          for (l = 0; l < ((smg_data->num_levels) - 1); l++)
+            {
+              hypre_SMGRelaxDestroy(smg_data->relax_data_l[l]);
+              hypre_SMGResidualDestroy(smg_data->residual_data_l[l]);
+              hypre_SemiRestrictDestroy(smg_data->restrict_data_l[l]);
+              hypre_SemiInterpDestroy(smg_data->interp_data_l[l]);
+            }
+          hypre_SMGRelaxDestroy(smg_data->relax_data_l[l]);
+          if (l == 0)
+            {
+              hypre_SMGResidualDestroy(smg_data->residual_data_l[l]);
+            }
+          hypre_TFree(smg_data->relax_data_l);
+          hypre_TFree(smg_data->residual_data_l);
+          hypre_TFree(smg_data->restrict_data_l);
+          hypre_TFree(smg_data->interp_data_l);
+
+          hypre_StructVectorDestroy(smg_data->tb_l[0]);
+          hypre_StructVectorDestroy(smg_data->tx_l[0]);
+          hypre_StructGridDestroy(smg_data->grid_l[0]);
+          hypre_StructMatrixDestroy(smg_data->A_l[0]);
+          hypre_StructVectorDestroy(smg_data->b_l[0]);
+          hypre_StructVectorDestroy(smg_data->x_l[0]);
+          for (l = 0; l < ((smg_data->num_levels) - 1); l++)
+            {
+              hypre_StructGridDestroy(smg_data->grid_l[l + 1]);
+              hypre_StructGridDestroy(smg_data->PT_grid_l[l + 1]);
+              hypre_StructMatrixDestroy(smg_data->A_l[l + 1]);
+              if (smg_data->PT_l[l] == smg_data->R_l[l])
+                {
+                  hypre_StructMatrixDestroy(smg_data->PT_l[l]);
+                }
+              else
+                {
+                  hypre_StructMatrixDestroy(smg_data->PT_l[l]);
+                  hypre_StructMatrixDestroy(smg_data->R_l[l]);
+                }
+              hypre_StructVectorDestroy(smg_data->b_l[l + 1]);
+              hypre_StructVectorDestroy(smg_data->x_l[l + 1]);
+              hypre_StructVectorDestroy(smg_data->tb_l[l + 1]);
+              hypre_StructVectorDestroy(smg_data->tx_l[l + 1]);
+            }
+          hypre_SharedTFree(smg_data->data);
+          hypre_TFree(smg_data->grid_l);
+          hypre_TFree(smg_data->PT_grid_l);
+          hypre_TFree(smg_data->A_l);
+          hypre_TFree(smg_data->PT_l);
+          hypre_TFree(smg_data->R_l);
+          hypre_TFree(smg_data->b_l);
+          hypre_TFree(smg_data->x_l);
+          hypre_TFree(smg_data->tb_l);
+          hypre_TFree(smg_data->tx_l);
+        }
+
+      hypre_FinalizeTiming(smg_data->time_index);
+      hypre_TFree(smg_data);
+    }
 
   return (ierr);
 }
@@ -240,10 +240,10 @@ int hypre_SMGSetBase(void *smg_vdata, hypre_Index base_index,
   int ierr = 0;
 
   for (d = 0; d < 3; d++)
-  {
-    hypre_IndexD((smg_data->base_index), d) = hypre_IndexD(base_index, d);
-    hypre_IndexD((smg_data->base_stride), d) = hypre_IndexD(base_stride, d);
-  }
+    {
+      hypre_IndexD((smg_data->base_index), d) = hypre_IndexD(base_index, d);
+      hypre_IndexD((smg_data->base_stride), d) = hypre_IndexD(base_stride, d);
+    }
 
   return ierr;
 }
@@ -291,16 +291,16 @@ int hypre_SMGPrintLogging(void *smg_vdata, int myid)
   double *rel_norms = (smg_data->rel_norms);
 
   if (myid == 0)
-  {
-    if (logging > 0)
     {
-      for (i = 0; i < num_iterations; i++)
-      {
-        printf("Residual norm[%d] = %e   ", i, norms[i]);
-        printf("Relative residual norm[%d] = %e\n", i, rel_norms[i]);
-      }
+      if (logging > 0)
+        {
+          for (i = 0; i < num_iterations; i++)
+            {
+              printf("Residual norm[%d] = %e   ", i, norms[i]);
+              printf("Relative residual norm[%d] = %e\n", i, rel_norms[i]);
+            }
+        }
     }
-  }
 
   return ierr;
 }
@@ -322,18 +322,18 @@ int hypre_SMGGetFinalRelativeResidualNorm(void *smg_vdata,
   int ierr = -1;
 
   if (logging > 0)
-  {
-    if (num_iterations == max_iter)
     {
-      *relative_residual_norm = rel_norms[num_iterations - 1];
-    }
-    else
-    {
-      *relative_residual_norm = rel_norms[num_iterations];
-    }
+      if (num_iterations == max_iter)
+        {
+          *relative_residual_norm = rel_norms[num_iterations - 1];
+        }
+      else
+        {
+          *relative_residual_norm = rel_norms[num_iterations];
+        }
 
-    ierr = 0;
-  }
+      ierr = 0;
+    }
 
   return ierr;
 }
@@ -378,7 +378,10 @@ int hypre_SMGSetStructVectorConstantValues(hypre_StructVector *vector,
     hypre_BoxLoop1Begin(loop_size, v_data_box, start, stride, vi);
 #define HYPRE_BOX_SMP_PRIVATE loopk, loopi, loopj, vi
 #include "hypre_box_smp_forloop.h"
-    hypre_BoxLoop1For(loopi, loopj, loopk, vi) { vp[vi] = values; }
+    hypre_BoxLoop1For(loopi, loopj, loopk, vi)
+    {
+      vp[vi] = values;
+    }
     hypre_BoxLoop1End(vi);
   }
 

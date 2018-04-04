@@ -33,13 +33,13 @@
  *	Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include <assert.h>         /*  for assert()                    */
-#include <stdio.h>          /*  for sprintf() definition        */
-#include <stdlib.h>         /*  for NULL definition             */
-#include <string.h>         /*  for strcpy() definition         */
+#include <assert.h> /*  for assert()                    */
+#include <stdio.h> /*  for sprintf() definition        */
+#include <stdlib.h> /*  for NULL definition             */
+#include <string.h> /*  for strcpy() definition         */
 #include "dataManagement.h" /*  for primitive type definitions  */
-#include "dataObject.h"     /*  for DataObject definitions      */
-#include "errorMessage.h"   /*  for errorMessage() definition   */
+#include "dataObject.h" /*  for DataObject definitions      */
+#include "errorMessage.h" /*  for errorMessage() definition   */
 
 /*
  *  Static definition of output buffer
@@ -107,8 +107,8 @@ void flushOutputBuffer(void);
  */
 
 void outputQuery(DataObject *dataObject) /*  object to place in buffer */
-{                                        /*  beginning of outputQuery()  */
-  Int i;                  /*  loop variable for attributes         */
+{ /*  beginning of outputQuery()  */
+  Int i; /*  loop variable for attributes         */
   Int numberOfAttributes; /*  number of attributes for object      */
 
 #ifndef NDEBUG
@@ -150,17 +150,17 @@ void outputQuery(DataObject *dataObject) /*  object to place in buffer */
    */
   numberOfAttributes = 0;
   if (dataObject->type == SMALL)
-  {
-    numberOfAttributes = NUM_OF_SMALL_ATTRIBUTES - 1;
-  } /*  end if ( dataObject->type == SMALL )      */
+    {
+      numberOfAttributes = NUM_OF_SMALL_ATTRIBUTES - 1;
+    } /*  end if ( dataObject->type == SMALL )      */
   else if (dataObject->type == MEDIUM)
-  {
-    numberOfAttributes = NUM_OF_MEDIUM_ATTRIBUTES - 1;
-  } /*  end if ( dataObject->type == MEDIUM )    */
+    {
+      numberOfAttributes = NUM_OF_MEDIUM_ATTRIBUTES - 1;
+    } /*  end if ( dataObject->type == MEDIUM )    */
   else if (dataObject->type == LARGE)
-  {
-    numberOfAttributes = NUM_OF_LARGE_ATTRIBUTES - 1;
-  } /*  end if ( dataObject->type == LARGE )      */
+    {
+      numberOfAttributes = NUM_OF_LARGE_ATTRIBUTES - 1;
+    } /*  end if ( dataObject->type == LARGE )      */
 
   /*
    *  Place each attribute into dataObjectString. Key and Non-Key values are
@@ -179,20 +179,20 @@ void outputQuery(DataObject *dataObject) /*  object to place in buffer */
    */
   dataObjectString[0] = '\0';
   for (i = MIN_ATTRIBUTE_CODE; i < NUM_OF_KEY_ATTRIBUTES; i++)
-  {
-    sprintf(temp, "%.8e", dataObject->attributes[i].value.key);
-    strcat(dataObjectString, temp);
-    strcat(dataObjectString, ATTRIBUTE_DELIMITER);
-  } /*  end of loop for key attributes  */
+    {
+      sprintf(temp, "%.8e", dataObject->attributes[i].value.key);
+      strcat(dataObjectString, temp);
+      strcat(dataObjectString, ATTRIBUTE_DELIMITER);
+    } /*  end of loop for key attributes  */
 
   for (i = NUM_OF_KEY_ATTRIBUTES; i < numberOfAttributes; i++)
-  {
-    assert(dataObject->attributes[i].value.nonKey);
-    assert(strlen(dataObject->attributes[i].value.nonKey) > 0);
+    {
+      assert(dataObject->attributes[i].value.nonKey);
+      assert(strlen(dataObject->attributes[i].value.nonKey) > 0);
 
-    strcat(dataObjectString, dataObject->attributes[i].value.nonKey);
-    strcat(dataObjectString, ATTRIBUTE_DELIMITER);
-  } /*  end of loop for non-key attributes  */
+      strcat(dataObjectString, dataObject->attributes[i].value.nonKey);
+      strcat(dataObjectString, ATTRIBUTE_DELIMITER);
+    } /*  end of loop for non-key attributes  */
 
   assert(dataObject->attributes[numberOfAttributes].value.nonKey);
   assert(strlen(dataObject->attributes[numberOfAttributes].value.nonKey) > 0);
@@ -208,15 +208,15 @@ void outputQuery(DataObject *dataObject) /*  object to place in buffer */
    *  flushing if necessary.
    */
   if (strlen(dataObjectString) + strlen(outputBuffer) > OUTPUT_BUFFER_LENGTH)
-  {
+    {
 #ifndef NDEBUG
-    errorMessage("output buffer full - flushing", REPLACE);
-    errorMessage(name, PREPEND);
-    flushErrorMessage();
+      errorMessage("output buffer full - flushing", REPLACE);
+      errorMessage(name, PREPEND);
+      flushErrorMessage();
 #endif /* NDEBUG */
 
-    flushOutputBuffer();
-  }
+      flushOutputBuffer();
+    }
 
   strcat(outputBuffer, dataObjectString);
 
@@ -283,10 +283,10 @@ void flushOutputBuffer(void)
    *  If the contents are not empty, flush the buffer
    */
   if (strlen(outputBuffer) > 0)
-  {
-    fprintf(outputFile, "%s", outputBuffer);
-    fflush(outputFile);
-  }
+    {
+      fprintf(outputFile, "%s", outputBuffer);
+      fflush(outputFile);
+    }
 
   outputBuffer[0] = '\0';
 

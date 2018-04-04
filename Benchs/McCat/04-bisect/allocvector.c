@@ -32,10 +32,10 @@ void *allocvector(size_t size)
   }
   else {     */
   if ((V = (void *)malloc((size_t)size)) == NULL)
-  {
-    fprintf(stderr, "Error: couldn't allocate V in allocvector.\n");
-    exit(-1);
-  }
+    {
+      fprintf(stderr, "Error: couldn't allocate V in allocvector.\n");
+      exit(-1);
+    }
   /*  } */
   memset(V, 0, size);
   return V;

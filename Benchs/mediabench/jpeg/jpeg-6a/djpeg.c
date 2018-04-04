@@ -23,14 +23,14 @@
  * works regardless of which command line style is used.
  */
 
-#include "cdjpeg.h"   /* Common decls for cjpeg/djpeg applications */
+#include "cdjpeg.h" /* Common decls for cjpeg/djpeg applications */
 #include "jversion.h" /* for version message */
 
 #include <ctype.h> /* to declare isprint() */
 
 #ifdef USE_CCOMMAND /* command-line reader for Macintosh */
 #ifdef __MWERKS__
-#include <SIOUX.h>   /* Metrowerks needs this */
+#include <SIOUX.h> /* Metrowerks needs this */
 #include <console.h> /* ... and this */
 #endif
 #ifdef THINK_C
@@ -53,14 +53,15 @@ static const char *const cdjpeg_message_table[] = {
  * indeed, you had better do so if you undefine PPM_SUPPORTED.
  */
 
-typedef enum {
-  FMT_BMP,   /* BMP format (Windows flavor) */
-  FMT_GIF,   /* GIF format */
-  FMT_OS2,   /* BMP format (OS/2 flavor) */
-  FMT_PPM,   /* PPM/PGM (PBMPLUS formats) */
-  FMT_RLE,   /* RLE format */
+typedef enum
+{
+  FMT_BMP, /* BMP format (Windows flavor) */
+  FMT_GIF, /* GIF format */
+  FMT_OS2, /* BMP format (OS/2 flavor) */
+  FMT_PPM, /* PPM/PGM (PBMPLUS formats) */
+  FMT_RLE, /* RLE format */
   FMT_TARGA, /* Targa format */
-  FMT_TIFF   /* TIFF format */
+  FMT_TIFF /* TIFF format */
 } IMAGE_FORMATS;
 
 #ifndef DEFAULT_FMT /* so can override from CFLAGS in Makefile */
@@ -78,7 +79,7 @@ static IMAGE_FORMATS requested_fmt;
  */
 
 static const char *progname; /* program name for error messages */
-static char *outfilename;    /* for -outfile switch */
+static char *outfilename; /* for -outfile switch */
 
 LOCAL(void)
 usage(void)
@@ -178,228 +179,228 @@ parse_switches(j_decompress_ptr cinfo, int argc, char **argv,
   /* Scan command line options, adjust parameters */
 
   for (argn = 1; argn < argc; argn++)
-  {
-    arg = argv[argn];
-    if (*arg != '-')
     {
-      /* Not a switch, must be a file name argument */
-      if (argn <= last_file_arg_seen)
-      {
-        outfilename = NULL; /* -outfile applies to just one input file */
-        continue;           /* ignore this name if previously processed */
-      }
-      break; /* else done parsing switches */
-    }
-    arg++; /* advance past switch marker character */
-
-    if (keymatch(arg, "bmp", 1))
-    {
-      /* BMP output format. */
-      requested_fmt = FMT_BMP;
-    }
-    else if (keymatch(arg, "colors", 1) || keymatch(arg, "colours", 1) ||
-             keymatch(arg, "quantize", 1) || keymatch(arg, "quantise", 1))
-    {
-      /* Do color quantization. */
-      int val;
-
-      if (++argn >= argc)
-      { /* advance to next argument */
-        usage();
-      }
-      if (sscanf(argv[argn], "%d", &val) != 1)
-      {
-        usage();
-      }
-      cinfo->desired_number_of_colors = val;
-      cinfo->quantize_colors = TRUE;
-    }
-    else if (keymatch(arg, "dct", 2))
-    {
-      /* Select IDCT algorithm. */
-      if (++argn >= argc)
-      { /* advance to next argument */
-        usage();
-      }
-      if (keymatch(argv[argn], "int", 1))
-      {
-        cinfo->dct_method = JDCT_ISLOW;
-      }
-      else if (keymatch(argv[argn], "fast", 2))
-      {
-        cinfo->dct_method = JDCT_IFAST;
-      }
-      else if (keymatch(argv[argn], "float", 2))
-      {
-        cinfo->dct_method = JDCT_FLOAT;
-      }
-      else
-      {
-        usage();
-      }
-    }
-    else if (keymatch(arg, "dither", 2))
-    {
-      /* Select dithering algorithm. */
-      if (++argn >= argc)
-      { /* advance to next argument */
-        usage();
-      }
-      if (keymatch(argv[argn], "fs", 2))
-      {
-        cinfo->dither_mode = JDITHER_FS;
-      }
-      else if (keymatch(argv[argn], "none", 2))
-      {
-        cinfo->dither_mode = JDITHER_NONE;
-      }
-      else if (keymatch(argv[argn], "ordered", 2))
-      {
-        cinfo->dither_mode = JDITHER_ORDERED;
-      }
-      else
-      {
-        usage();
-      }
-    }
-    else if (keymatch(arg, "debug", 1) || keymatch(arg, "verbose", 1))
-    {
-      /* Enable debug printouts. */
-      /* On first -d, print version identification */
-      static boolean printed_version = FALSE;
-
-      if (!printed_version)
-      {
-        fprintf(stderr, "Independent JPEG Group's DJPEG, version %s\n%s\n",
-                JVERSION, JCOPYRIGHT);
-        printed_version = TRUE;
-      }
-      cinfo->err->trace_level++;
-    }
-    else if (keymatch(arg, "fast", 1))
-    {
-      /* Select recommended processing options for quick-and-dirty output. */
-      cinfo->two_pass_quantize = FALSE;
-      cinfo->dither_mode = JDITHER_ORDERED;
-      if (!cinfo->quantize_colors)
-      { /* don't override an earlier -colors */
-        cinfo->desired_number_of_colors = 216;
-      }
-      cinfo->dct_method = JDCT_FASTEST;
-      cinfo->do_fancy_upsampling = FALSE;
-    }
-    else if (keymatch(arg, "gif", 1))
-    {
-      /* GIF output format. */
-      requested_fmt = FMT_GIF;
-    }
-    else if (keymatch(arg, "grayscale", 2) || keymatch(arg, "greyscale", 2))
-    {
-      /* Force monochrome output. */
-      cinfo->out_color_space = JCS_GRAYSCALE;
-    }
-    else if (keymatch(arg, "map", 3))
-    {
-      /* Quantize to a color map taken from an input file. */
-      if (++argn >= argc)
-      { /* advance to next argument */
-        usage();
-      }
-      if (for_real)
-      {                      /* too expensive to do twice! */
-#ifdef QUANT_2PASS_SUPPORTED /* otherwise can't quantize to supplied map */
-        FILE *mapfile;
-
-        if ((mapfile = fopen(argv[argn], READ_BINARY)) == NULL)
+      arg = argv[argn];
+      if (*arg != '-')
         {
-          fprintf(stderr, "%s: can't open %s\n", progname, argv[argn]);
-          exit(EXIT_FAILURE);
+          /* Not a switch, must be a file name argument */
+          if (argn <= last_file_arg_seen)
+            {
+              outfilename = NULL; /* -outfile applies to just one input file */
+              continue; /* ignore this name if previously processed */
+            }
+          break; /* else done parsing switches */
         }
-        read_color_map(cinfo, mapfile);
-        fclose(mapfile);
-        cinfo->quantize_colors = TRUE;
-#else
-        ERREXIT(cinfo, JERR_NOT_COMPILED);
-#endif
-      }
-    }
-    else if (keymatch(arg, "maxmemory", 3))
-    {
-      /* Maximum memory in Kb (or Mb with 'm'). */
-      long lval;
-      char ch = 'x';
+      arg++; /* advance past switch marker character */
 
-      if (++argn >= argc)
-      { /* advance to next argument */
-        usage();
-      }
-      if (sscanf(argv[argn], "%ld%c", &lval, &ch) < 1)
-      {
-        usage();
-      }
-      if (ch == 'm' || ch == 'M')
-      {
-        lval *= 1000L;
-      }
-      cinfo->mem->max_memory_to_use = lval * 1000L;
+      if (keymatch(arg, "bmp", 1))
+        {
+          /* BMP output format. */
+          requested_fmt = FMT_BMP;
+        }
+      else if (keymatch(arg, "colors", 1) || keymatch(arg, "colours", 1) ||
+               keymatch(arg, "quantize", 1) || keymatch(arg, "quantise", 1))
+        {
+          /* Do color quantization. */
+          int val;
+
+          if (++argn >= argc)
+            { /* advance to next argument */
+              usage();
+            }
+          if (sscanf(argv[argn], "%d", &val) != 1)
+            {
+              usage();
+            }
+          cinfo->desired_number_of_colors = val;
+          cinfo->quantize_colors = TRUE;
+        }
+      else if (keymatch(arg, "dct", 2))
+        {
+          /* Select IDCT algorithm. */
+          if (++argn >= argc)
+            { /* advance to next argument */
+              usage();
+            }
+          if (keymatch(argv[argn], "int", 1))
+            {
+              cinfo->dct_method = JDCT_ISLOW;
+            }
+          else if (keymatch(argv[argn], "fast", 2))
+            {
+              cinfo->dct_method = JDCT_IFAST;
+            }
+          else if (keymatch(argv[argn], "float", 2))
+            {
+              cinfo->dct_method = JDCT_FLOAT;
+            }
+          else
+            {
+              usage();
+            }
+        }
+      else if (keymatch(arg, "dither", 2))
+        {
+          /* Select dithering algorithm. */
+          if (++argn >= argc)
+            { /* advance to next argument */
+              usage();
+            }
+          if (keymatch(argv[argn], "fs", 2))
+            {
+              cinfo->dither_mode = JDITHER_FS;
+            }
+          else if (keymatch(argv[argn], "none", 2))
+            {
+              cinfo->dither_mode = JDITHER_NONE;
+            }
+          else if (keymatch(argv[argn], "ordered", 2))
+            {
+              cinfo->dither_mode = JDITHER_ORDERED;
+            }
+          else
+            {
+              usage();
+            }
+        }
+      else if (keymatch(arg, "debug", 1) || keymatch(arg, "verbose", 1))
+        {
+          /* Enable debug printouts. */
+          /* On first -d, print version identification */
+          static boolean printed_version = FALSE;
+
+          if (!printed_version)
+            {
+              fprintf(stderr, "Independent JPEG Group's DJPEG, version %s\n%s\n",
+                      JVERSION, JCOPYRIGHT);
+              printed_version = TRUE;
+            }
+          cinfo->err->trace_level++;
+        }
+      else if (keymatch(arg, "fast", 1))
+        {
+          /* Select recommended processing options for quick-and-dirty output. */
+          cinfo->two_pass_quantize = FALSE;
+          cinfo->dither_mode = JDITHER_ORDERED;
+          if (!cinfo->quantize_colors)
+            { /* don't override an earlier -colors */
+              cinfo->desired_number_of_colors = 216;
+            }
+          cinfo->dct_method = JDCT_FASTEST;
+          cinfo->do_fancy_upsampling = FALSE;
+        }
+      else if (keymatch(arg, "gif", 1))
+        {
+          /* GIF output format. */
+          requested_fmt = FMT_GIF;
+        }
+      else if (keymatch(arg, "grayscale", 2) || keymatch(arg, "greyscale", 2))
+        {
+          /* Force monochrome output. */
+          cinfo->out_color_space = JCS_GRAYSCALE;
+        }
+      else if (keymatch(arg, "map", 3))
+        {
+          /* Quantize to a color map taken from an input file. */
+          if (++argn >= argc)
+            { /* advance to next argument */
+              usage();
+            }
+          if (for_real)
+            { /* too expensive to do twice! */
+#ifdef QUANT_2PASS_SUPPORTED /* otherwise can't quantize to supplied map */
+              FILE *mapfile;
+
+              if ((mapfile = fopen(argv[argn], READ_BINARY)) == NULL)
+                {
+                  fprintf(stderr, "%s: can't open %s\n", progname, argv[argn]);
+                  exit(EXIT_FAILURE);
+                }
+              read_color_map(cinfo, mapfile);
+              fclose(mapfile);
+              cinfo->quantize_colors = TRUE;
+#else
+              ERREXIT(cinfo, JERR_NOT_COMPILED);
+#endif
+            }
+        }
+      else if (keymatch(arg, "maxmemory", 3))
+        {
+          /* Maximum memory in Kb (or Mb with 'm'). */
+          long lval;
+          char ch = 'x';
+
+          if (++argn >= argc)
+            { /* advance to next argument */
+              usage();
+            }
+          if (sscanf(argv[argn], "%ld%c", &lval, &ch) < 1)
+            {
+              usage();
+            }
+          if (ch == 'm' || ch == 'M')
+            {
+              lval *= 1000L;
+            }
+          cinfo->mem->max_memory_to_use = lval * 1000L;
+        }
+      else if (keymatch(arg, "nosmooth", 3))
+        {
+          /* Suppress fancy upsampling */
+          cinfo->do_fancy_upsampling = FALSE;
+        }
+      else if (keymatch(arg, "onepass", 3))
+        {
+          /* Use fast one-pass quantization. */
+          cinfo->two_pass_quantize = FALSE;
+        }
+      else if (keymatch(arg, "os2", 3))
+        {
+          /* BMP output format (OS/2 flavor). */
+          requested_fmt = FMT_OS2;
+        }
+      else if (keymatch(arg, "outfile", 4))
+        {
+          /* Set output file name. */
+          if (++argn >= argc)
+            { /* advance to next argument */
+              usage();
+            }
+          outfilename = argv[argn]; /* save it away for later use */
+        }
+      else if (keymatch(arg, "pnm", 1) || keymatch(arg, "ppm", 1))
+        {
+          /* PPM/PGM output format. */
+          requested_fmt = FMT_PPM;
+        }
+      else if (keymatch(arg, "rle", 1))
+        {
+          /* RLE output format. */
+          requested_fmt = FMT_RLE;
+        }
+      else if (keymatch(arg, "scale", 1))
+        {
+          /* Scale the output image by a fraction M/N. */
+          if (++argn >= argc)
+            { /* advance to next argument */
+              usage();
+            }
+          if (sscanf(argv[argn], "%d/%d", &cinfo->scale_num, &cinfo->scale_denom) !=
+              2)
+            {
+              usage();
+            }
+        }
+      else if (keymatch(arg, "targa", 1))
+        {
+          /* Targa output format. */
+          requested_fmt = FMT_TARGA;
+        }
+      else
+        {
+          usage(); /* bogus switch */
+        }
     }
-    else if (keymatch(arg, "nosmooth", 3))
-    {
-      /* Suppress fancy upsampling */
-      cinfo->do_fancy_upsampling = FALSE;
-    }
-    else if (keymatch(arg, "onepass", 3))
-    {
-      /* Use fast one-pass quantization. */
-      cinfo->two_pass_quantize = FALSE;
-    }
-    else if (keymatch(arg, "os2", 3))
-    {
-      /* BMP output format (OS/2 flavor). */
-      requested_fmt = FMT_OS2;
-    }
-    else if (keymatch(arg, "outfile", 4))
-    {
-      /* Set output file name. */
-      if (++argn >= argc)
-      { /* advance to next argument */
-        usage();
-      }
-      outfilename = argv[argn]; /* save it away for later use */
-    }
-    else if (keymatch(arg, "pnm", 1) || keymatch(arg, "ppm", 1))
-    {
-      /* PPM/PGM output format. */
-      requested_fmt = FMT_PPM;
-    }
-    else if (keymatch(arg, "rle", 1))
-    {
-      /* RLE output format. */
-      requested_fmt = FMT_RLE;
-    }
-    else if (keymatch(arg, "scale", 1))
-    {
-      /* Scale the output image by a fraction M/N. */
-      if (++argn >= argc)
-      { /* advance to next argument */
-        usage();
-      }
-      if (sscanf(argv[argn], "%d/%d", &cinfo->scale_num, &cinfo->scale_denom) !=
-          2)
-      {
-        usage();
-      }
-    }
-    else if (keymatch(arg, "targa", 1))
-    {
-      /* Targa output format. */
-      requested_fmt = FMT_TARGA;
-    }
-    else
-    {
-      usage(); /* bogus switch */
-    }
-  }
 
   return argn; /* return index of next arg (file name) */
 }
@@ -418,12 +419,12 @@ jpeg_getc(j_decompress_ptr cinfo)
   struct jpeg_source_mgr *datasrc = cinfo->src;
 
   if (datasrc->bytes_in_buffer == 0)
-  {
-    if (!(*datasrc->fill_input_buffer)(cinfo))
     {
-      ERREXIT(cinfo, JERR_CANT_SUSPEND);
+      if (!(*datasrc->fill_input_buffer)(cinfo))
+        {
+          ERREXIT(cinfo, JERR_CANT_SUSPEND);
+        }
     }
-  }
   datasrc->bytes_in_buffer--;
   return GETJOCTET(*datasrc->next_input_byte++);
 }
@@ -441,51 +442,51 @@ COM_handler(j_decompress_ptr cinfo)
   length -= 2; /* discount the length word itself */
 
   if (traceit)
-  {
-    fprintf(stderr, "Comment, length %ld:\n", (long)length);
-  }
+    {
+      fprintf(stderr, "Comment, length %ld:\n", (long)length);
+    }
 
   while (--length >= 0)
-  {
-    ch = jpeg_getc(cinfo);
-    if (traceit)
     {
-      /* Emit the character in a readable form.
+      ch = jpeg_getc(cinfo);
+      if (traceit)
+        {
+          /* Emit the character in a readable form.
        * Nonprintables are converted to \nnn form,
        * while \ is converted to \\.
        * Newlines in CR, CR/LF, or LF form will be printed as one newline.
        */
-      if (ch == '\r')
-      {
-        fprintf(stderr, "\n");
-      }
-      else if (ch == '\n')
-      {
-        if (lastch != '\r')
-        {
-          fprintf(stderr, "\n");
+          if (ch == '\r')
+            {
+              fprintf(stderr, "\n");
+            }
+          else if (ch == '\n')
+            {
+              if (lastch != '\r')
+                {
+                  fprintf(stderr, "\n");
+                }
+            }
+          else if (ch == '\\')
+            {
+              fprintf(stderr, "\\\\");
+            }
+          else if (isprint(ch))
+            {
+              putc(ch, stderr);
+            }
+          else
+            {
+              fprintf(stderr, "\\%03o", ch);
+            }
+          lastch = ch;
         }
-      }
-      else if (ch == '\\')
-      {
-        fprintf(stderr, "\\\\");
-      }
-      else if (isprint(ch))
-      {
-        putc(ch, stderr);
-      }
-      else
-      {
-        fprintf(stderr, "\\%03o", ch);
-      }
-      lastch = ch;
     }
-  }
 
   if (traceit)
-  {
-    fprintf(stderr, "\n");
-  }
+    {
+      fprintf(stderr, "\n");
+    }
 
   return TRUE;
 }
@@ -514,11 +515,11 @@ int main(int argc, char **argv)
 
   progname = argv[0];
   if (progname == NULL || progname[0] == 0)
-  {
-    progname = "djpeg"; /* in case C library doesn't provide it */
+    {
+      progname = "djpeg"; /* in case C library doesn't provide it */
 
-    /* Initialize the JPEG decompression object with default error handling. */
-  }
+      /* Initialize the JPEG decompression object with default error handling. */
+    }
   cinfo.err = jpeg_std_error(&jerr);
   jpeg_create_decompress(&cinfo);
   /* Add some application-specific error messages (from cderror.h) */
@@ -546,62 +547,62 @@ int main(int argc, char **argv)
 #ifdef TWO_FILE_COMMANDLINE
   /* Must have either -outfile switch or explicit output file name */
   if (outfilename == NULL)
-  {
-    if (file_index != argc - 2)
     {
-      fprintf(stderr, "%s: must name one input and one output file\n",
-              progname);
-      usage();
+      if (file_index != argc - 2)
+        {
+          fprintf(stderr, "%s: must name one input and one output file\n",
+                  progname);
+          usage();
+        }
+      outfilename = argv[file_index + 1];
     }
-    outfilename = argv[file_index + 1];
-  }
   else
-  {
-    if (file_index != argc - 1)
     {
-      fprintf(stderr, "%s: must name one input and one output file\n",
-              progname);
-      usage();
+      if (file_index != argc - 1)
+        {
+          fprintf(stderr, "%s: must name one input and one output file\n",
+                  progname);
+          usage();
+        }
     }
-  }
 #else
   /* Unix style: expect zero or one file name */
   if (file_index < argc - 1)
-  {
-    fprintf(stderr, "%s: only one input file\n", progname);
-    usage();
-  }
+    {
+      fprintf(stderr, "%s: only one input file\n", progname);
+      usage();
+    }
 #endif /* TWO_FILE_COMMANDLINE */
 
   /* Open the input file. */
   if (file_index < argc)
-  {
-    if ((input_file = fopen(argv[file_index], READ_BINARY)) == NULL)
     {
-      fprintf(stderr, "%s: can't open %s\n", progname, argv[file_index]);
-      exit(EXIT_FAILURE);
+      if ((input_file = fopen(argv[file_index], READ_BINARY)) == NULL)
+        {
+          fprintf(stderr, "%s: can't open %s\n", progname, argv[file_index]);
+          exit(EXIT_FAILURE);
+        }
     }
-  }
   else
-  {
-    /* default input file is stdin */
-    input_file = read_stdin();
-  }
+    {
+      /* default input file is stdin */
+      input_file = read_stdin();
+    }
 
   /* Open the output file. */
   if (outfilename != NULL)
-  {
-    if ((output_file = fopen(outfilename, WRITE_BINARY)) == NULL)
     {
-      fprintf(stderr, "%s: can't open %s\n", progname, outfilename);
-      exit(EXIT_FAILURE);
+      if ((output_file = fopen(outfilename, WRITE_BINARY)) == NULL)
+        {
+          fprintf(stderr, "%s: can't open %s\n", progname, outfilename);
+          exit(EXIT_FAILURE);
+        }
     }
-  }
   else
-  {
-    /* default output file is stdout */
-    output_file = write_stdout();
-  }
+    {
+      /* default output file is stdout */
+      output_file = write_stdout();
+    }
 
 #ifdef PROGRESS_REPORT
   start_progress_monitor((j_common_ptr)&cinfo, &progress);
@@ -620,39 +621,39 @@ int main(int argc, char **argv)
    * option settings (for instance, GIF wants to force color quantization).
    */
   switch (requested_fmt)
-  {
+    {
 #ifdef BMP_SUPPORTED
-    case FMT_BMP:
-      dest_mgr = jinit_write_bmp(&cinfo, FALSE);
-      break;
-    case FMT_OS2:
-      dest_mgr = jinit_write_bmp(&cinfo, TRUE);
-      break;
+      case FMT_BMP:
+        dest_mgr = jinit_write_bmp(&cinfo, FALSE);
+        break;
+      case FMT_OS2:
+        dest_mgr = jinit_write_bmp(&cinfo, TRUE);
+        break;
 #endif
 #ifdef GIF_SUPPORTED
-    case FMT_GIF:
-      dest_mgr = jinit_write_gif(&cinfo);
-      break;
+      case FMT_GIF:
+        dest_mgr = jinit_write_gif(&cinfo);
+        break;
 #endif
 #ifdef PPM_SUPPORTED
-    case FMT_PPM:
-      dest_mgr = jinit_write_ppm(&cinfo);
-      break;
+      case FMT_PPM:
+        dest_mgr = jinit_write_ppm(&cinfo);
+        break;
 #endif
 #ifdef RLE_SUPPORTED
-    case FMT_RLE:
-      dest_mgr = jinit_write_rle(&cinfo);
-      break;
+      case FMT_RLE:
+        dest_mgr = jinit_write_rle(&cinfo);
+        break;
 #endif
 #ifdef TARGA_SUPPORTED
-    case FMT_TARGA:
-      dest_mgr = jinit_write_targa(&cinfo);
-      break;
+      case FMT_TARGA:
+        dest_mgr = jinit_write_targa(&cinfo);
+        break;
 #endif
-    default:
-      ERREXIT(&cinfo, JERR_UNSUPPORTED_FORMAT);
-      break;
-  }
+      default:
+        ERREXIT(&cinfo, JERR_UNSUPPORTED_FORMAT);
+        break;
+    }
   dest_mgr->output_file = output_file;
 
   /* Start decompressor */
@@ -663,11 +664,11 @@ int main(int argc, char **argv)
 
   /* Process data */
   while (cinfo.output_scanline < cinfo.output_height)
-  {
-    num_scanlines =
-        jpeg_read_scanlines(&cinfo, dest_mgr->buffer, dest_mgr->buffer_height);
-    (*dest_mgr->put_pixel_rows)(&cinfo, dest_mgr, num_scanlines);
-  }
+    {
+      num_scanlines =
+          jpeg_read_scanlines(&cinfo, dest_mgr->buffer, dest_mgr->buffer_height);
+      (*dest_mgr->put_pixel_rows)(&cinfo, dest_mgr, num_scanlines);
+    }
 
 #ifdef PROGRESS_REPORT
   /* Hack: count final pass as done in case finish_output does an extra pass.
@@ -686,13 +687,13 @@ int main(int argc, char **argv)
 
   /* Close files, if we opened them */
   if (input_file != stdin)
-  {
-    fclose(input_file);
-  }
+    {
+      fclose(input_file);
+    }
   if (output_file != stdout)
-  {
-    fclose(output_file);
-  }
+    {
+      fclose(output_file);
+    }
 
 #ifdef PROGRESS_REPORT
   end_progress_monitor((j_common_ptr)&cinfo);

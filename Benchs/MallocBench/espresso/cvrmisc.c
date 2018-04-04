@@ -17,29 +17,29 @@ INOUT pcost cost;
 
   /* Count transistors (zeros) for each binary variable (inputs) */
   for (var = 0; var < cube.num_binary_vars; var++)
-  {
-    cost->in += cdata.var_zeros[var];
-  }
+    {
+      cost->in += cdata.var_zeros[var];
+    }
 
   /* Count transistors for each mv variable based on sparse/dense */
   for (var = cube.num_binary_vars; var < cube.num_vars - 1; var++)
-  {
-    if (cube.sparse[var])
     {
-      cost->mv += F->count * cube.part_size[var] - cdata.var_zeros[var];
+      if (cube.sparse[var])
+        {
+          cost->mv += F->count * cube.part_size[var] - cdata.var_zeros[var];
+        }
+      else
+        {
+          cost->mv += cdata.var_zeros[var];
+        }
     }
-    else
-    {
-      cost->mv += cdata.var_zeros[var];
-    }
-  }
 
   /* Count the transistors (ones) for the output variable */
   if (cube.num_binary_vars != cube.num_vars)
-  {
-    var = cube.num_vars - 1;
-    cost->out = F->count * cube.part_size[var] - cdata.var_zeros[var];
-  }
+    {
+      var = cube.num_vars - 1;
+      cost->out = F->count * cube.part_size[var] - cdata.var_zeros[var];
+    }
 
   /* Count the number of nonprime cubes */
   foreach_set(F, last, p) cost->primes += TESTP(p, PRIME) != 0;
@@ -54,15 +54,15 @@ char *fmt_cost(cost) IN pcost cost;
   static char s[200];
 
   if (cube.num_binary_vars == cube.num_vars - 1)
-  {
-    (void)sprintf(s, "c=%d in=%d out=%d tot=%d", cost->cubes, cost->in,
-                  cost->out, cost->total);
-  }
+    {
+      (void)sprintf(s, "c=%d in=%d out=%d tot=%d", cost->cubes, cost->in,
+                    cost->out, cost->total);
+    }
   else
-  {
-    (void)sprintf(s, "c=%d in=%d mv=%d out=%d", cost->cubes, cost->in, cost->mv,
-                  cost->out);
-  }
+    {
+      (void)sprintf(s, "c=%d in=%d mv=%d out=%d", cost->cubes, cost->in, cost->mv,
+                    cost->out);
+    }
   return s;
 }
 
@@ -113,11 +113,11 @@ pcost cost;
   total_calls[i]++;
   cover_cost(T, cost);
   if (trace)
-  {
-    printf("# %s\tTime was %s, cost is %s\n", total_name[i], print_time(time),
-           fmt_cost(cost));
-    (void)fflush(stdout);
-  }
+    {
+      printf("# %s\tTime was %s, cost is %s\n", total_name[i], print_time(time),
+             fmt_cost(cost));
+      (void)fflush(stdout);
+    }
 }
 
 /* fatal -- report fatal error message and take a dive */

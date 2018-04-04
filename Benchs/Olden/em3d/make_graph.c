@@ -43,15 +43,15 @@ void fill_table(node_t **node_table, double *values, int size, int procname)
 
   /* Now we fill the node_table with allocated nodes */
   for (i = 1; i < size; i++)
-  {
-    cur_node = (node_t *)malloc(sizeof(node_t));
-    *values = gen_uniform_double();
-    cur_node->value = values++;
-    cur_node->from_count = 0;
-    node_table[i] = cur_node;
-    prev_node->next = cur_node;
-    prev_node = cur_node;
-  }
+    {
+      cur_node = (node_t *)malloc(sizeof(node_t));
+      *values = gen_uniform_double();
+      cur_node->value = values++;
+      cur_node->from_count = 0;
+      node_table[i] = cur_node;
+      prev_node->next = cur_node;
+      prev_node = cur_node;
+    }
   cur_node->next = NULL;
 }
 
@@ -61,74 +61,74 @@ void make_neighbors(node_t *nodelist, node_t **table[], int tablesz, int degree,
   node_t *cur_node;
 
   for (cur_node = nodelist; cur_node; cur_node = cur_node->next)
-  {
-    node_t *other_node;
-    int j, k;
-    int dest_proc;
-
-    cur_node->to_nodes = (node_t **)malloc(degree * (sizeof(node_t *)));
-    if (!cur_node->to_nodes)
     {
-      chatting("Uncaught malloc error\n");
-      exit(0);
-    }
+      node_t *other_node;
+      int j, k;
+      int dest_proc;
 
-    for (j = 0; j < degree; j++)
-    {
-      do
-      {
-        node_t **local_table;
-        int number = gen_number(tablesz);
-
-        if (check_percent(percent_local))
+      cur_node->to_nodes = (node_t **)malloc(degree * (sizeof(node_t *)));
+      if (!cur_node->to_nodes)
         {
-          dest_proc = id;
-        }
-        else
-        {
-          dest_proc = (id + PROCS + 4 * gen_signed_number(1)) % PROCS;
+          chatting("Uncaught malloc error\n");
+          exit(0);
         }
 
-        /* We expect these accesses to be remote */
-        local_table = table[dest_proc];
-        other_node = local_table[number]; /* <------ 4% load miss penalty */
-        if (!other_node)
+      for (j = 0; j < degree; j++)
         {
-          chatting("Error! on dest %d @ %d\n", number, dest_proc);
-          exit(1);
-        }
+          do
+            {
+              node_t **local_table;
+              int number = gen_number(tablesz);
 
-        for (k = 0; k < j; k++)
-        {
-          if (other_node == cur_node->to_nodes[k])
-          {
-            break;
-          }
-        }
+              if (check_percent(percent_local))
+                {
+                  dest_proc = id;
+                }
+              else
+                {
+                  dest_proc = (id + PROCS + 4 * gen_signed_number(1)) % PROCS;
+                }
+
+              /* We expect these accesses to be remote */
+              local_table = table[dest_proc];
+              other_node = local_table[number]; /* <------ 4% load miss penalty */
+              if (!other_node)
+                {
+                  chatting("Error! on dest %d @ %d\n", number, dest_proc);
+                  exit(1);
+                }
+
+              for (k = 0; k < j; k++)
+                {
+                  if (other_node == cur_node->to_nodes[k])
+                    {
+                      break;
+                    }
+                }
 
 #if 0
         if ((((unsigned long long) other_node) >> 7) < 2048)
           chatting("pre other_node = 0x%x,number = %d,dest = %d\n",
                    other_node,number,dest_proc);
 #endif
-      }
+            }
 
-      while (k < j);
+          while (k < j);
 
-      if (!cur_node || !cur_node->to_nodes)
-      {
-        chatting("Error! no to_nodes filed!\n");
-        exit(1);
-      }
+          if (!cur_node || !cur_node->to_nodes)
+            {
+              chatting("Error! no to_nodes filed!\n");
+              exit(1);
+            }
 
-      cur_node->to_nodes[j] = other_node; /* <------ 6.5% store penalty */
+          cur_node->to_nodes[j] = other_node; /* <------ 6.5% store penalty */
 #if 0
       if ((((unsigned long long) other_node) >> 7) < 2048)
         chatting("post other_node = 0x%x\n",other_node);
 #endif
-      ++other_node->from_count; /* <----- 12% load miss penalty */
+          ++other_node->from_count; /* <----- 12% load miss penalty */
+        }
     }
-  }
 }
 
 void update_from_coeffs(node_t *nodelist)
@@ -137,60 +137,60 @@ void update_from_coeffs(node_t *nodelist)
 
   /* Setup coefficient and from_nodes vectors for h nodes */
   for (cur_node = nodelist; cur_node; cur_node = cur_node->next)
-  {
-    int from_count = cur_node->from_count;
+    {
+      int from_count = cur_node->from_count;
 
-    if (from_count < 1)
-    {
-      chatting("Help! no from count (from_count=%d) \n", from_count);
-      cur_node->from_values = (double **)malloc(20 * sizeof(double *));
-      cur_node->coeffs = (double *)malloc(20 * sizeof(double));
-      cur_node->from_length = 0;
+      if (from_count < 1)
+        {
+          chatting("Help! no from count (from_count=%d) \n", from_count);
+          cur_node->from_values = (double **)malloc(20 * sizeof(double *));
+          cur_node->coeffs = (double *)malloc(20 * sizeof(double));
+          cur_node->from_length = 0;
+        }
+      else
+        {
+          cur_node->from_values = (double **)malloc(from_count * sizeof(double *));
+          cur_node->coeffs = (double *)malloc(from_count * sizeof(double));
+          cur_node->from_length = 0;
+        }
     }
-    else
-    {
-      cur_node->from_values = (double **)malloc(from_count * sizeof(double *));
-      cur_node->coeffs = (double *)malloc(from_count * sizeof(double));
-      cur_node->from_length = 0;
-    }
-  }
 }
 
 void fill_from_fields(node_t *nodelist, int degree)
 {
   node_t *cur_node;
   for (cur_node = nodelist; cur_node; cur_node = cur_node->next)
-  {
-    int j;
-
-    for (j = 0; j < degree; j++)
     {
-      int count, thecount;
-      node_t *other_node = cur_node->to_nodes[j]; /* <-- 6% load miss penalty */
-      double **otherlist;
-      double *value = cur_node->value;
+      int j;
 
-      if (!other_node)
-      {
-        chatting("Help!!\n");
-      }
-      count = (other_node->from_length)++; /* <----- 30% load miss penalty */
-      otherlist = other_node->from_values; /* <----- 10% load miss penalty */
-      thecount = other_node->from_count;
-      if (!otherlist)
-      {
-        /*chatting("node 0x%p list 0x%p count %d\n",
+      for (j = 0; j < degree; j++)
+        {
+          int count, thecount;
+          node_t *other_node = cur_node->to_nodes[j]; /* <-- 6% load miss penalty */
+          double **otherlist;
+          double *value = cur_node->value;
+
+          if (!other_node)
+            {
+              chatting("Help!!\n");
+            }
+          count = (other_node->from_length)++; /* <----- 30% load miss penalty */
+          otherlist = other_node->from_values; /* <----- 10% load miss penalty */
+          thecount = other_node->from_count;
+          if (!otherlist)
+            {
+              /*chatting("node 0x%p list 0x%p count %d\n",
                  other_node,otherlist,thecount);*/
-        otherlist = other_node->from_values;
-        /*chatting("No from list!! 0x%p\n",otherlist);*/
-      }
+              otherlist = other_node->from_values;
+              /*chatting("No from list!! 0x%p\n",otherlist);*/
+            }
 
-      otherlist[count] = value; /* <------ 42% store penalty */
+          otherlist[count] = value; /* <------ 42% store penalty */
 
-      /* <----- 42+6.5% store penalty */
-      other_node->coeffs[count] = gen_uniform_double();
+          /* <----- 42+6.5% store penalty */
+          other_node->coeffs[count] = gen_uniform_double();
+        }
     }
-  }
 }
 
 void localize_local(node_t *nodelist)
@@ -198,11 +198,11 @@ void localize_local(node_t *nodelist)
   node_t *cur_node;
 
   for (cur_node = nodelist; cur_node; cur_node = cur_node->next)
-  {
-    cur_node->coeffs = cur_node->coeffs;
-    cur_node->from_values = cur_node->from_values;
-    cur_node->value = cur_node->value;
-  }
+    {
+      cur_node->coeffs = cur_node->coeffs;
+      cur_node->from_values = cur_node->from_values;
+      cur_node->value = cur_node->value;
+    }
 }
 
 void make_tables(table_t *table, int groupname)
@@ -297,14 +297,14 @@ void do_all(table_t *table, int groupname, int nproc, void func(table_t *, int),
 {
   /*chatting("do all group %d with %d\n",groupname,nproc);*/
   if (nproc > 1)
-  {
-    do_all(table, groupname + nproc / 2, nproc / 2, func, groupsize);
-    do_all(table, groupname, nproc / 2, func, groupsize);
-  }
+    {
+      do_all(table, groupname + nproc / 2, nproc / 2, func, groupsize);
+      do_all(table, groupname, nproc / 2, func, groupsize);
+    }
   else
-  {
-    func(table, groupname);
-  }
+    {
+      func(table, groupname);
+    }
 }
 
 graph_t *initialize_graph()
@@ -343,32 +343,32 @@ graph_t *initialize_graph()
 
   chatting("cleanup for return now\n");
   for (i = 0; i < NumNodes; i++)
-  {
-    node_t **local_table = table->e_table[i * blocksize];
-    node_t *local_node_r = local_table[0];
-
-    retval->e_nodes[i] = local_node_r;
-
-    local_table = table->h_table[i * blocksize];
-    local_node_r = local_table[0];
-    retval->h_nodes[i] = local_node_r;
-    for (j = 1; j < blocksize; j++)
     {
-      node_t *local_node_l;
+      node_t **local_table = table->e_table[i * blocksize];
+      node_t *local_node_r = local_table[0];
 
-      local_table = table->e_table[i * blocksize + j - 1];
-      local_node_l = local_table[(n_nodes / PROCS) - 1];
-      local_table = table->e_table[i * blocksize + j];
-      local_node_r = local_table[0];
-      local_node_l->next = local_node_r;
+      retval->e_nodes[i] = local_node_r;
 
-      local_table = table->h_table[i * blocksize + j - 1];
-      local_node_l = local_table[(n_nodes / PROCS) - 1];
-      local_table = table->h_table[i * blocksize + j];
+      local_table = table->h_table[i * blocksize];
       local_node_r = local_table[0];
-      local_node_l->next = local_node_r;
+      retval->h_nodes[i] = local_node_r;
+      for (j = 1; j < blocksize; j++)
+        {
+          node_t *local_node_l;
+
+          local_table = table->e_table[i * blocksize + j - 1];
+          local_node_l = local_table[(n_nodes / PROCS) - 1];
+          local_table = table->e_table[i * blocksize + j];
+          local_node_r = local_table[0];
+          local_node_l->next = local_node_r;
+
+          local_table = table->h_table[i * blocksize + j - 1];
+          local_node_l = local_table[(n_nodes / PROCS) - 1];
+          local_table = table->h_table[i * blocksize + j];
+          local_node_r = local_table[0];
+          local_node_l->next = local_node_r;
+        }
     }
-  }
 
   chatting("Clearing NumMisses\n");
   do_all(table, 0, PROCS, clear_nummiss, groupsize);

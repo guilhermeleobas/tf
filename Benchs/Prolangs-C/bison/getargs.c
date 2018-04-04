@@ -51,59 +51,59 @@ void getargs(int argc, char *argv[])
 
   lastcomponent = p;
   while (*p)
-  {
-    if (*p == '/')
     {
-      lastcomponent = p + 1;
+      if (*p == '/')
+        {
+          lastcomponent = p + 1;
+        }
+      p++;
     }
-    p++;
-  }
   if (!strcmp(lastcomponent, "yacc"))
-  {
-    /* If so, pretend we have "-y" as argument.  */
-    fixed_outfiles = 1;
-  }
+    {
+      /* If so, pretend we have "-y" as argument.  */
+      fixed_outfiles = 1;
+    }
 
   while ((c = getopt(argc, argv, "yvdlto:")) != EOF)
-  {
-    switch (c)
     {
-      case 'y':
-        fixed_outfiles = 1;
-        break;
+      switch (c)
+        {
+          case 'y':
+            fixed_outfiles = 1;
+            break;
 
-      case 'v':
-        verboseflag = 1;
-        break;
+          case 'v':
+            verboseflag = 1;
+            break;
 
-      case 'd':
-        definesflag = 1;
-        break;
+          case 'd':
+            definesflag = 1;
+            break;
 
-      case 'l':
-        nolinesflag = 1;
-        break;
+          case 'l':
+            nolinesflag = 1;
+            break;
 
-      case 't':
-        debugflag = 1;
-        break;
+          case 't':
+            debugflag = 1;
+            break;
 
-      case 'o':
-        spec_outfile = optarg;
+          case 'o':
+            spec_outfile = optarg;
+        }
     }
-  }
 
   if (optind == argc)
-  {
-    fatal("grammar file not specified");
-  }
+    {
+      fatal("grammar file not specified");
+    }
   else
-  {
-    infile = argv[optind];
-  }
+    {
+      infile = argv[optind];
+    }
 
   if (optind < argc - 1)
-  {
-    fprintf(stderr, "bison: warning: extra arguments ignored\n");
-  }
+    {
+      fprintf(stderr, "bison: warning: extra arguments ignored\n");
+    }
 }

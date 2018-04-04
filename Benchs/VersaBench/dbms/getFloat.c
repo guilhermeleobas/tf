@@ -31,12 +31,12 @@
  *              Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include "getFloat.h"       /* for getFloat() return codes    */
-#include <assert.h>         /* for assert()                   */
-#include <errno.h>          /* for extern errno definition    */
-#include <stdio.h>          /* for FILE definition            */
-#include <stdlib.h>         /* for NULL definition            */
-#include <string.h>         /* for strlen() definition        */
+#include "getFloat.h" /* for getFloat() return codes    */
+#include <assert.h> /* for assert()                   */
+#include <errno.h> /* for extern errno definition    */
+#include <stdio.h> /* for FILE definition            */
+#include <stdlib.h> /* for NULL definition            */
+#include <string.h> /* for strlen() definition        */
 #include "dataManagement.h" /* for primitive type definitions */
 
 extern int errno;
@@ -46,11 +46,11 @@ extern int errno;
  */
 extern Char *getString(FILE *file);
 
-Int getFloat(FILE *file,   /*  FILE stream to read */
+Int getFloat(FILE *file, /*  FILE stream to read */
              Float *value) /*  value to output     */
-{                          /*  begin getFloat()    */
-  Char *temp;     /* temporary string used returned by getString()         */
-  Char *endptr;   /* residual string after conversion from string to Float */
+{ /*  begin getFloat()    */
+  Char *temp; /* temporary string used returned by getString()         */
+  Char *endptr; /* residual string after conversion from string to Float */
   Int returnCode; /* return code for this routine                          */
 
   assert(file);
@@ -65,39 +65,39 @@ Int getFloat(FILE *file,   /*  FILE stream to read */
    */
   temp = getString(file);
   if (temp != NULL)
-  {
-    /*
+    {
+      /*
      *  A valid string was read from the input and is stored in temp
      */
-    *value = strtod(temp, &endptr);
-    if (*value == 0.0 && strlen(endptr) > 0 && errno == ERANGE)
+      *value = strtod(temp, &endptr);
+      if (*value == 0.0 && strlen(endptr) > 0 && errno == ERANGE)
+        {
+          *value = MINIMUM_VALUE_OF_FLOAT;
+          returnCode = GET_FLOAT_BAD_CONVERSION;
+        } /*  end of strtod error check   */
+      else
+        {
+          if (*value < MINIMUM_VALUE_OF_FLOAT)
+            {
+              *value = MINIMUM_VALUE_OF_FLOAT;
+              returnCode = GET_FLOAT_RANGE_EXCEEDED;
+            } /*  end of value < MINIMUM_VALUE_OF_FLOAT   */
+          else if (*value > MAXIMUM_VALUE_OF_FLOAT)
+            {
+              *value = MAXIMUM_VALUE_OF_FLOAT;
+              returnCode = GET_FLOAT_RANGE_EXCEEDED;
+            } /*  end of value > MAXIMUM_VALUE_OF_FLOAT   */
+          else
+            {
+              returnCode = GET_FLOAT_SUCCESS;
+            } /*  end of else - SUCCESS   */
+        } /*  end of else strtod did not error    */
+    } /*  end if temp != NULL */
+  else
     {
       *value = MINIMUM_VALUE_OF_FLOAT;
-      returnCode = GET_FLOAT_BAD_CONVERSION;
-    } /*  end of strtod error check   */
-    else
-    {
-      if (*value < MINIMUM_VALUE_OF_FLOAT)
-      {
-        *value = MINIMUM_VALUE_OF_FLOAT;
-        returnCode = GET_FLOAT_RANGE_EXCEEDED;
-      } /*  end of value < MINIMUM_VALUE_OF_FLOAT   */
-      else if (*value > MAXIMUM_VALUE_OF_FLOAT)
-      {
-        *value = MAXIMUM_VALUE_OF_FLOAT;
-        returnCode = GET_FLOAT_RANGE_EXCEEDED;
-      } /*  end of value > MAXIMUM_VALUE_OF_FLOAT   */
-      else
-      {
-        returnCode = GET_FLOAT_SUCCESS;
-      } /*  end of else - SUCCESS   */
-    }   /*  end of else strtod did not error    */
-  }     /*  end if temp != NULL */
-  else
-  {
-    *value = MINIMUM_VALUE_OF_FLOAT;
-    returnCode = GET_FLOAT_EOI;
-  } /*  end if GET_STRING low-level I/O error */
+      returnCode = GET_FLOAT_EOI;
+    } /*  end if GET_STRING low-level I/O error */
 
   return (returnCode);
 } /*  end of getFloat()   */

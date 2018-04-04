@@ -27,16 +27,16 @@ void endoff(void)
 {
   int i;
   for (i = 0; i < MAXHEAD; i++)
-  {
-    if (linestop[i])
     {
-      fprintf(tabout, ".nr #%c 0\n", 'a' + i);
+      if (linestop[i])
+        {
+          fprintf(tabout, ".nr #%c 0\n", 'a' + i);
+        }
     }
-  }
   for (i = 0; i < texct; i++)
-  {
-    fprintf(tabout, ".rm %c+\n", texstr[i]);
-  }
+    {
+      fprintf(tabout, ".rm %c+\n", texstr[i]);
+    }
   fprintf(tabout, "%s\n", last);
 }
 

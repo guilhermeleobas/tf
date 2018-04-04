@@ -12,7 +12,7 @@
  */
 
 #define JPEG_CJPEG_DJPEG /* to get the command-line config symbols */
-#include "jinclude.h"    /* get auto-config symbols, <stdio.h> */
+#include "jinclude.h" /* get auto-config symbols, <stdio.h> */
 
 #include <ctype.h> /* to declare isupper(), tolower() */
 #ifdef USE_SETMODE
@@ -23,7 +23,7 @@
 
 #ifdef USE_CCOMMAND /* command-line reader for Macintosh */
 #ifdef __MWERKS__
-#include <SIOUX.h>   /* Metrowerks needs this */
+#include <SIOUX.h> /* Metrowerks needs this */
 #include <console.h> /* ... and this */
 #endif
 #ifdef THINK_C
@@ -68,9 +68,9 @@ static int read_1_byte(void)
 
   c = NEXTBYTE();
   if (c == EOF)
-  {
-    ERREXIT("Premature EOF in JPEG file");
-  }
+    {
+      ERREXIT("Premature EOF in JPEG file");
+    }
   return c;
 }
 
@@ -82,14 +82,14 @@ static unsigned int read_2_bytes(void)
 
   c1 = NEXTBYTE();
   if (c1 == EOF)
-  {
-    ERREXIT("Premature EOF in JPEG file");
-  }
+    {
+      ERREXIT("Premature EOF in JPEG file");
+    }
   c2 = NEXTBYTE();
   if (c2 == EOF)
-  {
-    ERREXIT("Premature EOF in JPEG file");
-  }
+    {
+      ERREXIT("Premature EOF in JPEG file");
+    }
   return (((unsigned int)c1) << 8) + ((unsigned int)c2);
 }
 
@@ -135,22 +135,23 @@ static int next_marker(void)
   /* Find 0xFF byte; count and skip any non-FFs. */
   c = read_1_byte();
   while (c != 0xFF)
-  {
-    discarded_bytes++;
-    c = read_1_byte();
-  }
+    {
+      discarded_bytes++;
+      c = read_1_byte();
+    }
   /* Get marker code byte, swallowing any duplicate FF bytes.  Extra FFs
    * are legal as pad bytes, so don't count them in discarded_bytes.
    */
   do
-  {
-    c = read_1_byte();
-  } while (c == 0xFF);
+    {
+      c = read_1_byte();
+    }
+  while (c == 0xFF);
 
   if (discarded_bytes != 0)
-  {
-    fprintf(stderr, "Warning: garbage data found in JPEG file\n");
-  }
+    {
+      fprintf(stderr, "Warning: garbage data found in JPEG file\n");
+    }
 
   return c;
 }
@@ -170,9 +171,9 @@ static int first_marker(void)
   c1 = NEXTBYTE();
   c2 = NEXTBYTE();
   if (c1 != 0xFF || c2 != M_SOI)
-  {
-    ERREXIT("Not a JPEG file");
-  }
+    {
+      ERREXIT("Not a JPEG file");
+    }
   return c2;
 }
 
@@ -194,16 +195,16 @@ static void skip_variable(void)
   length = read_2_bytes();
   /* Length includes itself, so must be at least 2 */
   if (length < 2)
-  {
-    ERREXIT("Erroneous JPEG marker length");
-  }
+    {
+      ERREXIT("Erroneous JPEG marker length");
+    }
   length -= 2;
   /* Skip over the remaining bytes */
   while (length > 0)
-  {
-    (void)read_1_byte();
-    length--;
-  }
+    {
+      (void)read_1_byte();
+      length--;
+    }
 }
 
 /*
@@ -222,45 +223,45 @@ static void process_COM(void)
   length = read_2_bytes();
   /* Length includes itself, so must be at least 2 */
   if (length < 2)
-  {
-    ERREXIT("Erroneous JPEG marker length");
-  }
+    {
+      ERREXIT("Erroneous JPEG marker length");
+    }
   length -= 2;
 
   while (length > 0)
-  {
-    ch = read_1_byte();
-    /* Emit the character in a readable form.
+    {
+      ch = read_1_byte();
+      /* Emit the character in a readable form.
      * Nonprintables are converted to \nnn form,
      * while \ is converted to \\.
      * Newlines in CR, CR/LF, or LF form will be printed as one newline.
      */
-    if (ch == '\r')
-    {
-      printf("\n");
+      if (ch == '\r')
+        {
+          printf("\n");
+        }
+      else if (ch == '\n')
+        {
+          if (lastch != '\r')
+            {
+              printf("\n");
+            }
+        }
+      else if (ch == '\\')
+        {
+          printf("\\\\");
+        }
+      else if (isprint(ch))
+        {
+          putc(ch, stdout);
+        }
+      else
+        {
+          printf("\\%03o", ch);
+        }
+      lastch = ch;
+      length--;
     }
-    else if (ch == '\n')
-    {
-      if (lastch != '\r')
-      {
-        printf("\n");
-      }
-    }
-    else if (ch == '\\')
-    {
-      printf("\\\\");
-    }
-    else if (isprint(ch))
-    {
-      putc(ch, stdout);
-    }
-    else
-    {
-      printf("\\%03o", ch);
-    }
-    lastch = ch;
-    length--;
-  }
   printf("\n");
 }
 
@@ -285,66 +286,66 @@ static void process_SOFn(int marker)
   num_components = read_1_byte();
 
   switch (marker)
-  {
-    case M_SOF0:
-      process = "Baseline";
-      break;
-    case M_SOF1:
-      process = "Extended sequential";
-      break;
-    case M_SOF2:
-      process = "Progressive";
-      break;
-    case M_SOF3:
-      process = "Lossless";
-      break;
-    case M_SOF5:
-      process = "Differential sequential";
-      break;
-    case M_SOF6:
-      process = "Differential progressive";
-      break;
-    case M_SOF7:
-      process = "Differential lossless";
-      break;
-    case M_SOF9:
-      process = "Extended sequential, arithmetic coding";
-      break;
-    case M_SOF10:
-      process = "Progressive, arithmetic coding";
-      break;
-    case M_SOF11:
-      process = "Lossless, arithmetic coding";
-      break;
-    case M_SOF13:
-      process = "Differential sequential, arithmetic coding";
-      break;
-    case M_SOF14:
-      process = "Differential progressive, arithmetic coding";
-      break;
-    case M_SOF15:
-      process = "Differential lossless, arithmetic coding";
-      break;
-    default:
-      process = "Unknown";
-      break;
-  }
+    {
+      case M_SOF0:
+        process = "Baseline";
+        break;
+      case M_SOF1:
+        process = "Extended sequential";
+        break;
+      case M_SOF2:
+        process = "Progressive";
+        break;
+      case M_SOF3:
+        process = "Lossless";
+        break;
+      case M_SOF5:
+        process = "Differential sequential";
+        break;
+      case M_SOF6:
+        process = "Differential progressive";
+        break;
+      case M_SOF7:
+        process = "Differential lossless";
+        break;
+      case M_SOF9:
+        process = "Extended sequential, arithmetic coding";
+        break;
+      case M_SOF10:
+        process = "Progressive, arithmetic coding";
+        break;
+      case M_SOF11:
+        process = "Lossless, arithmetic coding";
+        break;
+      case M_SOF13:
+        process = "Differential sequential, arithmetic coding";
+        break;
+      case M_SOF14:
+        process = "Differential progressive, arithmetic coding";
+        break;
+      case M_SOF15:
+        process = "Differential lossless, arithmetic coding";
+        break;
+      default:
+        process = "Unknown";
+        break;
+    }
 
   printf("JPEG image is %uw * %uh, %d color components, %d bits per sample\n",
          image_width, image_height, num_components, data_precision);
   printf("JPEG process: %s\n", process);
 
   if (length != (unsigned int)(8 + num_components * 3))
-  {
-    ERREXIT("Bogus SOF marker length");
-  }
+    {
+      ERREXIT("Bogus SOF marker length");
+    }
 
   for (ci = 0; ci < num_components; ci++)
-  {
-    (void)read_1_byte(); /* Component ID code */
-    (void)read_1_byte(); /* H, V sampling factors */
-    (void)read_1_byte(); /* Quantization table number */
-  }
+    {
+      (void)read_1_byte(); /* Component ID code */
+      (void)read_1_byte(); /* H, V sampling factors */
+      (void)read_1_byte(); /* Quantization table number */
+    }
 }
 
 /*
@@ -363,54 +364,54 @@ static int scan_JPEG_header(int verbose)
 
   /* Expect SOI at start of file */
   if (first_marker() != M_SOI)
-  {
-    ERREXIT("Expected SOI marker first");
-  }
+    {
+      ERREXIT("Expected SOI marker first");
+    }
 
   /* Scan miscellaneous markers until we reach SOS. */
   for (;;)
-  {
-    marker = next_marker();
-    switch (marker)
     {
-      case M_SOF0:  /* Baseline */
-      case M_SOF1:  /* Extended sequential, Huffman */
-      case M_SOF2:  /* Progressive, Huffman */
-      case M_SOF3:  /* Lossless, Huffman */
-      case M_SOF5:  /* Differential sequential, Huffman */
-      case M_SOF6:  /* Differential progressive, Huffman */
-      case M_SOF7:  /* Differential lossless, Huffman */
-      case M_SOF9:  /* Extended sequential, arithmetic */
-      case M_SOF10: /* Progressive, arithmetic */
-      case M_SOF11: /* Lossless, arithmetic */
-      case M_SOF13: /* Differential sequential, arithmetic */
-      case M_SOF14: /* Differential progressive, arithmetic */
-      case M_SOF15: /* Differential lossless, arithmetic */
-        if (verbose)
+      marker = next_marker();
+      switch (marker)
         {
-          process_SOFn(marker);
+          case M_SOF0: /* Baseline */
+          case M_SOF1: /* Extended sequential, Huffman */
+          case M_SOF2: /* Progressive, Huffman */
+          case M_SOF3: /* Lossless, Huffman */
+          case M_SOF5: /* Differential sequential, Huffman */
+          case M_SOF6: /* Differential progressive, Huffman */
+          case M_SOF7: /* Differential lossless, Huffman */
+          case M_SOF9: /* Extended sequential, arithmetic */
+          case M_SOF10: /* Progressive, arithmetic */
+          case M_SOF11: /* Lossless, arithmetic */
+          case M_SOF13: /* Differential sequential, arithmetic */
+          case M_SOF14: /* Differential progressive, arithmetic */
+          case M_SOF15: /* Differential lossless, arithmetic */
+            if (verbose)
+              {
+                process_SOFn(marker);
+              }
+            else
+              {
+                skip_variable();
+              }
+            break;
+
+          case M_SOS: /* stop before hitting compressed data */
+            return marker;
+
+          case M_EOI: /* in case it's a tables-only JPEG stream */
+            return marker;
+
+          case M_COM:
+            process_COM();
+            break;
+
+          default: /* Anything else just gets skipped */
+            skip_variable(); /* we assume it has a parameter count... */
+            break;
         }
-        else
-        {
-          skip_variable();
-        }
-        break;
-
-      case M_SOS: /* stop before hitting compressed data */
-        return marker;
-
-      case M_EOI: /* in case it's a tables-only JPEG stream */
-        return marker;
-
-      case M_COM:
-        process_COM();
-        break;
-
-      default:           /* Anything else just gets skipped */
-        skip_variable(); /* we assume it has a parameter count... */
-        break;
-    }
-  } /* end loop */
+    } /* end loop */
 }
 
 /* Command line parsing code */
@@ -439,26 +440,26 @@ static int keymatch(char *arg, const char *keyword, int minchars)
   register int nmatched = 0;
 
   while ((ca = *arg++) != '\0')
-  {
-    if ((ck = *keyword++) == '\0')
     {
-      return 0; /* arg longer than keyword, no good */
+      if ((ck = *keyword++) == '\0')
+        {
+          return 0; /* arg longer than keyword, no good */
+        }
+      if (isupper(ca))
+        { /* force arg to lcase (assume ck is already) */
+          ca = tolower(ca);
+        }
+      if (ca != ck)
+        {
+          return 0; /* no good */
+        }
+      nmatched++; /* count matched characters */
     }
-    if (isupper(ca))
-    { /* force arg to lcase (assume ck is already) */
-      ca = tolower(ca);
-    }
-    if (ca != ck)
-    {
-      return 0; /* no good */
-    }
-    nmatched++; /* count matched characters */
-  }
   /* reached end of argument; fail if it's too short for unique abbrev */
   if (nmatched < minchars)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
   return 1; /* A-OK */
 }
 
@@ -479,60 +480,60 @@ int main(int argc, char **argv)
 
   progname = argv[0];
   if (progname == NULL || progname[0] == 0)
-  {
-    progname = "rdjpgcom"; /* in case C library doesn't provide it */
+    {
+      progname = "rdjpgcom"; /* in case C library doesn't provide it */
 
-    /* Parse switches, if any */
-  }
+      /* Parse switches, if any */
+    }
   for (argn = 1; argn < argc; argn++)
-  {
-    arg = argv[argn];
-    if (arg[0] != '-')
     {
-      break; /* not switch, must be file name */
+      arg = argv[argn];
+      if (arg[0] != '-')
+        {
+          break; /* not switch, must be file name */
+        }
+      arg++; /* advance over '-' */
+      if (keymatch(arg, "verbose", 1))
+        {
+          verbose++;
+        }
+      else
+        {
+          usage();
+        }
     }
-    arg++; /* advance over '-' */
-    if (keymatch(arg, "verbose", 1))
-    {
-      verbose++;
-    }
-    else
-    {
-      usage();
-    }
-  }
 
   /* Open the input file. */
   /* Unix style: expect zero or one file name */
   if (argn < argc - 1)
-  {
-    fprintf(stderr, "%s: only one input file\n", progname);
-    usage();
-  }
-  if (argn < argc)
-  {
-    if ((infile = fopen(argv[argn], READ_BINARY)) == NULL)
     {
-      fprintf(stderr, "%s: can't open %s\n", progname, argv[argn]);
-      exit(EXIT_FAILURE);
+      fprintf(stderr, "%s: only one input file\n", progname);
+      usage();
     }
-  }
+  if (argn < argc)
+    {
+      if ((infile = fopen(argv[argn], READ_BINARY)) == NULL)
+        {
+          fprintf(stderr, "%s: can't open %s\n", progname, argv[argn]);
+          exit(EXIT_FAILURE);
+        }
+    }
   else
-  {
+    {
 /* default input file is stdin */
 #ifdef USE_SETMODE /* need to hack file mode? */
-    setmode(fileno(stdin), O_BINARY);
+      setmode(fileno(stdin), O_BINARY);
 #endif
 #ifdef USE_FDOPEN /* need to re-open in binary mode? */
-    if ((infile = fdopen(fileno(stdin), READ_BINARY)) == NULL)
-    {
-      fprintf(stderr, "%s: can't open stdin\n", progname);
-      exit(EXIT_FAILURE);
-    }
+      if ((infile = fdopen(fileno(stdin), READ_BINARY)) == NULL)
+        {
+          fprintf(stderr, "%s: can't open stdin\n", progname);
+          exit(EXIT_FAILURE);
+        }
 #else
-    infile = stdin;
+      infile = stdin;
 #endif
-  }
+    }
 
   /* Scan the JPEG headers. */
   (void)scan_JPEG_header(verbose);

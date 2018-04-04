@@ -15,10 +15,10 @@
  *	Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include <assert.h>         /* for assert()                   */
-#include <string.h>         /* for strstr() definition        */
+#include <assert.h> /* for assert()                   */
+#include <string.h> /* for strstr() definition        */
 #include "dataManagement.h" /* for primitive type definitions */
-#include "indexKey.h"       /* for IndexKey definition        */
+#include "indexKey.h" /* for IndexKey definition        */
 
 /*
  *
@@ -43,7 +43,7 @@
  */
 
 Boolean consistentKey(IndexKey *A, IndexKey *B)
-{               /*  beginning of consistentKey() */
+{ /*  beginning of consistentKey() */
   Boolean flag; /* flag indicating consistency */
 
   assert(A);
@@ -55,30 +55,30 @@ Boolean consistentKey(IndexKey *A, IndexKey *B)
    */
   flag = TRUE;
   if (A->lower.T > B->upper.T || B->lower.T > A->upper.T)
-  {
-    flag = FALSE;
-  } /* end of bounds check on T */
-  else
-  {
-    if (A->lower.X > B->upper.X || B->lower.X > A->upper.X)
     {
       flag = FALSE;
-    } /* end of bounds check on X */
-    else
+    } /* end of bounds check on T */
+  else
     {
-      if (A->lower.Y > B->upper.Y || B->lower.Y > A->upper.Y)
-      {
-        flag = FALSE;
-      } /* end of bounds check on Y */
-      else
-      {
-        if (A->lower.Z > B->upper.Z || B->lower.Z > A->upper.Z)
+      if (A->lower.X > B->upper.X || B->lower.X > A->upper.X)
         {
           flag = FALSE;
-        } /*  end of bounds check on Z   */
-      }   /*  end of check on Y   */
-    }     /*  end of check on X   */
-  }       /*  end of check on T   */
+        } /* end of bounds check on X */
+      else
+        {
+          if (A->lower.Y > B->upper.Y || B->lower.Y > A->upper.Y)
+            {
+              flag = FALSE;
+            } /* end of bounds check on Y */
+          else
+            {
+              if (A->lower.Z > B->upper.Z || B->lower.Z > A->upper.Z)
+                {
+                  flag = FALSE;
+                } /*  end of bounds check on Z   */
+            } /*  end of check on Y   */
+        } /*  end of check on X   */
+    } /*  end of check on T   */
 
   return (flag);
 } /*  end of consistentKey()   */
@@ -107,7 +107,7 @@ Boolean consistentKey(IndexKey *A, IndexKey *B)
  */
 
 Boolean consistentNonKey(Char *A, Char *B)
-{               /*  beginning of consistentNonKey() */
+{ /*  beginning of consistentNonKey() */
   Boolean flag; /* flag indicating consistency */
 
   assert(A);
@@ -118,13 +118,13 @@ Boolean consistentNonKey(Char *A, Char *B)
    *  routine.
    */
   if (strstr(A, B) != NULL)
-  {
-    flag = TRUE;
-  } /*  end of if strstr != NULL */
+    {
+      flag = TRUE;
+    } /*  end of if strstr != NULL */
   else
-  {
-    flag = FALSE;
-  } /*  end of if strstr == NULL */
+    {
+      flag = FALSE;
+    } /*  end of if strstr == NULL */
 
   return (flag);
 } /*  end of consistentNonKey()  */

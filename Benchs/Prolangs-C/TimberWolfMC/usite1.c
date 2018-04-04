@@ -41,46 +41,46 @@ int usite1(int a, int xb, int yb)
   cost += usoftnet(acellptr);
 
   if (finalShot > 0)
-  {
-    delta = deltaBB(a, xb, yb);
-    newpenalty += delta;
-  }
+    {
+      delta = deltaBB(a, xb, yb);
+      newpenalty += delta;
+    }
 
   if ((cost + newpenalty <= funccost + penalty) ||
       (exp((double)(funccost + penalty - cost - newpenalty) / T) >
        ((double)RAND / (double)0x7fffffff)))
-  {
-    ufixpin(atermptr, 1, 0, 0);
-    usoftpin(acellptr, 1, 0, 0, 0);
-
-    if (occa1ptr != occa2ptr)
     {
-      for (i = 1; occa1ptr[i] != a; i++)
-      {
-        ;
-      }
-      occa1ptr[i] = occa1ptr[occa1ptr[0]--];
-      occa2ptr[++occa2ptr[0]] = a;
+      ufixpin(atermptr, 1, 0, 0);
+      usoftpin(acellptr, 1, 0, 0, 0);
+
+      if (occa1ptr != occa2ptr)
+        {
+          for (i = 1; occa1ptr[i] != a; i++)
+            {
+              ;
+            }
+          occa1ptr[i] = occa1ptr[occa1ptr[0]--];
+          occa2ptr[++occa2ptr[0]] = a;
+        }
+
+      acellptr->xcenter = xb;
+      acellptr->ycenter = yb;
+
+      funccost = cost;
+      if (finalShot > 0)
+        {
+          newpenalty -= delta;
+          bbleft = bbbl;
+          bbright = bbbr;
+          bbbottom = bbbb;
+          bbtop = bbbt;
+        }
+      penalty = newpenalty;
+
+      return (1);
     }
-
-    acellptr->xcenter = xb;
-    acellptr->ycenter = yb;
-
-    funccost = cost;
-    if (finalShot > 0)
-    {
-      newpenalty -= delta;
-      bbleft = bbbl;
-      bbright = bbbr;
-      bbbottom = bbbb;
-      bbtop = bbbt;
-    }
-    penalty = newpenalty;
-
-    return (1);
-  }
   else
-  {
-    return (0);
-  }
+    {
+      return (0);
+    }
 }

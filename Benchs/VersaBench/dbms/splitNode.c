@@ -42,12 +42,12 @@
  *              Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include "splitNode.h"      /* for splitNode() return codes             */
-#include <assert.h>         /* for assert()                             */
-#include <stdlib.h>         /* for NULL definition                      */
+#include "splitNode.h" /* for splitNode() return codes             */
+#include <assert.h> /* for assert()                             */
+#include <stdlib.h> /* for NULL definition                      */
 #include "dataManagement.h" /* for primitive type definitions           */
-#include "errorMessage.h"   /* for errorMessage() definition            */
-#include "index.h"          /* for IndexNode and IndexEntry definitions */
+#include "errorMessage.h" /* for errorMessage() definition            */
+#include "index.h" /* for IndexNode and IndexEntry definitions */
 
 /*
  *  Function prototypes
@@ -56,13 +56,13 @@ extern void partitionEntries(IndexEntry *I, Int fan, IndexEntry **A,
                              IndexEntry **B);
 extern void keysUnion(IndexEntry *I, IndexKey *U);
 
-Int splitNode(IndexNode *nodeToSplit,  /* node to split            */
-              IndexEntry *entry,       /* entry which caused split */
-              Int fan,                 /* fan of index             */
+Int splitNode(IndexNode *nodeToSplit, /* node to split            */
+              IndexEntry *entry, /* entry which caused split */
+              Int fan, /* fan of index             */
               IndexEntry **splitEntry) /* output entry of new node */
-{                                      /* beginning of splitNode() */
+{ /* beginning of splitNode() */
   IndexEntry *listOfEntries; /* union of entries of nodeToSplit and entry */
-  IndexNode *splitNode;      /* new split node referenced by splitEntry   */
+  IndexNode *splitNode; /* new split node referenced by splitEntry   */
 
   static Char name[] = "splitNode";
 
@@ -81,22 +81,22 @@ Int splitNode(IndexNode *nodeToSplit,  /* node to split            */
    */
   *splitEntry = createIndexEntry();
   if (*splitEntry == NULL)
-  {
-    errorMessage("allocation failure - split entry", REPLACE);
-    errorMessage(name, PREPEND);
-    return (SPLIT_NODE_ALLOCATION_FAILURE);
-  } /*  end of if ( *splitEntry == NULL )  */
-  else
-  {
-    splitNode = createIndexNode(nodeToSplit->level);
-    if (splitNode == NULL)
     {
-      deleteIndexEntry(*splitEntry, nodeToSplit->level);
-      errorMessage("allocation failure - sibling node", REPLACE);
+      errorMessage("allocation failure - split entry", REPLACE);
       errorMessage(name, PREPEND);
       return (SPLIT_NODE_ALLOCATION_FAILURE);
-    } /*  end of if ( splitNode == NULL )  */
-  }   /*  end of split entry and node allocation  */
+    } /*  end of if ( *splitEntry == NULL )  */
+  else
+    {
+      splitNode = createIndexNode(nodeToSplit->level);
+      if (splitNode == NULL)
+        {
+          deleteIndexEntry(*splitEntry, nodeToSplit->level);
+          errorMessage("allocation failure - sibling node", REPLACE);
+          errorMessage(name, PREPEND);
+          return (SPLIT_NODE_ALLOCATION_FAILURE);
+        } /*  end of if ( splitNode == NULL )  */
+    } /*  end of split entry and node allocation  */
 
   /*
    *  Create a list which is the union of the current entries of the node to
@@ -110,10 +110,10 @@ Int splitNode(IndexNode *nodeToSplit,  /* node to split            */
   /*
    *  Partition entries unto old nodeToSplit and new temporary node.
    */
-  partitionEntries(listOfEntries,           /*  entries to partition    */
-                   fan,                     /*  fan of index            */
+  partitionEntries(listOfEntries, /*  entries to partition    */
+                   fan, /*  fan of index            */
                    &(nodeToSplit->entries), /*  1st partitioned group   */
-                   &(splitNode->entries));  /*  2nd partitioned group   */
+                   &(splitNode->entries)); /*  2nd partitioned group   */
 
   /*
    *  Set reference of splitEntry to new split node and adjust

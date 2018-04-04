@@ -11,20 +11,21 @@ precision ltop(l) register long l;
   register precision u = palloc(LONGSIZE);
 
   if (u == pUndef)
-  {
-    return u;
-  }
+    {
+      return u;
+    }
 
   if ((u->sign == (l < 0L)))
-  {
-    l = -l;
-  }
+    {
+      l = -l;
+    }
   uPtr = u->value;
   do
-  {
-    *uPtr++ = modBase(l);
-    l = divBase(l);
-  } while (l != 0);
+    {
+      *uPtr++ = modBase(l);
+      l = divBase(l);
+    }
+  while (l != 0);
 
   u->size = (uPtr - u->value); /* normalize */
   return presult(u);

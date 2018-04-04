@@ -37,8 +37,8 @@ typedef struct vm_save_s vm_save;
 struct vm_save_s
 {
   alloc_save *asave; /* allocator save */
-  int_state *isave;  /* old interpreter state */
-  gs_state *gsave;   /* old graphics state */
+  int_state *isave; /* old interpreter state */
+  gs_state *gsave; /* old graphics state */
 };
 
 /* save */
@@ -48,13 +48,13 @@ int zsave(register ref *op)
   vm_save *vmsave = (vm_save *)alloc(1, sizeof(vm_save), "zsave");
   alloc_save *asave = alloc_save_state();
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   if (vmsave == 0 || asave == 0)
-  {
-    return e_VMerror;
-  }
+    {
+      return e_VMerror;
+    }
   vmsave->asave = asave;
   /* Save the old interpreter state pointers, */
   /* and cut the chains so we can't grestore past here. */
@@ -83,14 +83,14 @@ int zrestore(register ref *op)
     if ((code = restore_check_stack(osbot, op, asave)) < 0 ||
         (code = restore_check_stack(estack, esp + 1, asave)) < 0 ||
         (code = restore_check_stack(dstack, dsp + 1, asave)) < 0)
-    {
-      return code;
-    }
+      {
+        return code;
+      }
   }
   if (alloc_restore_state_check(asave) < 0)
-  {
-    return e_invalidrestore;
-  }
+    {
+      return e_invalidrestore;
+    }
   /* Restore the graphics state back to the state */
   /* that was allocated by the save. */
   /* This must be done before the alloc_restore_state. */
@@ -102,9 +102,9 @@ int zrestore(register ref *op)
   istate.saved = vmsave->isave;
   gs_state_swap_saved(igs, vmsave->gsave);
   if ((code = zgrestore(op)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   alloc_free((char *)vmsave, 1, sizeof(vm_save), "zrestore");
   pop(1);
   return 0;
@@ -115,44 +115,44 @@ int restore_check_stack(ref *bot, ref *top, alloc_save *asave)
 {
   ref *stkp;
   for (stkp = bot; stkp < top; stkp++)
-  {
-    char *ptr;
-    switch (r_type(stkp))
     {
-      case t_array:
-      case t_packedarray:
-        ptr = (char *)stkp->value.refs;
-        break;
-      case t_dictionary:
-        ptr = (char *)stkp->value.pdict;
-        break;
-      case t_fontID:
-        ptr = (char *)stkp->value.pfont;
-        break;
-      /* case t_file: ****** WHAT? ****** */
-      case t_name:
-        ptr = (char *)stkp->value.pname;
-        break;
-      case t_save:
-        ptr = (char *)stkp->value.psave;
-        break;
-      case t_string:
-        ptr = (char *)stkp->value.bytes;
-        break;
-      case t_color:
-        ptr = (char *)stkp->value.pcolor;
-        break;
-      case t_device:
-        ptr = (char *)stkp->value.pdevice;
-        break;
-      default:
-        continue;
+      char *ptr;
+      switch (r_type(stkp))
+        {
+          case t_array:
+          case t_packedarray:
+            ptr = (char *)stkp->value.refs;
+            break;
+          case t_dictionary:
+            ptr = (char *)stkp->value.pdict;
+            break;
+          case t_fontID:
+            ptr = (char *)stkp->value.pfont;
+            break;
+          /* case t_file: ****** WHAT? ****** */
+          case t_name:
+            ptr = (char *)stkp->value.pname;
+            break;
+          case t_save:
+            ptr = (char *)stkp->value.psave;
+            break;
+          case t_string:
+            ptr = (char *)stkp->value.bytes;
+            break;
+          case t_color:
+            ptr = (char *)stkp->value.pcolor;
+            break;
+          case t_device:
+            ptr = (char *)stkp->value.pdevice;
+            break;
+          default:
+            continue;
+        }
+      if (alloc_is_since_save(ptr, asave))
+        {
+          return e_invalidrestore;
+        }
     }
-    if (alloc_is_since_save(ptr, asave))
-    {
-      return e_invalidrestore;
-    }
-  }
 
   return 0; /* OK */
 }

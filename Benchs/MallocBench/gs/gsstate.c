@@ -23,7 +23,7 @@ copies.  */
 #include "gx.h"
 #include "gxfixed.h"
 #include "gxmatrix.h" /* for gzstate */
-#include "gzcolor.h"  /* requires gxdevice.h */
+#include "gzcolor.h" /* requires gxdevice.h */
 #include "gzdevice.h"
 #include "gzht.h"
 #include "gzline.h"
@@ -46,13 +46,13 @@ gs_state *gs_state_alloc(proc_alloc_t palloc, proc_free_t pfree)
   register gs_state *pgs =
       (gs_state *)(*palloc)(1, sizeof(gs_state), "gs_state_alloc");
   if (pgs == 0)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
   if (alloc_state_contents(pgs, palloc) < 0)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
   pgs->saved = 0;
   pgs->memory_procs.alloc = palloc;
   pgs->memory_procs.free = pfree;
@@ -65,9 +65,9 @@ gs_state *gs_state_alloc(proc_alloc_t palloc, proc_free_t pfree)
   /****** What about the font and transfer function ? ******/
   pgs->in_cachedevice = pgs->in_charpath = 0;
   if (gs_initgraphics(pgs) < 0)
-  { /* Something went very wrong */
-    return 0;
-  }
+    { /* Something went very wrong */
+      return 0;
+    }
   return pgs;
 }
 
@@ -85,14 +85,14 @@ int gs_gsave(gs_state *pgs)
   gs_state *pnew =
       (gs_state *)(*pgs->memory_procs.alloc)(1, sizeof(gs_state), "gs_gsave");
   if (pnew == 0)
-  {
-    return_error(gs_error_VMerror);
-  }
+    {
+      return_error(gs_error_VMerror);
+    }
   *pnew = *pgs;
   if (alloc_state_contents(pgs, pgs->memory_procs.alloc) < 0)
-  {
-    return_error(gs_error_VMerror);
-  }
+    {
+      return_error(gs_error_VMerror);
+    }
 #define gcopy(element, type) *pgs->element = *pnew->element
   gcopy(path, gx_path);
   gcopy(clip_path, gx_path);
@@ -113,9 +113,9 @@ int gs_grestore(gs_state *pgs)
 {
   gs_state *saved = pgs->saved;
   if (saved == 0)
-  {
-    return_error(gs_error_undefinedresult); /* adhoc */
-  }
+    {
+      return_error(gs_error_undefinedresult); /* adhoc */
+    }
   free_state_contents(pgs);
   *pgs = *saved;
   (*pgs->memory_procs.free)((char *)saved, 1, sizeof(gs_state), "gs_grestore");
@@ -126,9 +126,9 @@ int gs_grestore(gs_state *pgs)
 int gs_grestoreall(gs_state *pgs)
 {
   while (gs_grestore(pgs) >= 0)
-  {
-    ;
-  }
+    {
+      ;
+    }
   return 0;
 }
 
@@ -153,9 +153,9 @@ int gs_initgraphics(register gs_state *pgs)
       (code = gs_setdash(pgs, (float *)0, 0, 0.0)) < 0 ||
       (code = gs_setgray(pgs, 0.0)) < 0 ||
       (code = gs_setmiterlimit(pgs, 10.0)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   return 0;
 }
 
@@ -163,9 +163,9 @@ int gs_initgraphics(register gs_state *pgs)
 int gs_setflat(gs_state *pgs, floatp flat)
 {
   if (flat <= 0)
-  {
-    return_error(gs_error_rangecheck);
-  }
+    {
+      return_error(gs_error_rangecheck);
+    }
   pgs->flatness = flat;
   return 0;
 }
@@ -207,9 +207,9 @@ void free_state_contents(gs_state *pgs)
 #define gfree(element, type) \
   (*pfree)((char *)pgs->element, 1, sizeof(type), cname)
   if (!pgs->device_is_shared)
-  {
-    gfree(device, device);
-  }
+    {
+      gfree(device, device);
+    }
   gfree(dev_color, gx_device_color);
   gfree(color, gs_color);
   gfree(halftone, halftone);

@@ -41,9 +41,9 @@ SearchOptions *SearchOptions_new()
 {
   SearchOptions *options = malloc(sizeof(SearchOptions));
   if (!options)
-  {
-    return (NULL);
-  }
+    {
+      return (NULL);
+    }
   options->searchType = treeSearch;
   options->multiThreaded = false;
   options->doStatistics = false;
@@ -58,17 +58,17 @@ Configuration *Configuration_new()
   Configuration *new = malloc(sizeof(Configuration));
   SearchOptions *options = SearchOptions_new();
   if (!new || !options)
-  {
-    if (new)
     {
-      free(new);
+      if (new)
+        {
+          free(new);
+        }
+      if (options)
+        {
+          free(options);
+        }
+      return (NULL);
     }
-    if (options)
-    {
-      free(options);
-    }
-    return (NULL);
-  }
   new->graphs = NULL;
   new->signatures = NULL;
   new->searchOptions = options;

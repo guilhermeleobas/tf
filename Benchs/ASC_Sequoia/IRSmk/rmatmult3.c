@@ -76,22 +76,22 @@ void rmatmult3(Domain_t *domain, RadiationData_t *rblk, double *x, double *b)
   double *xufr = x + kp + jp + 1;
 
   for (kk = kmin; kk < kmax; kk++)
-  {
-    for (jj = jmin; jj < jmax; jj++)
     {
-      for (ii = imin; ii < imax; ii++)
-      {
-        i = ii + jj * jp + kk * kp;
-        b[i] = dbl[i] * xdbl[i] + dbc[i] * xdbc[i] + dbr[i] * xdbr[i] +
-               dcl[i] * xdcl[i] + dcc[i] * xdcc[i] + dcr[i] * xdcr[i] +
-               dfl[i] * xdfl[i] + dfc[i] * xdfc[i] + dfr[i] * xdfr[i] +
-               cbl[i] * xcbl[i] + cbc[i] * xcbc[i] + cbr[i] * xcbr[i] +
-               ccl[i] * xccl[i] + ccc[i] * xccc[i] + ccr[i] * xccr[i] +
-               cfl[i] * xcfl[i] + cfc[i] * xcfc[i] + cfr[i] * xcfr[i] +
-               ubl[i] * xubl[i] + ubc[i] * xubc[i] + ubr[i] * xubr[i] +
-               ucl[i] * xucl[i] + ucc[i] * xucc[i] + ucr[i] * xucr[i] +
-               ufl[i] * xufl[i] + ufc[i] * xufc[i] + ufr[i] * xufr[i];
-      }
+      for (jj = jmin; jj < jmax; jj++)
+        {
+          for (ii = imin; ii < imax; ii++)
+            {
+              i = ii + jj * jp + kk * kp;
+              b[i] = dbl[i] * xdbl[i] + dbc[i] * xdbc[i] + dbr[i] * xdbr[i] +
+                     dcl[i] * xdcl[i] + dcc[i] * xdcc[i] + dcr[i] * xdcr[i] +
+                     dfl[i] * xdfl[i] + dfc[i] * xdfc[i] + dfr[i] * xdfr[i] +
+                     cbl[i] * xcbl[i] + cbc[i] * xcbc[i] + cbr[i] * xcbr[i] +
+                     ccl[i] * xccl[i] + ccc[i] * xccc[i] + ccr[i] * xccr[i] +
+                     cfl[i] * xcfl[i] + cfc[i] * xcfc[i] + cfr[i] * xcfr[i] +
+                     ubl[i] * xubl[i] + ubc[i] * xubc[i] + ubr[i] * xubr[i] +
+                     ucl[i] * xucl[i] + ucc[i] * xucc[i] + ucr[i] * xucr[i] +
+                     ufl[i] * xufl[i] + ufc[i] * xufc[i] + ufr[i] * xufr[i];
+            }
+        }
     }
-  }
 }

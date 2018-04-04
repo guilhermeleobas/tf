@@ -61,14 +61,14 @@ void DimensionChannel(void)
    */
   channelFP = fopen(channelFile, "r");
   if (channelFP == NULL)
-  {
-    /*
+    {
+      /*
      * Error in channel file description.
      */
-    printf("Error:\n");
-    printf("\tChannel file cannot be opened.\n");
-    exit(1);
-  }
+      printf("Error:\n");
+      printf("\tChannel file cannot be opened.\n");
+      exit(1);
+    }
 
   /*
    * Scan the file to find the last column
@@ -82,76 +82,77 @@ void DimensionChannel(void)
   dim = 0;
   net = 0;
   do
-  {
-    line++;
-    unsigned int c1, b1, t1;
-    stat = fscanf(channelFP, "%u%u%u", &c1, &b1, &t1);
-    col = c1;
-    bot = b1;
-    top = t1;
-    if (stat != EOF)
     {
-      if (stat == 3)
-      {
-        /*
+      line++;
+      unsigned int c1, b1, t1;
+      stat = fscanf(channelFP, "%u%u%u", &c1, &b1, &t1);
+      col = c1;
+      bot = b1;
+      top = t1;
+      if (stat != EOF)
+        {
+          if (stat == 3)
+            {
+              /*
          * Update column #.
          */
-        if (col > dim)
-        {
-          dim = col;
-        }
+              if (col > dim)
+                {
+                  dim = col;
+                }
 
-        /*
+              /*
          * Determine how many channel nets.
          */
-        if (bot > net)
-        {
-          net = bot;
-        }
-        if (top > net)
-        {
-          net = top;
-        }
-      }
-      else
-      {
-        /*
+              if (bot > net)
+                {
+                  net = bot;
+                }
+              if (top > net)
+                {
+                  net = top;
+                }
+            }
+          else
+            {
+              /*
          * Error in channel file description.
          */
-        printf("Error:\n");
-        printf("\tChannel file description invalid at line %lu.\n", line);
-        printf("\tIncorrect number of specifiers.\n");
-        exit(1);
-      }
+              printf("Error:\n");
+              printf("\tChannel file description invalid at line %lu.\n", line);
+              printf("\tIncorrect number of specifiers.\n");
+              exit(1);
+            }
+        }
     }
-  } while (stat != EOF);
+  while (stat != EOF);
 
   /*
    * Close channel description file.
    */
   if (fclose(channelFP) == EOF)
-  {
-    /*
+    {
+      /*
      * Error in channel file description.
      */
-    printf("Error:\n");
-    printf("\tChannel file cannot be closed.\n");
-    exit(1);
-  }
+      printf("Error:\n");
+      printf("\tChannel file cannot be closed.\n");
+      exit(1);
+    }
 
   /*
    * Check channel dimension.
    */
   if (dim == 0)
-  {
-    /*
+    {
+      /*
      * Error in channel file description.
      */
-    printf("Error:\n");
-    printf("\tChannel description invalid.\n");
-    printf("\tChannel has null dimension.\n");
-    exit(1);
-  }
+      printf("Error:\n");
+      printf("\tChannel description invalid.\n");
+      printf("\tChannel has null dimension.\n");
+      exit(1);
+    }
 
   /*
    * Set global channel info.
@@ -183,24 +184,24 @@ void DescribeChannel(void)
    * Initialize terminals of channel.
    */
   for (col = 0; col <= channelColumns; col++)
-  {
-    TOP[col] = 0;
-    BOT[col] = 0;
-  }
+    {
+      TOP[col] = 0;
+      BOT[col] = 0;
+    }
 
   /*
    * Open channel description file.
    */
   channelFP = fopen(channelFile, "r");
   if (channelFP == NULL)
-  {
-    /*
+    {
+      /*
      * Error in channel file description.
      */
-    printf("Error:\n");
-    printf("\tChannel file cannot be opened.\n");
-    exit(1);
-  }
+      printf("Error:\n");
+      printf("\tChannel file cannot be opened.\n");
+      exit(1);
+    }
 
   /*
    * Scan the file to find the last column
@@ -212,64 +213,65 @@ void DescribeChannel(void)
    */
   line = 0;
   do
-  {
-    line++;
-    unsigned int c1, b1, t1;
-    stat = fscanf(channelFP, "%u%u%u", &c1, &b1, &t1);
-    col = c1;
-    bot = b1;
-    top = t1;
-    if (stat != EOF)
     {
-      if (stat == 3)
-      {
-        /*
+      line++;
+      unsigned int c1, b1, t1;
+      stat = fscanf(channelFP, "%u%u%u", &c1, &b1, &t1);
+      col = c1;
+      bot = b1;
+      top = t1;
+      if (stat != EOF)
+        {
+          if (stat == 3)
+            {
+              /*
          * Build column.
          */
-        if (col > channelColumns)
-        {
-          /*
+              if (col > channelColumns)
+                {
+                  /*
            * Error in channel file description.
            */
-          printf("Error:\n");
-          printf("\tChannel file description invalid at line %lu.\n", line);
-          printf("\tColumn number out of range.\n");
-          exit(1);
-        }
-        else
-        {
-          /*
+                  printf("Error:\n");
+                  printf("\tChannel file description invalid at line %lu.\n", line);
+                  printf("\tColumn number out of range.\n");
+                  exit(1);
+                }
+              else
+                {
+                  /*
            * Doit.
            */
-          BOT[col] = bot;
-          TOP[col] = top;
-        }
-      }
-      else
-      {
-        /*
+                  BOT[col] = bot;
+                  TOP[col] = top;
+                }
+            }
+          else
+            {
+              /*
          * Error in channel file description.
          */
-        printf("Error:\n");
-        printf("\tChannel file description invalid at line %lu.\n", line);
-        printf("\tIncorrect number of specifiers.\n");
-        exit(1);
-      }
+              printf("Error:\n");
+              printf("\tChannel file description invalid at line %lu.\n", line);
+              printf("\tIncorrect number of specifiers.\n");
+              exit(1);
+            }
+        }
     }
-  } while (stat != EOF);
+  while (stat != EOF);
 
   /*
    * Close channel description file.
    */
   if (fclose(channelFP) == EOF)
-  {
-    /*
+    {
+      /*
      * Error in channel file description.
      */
-    printf("Error:\n");
-    printf("\tChannel file cannot be closed.\n");
-    exit(1);
-  }
+      printf("Error:\n");
+      printf("\tChannel file cannot be closed.\n");
+      exit(1);
+    }
 }
 
 void DensityChannel(void)
@@ -292,56 +294,56 @@ void DensityChannel(void)
    * Initialize track dimension structures.
    */
   for (init = 0; init <= channelNets; init++)
-  {
-    FIRST[init] = 0;
-    LAST[init] = 0;
-    CROSSING[init] = 0;
-  }
+    {
+      FIRST[init] = 0;
+      LAST[init] = 0;
+      CROSSING[init] = 0;
+    }
   for (init = 0; init <= channelColumns; init++)
-  {
-    DENSITY[init] = 0;
-  }
+    {
+      DENSITY[init] = 0;
+    }
 
   /*
    * Compute the span for each net.
    */
   for (which = 1; which <= channelNets; which++)
-  {
-    /*
+    {
+      /*
      * Compute first.  This is the location of
      * the first column for this net.
      */
-    for (col = 1; col <= channelColumns; col++)
-    {
-      if ((BOT[col] == which) || (TOP[col] == which))
-      {
-        FIRST[which] = col;
-        break;
-      }
-    }
+      for (col = 1; col <= channelColumns; col++)
+        {
+          if ((BOT[col] == which) || (TOP[col] == which))
+            {
+              FIRST[which] = col;
+              break;
+            }
+        }
 
-    /*
+      /*
      * Compute last.  This is the location of
      * the last column for this net.
      */
-    for (col = channelColumns; col >= 1; col--)
-    {
-      if ((BOT[col] == which) || (TOP[col] == which))
-      {
-        LAST[which] = col;
-        break;
-      }
-    }
+      for (col = channelColumns; col >= 1; col--)
+        {
+          if ((BOT[col] == which) || (TOP[col] == which))
+            {
+              LAST[which] = col;
+              break;
+            }
+        }
 
-    /*
+      /*
      * Increment the track for each column
      * of the channel which this net spans.
      */
-    for (col = FIRST[which]; col <= LAST[which]; col++)
-    {
-      DENSITY[col]++;
+      for (col = FIRST[which]; col <= LAST[which]; col++)
+        {
+          DENSITY[col]++;
+        }
     }
-  }
 
 /*
  * Compute lower bound on channel tracks.
@@ -349,29 +351,29 @@ void DensityChannel(void)
 #ifdef SCOTT
   bound = 0;
   for (col = 1; col <= channelColumns; col++)
-  {
-    if (DENSITY[col] > bound)
     {
-      bound = DENSITY[col];
-      boundColumn = col;
+      if (DENSITY[col] > bound)
+        {
+          bound = DENSITY[col];
+          boundColumn = col;
+        }
     }
-  }
 #else
   bound = 0;
   for (col = channelColumns; col >= 1; col--)
-  {
-    if (DENSITY[col] > bound)
     {
-      bound = DENSITY[col];
-      boundColumn = col;
+      if (DENSITY[col] > bound)
+        {
+          bound = DENSITY[col];
+          boundColumn = col;
+        }
     }
-  }
 #endif
 
   /*
    * Set global channel info.
    */
-  channelTracks = bound;              /* tracks available for routing */
-  channelDensity = bound;             /* max channel density */
+  channelTracks = bound; /* tracks available for routing */
+  channelDensity = bound; /* max channel density */
   channelDensityColumn = boundColumn; /* column of max channel density */
 }

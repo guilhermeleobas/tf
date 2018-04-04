@@ -66,13 +66,13 @@ void *hypre_StructKrylovCreateVectorArray(int n, void *vvector)
 
   new_vector = hypre_CTAlloc(hypre_StructVector *, n);
   for (i = 0; i < n; i++)
-  {
-    HYPRE_StructVectorCreate(hypre_StructVectorComm(vector),
-                             hypre_StructVectorGrid(vector),
-                             (HYPRE_StructVector *)&new_vector[i]);
-    HYPRE_StructVectorInitialize((HYPRE_StructVector)new_vector[i]);
-    HYPRE_StructVectorAssemble((HYPRE_StructVector)new_vector[i]);
-  }
+    {
+      HYPRE_StructVectorCreate(hypre_StructVectorComm(vector),
+                               hypre_StructVectorGrid(vector),
+                               (HYPRE_StructVector *)&new_vector[i]);
+      HYPRE_StructVectorInitialize((HYPRE_StructVector)new_vector[i]);
+      HYPRE_StructVectorAssemble((HYPRE_StructVector)new_vector[i]);
+    }
 
   return ((void *)new_vector);
 }

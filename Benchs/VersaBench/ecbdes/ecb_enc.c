@@ -68,40 +68,40 @@ char *des_options()
   static char buf[32];
 
   if (init)
-  {
-    char *ptr, *unroll, *risc, *size;
+    {
+      char *ptr, *unroll, *risc, *size;
 
-    init = 0;
+      init = 0;
 #ifdef DES_PTR
-    ptr = "ptr";
+      ptr = "ptr";
 #else
-    ptr = "idx";
+      ptr = "idx";
 #endif
 #if defined(DES_RISC1) || defined(DES_RISC2)
 #ifdef DES_RISC1
-    risc = "risc1";
+      risc = "risc1";
 #endif
 #ifdef DES_RISC2
-    risc = "risc2";
+      risc = "risc2";
 #endif
 #else
-    risc = "cisc";
+      risc = "cisc";
 #endif
 #ifdef DES_UNROLL
-    unroll = "16";
+      unroll = "16";
 #else
-    unroll = "4";
+      unroll = "4";
 #endif
-    if (sizeof(DES_LONG) != sizeof(long))
-    {
-      size = "int";
+      if (sizeof(DES_LONG) != sizeof(long))
+        {
+          size = "int";
+        }
+      else
+        {
+          size = "long";
+        }
+      sprintf(buf, "des(%s,%s,%s,%s)", ptr, risc, unroll, size);
     }
-    else
-    {
-      size = "long";
-    }
-    sprintf(buf, "des(%s,%s,%s,%s)", ptr, risc, unroll, size);
-  }
   return (buf);
 }
 

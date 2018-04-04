@@ -21,41 +21,41 @@ void PRINT_TABLE(SYMBOL_TABLE SYM_TAB, FILE *OUTPUT)
 
   /* ------------------- Print out the linked list backwards */
   if (SYM_TAB != NULL)
-  {
-    PRINT_TABLE((*SYM_TAB).NEXT, OUTPUT);
+    {
+      PRINT_TABLE((*SYM_TAB).NEXT, OUTPUT);
 
-    if ((*SYM_TAB).TYPE == MODULE)
-    {
-      (void)fprintf(OUTPUT, "%s            ", (*SYM_TAB).LABEL);
-    }
-    else
-    {
-      (void)fprintf(OUTPUT, "          %s  ", (*SYM_TAB).LABEL);
-    }
+      if ((*SYM_TAB).TYPE == MODULE)
+        {
+          (void)fprintf(OUTPUT, "%s            ", (*SYM_TAB).LABEL);
+        }
+      else
+        {
+          (void)fprintf(OUTPUT, "          %s  ", (*SYM_TAB).LABEL);
+        }
 
-    NUM_TO_STR((*SYM_TAB).LOCATION, 16,
-               (int)MEM_ADDR_SIZE_1 / BITS_PER_HALFBYTE_1, TEMP);
+      NUM_TO_STR((*SYM_TAB).LOCATION, 16,
+                 (int)MEM_ADDR_SIZE_1 / BITS_PER_HALFBYTE_1, TEMP);
 
-    if ((*SYM_TAB).TYPE == UNDEFINED)
-    {
-      (void)fprintf(OUTPUT, "Undefined ");
-    }
-    else
-    {
-      (void)fprintf(OUTPUT, "%s    ", TEMP);
-    }
+      if ((*SYM_TAB).TYPE == UNDEFINED)
+        {
+          (void)fprintf(OUTPUT, "Undefined ");
+        }
+      else
+        {
+          (void)fprintf(OUTPUT, "%s    ", TEMP);
+        }
 
-    if ((*SYM_TAB).TYPE == MODULE)
-    {
-      NUM_TO_STR((*SYM_TAB).LENGTH, 16,
-                 (int)MEM_ADDR_SIZE_1 / BITS_PER_HALFBYTE_1 + 1, TEMP);
-      (void)fprintf(OUTPUT, "%s\n", TEMP);
+      if ((*SYM_TAB).TYPE == MODULE)
+        {
+          NUM_TO_STR((*SYM_TAB).LENGTH, 16,
+                     (int)MEM_ADDR_SIZE_1 / BITS_PER_HALFBYTE_1 + 1, TEMP);
+          (void)fprintf(OUTPUT, "%s\n", TEMP);
+        }
+      else
+        {
+          (void)fprintf(OUTPUT, "\n");
+        }
     }
-    else
-    {
-      (void)fprintf(OUTPUT, "\n");
-    }
-  }
 }
 
 /* --------------------------------- PRT_SYM_TAB --------------------------- */
@@ -76,34 +76,34 @@ void OUTPUT_TABLE(SYMBOL_TABLE SYM_TAB, FILE *OUTPUT)
 
   /* ---------------- Prints linked list out backwards */
   if (SYM_TAB != NULL)
-  {
-    OUTPUT_TABLE((*SYM_TAB).NEXT, OUTPUT);
+    {
+      OUTPUT_TABLE((*SYM_TAB).NEXT, OUTPUT);
 
-    if ((*SYM_TAB).TYPE == MODULE)
-    {
-      (void)fprintf(OUTPUT, "M%s", (*SYM_TAB).LABEL);
-    }
-    else if (!strcmp((*SYM_TAB).MODULE, GLOBAL_1))
-    {
-      (void)fprintf(OUTPUT, "G%s", (*SYM_TAB).LABEL);
-    }
-    else
-    {
-      (void)fprintf(OUTPUT, "L%s%s", (*SYM_TAB).MODULE, (*SYM_TAB).LABEL);
-    }
+      if ((*SYM_TAB).TYPE == MODULE)
+        {
+          (void)fprintf(OUTPUT, "M%s", (*SYM_TAB).LABEL);
+        }
+      else if (!strcmp((*SYM_TAB).MODULE, GLOBAL_1))
+        {
+          (void)fprintf(OUTPUT, "G%s", (*SYM_TAB).LABEL);
+        }
+      else
+        {
+          (void)fprintf(OUTPUT, "L%s%s", (*SYM_TAB).MODULE, (*SYM_TAB).LABEL);
+        }
 
-    NUM_TO_STR((*SYM_TAB).LOCATION, 16,
-               (int)MEM_ADDR_SIZE_1 / BITS_PER_HALFBYTE_1 + 1, TEMP);
-    (void)fprintf(OUTPUT, "%s", TEMP);
-
-    if ((*SYM_TAB).TYPE == MODULE)
-    {
-      NUM_TO_STR((*SYM_TAB).LENGTH, 16,
+      NUM_TO_STR((*SYM_TAB).LOCATION, 16,
                  (int)MEM_ADDR_SIZE_1 / BITS_PER_HALFBYTE_1 + 1, TEMP);
       (void)fprintf(OUTPUT, "%s", TEMP);
+
+      if ((*SYM_TAB).TYPE == MODULE)
+        {
+          NUM_TO_STR((*SYM_TAB).LENGTH, 16,
+                     (int)MEM_ADDR_SIZE_1 / BITS_PER_HALFBYTE_1 + 1, TEMP);
+          (void)fprintf(OUTPUT, "%s", TEMP);
+        }
+      (void)fprintf(OUTPUT, "\n");
     }
-    (void)fprintf(OUTPUT, "\n");
-  }
 }
 
 /* ------------------------------ PRINT_EXEC ------------------------------- */

@@ -95,7 +95,7 @@
 #endif
 
 /* Compiler dependent options */
-#undef NOENUM         /* Define if compiler has no enum's */
+#undef NOENUM /* Define if compiler has no enum's */
 #undef NOSTRUCTASSIGN /* Define if compiler can't assign structures */
 
 /* define only one of the next three defines */
@@ -131,7 +131,14 @@ char Version[] = "1.1";
 #define Ident5 5
 typedef extended Enumeration;
 #else
-typedef enum { Ident1, Ident2 = 10000, Ident3, Ident4, Ident5 } Enumeration;
+typedef enum
+{
+  Ident1,
+  Ident2 = 10000,
+  Ident3,
+  Ident4,
+  Ident5
+} Enumeration;
 #endif
 
 typedef extended OneToThirty;
@@ -225,9 +232,9 @@ Proc0()
 
   starttime = clock();
   for (i = 0; i < LOOPS; ++i)
-  {
-    ;
-  }
+    {
+      ;
+    }
   nulltime = clock() - starttime; /* Computes overhead of looping */
 #endif
 #ifdef TIME
@@ -281,36 +288,36 @@ Proc0()
   starttime = tms.tms_utime;
 #endif
   for (i = 0; i < LOOPS; ++i)
-  {
-    Proc5();
-    Proc4();
-    IntLoc1 = 2.0;
-    IntLoc2 = 3.0;
-    strcpy(String2Loc, "DHRYSTONE PROGRAM, 2'ND STRING");
-    EnumLoc = Ident2;
-    BoolGlob = !Func2(String1Loc, String2Loc);
-    while (IntLoc1 < IntLoc2)
     {
-      IntLoc3 = 5.0 * IntLoc1 - IntLoc2;
-      Proc7(IntLoc1, IntLoc2, &IntLoc3);
-      ++IntLoc1;
+      Proc5();
+      Proc4();
+      IntLoc1 = 2.0;
+      IntLoc2 = 3.0;
+      strcpy(String2Loc, "DHRYSTONE PROGRAM, 2'ND STRING");
+      EnumLoc = Ident2;
+      BoolGlob = !Func2(String1Loc, String2Loc);
+      while (IntLoc1 < IntLoc2)
+        {
+          IntLoc3 = 5.0 * IntLoc1 - IntLoc2;
+          Proc7(IntLoc1, IntLoc2, &IntLoc3);
+          ++IntLoc1;
+        }
+      Proc8(Array1Glob, Array2Glob, IntLoc1, IntLoc3);
+      Proc1(PtrGlb);
+      for (CharIndex = 'A'; CharIndex <= Char2Glob; ++CharIndex)
+        {
+          if (EnumLoc == Func1(CharIndex, 'C'))
+            {
+              Proc6(Ident1, &EnumLoc);
+            }
+        }
+      IntLoc3 = IntLoc2 * IntLoc1;
+      IntLoc2 = IntLoc3 / IntLoc1;
+      IntLoc2 = 7.0 * (IntLoc3 - IntLoc2) - IntLoc1;
+      Proc2(&IntLoc1);
     }
-    Proc8(Array1Glob, Array2Glob, IntLoc1, IntLoc3);
-    Proc1(PtrGlb);
-    for (CharIndex = 'A'; CharIndex <= Char2Glob; ++CharIndex)
-    {
-      if (EnumLoc == Func1(CharIndex, 'C'))
-      {
-        Proc6(Ident1, &EnumLoc);
-      }
-    }
-    IntLoc3 = IntLoc2 * IntLoc1;
-    IntLoc2 = IntLoc3 / IntLoc1;
-    IntLoc2 = 7.0 * (IntLoc3 - IntLoc2) - IntLoc1;
-    Proc2(&IntLoc1);
-  }
 
-/*****************
+    /*****************
 -- Stop Timer --
 *****************/
 
@@ -352,8 +359,8 @@ Proc1(PtrParIn) REG RecordPtr PtrParIn;
   PtrParIn->IntComp = 5.0;
   NextRecord.IntComp = PtrParIn->IntComp;
   NextRecord.PtrComp = PtrParIn->PtrComp;
-/*	Proc3(NextRecord.PtrComp);  */
-/*	if (NextRecord.Discr == Ident1)
+  /*	Proc3(NextRecord.PtrComp);  */
+  /*	if (NextRecord.Discr == Ident1)
         {
                 NextRecord.IntComp = 6.0;
                 Proc6(PtrParIn->EnumComp, &NextRecord.EnumComp);
@@ -374,30 +381,30 @@ Proc2(IntParIO) OneToFifty *IntParIO;
 
   IntLoc = *IntParIO + 10.0;
   for (;;)
-  {
-    if (Char1Glob == 'A')
     {
-      --IntLoc;
-      *IntParIO = IntLoc - IntGlob;
-      EnumLoc = Ident1;
+      if (Char1Glob == 'A')
+        {
+          --IntLoc;
+          *IntParIO = IntLoc - IntGlob;
+          EnumLoc = Ident1;
+        }
+      if (EnumLoc == Ident1)
+        {
+          break;
+        }
     }
-    if (EnumLoc == Ident1)
-    {
-      break;
-    }
-  }
 }
 
 Proc3(PtrParOut) RecordPtr *PtrParOut;
 {
   if (PtrGlb != NULL)
-  {
-    *PtrParOut = PtrGlb->PtrComp;
-  }
+    {
+      *PtrParOut = PtrGlb->PtrComp;
+    }
   else
-  {
-    IntGlob = 100.0;
-  }
+    {
+      IntGlob = 100.0;
+    }
   Proc7(10, IntGlob, &PtrGlb->IntComp);
 }
 
@@ -423,32 +430,32 @@ REG Enumeration *EnumParOut;
 {
   *EnumParOut = EnumParIn;
   if (!Func3(EnumParIn))
-  {
-    *EnumParOut = Ident4;
-  }
+    {
+      *EnumParOut = Ident4;
+    }
   switch (EnumParIn)
-  {
-    case Ident1:
-      *EnumParOut = Ident1;
-      break;
-    case Ident2:
-      if (IntGlob > 100)
-      {
+    {
+      case Ident1:
         *EnumParOut = Ident1;
-      }
-      else
-      {
-        *EnumParOut = Ident4;
-      }
-      break;
-    case Ident3:
-      *EnumParOut = Ident2;
-      break;
-    case Ident4:
-      break;
-    case Ident5:
-      *EnumParOut = Ident3;
-  }
+        break;
+      case Ident2:
+        if (IntGlob > 100)
+          {
+            *EnumParOut = Ident1;
+          }
+        else
+          {
+            *EnumParOut = Ident4;
+          }
+        break;
+      case Ident3:
+        *EnumParOut = Ident2;
+        break;
+      case Ident4:
+        break;
+      case Ident5:
+        *EnumParOut = Ident3;
+    }
 }
 
 Proc7(IntParI1, IntParI2, IntParOut) OneToFifty IntParI1;
@@ -474,9 +481,9 @@ OneToFifty IntParI2;
   Array1Par[(int)IntLoc + 1] = Array1Par[(int)IntLoc];
   Array1Par[(int)IntLoc + 30] = IntLoc;
   for (IntIndex = IntLoc; IntIndex <= (IntLoc + 1); ++IntIndex)
-  {
-    Array2Par[(int)IntLoc][(int)IntIndex] = IntLoc;
-  }
+    {
+      Array2Par[(int)IntLoc][(int)IntIndex] = IntLoc;
+    }
   ++Array2Par[(int)IntLoc][(int)IntLoc - 1];
   Array2Par[(int)IntLoc + 20][(int)IntLoc] = Array1Par[(int)IntLoc];
   IntGlob = 5.0;
@@ -491,13 +498,13 @@ CapitalLetter CharPar2;
   CharLoc1 = CharPar1;
   CharLoc2 = CharLoc1;
   if (CharLoc2 != CharPar2)
-  {
-    return (Ident1);
-  }
+    {
+      return (Ident1);
+    }
   else
-  {
-    return (Ident2);
-  }
+    {
+      return (Ident2);
+    }
 }
 
 boolean Func2(StrParI1, StrParI2) String30 StrParI1;
@@ -508,33 +515,33 @@ String30 StrParI2;
 
   IntLoc = 1;
   while (IntLoc <= 1)
-  {
-    if (Func1(StrParI1[(int)IntLoc], StrParI2[(int)IntLoc + 1]) == Ident1)
     {
-      CharLoc = 'A';
-      ++IntLoc;
+      if (Func1(StrParI1[(int)IntLoc], StrParI2[(int)IntLoc + 1]) == Ident1)
+        {
+          CharLoc = 'A';
+          ++IntLoc;
+        }
     }
-  }
   if (CharLoc >= 'W' && CharLoc <= 'Z')
-  {
-    IntLoc = 7;
-  }
-  if (CharLoc == 'X')
-  {
-    return (TRUE);
-  }
-  else
-  {
-    if (strcmp(StrParI1, StrParI2) > 0)
     {
-      IntLoc += 7.0;
+      IntLoc = 7;
+    }
+  if (CharLoc == 'X')
+    {
       return (TRUE);
     }
-    else
+  else
     {
-      return (FALSE);
+      if (strcmp(StrParI1, StrParI2) > 0)
+        {
+          IntLoc += 7.0;
+          return (TRUE);
+        }
+      else
+        {
+          return (FALSE);
+        }
     }
-  }
 }
 
 boolean Func3(EnumParIn) REG Enumeration EnumParIn;
@@ -543,9 +550,9 @@ boolean Func3(EnumParIn) REG Enumeration EnumParIn;
 
   EnumLoc = EnumParIn;
   if (EnumLoc == Ident3)
-  {
-    return (TRUE);
-  }
+    {
+      return (TRUE);
+    }
   return (FALSE);
 }
 
@@ -582,27 +589,27 @@ strcmp(s1, s2) char *s1, *s2;
   while (*s1++ == *s2++)
     ;
   if (*s1 == 0)
-  {
-    if (*s2 == 0)
     {
-      return 0;
+      if (*s2 == 0)
+        {
+          return 0;
+        }
+      else
+        {
+          return -1;
+        }
     }
-    else
-    {
-      return -1;
-    }
-  }
   else
-  {
-    if (*s2 == 0)
     {
-      return 1;
+      if (*s2 == 0)
+        {
+          return 1;
+        }
+      else
+        {
+          return (*(--s1) - *(--s2));
+        }
     }
-    else
-    {
-      return (*(--s1) - *(--s2));
-    }
-  }
 }
 
 #endif

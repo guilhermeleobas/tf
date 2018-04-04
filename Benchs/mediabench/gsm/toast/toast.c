@@ -13,12 +13,12 @@
 
 char *progname;
 
-int f_decode = 0;   /* decode rather than encode	 (-d) */
-int f_cat = 0;      /* write to stdout, not foo.gsm	 (-c) */
-int f_force = 0;    /* force deletion 		 (-f) */
+int f_decode = 0; /* decode rather than encode	 (-d) */
+int f_cat = 0; /* write to stdout, not foo.gsm	 (-c) */
+int f_force = 0; /* force deletion 		 (-f) */
 int f_precious = 0; /* avoid deletion		 (-p) */
-int f_fast = 0;     /* use faster fpt algorithm	 (-F) */
-int f_verbose = 0;  /* debugging			 (-V) */
+int f_fast = 0; /* use faster fpt algorithm	 (-F) */
+int f_verbose = 0; /* debugging			 (-V) */
 
 struct stat instat; /* stat (inname) 		 */
 
@@ -60,20 +60,20 @@ struct fmtdesc
              audio_init_output,
              ulaw_input,
              ulaw_output},
-  f_ulaw = {"u-law",      "plain 8 kHz, 8 bit u-law encoding",
-            ".u",         generic_init,
+  f_ulaw = {"u-law", "plain 8 kHz, 8 bit u-law encoding",
+            ".u", generic_init,
             generic_init, ulaw_input,
             ulaw_output
 
 },
-  f_alaw = {"A-law",      "8 kHz, 8 bit A-law encoding",
-            ".A",         generic_init,
+  f_alaw = {"A-law", "8 kHz, 8 bit A-law encoding",
+            ".A", generic_init,
             generic_init, alaw_input,
             alaw_output
 
 },
-  f_linear = {"linear",     "16 bit (13 significant) signed 8 kHz signal",
-              ".l",         generic_init,
+  f_linear = {"linear", "16 bit (13 significant) signed 8 kHz signal",
+              ".l", generic_init,
               generic_init, linear_input,
               linear_output};
 
@@ -81,7 +81,7 @@ struct fmtdesc *alldescs[] = {&f_audio, &f_alaw, &f_ulaw, &f_linear,
                               (struct fmtdesc *)NULL};
 
 #define DEFAULT_FORMAT f_ulaw /* default audio format, others	*/
-                              /* are: f_alaw,f_audio,f_linear */
+/* are: f_alaw,f_audio,f_linear */
 struct fmtdesc *f_format = 0;
 
 /*
@@ -90,13 +90,13 @@ struct fmtdesc *f_format = 0;
 static char *endname P1((name), char *name)
 {
   if (name)
-  {
-    char *s = strrchr(name, '/');
-    if (s && s[1])
     {
-      name = s + 1;
+      char *s = strrchr(name, '/');
+      if (s && s[1])
+        {
+          name = s + 1;
+        }
     }
-  }
   return name;
 }
 
@@ -116,14 +116,14 @@ static void parse_argv0 P1((av0), char *av0)
    */
 
   if (!strncmp(av0, "un", 2))
-  {
-    f_decode = 1;
-  }
+    {
+      f_decode = 1;
+    }
   if ((l = strlen(av0)) >= 3 /* strlen("cat") */
       && !strcmp(av0 + l - 3, "cat"))
-  {
-    f_cat = f_decode = 1;
-  }
+    {
+      f_cat = f_decode = 1;
+    }
 }
 
 /*
@@ -144,9 +144,9 @@ static int length_okay P1((name), char *name)
    */
 
   if (!name)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
   end = endname(name);
 
 #ifdef NAME_MAX
@@ -160,21 +160,21 @@ static int length_okay P1((name), char *name)
     /*  s = dirname(name)
      */
     if ((s = end) > name)
-    {
-      if (s > name + 1) s--;
-      tmp = s;
-      *s = 0;
-    }
+      {
+        if (s > name + 1) s--;
+        tmp = s;
+        *s = 0;
+      }
 
     errno = 0;
     max_filename_length = pathconf(s > name ? name : ".", _PC_NAME_MAX);
     if (max_filename_length == -1 && errno)
-    {
-      perror(s > name ? name : ".");
-      fprintf(stderr, "%s: cannot get dynamic filename length limit for %s.\n",
-              progname, s > name ? name : ".");
-      return 0;
-    }
+      {
+        perror(s > name ? name : ".");
+        fprintf(stderr, "%s: cannot get dynamic filename length limit for %s.\n",
+                progname, s > name ? name : ".");
+        return 0;
+      }
     if (s > name) *s = tmp;
   }
 #endif /* USE_PATHCONF  */
@@ -182,11 +182,11 @@ static int length_okay P1((name), char *name)
 #endif /* !NAME_MAX 	*/
 
   if (max_filename_length > 0 && strlen(end) > max_filename_length)
-  {
-    fprintf(stderr, "%s: filename \"%s\" is too long (maximum is %ld)\n",
-            progname, endname(name), max_filename_length);
-    return 0;
-  }
+    {
+      fprintf(stderr, "%s: filename \"%s\" is too long (maximum is %ld)\n",
+              progname, endname(name), max_filename_length);
+      return 0;
+    }
 
   return 1;
 }
@@ -201,9 +201,9 @@ static char *suffix P2((name, suf), char *name, char *suf)
   size_t slen = strlen(suf);
 
   if (!slen || nlen <= slen)
-  {
-    return (char *)0;
-  }
+    {
+      return (char *)0;
+    }
   name += nlen - slen;
   return memcmp(name, suf, slen) ? (char *)0 : name;
 }
@@ -237,9 +237,9 @@ static SIGHANDLER_T onintr P0()
 
   outname = (char *)0;
   if (tmp)
-  {
-    (void)unlink(tmp);
-  }
+    {
+      (void)unlink(tmp);
+    }
 
   exit(1);
 }
@@ -251,11 +251,11 @@ static char *emalloc P1((len), size_t len)
 {
   char *s;
   if (!(s = malloc(len)))
-  {
-    fprintf(stderr, "%s: failed to malloc %zu bytes -- abort\n", progname, len);
-    onintr();
-    exit(1);
-  }
+    {
+      fprintf(stderr, "%s: failed to malloc %zu bytes -- abort\n", progname, len);
+      onintr();
+      exit(1);
+    }
   return s;
 }
 
@@ -266,21 +266,21 @@ static char *normalname P3((name, want, cut), char *name, char *want, char *cut)
 
   p = (char *)0;
   if (!name)
-  {
-    return p;
-  }
+    {
+      return p;
+    }
 
   maxlen = strlen(name) + 1 + strlen(want) + strlen(cut);
   p = strcpy(emalloc(maxlen), name);
 
   if ((s == suffix(p, cut)))
-  {
-    strcpy(s, want);
-  }
+    {
+      strcpy(s, want);
+    }
   else if (*want && !suffix(p, want))
-  {
-    strcat(p, want);
-  }
+    {
+      strcat(p, want);
+    }
 
   return p;
 }
@@ -310,26 +310,26 @@ static int ok_to_replace P1((name), char *name)
   int reply, c;
 
   if (f_force)
-  {
-    return 1; /* YES, do replace   */
-  }
+    {
+      return 1; /* YES, do replace   */
+    }
   if (!isatty(fileno(stderr)))
-  {
-    return 0; /* NO, don't replace */
-  }
+    {
+      return 0; /* NO, don't replace */
+    }
 
   fprintf(stderr, "%s already exists; do you wish to overwrite %s (y or n)? ",
           name, name);
   fflush(stderr);
 
   for (c = reply = getchar(); c != '\n' && c != EOF; c = getchar())
-  {
-    ;
-  }
+    {
+      ;
+    }
   if (reply == 'y')
-  {
-    return 1;
-  }
+    {
+      return 1;
+    }
 
   fprintf(stderr, "\tnot overwritten\n");
   return 0;
@@ -338,33 +338,33 @@ static int ok_to_replace P1((name), char *name)
 static void update_mode P0()
 {
   if (!instat.st_nlink)
-  {
-    return; /* couldn't stat in */
-  }
+    {
+      return; /* couldn't stat in */
+    }
 
 #ifdef HAS_FCHMOD
   if (fchmod(fileno(out), instat.st_mode & 07777))
-  {
-    perror(outname);
-    fprintf(stderr, "%s: could not change file mode of \"%s\"\n", progname,
-            outname);
-  }
+    {
+      perror(outname);
+      fprintf(stderr, "%s: could not change file mode of \"%s\"\n", progname,
+              outname);
+    }
 #else
   if (outname && chmod(outname, instat.st_mode & 07777))
-  {
-    perror(outname);
-    fprintf(stderr, "%s: could not change file mode of \"%s\"\n", progname,
-            outname);
-  }
+    {
+      perror(outname);
+      fprintf(stderr, "%s: could not change file mode of \"%s\"\n", progname,
+              outname);
+    }
 #endif /* HAS_FCHMOD */
 }
 
 static void update_own P0()
 {
   if (!instat.st_nlink)
-  {
-    return; /* couldn't stat in */
-  }
+    {
+      return; /* couldn't stat in */
+    }
 #ifdef HAS_FCHOWN
   (void)fchown(fileno(out), instat.st_uid, instat.st_gid);
 #else
@@ -377,50 +377,50 @@ static void update_own P0()
 static void update_times P0()
 {
   if (!instat.st_nlink)
-  {
-    return; /* couldn't stat in */
-  }
+    {
+      return; /* couldn't stat in */
+    }
 
 #ifdef HAS_UTIMES
   if (outname)
-  {
-    struct timeval tv[2];
+    {
+      struct timeval tv[2];
 
-    tv[0].tv_sec = instat.st_atime;
-    tv[1].tv_sec = instat.st_mtime;
-    tv[0].tv_usec = tv[1].tv_usec = 0;
-    (void)utimes(outname, tv);
-  }
+      tv[0].tv_sec = instat.st_atime;
+      tv[1].tv_sec = instat.st_mtime;
+      tv[0].tv_usec = tv[1].tv_usec = 0;
+      (void)utimes(outname, tv);
+    }
 #else
 #ifdef HAS_UTIME
 
   if (outname)
-  {
+    {
 
 #ifdef HAS_UTIMBUF
-    struct utimbuf ut;
+      struct utimbuf ut;
 
-    ut.actime = instat.st_atime;
-    ut.modtime = instat.st_mtime;
+      ut.actime = instat.st_atime;
+      ut.modtime = instat.st_mtime;
 
 #ifdef HAS_UTIMEUSEC
-    ut.acusec = instat.st_ausec;
-    ut.modusec = instat.st_musec;
+      ut.acusec = instat.st_ausec;
+      ut.modusec = instat.st_musec;
 #endif /* HAS_UTIMEUSEC */
 
-    (void)utime(outname, &ut);
+      (void)utime(outname, &ut);
 
 #else /* UTIMBUF */
 
-    time_t ut[2];
+      time_t ut[2];
 
-    ut[0] = instat.st_atime;
-    ut[1] = instat.st_mtime;
+      ut[0] = instat.st_atime;
+      ut[1] = instat.st_mtime;
 
-    (void)utime(outname, ut);
+      (void)utime(outname, ut);
 
 #endif /* UTIMBUF */
-  }
+    }
 #endif /* HAS_UTIME */
 #endif /* HAS_UTIMES */
 }
@@ -432,24 +432,24 @@ static int okay_as_input P3((name, f, st), char *name, FILE *f, struct stat *st)
 #else
   if (stat(name, st) < 0)
 #endif
-  {
-    perror(name);
-    fprintf(stderr, "%s: cannot stat \"%s\"\n", progname, name);
-    return 0;
-  }
+    {
+      perror(name);
+      fprintf(stderr, "%s: cannot stat \"%s\"\n", progname, name);
+      return 0;
+    }
 
   if (!S_ISREG(st->st_mode))
-  {
-    fprintf(stderr, "%s: \"%s\" is not a regular file -- unchanged.\n",
-            progname, name);
-    return 0;
-  }
+    {
+      fprintf(stderr, "%s: \"%s\" is not a regular file -- unchanged.\n",
+              progname, name);
+      return 0;
+    }
   if (st->st_nlink > 1 && !f_cat && !f_precious)
-  {
-    fprintf(stderr, "%s: \"%s\" has %lu other link%s -- unchanged.\n", progname,
-            name, st->st_nlink - 1, &"s"[(st->st_nlink <= 2)]);
-    return 0;
-  }
+    {
+      fprintf(stderr, "%s: \"%s\" has %lu other link%s -- unchanged.\n", progname,
+              name, st->st_nlink - 1, &"s"[(st->st_nlink <= 2)]);
+      return 0;
+    }
   return 1;
 }
 
@@ -468,20 +468,20 @@ static struct fmtdesc *grok_format P1((name), char *name)
   struct fmtdesc **f;
 
   if (name)
-  {
-    c = plainname(name);
-
-    for (f = alldescs; *f; f++)
     {
-      if ((*f)->suffix && *(*f)->suffix && suffix(c, (*f)->suffix))
-      {
-        free(c);
-        return *f;
-      }
-    }
+      c = plainname(name);
 
-    free(c);
-  }
+      for (f = alldescs; *f; f++)
+        {
+          if ((*f)->suffix && *(*f)->suffix && suffix(c, (*f)->suffix))
+            {
+              free(c);
+              return *f;
+            }
+        }
+
+      free(c);
+    }
   return (struct fmtdesc *)0;
 }
 
@@ -491,41 +491,41 @@ static int open_input P2((name, st), char *name, struct stat *st)
 
   st->st_nlink = 0; /* indicates `undefined' value */
   if (!name)
-  {
-    inname = (char *)NULL;
-    in = stdin;
-  }
+    {
+      inname = (char *)NULL;
+      in = stdin;
+    }
   else
-  {
-    if (f_decode)
     {
-      inname = codename(name);
+      if (f_decode)
+        {
+          inname = codename(name);
+        }
+      else
+        {
+          if (!f_cat && suffix(name, SUFFIX_TOASTED))
+            {
+              fprintf(stderr, "%s: %s already has \"%s\" suffix -- unchanged.\n",
+                      progname, name, SUFFIX_TOASTED);
+              return 0;
+            }
+          inname = strcpy(emalloc(strlen(name) + 1), name);
+        }
+      if (!(in = fopen(inname, READ)))
+        {
+          perror(inname); /* not guaranteed to be valid here */
+          fprintf(stderr, "%s: cannot open \"%s\" for reading\n", progname, inname);
+          return 0;
+        }
+      if (!okay_as_input(inname, in, st))
+        {
+          return 0;
+        }
+      if (!f)
+        {
+          f = grok_format(inname);
+        }
     }
-    else
-    {
-      if (!f_cat && suffix(name, SUFFIX_TOASTED))
-      {
-        fprintf(stderr, "%s: %s already has \"%s\" suffix -- unchanged.\n",
-                progname, name, SUFFIX_TOASTED);
-        return 0;
-      }
-      inname = strcpy(emalloc(strlen(name) + 1), name);
-    }
-    if (!(in = fopen(inname, READ)))
-    {
-      perror(inname); /* not guaranteed to be valid here */
-      fprintf(stderr, "%s: cannot open \"%s\" for reading\n", progname, inname);
-      return 0;
-    }
-    if (!okay_as_input(inname, in, st))
-    {
-      return 0;
-    }
-    if (!f)
-    {
-      f = grok_format(inname);
-    }
-  }
   prepare_io(f ? f : &DEFAULT_FORMAT);
   return 1;
 }
@@ -533,50 +533,50 @@ static int open_input P2((name, st), char *name, struct stat *st)
 static int open_output P1((name), char *name)
 {
   if (!name || f_cat)
-  {
-    out = stdout;
-    outname = (char *)NULL;
-  }
+    {
+      out = stdout;
+      outname = (char *)NULL;
+    }
   else
-  {
-    int outfd = -1;
-    char *o;
+    {
+      int outfd = -1;
+      char *o;
 
-    o = (*(f_decode ? plainname : codename))(name);
-    if (!length_okay(o))
-    {
-      return 0;
-    }
-    if ((outfd = open(o, O_WRITE_EXCL, 0666)) >= 0)
-    {
-      out = fdopen(outfd, WRITE);
-    }
-    else if (errno != EEXIST)
-    {
-      out = (FILE *)NULL;
-    }
-    else if (ok_to_replace(o))
-    {
-      out = fopen(o, WRITE);
-    }
-    else
-    {
-      return 0;
-    }
+      o = (*(f_decode ? plainname : codename))(name);
+      if (!length_okay(o))
+        {
+          return 0;
+        }
+      if ((outfd = open(o, O_WRITE_EXCL, 0666)) >= 0)
+        {
+          out = fdopen(outfd, WRITE);
+        }
+      else if (errno != EEXIST)
+        {
+          out = (FILE *)NULL;
+        }
+      else if (ok_to_replace(o))
+        {
+          out = fopen(o, WRITE);
+        }
+      else
+        {
+          return 0;
+        }
 
-    if (!out)
-    {
-      perror(o);
-      fprintf(stderr, "%s: can't open \"%s\" for writing\n", progname, o);
-      if (outfd >= 0)
-      {
-        (void)close(outfd);
-      }
-      return 0;
-    }
+      if (!out)
+        {
+          perror(o);
+          fprintf(stderr, "%s: can't open \"%s\" for writing\n", progname, o);
+          if (outfd >= 0)
+            {
+              (void)close(outfd);
+            }
+          return 0;
+        }
 
-    outname = o;
-  }
+      outname = o;
+    }
   return 1;
 }
 
@@ -589,37 +589,37 @@ static int process_encode P0()
   int cc;
 
   if (!(r = gsm_create()))
-  {
-    perror(progname);
-    return -1;
-  }
+    {
+      perror(progname);
+      return -1;
+    }
   (void)gsm_option(r, GSM_OPT_FAST, &f_fast);
   (void)gsm_option(r, GSM_OPT_VERBOSE, &f_verbose);
 
   while ((cc = (*input)(s)) > 0)
-  {
-    if (cc < sizeof(s) / sizeof(*s))
     {
-      memset((char *)(s + cc), 0, sizeof(s) - (cc * sizeof(*s)));
+      if (cc < sizeof(s) / sizeof(*s))
+        {
+          memset((char *)(s + cc), 0, sizeof(s) - (cc * sizeof(*s)));
+        }
+      gsm_encode(r, s, d);
+      if (fwrite((char *)d, sizeof(d), 1, out) != 1)
+        {
+          perror(outname ? outname : "stdout");
+          fprintf(stderr, "%s: error writing to %s\n", progname,
+                  outname ? outname : "stdout");
+          gsm_destroy(r);
+          return -1;
+        }
     }
-    gsm_encode(r, s, d);
-    if (fwrite((char *)d, sizeof(d), 1, out) != 1)
+  if (cc < 0)
     {
-      perror(outname ? outname : "stdout");
-      fprintf(stderr, "%s: error writing to %s\n", progname,
-              outname ? outname : "stdout");
+      perror(inname ? inname : "stdin");
+      fprintf(stderr, "%s: error reading from %s\n", progname,
+              inname ? inname : "stdin");
       gsm_destroy(r);
       return -1;
     }
-  }
-  if (cc < 0)
-  {
-    perror(inname ? inname : "stdin");
-    fprintf(stderr, "%s: error reading from %s\n", progname,
-            inname ? inname : "stdin");
-    gsm_destroy(r);
-    return -1;
-  }
   gsm_destroy(r);
 
   return 0;
@@ -634,53 +634,53 @@ static int process_decode P0()
   int cc;
 
   if (!(r = gsm_create()))
-  { /* malloc failed */
-    perror(progname);
-    return -1;
-  }
+    { /* malloc failed */
+      perror(progname);
+      return -1;
+    }
   (void)gsm_option(r, GSM_OPT_FAST, &f_fast);
   (void)gsm_option(r, GSM_OPT_VERBOSE, &f_verbose);
 
   while ((cc = fread(s, 1, sizeof(s), in)) > 0)
-  {
-    if (cc != sizeof(s))
     {
-      if (cc >= 0)
-      {
-        fprintf(stderr, "%s: incomplete frame (%lu byte%s missing) from %s\n",
-                progname, sizeof(s) - cc, &"s"[(sizeof(s) - cc == 1)],
-                inname ? inname : "stdin");
-      }
-      gsm_destroy(r);
-      errno = 0;
-      return -1;
-    }
-    if (gsm_decode(r, s, d))
-    {
-      fprintf(stderr, "%s: bad frame in %s\n", progname,
-              inname ? inname : "stdin");
-      gsm_destroy(r);
-      errno = 0;
-      return -1;
-    }
+      if (cc != sizeof(s))
+        {
+          if (cc >= 0)
+            {
+              fprintf(stderr, "%s: incomplete frame (%lu byte%s missing) from %s\n",
+                      progname, sizeof(s) - cc, &"s"[(sizeof(s) - cc == 1)],
+                      inname ? inname : "stdin");
+            }
+          gsm_destroy(r);
+          errno = 0;
+          return -1;
+        }
+      if (gsm_decode(r, s, d))
+        {
+          fprintf(stderr, "%s: bad frame in %s\n", progname,
+                  inname ? inname : "stdin");
+          gsm_destroy(r);
+          errno = 0;
+          return -1;
+        }
 
-    if ((*output)(d) < 0)
-    {
-      perror(outname);
-      fprintf(stderr, "%s: error writing to %s\n", progname, outname);
-      gsm_destroy(r);
-      return -1;
+      if ((*output)(d) < 0)
+        {
+          perror(outname);
+          fprintf(stderr, "%s: error writing to %s\n", progname, outname);
+          gsm_destroy(r);
+          return -1;
+        }
     }
-  }
 
   if (cc < 0)
-  {
-    perror(inname ? inname : "stdin");
-    fprintf(stderr, "%s: error reading from %s\n", progname,
-            inname ? inname : "stdin");
-    gsm_destroy(r);
-    return -1;
-  }
+    {
+      perror(inname ? inname : "stdin");
+      fprintf(stderr, "%s: error reading from %s\n", progname,
+              inname ? inname : "stdin");
+      gsm_destroy(r);
+      return -1;
+    }
 
   gsm_destroy(r);
   return 0;
@@ -697,69 +697,69 @@ static int process P1((name), char *name)
   inname = (char *)0;
 
   if (!open_input(name, &instat) || !open_output(name))
-  {
-    goto err;
-  }
+    {
+      goto err;
+    }
 
   if ((*(f_decode ? init_output : init_input))())
-  {
-    fprintf(stderr, "%s: error %s %s\n", progname,
-            f_decode ? "writing header to" : "reading header from",
-            f_decode ? (outname ? outname : "stdout")
-                     : (inname ? inname : "stdin"));
-    goto err;
-  }
+    {
+      fprintf(stderr, "%s: error %s %s\n", progname,
+              f_decode ? "writing header to" : "reading header from",
+              f_decode ? (outname ? outname : "stdout")
+                       : (inname ? inname : "stdin"));
+      goto err;
+    }
 
   if ((*(f_decode ? process_decode : process_encode))())
-  {
-    goto err;
-  }
+    {
+      goto err;
+    }
 
   if (fflush(out) < 0 || ferror(out))
-  {
-    perror(outname ? outname : "stdout");
-    fprintf(stderr, "%s: error writing \"%s\"\n", progname,
-            outname ? outname : "stdout");
-    goto err;
-  }
+    {
+      perror(outname ? outname : "stdout");
+      fprintf(stderr, "%s: error writing \"%s\"\n", progname,
+              outname ? outname : "stdout");
+      goto err;
+    }
 
   if (out != stdout)
-  {
-    update_times();
-    update_mode();
-    update_own();
+    {
+      update_times();
+      update_mode();
+      update_own();
 
-    if (fclose(out) < 0)
-    {
-      perror(outname);
-      fprintf(stderr, "%s: error writing \"%s\"\n", progname, outname);
-      goto err;
+      if (fclose(out) < 0)
+        {
+          perror(outname);
+          fprintf(stderr, "%s: error writing \"%s\"\n", progname, outname);
+          goto err;
+        }
+      if (outname != name)
+        {
+          free(outname);
+        }
+      outname = (char *)0;
     }
-    if (outname != name)
-    {
-      free(outname);
-    }
-    outname = (char *)0;
-  }
   out = (FILE *)0;
   if (in != stdin)
-  {
-    (void)fclose(in), in = (FILE *)0;
-    if (!f_cat && !f_precious)
     {
-      if (unlink(inname) < 0)
-      {
-        perror(inname);
-        fprintf(stderr, "%s: source \"%s\" not deleted.\n", progname, inname);
-      }
-      goto err;
+      (void)fclose(in), in = (FILE *)0;
+      if (!f_cat && !f_precious)
+        {
+          if (unlink(inname) < 0)
+            {
+              perror(inname);
+              fprintf(stderr, "%s: source \"%s\" not deleted.\n", progname, inname);
+            }
+          goto err;
+        }
+      if (inname != name)
+        {
+          free(inname);
+        }
+      inname = (char *)0;
     }
-    if (inname != name)
-    {
-      free(inname);
-    }
-    inname = (char *)0;
-  }
   return 0;
 
 /*
@@ -769,27 +769,27 @@ static int process P1((name), char *name)
  */
 err:
   if (out && out != stdout)
-  {
-    (void)fclose(out), out = (FILE *)0;
-    if (unlink(outname) < 0 && errno != ENOENT && errno != EINTR)
     {
-      perror(outname);
-      fprintf(stderr, "%s: could not unlink \"%s\"\n", progname, outname);
+      (void)fclose(out), out = (FILE *)0;
+      if (unlink(outname) < 0 && errno != ENOENT && errno != EINTR)
+        {
+          perror(outname);
+          fprintf(stderr, "%s: could not unlink \"%s\"\n", progname, outname);
+        }
     }
-  }
   if (in && in != stdin)
-  {
-    (void)fclose(in), in = (FILE *)0;
-  }
+    {
+      (void)fclose(in), in = (FILE *)0;
+    }
 
   if (inname && inname != name)
-  {
-    free(inname);
-  }
+    {
+      free(inname);
+    }
   if (outname && outname != name)
-  {
-    free(outname);
-  }
+    {
+      free(outname);
+    }
 
   return -1;
 }
@@ -826,11 +826,11 @@ static void help P0()
 static void set_format P1((f), struct fmtdesc *f)
 {
   if (f_format && f_format != f)
-  {
-    fprintf(stderr, "%s: only one of -[uals] is possible (%s -h for help)\n",
-            progname, progname);
-    exit(1);
-  }
+    {
+      fprintf(stderr, "%s: only one of -[uals] is possible (%s -h for help)\n",
+              progname, progname);
+      exit(1);
+    }
 
   f_format = f;
 }
@@ -843,57 +843,57 @@ int main P2((ac, av), int ac, char **av)
   parse_argv0(*av);
 
   while ((opt = getopt(ac, av, "fcdpvhuaslVF")) != EOF)
-  {
-    switch (opt)
     {
-      case 'd':
-        f_decode = 1;
-        break;
-      case 'f':
-        f_force = 1;
-        break;
-      case 'c':
-        f_cat = 1;
-        break;
-      case 'p':
-        f_precious = 1;
-        break;
-      case 'F':
-        f_fast = 1;
-        break;
+      switch (opt)
+        {
+          case 'd':
+            f_decode = 1;
+            break;
+          case 'f':
+            f_force = 1;
+            break;
+          case 'c':
+            f_cat = 1;
+            break;
+          case 'p':
+            f_precious = 1;
+            break;
+          case 'F':
+            f_fast = 1;
+            break;
 
 #ifndef NDEBUG
-      case 'V':
-        f_verbose = 1;
-        break; /* undocumented */
+          case 'V':
+            f_verbose = 1;
+            break; /* undocumented */
 #endif
 
-      case 'u':
-        set_format(&f_ulaw);
-        break;
-      case 'l':
-        set_format(&f_linear);
-        break;
-      case 'a':
-        set_format(&f_alaw);
-        break;
-      case 's':
-        set_format(&f_audio);
-        break;
+          case 'u':
+            set_format(&f_ulaw);
+            break;
+          case 'l':
+            set_format(&f_linear);
+            break;
+          case 'a':
+            set_format(&f_alaw);
+            break;
+          case 's':
+            set_format(&f_audio);
+            break;
 
-      case 'v':
-        version();
-        exit(0);
-      case 'h':
-        help();
-        exit(0);
+          case 'v':
+            version();
+            exit(0);
+          case 'h':
+            help();
+            exit(0);
 
-      default:
-        fprintf(stderr, "Usage: %s [-fcpdhvuaslF] [files...] (-h for help)\n",
-                progname);
-        exit(1);
+          default:
+            fprintf(stderr, "Usage: %s [-fcpdhvuaslF] [files...] (-h for help)\n",
+                    progname);
+            exit(1);
+        }
     }
-  }
 
   f_precious |= f_cat;
 
@@ -903,16 +903,16 @@ int main P2((ac, av), int ac, char **av)
   catch_signals(onintr);
 
   if (ac <= 0)
-  {
-    process((char *)0);
-  }
-  else
-  {
-    while (ac--)
     {
-      process(*av++);
+      process((char *)0);
     }
-  }
+  else
+    {
+      while (ac--)
+        {
+          process(*av++);
+        }
+    }
 
   exit(0);
 }

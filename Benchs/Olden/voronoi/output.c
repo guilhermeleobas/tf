@@ -45,21 +45,21 @@ void plot_vedge(p1, p2) struct VEC2 p1, p2;
   float p2y = p2.y;
 
   if (isnan(p1x))
-  {
-    p1x = copysign(p1x, 1.0);
-  }
+    {
+      p1x = copysign(p1x, 1.0);
+    }
   if (isnan(p1y))
-  {
-    p1y = copysign(p1y, 1.0);
-  }
+    {
+      p1y = copysign(p1y, 1.0);
+    }
   if (isnan(p2x))
-  {
-    p2x = copysign(p2x, 1.0);
-  }
+    {
+      p2x = copysign(p2x, 1.0);
+    }
   if (isnan(p2y))
-  {
-    p2y = copysign(p2y, 1.0);
-  }
+    {
+      p2y = copysign(p2y, 1.0);
+    }
 
   printf("Vedge %g %g %g %g \n", p1x, p1y, p2x, p2y);
 }
@@ -75,22 +75,22 @@ struct VEC2 circle_center(struct VEC2 a, struct VEC2 b, struct VEC2 c)
   vv1 = V2_sum(a, b);
   vv2 = V2_times(0.5, vv1);
   if (d1 < 0.0)
-  { /*there is no intersection point, the bisectors coincide. */
-    return (vv2);
-  }
+    { /*there is no intersection point, the bisectors coincide. */
+      return (vv2);
+    }
   else
-  {
-    vv3 = V2_sub(b, a);
-    vv4 = V2_sub(c, a);
-    d3 = V2_cprod(vv3, vv4);
-    d2 = -2.0 * d3;
-    vv5 = V2_sub(c, b);
-    d4 = V2_dot(vv5, vv4);
-    vv6 = V2_cross(vv3);
-    vv7 = V2_times(d4 / d2, vv6);
-    p = V2_sum(vv2, vv7);
-    return (p);
-  }
+    {
+      vv3 = V2_sub(b, a);
+      vv4 = V2_sub(c, a);
+      d3 = V2_cprod(vv3, vv4);
+      d2 = -2.0 * d3;
+      vv5 = V2_sub(c, b);
+      d4 = V2_dot(vv5, vv4);
+      vv6 = V2_cross(vv3);
+      vv7 = V2_times(d4 / d2, vv6);
+      p = V2_sum(vv2, vv7);
+      return (p);
+    }
 }
 
 int *earray;
@@ -105,34 +105,35 @@ void output_voronoi_diagram(QUAD_EDGE edge, int nv, struct EDGE_STACK *my_stack)
   struct VEC2 vv1, vv2, vv3;
 
   if (voronoi)
-  {
-    zero_seen(my_stack, edge);
-    nex = edge;
-    /*  Plot VD edges with one endpoint at infinity. */
-    do
     {
-      struct VEC2 v21, v22, v23;
-      QUAD_EDGE tmp;
+      zero_seen(my_stack, edge);
+      nex = edge;
+      /*  Plot VD edges with one endpoint at infinity. */
+      do
+        {
+          struct VEC2 v21, v22, v23;
+          QUAD_EDGE tmp;
 
-      v21 = destv(nex);
-      v22 = origv(nex);
-      tmp = onext(nex);
-      v23 = destv(tmp);
-      cvxvec = V2_sub(v21, v22 /*destv(nex), origv(nex)*/);
-      center = circle_center(v22, v21, v23
-                             /*origv(nex), destv(nex), destv(onext(nex))*/);
-      vv1 = V2_sum(v22, v21 /*origv(nex), destv(nex)*/);
-      vv2 = V2_times(0.5, vv1);
-      vv3 = V2_sub(center, vv2);
-      ln = 1.0 + V2_magn(vv3);
-      d1 = ln / V2_magn(cvxvec);
-      vv1 = V2_cross(cvxvec);
-      vv2 = V2_times(d1, vv1);
-      vv3 = V2_sum(center, vv2);
-      plot_vedge(center, vv3);
-      nex = rnext(nex);
-    } while (nex != edge);
-  }
+          v21 = destv(nex);
+          v22 = origv(nex);
+          tmp = onext(nex);
+          v23 = destv(tmp);
+          cvxvec = V2_sub(v21, v22 /*destv(nex), origv(nex)*/);
+          center = circle_center(v22, v21, v23
+                                 /*origv(nex), destv(nex), destv(onext(nex))*/);
+          vv1 = V2_sum(v22, v21 /*origv(nex), destv(nex)*/);
+          vv2 = V2_times(0.5, vv1);
+          vv3 = V2_sub(center, vv2);
+          ln = 1.0 + V2_magn(vv3);
+          d1 = ln / V2_magn(cvxvec);
+          vv1 = V2_cross(cvxvec);
+          vv2 = V2_times(d1, vv1);
+          vv3 = V2_sum(center, vv2);
+          plot_vedge(center, vv3);
+          nex = rnext(nex);
+        }
+      while (nex != edge);
+    }
 
   /* Plot DT edges and finite VD edges. */
 
@@ -140,54 +141,57 @@ void output_voronoi_diagram(QUAD_EDGE edge, int nv, struct EDGE_STACK *my_stack)
   push_ring(my_stack, edge);
   printf("mystack_ptr = %d\n", my_stack->ptr);
   while (my_stack->ptr != 0)
-  {
-    VERTEX_PTR v1, v2, v3, v4;
-    double d1, d2;
-
-    edge = pop_edge(my_stack);
-    if (seen(edge) == 1)
     {
-      prev = edge;
-      nex = onext(edge);
-      do
-      {
-        v1 = orig(prev);
-        d1 = X(v1);
-        v2 = dest(prev);
-        d2 = X(v2);
-        if (d1 >= d2 /*X(orig(prev)) >= X(dest(prev))*/)
+      VERTEX_PTR v1, v2, v3, v4;
+      double d1, d2;
+
+      edge = pop_edge(my_stack);
+      if (seen(edge) == 1)
         {
-          /*plot_dedge(orig(prev), dest(prev));*/
-          plot_dedge(v1, v2);
-          sprev = sym(prev);
-          snex = onext(sprev);
-          v1 = orig(prev);
-          v2 = dest(prev);
-          v3 = dest(nex);
-          v4 = dest(snex);
-          if (ccw(v1, v2, v3 /*orig(prev), dest(prev), dest(nex)*/) !=
-              ccw(v1, v2, v4 /*orig(prev),dest(prev),dest(snex)*/))
-          {
-            struct VEC2 v21, v22, v23;
-            v21 = origv(prev);
-            v22 = destv(prev);
-            v23 = destv(nex);
-            vv1 = circle_center(v21, v22, v23 /*origv(prev),
-                                             destv(prev),destv(nex)*/);
-            v21 = origv(sprev);
-            v22 = destv(sprev);
-            v23 = destv(snex);
-            vv2 = circle_center(v21, v22, v23 /*origv(sprev),
-                                             destv(sprev),destv(snex)*/);
-            plot_vedge(vv1, vv2);
-          }
+          prev = edge;
+          nex = onext(edge);
+          do
+            {
+              v1 = orig(prev);
+              d1 = X(v1);
+              v2 = dest(prev);
+              d2 = X(v2);
+              if (d1 >= d2 /*X(orig(prev)) >= X(dest(prev))*/)
+                {
+                  /*plot_dedge(orig(prev), dest(prev));*/
+                  plot_dedge(v1, v2);
+                  sprev = sym(prev);
+                  snex = onext(sprev);
+                  v1 = orig(prev);
+                  v2 = dest(prev);
+                  v3 = dest(nex);
+                  v4 = dest(snex);
+                  if (ccw(v1, v2, v3 /*orig(prev), dest(prev), dest(nex)*/) !=
+                      ccw(v1, v2, v4 /*orig(prev),dest(prev),dest(snex)*/))
+                    {
+                      struct VEC2 v21, v22, v23;
+                      v21 = origv(prev);
+                      v22 = destv(prev);
+                      v23 = destv(nex);
+                      vv1 = circle_center(v21, v22, v23 /*origv(prev),
+                                             destv(prev),destv(nex)*/
+                      );
+                      v21 = origv(sprev);
+                      v22 = destv(sprev);
+                      v23 = destv(snex);
+                      vv2 = circle_center(v21, v22, v23 /*origv(sprev),
+                                             destv(sprev),destv(snex)*/
+                      );
+                      plot_vedge(vv1, vv2);
+                    }
+                }
+              seen(prev) = 2;
+              prev = nex;
+              nex = onext(nex);
+            }
+          while (prev != edge);
         }
-        seen(prev) = 2;
-        prev = nex;
-        nex = onext(nex);
-      } while (prev != edge);
+      push_ring(my_stack, sym(edge));
     }
-    push_ring(my_stack, sym(edge));
-  }
   zero_seen(my_stack, edge);
 }

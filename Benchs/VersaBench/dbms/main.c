@@ -76,21 +76,21 @@
  *	Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include <stdlib.h>             /*  for free() and NULL definitions           */
-#include "dataManagement.h"     /*  for primitive type definitions            */
-#include "dataObject.h"         /*  for DataObject definitions                */
-#include "delete.h"             /*  for delete() and return codes             */
-#include "errorMessage.h"       /*  for errorMessage() definitions            */
-#include "getDeleteCommand.h"   /*  for getDeleteCommand() and return codes   */
-#include "getInitCommand.h"     /*  for getInitCommand() and return codes     */
-#include "getInsertCommand.h"   /*  for getInsertCommand() and return codes   */
+#include <stdlib.h> /*  for free() and NULL definitions           */
+#include "dataManagement.h" /*  for primitive type definitions            */
+#include "dataObject.h" /*  for DataObject definitions                */
+#include "delete.h" /*  for delete() and return codes             */
+#include "errorMessage.h" /*  for errorMessage() definitions            */
+#include "getDeleteCommand.h" /*  for getDeleteCommand() and return codes   */
+#include "getInitCommand.h" /*  for getInitCommand() and return codes     */
+#include "getInsertCommand.h" /*  for getInsertCommand() and return codes   */
 #include "getNextCommandCode.h" /*  for getNextCommandCode definitions        */
-#include "getQueryCommand.h"    /*  for getQueryCommand() and return codes    */
-#include "index.h"              /*  for IndexNode definition                  */
-#include "insert.h"             /*  for insert() and return codes             */
-#include "metrics.h"            /*  for Metrics definition                    */
-#include "openFiles.h"          /*  for openFiles() and return codes          */
-#include "query.h"              /*  for query() and return codes              */
+#include "getQueryCommand.h" /*  for getQueryCommand() and return codes    */
+#include "index.h" /*  for IndexNode definition                  */
+#include "insert.h" /*  for insert() and return codes             */
+#include "metrics.h" /*  for Metrics definition                    */
+#include "openFiles.h" /*  for openFiles() and return codes          */
+#include "query.h" /*  for query() and return codes              */
 
 /*
  *  Exit status definitions
@@ -120,16 +120,16 @@ extern Int countDataObjects(IndexNode *node);
  *  Main program
  */
 int main(int argc, Char *argv[])
-{                      /*  begin main()    */
-  Int returnCode;      /*  generic return code for error processing    */
+{ /*  begin main()    */
+  Int returnCode; /*  generic return code for error processing    */
   CommandType command; /*  current command read/processing             */
-  FILE *input;         /*  input file                                  */
-  FILE *output;        /*  output file                                 */
-  FILE *metric;        /*  metrics file                                */
-  Metrics metrics;     /*  metrics data structure                      */
-  IndexNode *root;     /*  root node of index                          */
-  Int fan;             /*  fan or order of index - read from input     */
-  Time tempTime;       /*  time for keeping I/O timing statistics      */
+  FILE *input; /*  input file                                  */
+  FILE *output; /*  output file                                 */
+  FILE *metric; /*  metrics file                                */
+  Metrics metrics; /*  metrics data structure                      */
+  IndexNode *root; /*  root node of index                          */
+  Int fan; /*  fan or order of index - read from input     */
+  Time tempTime; /*  time for keeping I/O timing statistics      */
 
   /*
    *                  Initialize Application
@@ -156,87 +156,87 @@ int main(int argc, Char *argv[])
   metric = NULL;
   returnCode = openFiles(argc, argv, &input, &output, &metric); /* (2) */
   if (returnCode != OPEN_FILES_SUCCESS)
-  {
-    /*
+    {
+      /*
      *  Check for a usage request, i.e., "-h" in the command-line and
      *  exit successfully if so. Otherwise, flush error message and return
      *  with error.
      */
-    if (returnCode == OPEN_FILES_USAGE_REQUEST)
-    {
-      return (DIS_DATA_MANAGEMENT_SUCCESS);
-    } /*  end of returnCode == OPEN_FILES_USAGE_REQUEST */
-    else
-    {
-      /*
+      if (returnCode == OPEN_FILES_USAGE_REQUEST)
+        {
+          return (DIS_DATA_MANAGEMENT_SUCCESS);
+        } /*  end of returnCode == OPEN_FILES_USAGE_REQUEST */
+      else
+        {
+          /*
        *  FATAL ERROR: can't proceed if unable to open files or incorrect
        *               usage
        */
+          errorMessage(argv[0], PREPEND);
+          flushErrorMessage();
+
+          return (DIS_DATA_MANAGEMENT_ERROR);
+        } /*  end of else */
+    }
+
+  root = createIndexNode(LEAF); /* (3) */
+  if (root == NULL)
+    {
+      /*
+     *  FATAL ERROR: can't proceed if unable to create root node
+     */
+      errorMessage("root node", PREPEND);
       errorMessage(argv[0], PREPEND);
       flushErrorMessage();
 
       return (DIS_DATA_MANAGEMENT_ERROR);
-    } /*  end of else */
-  }
-
-  root = createIndexNode(LEAF); /* (3) */
-  if (root == NULL)
-  {
-    /*
-     *  FATAL ERROR: can't proceed if unable to create root node
-     */
-    errorMessage("root node", PREPEND);
-    errorMessage(argv[0], PREPEND);
-    flushErrorMessage();
-
-    return (DIS_DATA_MANAGEMENT_ERROR);
-  }
+    }
 
   returnCode = getNextCommandCode(input, &command);
   if (returnCode == GET_NEXT_COMMAND_CODE_SUCCESS)
-  {
-    if (command == INIT)
     {
-      tempTime = getTime(); /* start I/O timing of command */
-      returnCode = getInitCommand(input, &fan);
-      metrics.inputTime += (getTime() - tempTime);
+      if (command == INIT)
+        {
+          tempTime = getTime(); /* start I/O timing of command */
+          returnCode = getInitCommand(input, &fan);
+          metrics.inputTime += (getTime() - tempTime);
 
-      if (returnCode != GET_INIT_SUCCESS)
-      {
-        errorMessage("Can't read first command (INIT)", PREPEND);
-        errorMessage(argv[0], PREPEND);
-        flushErrorMessage();
+          if (returnCode != GET_INIT_SUCCESS)
+            {
+              errorMessage("Can't read first command (INIT)", PREPEND);
+              errorMessage(argv[0], PREPEND);
+              flushErrorMessage();
 
-        /*
+              /*
          *  FATAL ERROR: must have fan parameter to continue
          */
-        return (DIS_DATA_MANAGEMENT_ERROR);
-      } /*  end error checks for getInitCommand */
-    }   /*  end if command == INIT  */
-    else
+              return (DIS_DATA_MANAGEMENT_ERROR);
+            } /*  end error checks for getInitCommand */
+        } /*  end if command == INIT  */
+      else
+        {
+          errorMessage("First command is not INIT command", REPLACE);
+          errorMessage(argv[0], PREPEND);
+          flushErrorMessage();
+
+          /*
+       *  FATAL ERROR: must have fan parameter to continue
+       */
+          return (DIS_DATA_MANAGEMENT_ERROR);
+        } /*  end command != INIT     */
+    } /*  end if returnCode == GET_NEXT_COMMAND_CODE_SUCCESS */
+  else if (returnCode == GET_NEXT_COMMAND_CODE_IO_ERROR ||
+           returnCode == GET_NEXT_COMMAND_CODE_INVALID_COMMAND)
     {
-      errorMessage("First command is not INIT command", REPLACE);
+      errorMessage("Can't read first command (INIT)", PREPEND);
       errorMessage(argv[0], PREPEND);
       flushErrorMessage();
 
       /*
-       *  FATAL ERROR: must have fan parameter to continue
-       */
-      return (DIS_DATA_MANAGEMENT_ERROR);
-    } /*  end command != INIT     */
-  }   /*  end if returnCode == GET_NEXT_COMMAND_CODE_SUCCESS */
-  else if (returnCode == GET_NEXT_COMMAND_CODE_IO_ERROR ||
-           returnCode == GET_NEXT_COMMAND_CODE_INVALID_COMMAND)
-  {
-    errorMessage("Can't read first command (INIT)", PREPEND);
-    errorMessage(argv[0], PREPEND);
-    flushErrorMessage();
-
-    /*
      *  FATAL ERROR: must have fan parameter to continue
      */
-    return (DIS_DATA_MANAGEMENT_ERROR);
-  } /*  end return check for getNextCommandCode */
+      return (DIS_DATA_MANAGEMENT_ERROR);
+    } /*  end return check for getNextCommandCode */
   clearLine(input);
 
   /*
@@ -289,172 +289,172 @@ int main(int argc, Char *argv[])
 
   /*** VERSABENCH START ***/
   while (command != NONE)
-  {
-    returnCode = getNextCommandCode(input, &command);
-    if (returnCode == GET_NEXT_COMMAND_CODE_SUCCESS)
     {
-      setMetricsData(&metrics, command); /* start timing */
-
-      if (command == INSERT)
-      {
-        DataObject *dataObject;
-
-        tempTime = getTime(); /* start I/O timing of command */
-        returnCode = getInsertCommand(input, &dataObject);
-        metrics.inputTime += (getTime() - tempTime);
-
-        if (returnCode == GET_INSERT_SUCCESS)
+      returnCode = getNextCommandCode(input, &command);
+      if (returnCode == GET_NEXT_COMMAND_CODE_SUCCESS)
         {
-          returnCode = insert(&root, dataObject, fan);
-          if (returnCode == INSERT_INSERT_ENTRY_FAILURE_FATAL)
-          {
-            errorMessage(argv[0], PREPEND);
-            flushErrorMessage();
+          setMetricsData(&metrics, command); /* start timing */
 
-            /*
+          if (command == INSERT)
+            {
+              DataObject *dataObject;
+
+              tempTime = getTime(); /* start I/O timing of command */
+              returnCode = getInsertCommand(input, &dataObject);
+              metrics.inputTime += (getTime() - tempTime);
+
+              if (returnCode == GET_INSERT_SUCCESS)
+                {
+                  returnCode = insert(&root, dataObject, fan);
+                  if (returnCode == INSERT_INSERT_ENTRY_FAILURE_FATAL)
+                    {
+                      errorMessage(argv[0], PREPEND);
+                      flushErrorMessage();
+
+                      /*
              *  FATAL ERROR:
              */
-            return (DIS_DATA_MANAGEMENT_ERROR);
-          } /*  end code == INSERT_INSERT_ENTRY_FAILURE_FATAL */
-          else if (returnCode == INSERT_INSERT_ENTRY_FAILURE_NON_FATAL)
-          {
-            errorMessage(argv[0], PREPEND);
-            flushErrorMessage();
-          } /*  end code == INSERT_INSERT_ENTRY_FAILURE_NON_FATAL */
-          else if (returnCode == INSERT_ALLOCATION_FAILURE)
-          {
-            errorMessage(argv[0], PREPEND);
-            flushErrorMessage();
+                      return (DIS_DATA_MANAGEMENT_ERROR);
+                    } /*  end code == INSERT_INSERT_ENTRY_FAILURE_FATAL */
+                  else if (returnCode == INSERT_INSERT_ENTRY_FAILURE_NON_FATAL)
+                    {
+                      errorMessage(argv[0], PREPEND);
+                      flushErrorMessage();
+                    } /*  end code == INSERT_INSERT_ENTRY_FAILURE_NON_FATAL */
+                  else if (returnCode == INSERT_ALLOCATION_FAILURE)
+                    {
+                      errorMessage(argv[0], PREPEND);
+                      flushErrorMessage();
 
-            /*
+                      /*
              *  FATAL ERROR:
              */
-            return (DIS_DATA_MANAGEMENT_ERROR);
-          } /*  end of if returnCode == INSERT_ALLOCATION_FAILURE */
-        }   /*  end of if ( returnCode == GET_INSERT_SUCCESS )  */
-        else
-        {
-          errorMessage(argv[0], PREPEND);
-          flushErrorMessage();
-        } /*  end of returnCode != GET_INSERT_SUCCESS */
-      }   /*  end command == INSERT   */
-      else if (command == QUERY)
-      {
-        IndexKey searchKey;
-        DataAttribute *searchNonKey;
-        DataAttribute *temp;
+                      return (DIS_DATA_MANAGEMENT_ERROR);
+                    } /*  end of if returnCode == INSERT_ALLOCATION_FAILURE */
+                } /*  end of if ( returnCode == GET_INSERT_SUCCESS )  */
+              else
+                {
+                  errorMessage(argv[0], PREPEND);
+                  flushErrorMessage();
+                } /*  end of returnCode != GET_INSERT_SUCCESS */
+            } /*  end command == INSERT   */
+          else if (command == QUERY)
+            {
+              IndexKey searchKey;
+              DataAttribute *searchNonKey;
+              DataAttribute *temp;
 
-        tempTime = getTime(); /* start I/O timing of command */
-        returnCode = getQueryCommand(input, &searchKey, &searchNonKey);
-        metrics.inputTime += (getTime() - tempTime);
+              tempTime = getTime(); /* start I/O timing of command */
+              returnCode = getQueryCommand(input, &searchKey, &searchNonKey);
+              metrics.inputTime += (getTime() - tempTime);
 
-        if (returnCode == GET_QUERY_SUCCESS)
-        {
-          returnCode = query(root, &searchKey, searchNonKey, TRUE, outputQuery);
-          if (returnCode == QUERY_INVALID_KEY_SEARCH_VALUE ||
-              returnCode == QUERY_INVALID_NON_KEY_SEARCH_VALUE)
-          {
-            errorMessage(argv[0], PREPEND);
-            flushErrorMessage();
-          } /* end of if returnCode != QUERY_SUCCESS */
-        }   /*  end of if ( returnCode == GET_QUERY_SUCCESS )  */
-        else
-        {
-          errorMessage(argv[0], PREPEND);
-          flushErrorMessage();
-        } /*  end of returnCode != GET_QUERY_SUCCESS */
+              if (returnCode == GET_QUERY_SUCCESS)
+                {
+                  returnCode = query(root, &searchKey, searchNonKey, TRUE, outputQuery);
+                  if (returnCode == QUERY_INVALID_KEY_SEARCH_VALUE ||
+                      returnCode == QUERY_INVALID_NON_KEY_SEARCH_VALUE)
+                    {
+                      errorMessage(argv[0], PREPEND);
+                      flushErrorMessage();
+                    } /* end of if returnCode != QUERY_SUCCESS */
+                } /*  end of if ( returnCode == GET_QUERY_SUCCESS )  */
+              else
+                {
+                  errorMessage(argv[0], PREPEND);
+                  flushErrorMessage();
+                } /*  end of returnCode != GET_QUERY_SUCCESS */
 
-        /*
+              /*
          *  Clean-up memory: the non-key search values read for the
          *  QUERY command allocates memory for each value.  This memory
          *  needs to be deallocated before the list leaves scope.
          */
-        temp = searchNonKey;
-        while (temp != NULL)
-        {
-          DataAttribute *next;
+              temp = searchNonKey;
+              while (temp != NULL)
+                {
+                  DataAttribute *next;
 
-          next = temp->next;
-          free(temp->attribute.value.nonKey);
-          free(temp);
-          temp = next;
-        } /*  end of loop over searchNonKey list using temp */
-      }   /*  end command == QUERY    */
-      else if (command == DELETE)
-      {
-        IndexKey searchKey;
-        DataAttribute *searchNonKey;
-        DataAttribute *temp;
+                  next = temp->next;
+                  free(temp->attribute.value.nonKey);
+                  free(temp);
+                  temp = next;
+                } /*  end of loop over searchNonKey list using temp */
+            } /*  end command == QUERY    */
+          else if (command == DELETE)
+            {
+              IndexKey searchKey;
+              DataAttribute *searchNonKey;
+              DataAttribute *temp;
 
-        tempTime = getTime(); /* start I/O timing of command */
-        returnCode = getDeleteCommand(input, &searchKey, &searchNonKey);
-        metrics.inputTime += (getTime() - tempTime);
+              tempTime = getTime(); /* start I/O timing of command */
+              returnCode = getDeleteCommand(input, &searchKey, &searchNonKey);
+              metrics.inputTime += (getTime() - tempTime);
 
-        if (returnCode == GET_DELETE_SUCCESS)
-        {
-          returnCode = delete (&root, &searchKey, searchNonKey);
-          if (returnCode == DELETE_INVALID_KEY_SEARCH_VALUE ||
-              returnCode == DELETE_INVALID_NON_KEY_SEARCH_VALUE)
-          {
-            errorMessage(argv[0], PREPEND);
-            flushErrorMessage();
-          } /* end of returnCode != DELETE_SUCCESS */
-        }   /*  end of if ( returnCode == GET_INSERT_SUCCESS )  */
-        else
-        {
-          errorMessage(argv[0], PREPEND);
-          flushErrorMessage();
-        } /*  end of returnCode != GET_DELETE_SUCCESS */
+              if (returnCode == GET_DELETE_SUCCESS)
+                {
+                  returnCode = delete (&root, &searchKey, searchNonKey);
+                  if (returnCode == DELETE_INVALID_KEY_SEARCH_VALUE ||
+                      returnCode == DELETE_INVALID_NON_KEY_SEARCH_VALUE)
+                    {
+                      errorMessage(argv[0], PREPEND);
+                      flushErrorMessage();
+                    } /* end of returnCode != DELETE_SUCCESS */
+                } /*  end of if ( returnCode == GET_INSERT_SUCCESS )  */
+              else
+                {
+                  errorMessage(argv[0], PREPEND);
+                  flushErrorMessage();
+                } /*  end of returnCode != GET_DELETE_SUCCESS */
 
-        /*
+              /*
          *  Clean-up memory: the non-key search values read for the
          *  DELETE command allocates memory for each value.  This memory
          *  needs to be deallocated before the list leaves scope.
          */
-        temp = searchNonKey;
-        while (temp != NULL)
+              temp = searchNonKey;
+              while (temp != NULL)
+                {
+                  DataAttribute *next;
+
+                  next = temp->next;
+                  free(temp->attribute.value.nonKey);
+                  free(temp);
+                  temp = next;
+                } /*  end of loop over searchNonKey list using temp */
+            } /*  end command == DELETE   */
+          else if (command == INIT)
+            {
+              errorMessage("Additional INIT command read", REPLACE);
+              errorMessage(argv[0], PREPEND);
+              flushErrorMessage();
+            } /*  end command == INIT     */
+          else if (command == INVALID)
+            {
+              errorMessage(argv[0], PREPEND);
+              flushErrorMessage();
+            } /*  end command == INVALID  */
+
+          updateMetricsData(&metrics); /* stop timing */
+
+          tempTime = getTime(); /* start output timing of command */
+          flushOutputBuffer();
+          metrics.outputTime += (getTime() - tempTime);
+
+        } /*  end of returnCode == GET_NEXT_COMMAND_CODE_SUCCESS */
+      else if (returnCode == GET_NEXT_COMMAND_CODE_IO_ERROR)
         {
-          DataAttribute *next;
+          errorMessage(argv[0], PREPEND);
+          flushErrorMessage();
+          return (DIS_DATA_MANAGEMENT_ERROR);
+        } /*  else low-level I/O error for getNextCommandCode */
+      else if (returnCode == GET_NEXT_COMMAND_CODE_INVALID_COMMAND)
+        {
+          errorMessage(argv[0], PREPEND);
+          flushErrorMessage();
+        } /*  end return check for getNextCommandCode */
 
-          next = temp->next;
-          free(temp->attribute.value.nonKey);
-          free(temp);
-          temp = next;
-        } /*  end of loop over searchNonKey list using temp */
-      }   /*  end command == DELETE   */
-      else if (command == INIT)
-      {
-        errorMessage("Additional INIT command read", REPLACE);
-        errorMessage(argv[0], PREPEND);
-        flushErrorMessage();
-      } /*  end command == INIT     */
-      else if (command == INVALID)
-      {
-        errorMessage(argv[0], PREPEND);
-        flushErrorMessage();
-      } /*  end command == INVALID  */
-
-      updateMetricsData(&metrics); /* stop timing */
-
-      tempTime = getTime(); /* start output timing of command */
-      flushOutputBuffer();
-      metrics.outputTime += (getTime() - tempTime);
-
-    } /*  end of returnCode == GET_NEXT_COMMAND_CODE_SUCCESS */
-    else if (returnCode == GET_NEXT_COMMAND_CODE_IO_ERROR)
-    {
-      errorMessage(argv[0], PREPEND);
-      flushErrorMessage();
-      return (DIS_DATA_MANAGEMENT_ERROR);
-    } /*  else low-level I/O error for getNextCommandCode */
-    else if (returnCode == GET_NEXT_COMMAND_CODE_INVALID_COMMAND)
-    {
-      errorMessage(argv[0], PREPEND);
-      flushErrorMessage();
-    } /*  end return check for getNextCommandCode */
-
-    clearLine(input);
-  } /*  end main loop   */
+      clearLine(input);
+    } /*  end main loop   */
 
   /*** VERSABENCH END ***/
 

@@ -39,27 +39,27 @@ pcover essential(Fp, Dp) IN pcover *Fp, *Dp;
   {
     /* don't test a prime which EXPAND says is nonessential */
     if (!TESTP(p, NONESSEN))
-    {
-      /* only test a prime which was relatively essential */
-      if (TESTP(p, RELESSEN))
       {
-        /* Check essentiality */
-        if (essen_cube(F, D, p))
-        {
-          if (debug & ESSEN)
+        /* only test a prime which was relatively essential */
+        if (TESTP(p, RELESSEN))
           {
-            printf("ESSENTIAL: %s\n", pc1(p));
+            /* Check essentiality */
+            if (essen_cube(F, D, p))
+              {
+                if (debug & ESSEN)
+                  {
+                    printf("ESSENTIAL: %s\n", pc1(p));
+                  }
+                E = sf_addset(E, p);
+                RESET(p, ACTIVE);
+                F->active_count--;
+              }
           }
-          E = sf_addset(E, p);
-          RESET(p, ACTIVE);
-          F->active_count--;
-        }
       }
-    }
   }
 
   *Fp = sf_inactive(F); /* delete the inactive cubes from F */
-  *Dp = sf_join(D, E);  /* add the essentials to D */
+  *Dp = sf_join(D, E); /* add the essentials to D */
   sf_free(D);
   return E;
 }
@@ -108,21 +108,21 @@ register pcube c;
   foreach_set(T, last, p)
   {
     if (p != c)
-    {
-      switch (cdist01(p, c))
       {
-        case 0:
-          /* distance-0 needs special care */
-          R = cb_consensus_dist0(R, p, c);
-          break;
+        switch (cdist01(p, c))
+          {
+            case 0:
+              /* distance-0 needs special care */
+              R = cb_consensus_dist0(R, p, c);
+              break;
 
-        case 1:
-          /* distance-1 is easy because no sharping required */
-          consensus(temp, p, c);
-          R = sf_addset(R, temp);
-          break;
+            case 1:
+              /* distance-1 is easy because no sharping required */
+              consensus(temp, p, c);
+              R = sf_addset(R, temp);
+              break;
+          }
       }
-    }
   }
   set_free(temp);
   return R;
@@ -142,9 +142,9 @@ register pcube p, c;
 
   /* If c contains p, then this gives us no information for essential test */
   if (setp_implies(p, c))
-  {
-    return R;
-  }
+    {
+      return R;
+    }
 
   /* For the multiple-valued variables */
   temp = new_cube();
@@ -153,24 +153,24 @@ register pcube p, c;
   INLINEset_and(p_and_c, p, c);
 
   for (var = cube.num_binary_vars; var < cube.num_vars; var++)
-  {
-    /* Check if c(var) is contained in p(var) -- if so, no news */
-    mask = cube.var_mask[var];
-    if (!setp_disjoint(p_diff_c, mask))
     {
-      INLINEset_merge(temp, c, p_and_c, mask);
-      R = sf_addset(R, temp);
-      got_one = TRUE;
+      /* Check if c(var) is contained in p(var) -- if so, no news */
+      mask = cube.var_mask[var];
+      if (!setp_disjoint(p_diff_c, mask))
+        {
+          INLINEset_merge(temp, c, p_and_c, mask);
+          R = sf_addset(R, temp);
+          got_one = TRUE;
+        }
     }
-  }
 
   /* if no cube so far, add one for the intersection */
   if (!got_one && cube.num_binary_vars > 0)
-  {
-    /* Add a single cube for the intersection of p and c */
-    INLINEset_and(temp, p, c);
-    R = sf_addset(R, temp);
-  }
+    {
+      /* Add a single cube for the intersection of p and c */
+      INLINEset_and(temp, p, c);
+      R = sf_addset(R, temp);
+    }
 
   set_free(temp);
   return R;

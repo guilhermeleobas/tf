@@ -50,29 +50,29 @@ int HYPRE_CheckError(int ierr, int hypre_error_code)
 void HYPRE_DescribeError(int ierr, char *msg)
 {
   if (ierr == 0)
-  {
-    sprintf(msg, "[No error] ");
-  }
+    {
+      sprintf(msg, "[No error] ");
+    }
 
   if (ierr & HYPRE_ERROR_GENERIC)
-  {
-    sprintf(msg, "[Generic error] ");
-  }
+    {
+      sprintf(msg, "[Generic error] ");
+    }
 
   if (ierr & HYPRE_ERROR_MEMORY)
-  {
-    sprintf(msg, "[Memory error] ");
-  }
+    {
+      sprintf(msg, "[Memory error] ");
+    }
 
   if (ierr & HYPRE_ERROR_ARG)
-  {
-    sprintf(msg, "[Error in argument %d] ", HYPRE_GetErrorArg());
-  }
+    {
+      sprintf(msg, "[Error in argument %d] ", HYPRE_GetErrorArg());
+    }
 
   if (ierr & HYPRE_ERROR_CONV)
-  {
-    sprintf(msg, "[Method did not converge] ");
-  }
+    {
+      sprintf(msg, "[Method did not converge] ");
+    }
 }
 
 int HYPRE_GetErrorArg() { return (hypre_error_flag >> 3 & 31); }

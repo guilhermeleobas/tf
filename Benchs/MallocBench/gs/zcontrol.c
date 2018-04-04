@@ -45,11 +45,11 @@ int zif(register ref *op)
 {
   check_type(op[-1], t_boolean);
   if (op[-1].value.index) /* true */
-  {
-    check_estack(1);
-    ++esp;
-    s_store_i(esp, op);
-  }
+    {
+      check_estack(1);
+      ++esp;
+      s_store_i(esp, op);
+    }
   pop(2);
   return o_check_estack;
 }
@@ -61,13 +61,13 @@ int zifelse(register ref *op)
   check_estack(1);
   ++esp;
   if (op[-2].value.index)
-  {
-    s_store_b(esp, 0, op, -1);
-  }
+    {
+      s_store_b(esp, 0, op, -1);
+    }
   else
-  {
-    s_store_i(esp, op);
-  }
+    {
+      s_store_i(esp, op);
+    }
   pop(3);
   return o_check_estack;
 }
@@ -79,9 +79,9 @@ int zfor(register ref *op)
 {
   int code = num_params(op - 1, 3, (float *)0);
   if (code < 0)
-  {
-    return code; /* non-numeric arg */
-  }
+    {
+      return code; /* non-numeric arg */
+    }
   check_estack(7);
   /* Push a mark, the control variable, the increment, */
   /* the limit, and the procedure, and invoke */
@@ -96,25 +96,25 @@ int zfor(register ref *op)
   /* If the parameters are not all integers, */
   /* coerce them all to floats now. */
   if (code == 7)
-  { /* i.e. all integer args */
-    return for_int_continue(op);
-  }
+    { /* i.e. all integer args */
+      return for_int_continue(op);
+    }
   else
-  {
-    if (code & 1)
     {
-      make_real(esp - 3, esp[-3].value.intval);
+      if (code & 1)
+        {
+          make_real(esp - 3, esp[-3].value.intval);
+        }
+      if (code & 2)
+        {
+          make_real(esp - 2, esp[-2].value.intval);
+        }
+      if (code & 4)
+        {
+          make_real(esp - 1, esp[-1].value.intval);
+        }
+      return for_real_continue(op);
     }
-    if (code & 2)
-    {
-      make_real(esp - 2, esp[-2].value.intval);
-    }
-    if (code & 4)
-    {
-      make_real(esp - 1, esp[-1].value.intval);
-    }
-    return for_real_continue(op);
-  }
 }
 /* Continuation operators for for, separate for integer and real. */
 /* Execution stack contains mark, control variable, increment, */
@@ -127,14 +127,14 @@ int for_int_continue(register ref *op)
   long var = esp[-3].value.intval;
   long incr = esp[-2].value.intval;
   if (incr >= 0 ? (var > esp[-1].value.intval) : (var < esp[-1].value.intval))
-  {
-    esp -= 5; /* pop everything */
-    return o_check_estack;
-  }
+    {
+      esp -= 5; /* pop everything */
+      return o_check_estack;
+    }
   push(1);
   *op = esp[-3];
   esp[-3].value.intval = var + incr;
-  proc = *esp;                      /* saved proc */
+  proc = *esp; /* saved proc */
   push_op_estack(for_int_continue); /* push continuation */
   *++esp = proc;
   return o_check_estack;
@@ -147,14 +147,14 @@ int for_real_continue(register ref *op)
   float var = esp[-3].value.realval;
   float incr = esp[-2].value.realval;
   if (incr >= 0 ? (var > esp[-1].value.realval) : (var < esp[-1].value.realval))
-  {
-    esp -= 5; /* pop everything */
-    return o_check_estack;
-  }
+    {
+      esp -= 5; /* pop everything */
+      return o_check_estack;
+    }
   push(1);
   *op = esp[-3];
   esp[-3].value.realval = var + incr;
-  proc = *esp;                       /* saved proc */
+  proc = *esp; /* saved proc */
   push_op_estack(for_real_continue); /* push continuation */
   *++esp = proc;
   return o_check_estack;
@@ -167,9 +167,9 @@ int zrepeat(register ref *op)
 {
   check_type(op[-1], t_integer);
   if (op[-1].value.intval < 0)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   check_estack(5);
   /* Push a mark, the count, and the procedure, and invoke */
   /* the continuation operator. */
@@ -184,16 +184,16 @@ private
 int repeat_continue(register ref *op)
 {
   ref proc;
-  proc = *esp;                       /* saved proc */
+  proc = *esp; /* saved proc */
   if (--(esp[-1].value.intval) >= 0) /* continue */
-  {
-    push_op_estack(repeat_continue); /* push continuation */
-    *++esp = proc;
-  }
+    {
+      push_op_estack(repeat_continue); /* push continuation */
+      *++esp = proc;
+    }
   else /* done */
-  {
-    esp -= 3; /* pop mark, count, proc */
-  }
+    {
+      esp -= 3; /* pop mark, count, proc */
+    }
   return o_check_estack;
 }
 
@@ -216,7 +216,7 @@ private
 int loop_continue(register ref *op)
 {
   ref proc;
-  proc = *esp;                   /* saved proc */
+  proc = *esp; /* saved proc */
   push_op_estack(loop_continue); /* push continuation */
   *++esp = proc;
   return o_check_estack;
@@ -227,23 +227,23 @@ int zexit(register ref *op)
 {
   ref *ep = esp;
   while (ep >= estack)
-  {
-    if (r_type(ep) == t_null)
-    { /* control mark */
-      switch ((ep--)->value.index)
-      {
-        case es_for:
-          esp = ep;
-          return o_check_estack;
-        case es_stopped:
-          return e_invalidexit; /* not a loop */
-      }
-    }
-    else
     {
-      ep--;
+      if (r_type(ep) == t_null)
+        { /* control mark */
+          switch ((ep--)->value.index)
+            {
+              case es_for:
+                esp = ep;
+                return o_check_estack;
+              case es_stopped:
+                return e_invalidexit; /* not a loop */
+            }
+        }
+      else
+        {
+          ep--;
+        }
     }
-  }
   /* Return e_invalidexit if there is no mark at all. */
   /* This is different from PostScript, which aborts. */
   /* It shouldn't matter in practice. */
@@ -255,16 +255,16 @@ int zstop(register ref *op)
 {
   ref *ep = esp;
   while (ep >= estack)
-  {
-    if (r_type(ep) == t_null && ep->value.index == es_stopped)
     {
-      esp = ep - 1;
-      push(1);
-      make_bool(op, 1);
-      return o_check_estack;
+      if (r_type(ep) == t_null && ep->value.index == es_stopped)
+        {
+          esp = ep - 1;
+          push(1);
+          make_bool(op, 1);
+          return o_check_estack;
+        }
+      ep--;
     }
-    ep--;
-  }
   /* Return e_invalidexit if there is no mark at all. */
   /* This is different from PostScript, which aborts. */
   /* It shouldn't matter in practice. */
@@ -306,13 +306,13 @@ int zexecstack(register ref *op)
   int depth = esp - estack + 1;
   check_write_type(*op, t_array);
   if (depth > op->size)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   if (estack >= estop)
-  {
-    return e_execstackoverflow; /* no room to push */
-  }
+    {
+      return e_execstackoverflow; /* no room to push */
+    }
   op->size = depth;
   r_set_attrs(op, a_subrange);
   push_op_estack(continue_execstack);

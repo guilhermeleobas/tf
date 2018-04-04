@@ -49,18 +49,18 @@ int main(int argc, char* argv[])
     argv0 += 1;
 
   if (!strcmp(argv0, "pcompress2"))
-  {
-    compress(argc, argv);
-  }
+    {
+      compress(argc, argv);
+    }
   else if (!strcmp(argv0, "puncompress2"))
-  {
-    uncompress(argc, argv);
-  }
+    {
+      uncompress(argc, argv);
+    }
   else
-  {
-    printf("Call pCompress as 'pcompress2' or 'puncompress2', NOT %s\n",
-           argv[0]);
-  }
+    {
+      printf("Call pCompress as 'pcompress2' or 'puncompress2', NOT %s\n",
+             argv[0]);
+    }
 #endif
   return 0;
 }

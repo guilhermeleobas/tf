@@ -13,8 +13,8 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ****/
 
-#include "IOtest.h"
 #include <stdio.h>
+#include "IOtest.h"
 
 /* slow version */
 

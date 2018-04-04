@@ -33,16 +33,16 @@ enum operands
 /* ---------------- Structure of the operator table                          */
 struct OP_ENTRY
 {
-  char *MNEMONIC;        /* Name of the operator                     */
-  enum formats FORMAT;   /* FORMAT of this operator                  */
-  char *OPCODE;          /* OPCODE for this operator                 */
+  char *MNEMONIC; /* Name of the operator                     */
+  enum formats FORMAT; /* FORMAT of this operator                  */
+  char *OPCODE; /* OPCODE for this operator                 */
   enum operands OPERAND; /* Number and type of operands              */
-  int FUNCTION;          /* Function to execute is PASS1. Pseudo     */
-                         /* operators only.                          */
+  int FUNCTION; /* Function to execute is PASS1. Pseudo     */
+  /* operators only.                          */
 };
 
 #define NUM_OPCODES 59 /* number of opcodes in the table */
-                       /* NOT counting the NOT_FOUND entry */
+/* NOT counting the NOT_FOUND entry */
 
 /* table (sorted array) of keywords used in EMITID */
 struct OP_ENTRY OP_TABLE[] = {
@@ -122,20 +122,20 @@ struct OP_ENTRY *LOOK_UP_OP(char OP[])
 
   MIDDLE = 0;
   while (LOW <= HIGH)
-  {
-    MIDDLE = (HIGH + LOW) / 2;
-    if (!(CMP = strcmp(OP_TABLE[MIDDLE].MNEMONIC, OP)))
     {
-      return &OP_TABLE[MIDDLE];
+      MIDDLE = (HIGH + LOW) / 2;
+      if (!(CMP = strcmp(OP_TABLE[MIDDLE].MNEMONIC, OP)))
+        {
+          return &OP_TABLE[MIDDLE];
+        }
+      if (CMP > 0)
+        {
+          HIGH = MIDDLE - 1;
+        }
+      else
+        {
+          LOW = MIDDLE + 1;
+        }
     }
-    if (CMP > 0)
-    {
-      HIGH = MIDDLE - 1;
-    }
-    else
-    {
-      LOW = MIDDLE + 1;
-    }
-  }
   return &OP_TABLE[NUM_OPCODES];
 }

@@ -33,38 +33,38 @@ void makelink(void)
   pptr = hFixedList;
   nptr = hFixedList->next;
   for (;;)
-  {
-    tpop(&hFixedEdgeRoot, &junkptr, &location, &index);
-    if (junkptr == (TNODEPTR)NULL)
     {
-      break;
+      tpop(&hFixedEdgeRoot, &junkptr, &location, &index);
+      if (junkptr == (TNODEPTR)NULL)
+        {
+          break;
+        }
+      ptr = (DLINK1PTR)malloc(sizeof(DLINK1));
+      ptr->edge = index;
+      ptr->prev = pptr;
+      ptr->next = nptr;
+      pptr->next = ptr;
+      nptr->prev = ptr;
+      pptr = ptr;
     }
-    ptr = (DLINK1PTR)malloc(sizeof(DLINK1));
-    ptr->edge = index;
-    ptr->prev = pptr;
-    ptr->next = nptr;
-    pptr->next = ptr;
-    nptr->prev = ptr;
-    pptr = ptr;
-  }
 
   pptr = vFixedList;
   nptr = vFixedList->next;
   for (;;)
-  {
-    tpop(&vFixedEdgeRoot, &junkptr, &location, &index);
-    if (junkptr == (TNODEPTR)NULL)
     {
-      break;
+      tpop(&vFixedEdgeRoot, &junkptr, &location, &index);
+      if (junkptr == (TNODEPTR)NULL)
+        {
+          break;
+        }
+      ptr = (DLINK1PTR)malloc(sizeof(DLINK1));
+      ptr->edge = index;
+      ptr->prev = pptr;
+      ptr->next = nptr;
+      pptr->next = ptr;
+      nptr->prev = ptr;
+      pptr = ptr;
     }
-    ptr = (DLINK1PTR)malloc(sizeof(DLINK1));
-    ptr->edge = index;
-    ptr->prev = pptr;
-    ptr->next = nptr;
-    pptr->next = ptr;
-    nptr->prev = ptr;
-    pptr = ptr;
-  }
   makeVtree();
   makeHtree();
 
@@ -82,19 +82,19 @@ void makeVtree(void)
 
   last = -1000000;
   for (vptr = vFixedList; vptr != (DLINK1PTR)NULL; vptr = vptr->next)
-  {
-    edge = vptr->edge;
-    if (edgeList[edge].loc > last)
     {
-      last = edgeList[edge].loc;
-      if (++count % 100 == 0)
-      {
-        Vptrs = (DLINK1PTR *)realloc(Vptrs, (count + 100) * sizeof(DLINK1PTR));
-      }
-      Vptrs[count] = vptr;
-      tinsert(&Vroot, last, count);
+      edge = vptr->edge;
+      if (edgeList[edge].loc > last)
+        {
+          last = edgeList[edge].loc;
+          if (++count % 100 == 0)
+            {
+              Vptrs = (DLINK1PTR *)realloc(Vptrs, (count + 100) * sizeof(DLINK1PTR));
+            }
+          Vptrs[count] = vptr;
+          tinsert(&Vroot, last, count);
+        }
     }
-  }
 
   return;
 }
@@ -110,19 +110,19 @@ void makeHtree(void)
 
   last = -1000000;
   for (hptr = hFixedList; hptr != (DLINK1PTR)NULL; hptr = hptr->next)
-  {
-    edge = hptr->edge;
-    if (edgeList[edge].loc > last)
     {
-      last = edgeList[edge].loc;
-      if (++count % 100 == 0)
-      {
-        Hptrs = (DLINK1PTR *)realloc(Hptrs, (count + 100) * sizeof(DLINK1PTR));
-      }
-      Hptrs[count] = hptr;
-      tinsert(&Hroot, last, count);
+      edge = hptr->edge;
+      if (edgeList[edge].loc > last)
+        {
+          last = edgeList[edge].loc;
+          if (++count % 100 == 0)
+            {
+              Hptrs = (DLINK1PTR *)realloc(Hptrs, (count + 100) * sizeof(DLINK1PTR));
+            }
+          Hptrs[count] = hptr;
+          tinsert(&Hroot, last, count);
+        }
     }
-  }
 
   return;
 }

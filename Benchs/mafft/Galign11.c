@@ -12,9 +12,9 @@ static void match_calc(float *match, char **s1, char **s2, int i1, int lgth2)
   int *intptr = amino_dis[(int)s1[0][i1]];
 
   while (lgth2--)
-  {
-    *match++ = intptr[(int)*seq2++];
-  }
+    {
+      *match++ = intptr[(int)*seq2++];
+    }
 }
 static void match_calc_mtx(int mtx[0x80][0x80], float *match, char **s1,
                            char **s2, int i1, int lgth2)
@@ -23,9 +23,9 @@ static void match_calc_mtx(int mtx[0x80][0x80], float *match, char **s1,
   int *intptr = mtx[(int)s1[0][i1]];
 
   while (lgth2--)
-  {
-    *match++ = intptr[(int)*seq2++];
-  }
+    {
+      *match++ = intptr[(int)*seq2++];
+    }
 }
 #else
 static void match_calc(float *match, char **s1, char **s2, int i1, int lgth2)
@@ -53,13 +53,13 @@ static float Atracking(float *lasthorizontalw, float *lastverticalw,
 #endif
 
   for (i = 0; i < lgth1 + 1; i++)
-  {
-    ijp[i][0] = i + 1;
-  }
+    {
+      ijp[i][0] = i + 1;
+    }
   for (j = 0; j < lgth2 + 1; j++)
-  {
-    ijp[0][j] = -(j + 1);
-  }
+    {
+      ijp[0][j] = -(j + 1);
+    }
 
   mseq1[0] += lgth1 + lgth2;
   *mseq1[0] = 0;
@@ -69,46 +69,46 @@ static float Atracking(float *lasthorizontalw, float *lastverticalw,
   jin = lgth2;
   limk = lgth1 + lgth2 + 1;
   for (k = 0; k < limk; k++)
-  {
-    if (ijp[iin][jin] < 0)
     {
-      ifi = iin - 1;
-      jfi = jin + ijp[iin][jin];
-    }
-    else if (ijp[iin][jin] > 0)
-    {
-      ifi = iin - ijp[iin][jin];
-      jfi = jin - 1;
-    }
-    else
-    {
-      ifi = iin - 1;
-      jfi = jin - 1;
-    }
-    l = iin - ifi;
-    while (--l)
-    {
-      *--mseq1[0] = seq1[0][ifi + l];
-      *--mseq2[0] = *gap;
+      if (ijp[iin][jin] < 0)
+        {
+          ifi = iin - 1;
+          jfi = jin + ijp[iin][jin];
+        }
+      else if (ijp[iin][jin] > 0)
+        {
+          ifi = iin - ijp[iin][jin];
+          jfi = jin - 1;
+        }
+      else
+        {
+          ifi = iin - 1;
+          jfi = jin - 1;
+        }
+      l = iin - ifi;
+      while (--l)
+        {
+          *--mseq1[0] = seq1[0][ifi + l];
+          *--mseq2[0] = *gap;
+          k++;
+        }
+      l = jin - jfi;
+      while (--l)
+        {
+          *--mseq1[0] = *gap;
+          *--mseq2[0] = seq2[0][jfi + l];
+          k++;
+        }
+      if (iin <= 0 || jin <= 0)
+        {
+          break;
+        }
+      *--mseq1[0] = seq1[0][ifi];
+      *--mseq2[0] = seq2[0][jfi];
       k++;
+      iin = ifi;
+      jin = jfi;
     }
-    l = jin - jfi;
-    while (--l)
-    {
-      *--mseq1[0] = *gap;
-      *--mseq2[0] = seq2[0][jfi + l];
-      k++;
-    }
-    if (iin <= 0 || jin <= 0)
-    {
-      break;
-    }
-    *--mseq1[0] = seq1[0][ifi];
-    *--mseq2[0] = seq2[0][jfi];
-    k++;
-    iin = ifi;
-    jin = jfi;
-  }
   return (0.0);
 }
 
@@ -150,99 +150,99 @@ float G__align11(char **seq1, char **seq2, int alloclen)
   wm = 0.0;
 
   if (orlgth1 == 0)
-  {
-    mseq1 = AllocateCharMtx(njob, 0);
-    mseq2 = AllocateCharMtx(njob, 0);
-  }
+    {
+      mseq1 = AllocateCharMtx(njob, 0);
+      mseq2 = AllocateCharMtx(njob, 0);
+    }
 
   lgth1 = strlen(seq1[0]);
   lgth2 = strlen(seq2[0]);
 
   if (lgth1 <= 0 || lgth2 <= 0)
-  {
-    fprintf(stderr, "WARNING (g11): lgth1=%d, lgth2=%d\n", lgth1, lgth2);
-  }
-
-  if (lgth1 > orlgth1 || lgth2 > orlgth2)
-  {
-    int ll1, ll2;
-
-    if (orlgth1 > 0 && orlgth2 > 0)
     {
-      FreeFloatVec(w1);
-      FreeFloatVec(w2);
-      FreeFloatVec(match);
-      FreeFloatVec(initverticalw);
-      FreeFloatVec(lastverticalw);
-
-      FreeFloatVec(m);
-      FreeIntVec(mp);
-
-      FreeCharMtx(mseq);
-
-      FreeFloatMtx(floatwork);
-      FreeIntMtx(intwork);
+      fprintf(stderr, "WARNING (g11): lgth1=%d, lgth2=%d\n", lgth1, lgth2);
     }
 
-    ll1 = MAX((int)(1.3 * lgth1), orlgth1) + 100;
-    ll2 = MAX((int)(1.3 * lgth2), orlgth2) + 100;
+  if (lgth1 > orlgth1 || lgth2 > orlgth2)
+    {
+      int ll1, ll2;
+
+      if (orlgth1 > 0 && orlgth2 > 0)
+        {
+          FreeFloatVec(w1);
+          FreeFloatVec(w2);
+          FreeFloatVec(match);
+          FreeFloatVec(initverticalw);
+          FreeFloatVec(lastverticalw);
+
+          FreeFloatVec(m);
+          FreeIntVec(mp);
+
+          FreeCharMtx(mseq);
+
+          FreeFloatMtx(floatwork);
+          FreeIntMtx(intwork);
+        }
+
+      ll1 = MAX((int)(1.3 * lgth1), orlgth1) + 100;
+      ll2 = MAX((int)(1.3 * lgth2), orlgth2) + 100;
 
 #if DEBUG
-    fprintf(stderr, "\ntrying to allocate (%d+%d)xn matrices ... ", ll1, ll2);
+      fprintf(stderr, "\ntrying to allocate (%d+%d)xn matrices ... ", ll1, ll2);
 #endif
 
-    w1 = AllocateFloatVec(ll2 + 2);
-    w2 = AllocateFloatVec(ll2 + 2);
-    match = AllocateFloatVec(ll2 + 2);
+      w1 = AllocateFloatVec(ll2 + 2);
+      w2 = AllocateFloatVec(ll2 + 2);
+      match = AllocateFloatVec(ll2 + 2);
 
-    initverticalw = AllocateFloatVec(ll1 + 2);
-    lastverticalw = AllocateFloatVec(ll1 + 2);
+      initverticalw = AllocateFloatVec(ll1 + 2);
+      lastverticalw = AllocateFloatVec(ll1 + 2);
 
-    m = AllocateFloatVec(ll2 + 2);
-    mp = AllocateIntVec(ll2 + 2);
+      m = AllocateFloatVec(ll2 + 2);
+      mp = AllocateIntVec(ll2 + 2);
 
-    mseq = AllocateCharMtx(njob, ll1 + ll2);
+      mseq = AllocateCharMtx(njob, ll1 + ll2);
 
-    floatwork = AllocateFloatMtx(26, MAX(ll1, ll2) + 2);
-    intwork = AllocateIntMtx(26, MAX(ll1, ll2) + 2);
+      floatwork = AllocateFloatMtx(26, MAX(ll1, ll2) + 2);
+      intwork = AllocateIntMtx(26, MAX(ll1, ll2) + 2);
 
 #if DEBUG
-    fprintf(stderr, "succeeded\n");
+      fprintf(stderr, "succeeded\n");
 #endif
 
-    orlgth1 = ll1 - 100;
-    orlgth2 = ll2 - 100;
-  }
+      orlgth1 = ll1 - 100;
+      orlgth2 = ll2 - 100;
+    }
 
   mseq1[0] = mseq[0];
   mseq2[0] = mseq[1];
 
   if (orlgth1 > commonAlloc1 || orlgth2 > commonAlloc2)
-  {
-    int ll1, ll2;
-
-    if (commonAlloc1 && commonAlloc2)
     {
-      FreeIntMtx(commonIP);
+      int ll1, ll2;
+
+      if (commonAlloc1 && commonAlloc2)
+        {
+          FreeIntMtx(commonIP);
+        }
+
+      ll1 = MAX(orlgth1, commonAlloc1);
+      ll2 = MAX(orlgth2, commonAlloc2);
+
+#if DEBUG
+      fprintf(stderr, "\n\ntrying to allocate %dx%d matrices ... ", ll1 + 1,
+              ll2 + 1);
+#endif
+
+      commonIP = AllocateIntMtx(ll1 + 10, ll2 + 10);
+
+#if DEBUG
+      fprintf(stderr, "succeeded\n\n");
+#endif
+
+      commonAlloc1 = ll1;
+      commonAlloc2 = ll2;
     }
-
-    ll1 = MAX(orlgth1, commonAlloc1);
-    ll2 = MAX(orlgth2, commonAlloc2);
-
-#if DEBUG
-    fprintf(stderr, "\n\ntrying to allocate %dx%d matrices ... ", ll1 + 1,
-            ll2 + 1);
-#endif
-
-    commonIP = AllocateIntMtx(ll1 + 10, ll2 + 10);
-
-#if DEBUG
-    fprintf(stderr, "succeeded\n\n");
-#endif
-
-    commonAlloc1 = ll1;
-    commonAlloc2 = ll2;
-  }
   ijp = commonIP;
 
 #if 0
@@ -258,99 +258,99 @@ float G__align11(char **seq1, char **seq2, int alloclen)
   match_calc(currentw, seq1, seq2, 0, lgth2);
 
   if (outgap == 1)
-  {
-    for (i = 1; i < lgth1 + 1; i++)
     {
-      initverticalw[i] += fpenalty;
+      for (i = 1; i < lgth1 + 1; i++)
+        {
+          initverticalw[i] += fpenalty;
+        }
+      for (j = 1; j < lgth2 + 1; j++)
+        {
+          currentw[j] += fpenalty;
+        }
     }
-    for (j = 1; j < lgth2 + 1; j++)
-    {
-      currentw[j] += fpenalty;
-    }
-  }
 
   for (j = 1; j < lgth2 + 1; ++j)
-  {
-    m[j] = currentw[j - 1];
-    mp[j] = 0;
-  }
+    {
+      m[j] = currentw[j - 1];
+      mp[j] = 0;
+    }
 
   if (lgth2 == 0)
-  {
-    lastverticalw[0] = 0.0;  // lgth2==0 no toki error
-  }
+    {
+      lastverticalw[0] = 0.0;  // lgth2==0 no toki error
+    }
   else
-  {
-    lastverticalw[0] = currentw[lgth2 - 1];  // lgth2==0 no toki error
-  }
+    {
+      lastverticalw[0] = currentw[lgth2 - 1];  // lgth2==0 no toki error
+    }
 
   if (outgap)
-  {
-    lasti = lgth1 + 1;
-  }
+    {
+      lasti = lgth1 + 1;
+    }
   else
-  {
-    lasti = lgth1;
-  }
+    {
+      lasti = lgth1;
+    }
 
 #if XXXXXXX
   fprintf(stderr, "currentw = \n");
   for (i = 0; i < lgth1 + 1; i++)
-  {
-    fprintf(stderr, "%5.2f ", currentw[i]);
-  }
+    {
+      fprintf(stderr, "%5.2f ", currentw[i]);
+    }
   fprintf(stderr, "\n");
   fprintf(stderr, "initverticalw = \n");
   for (i = 0; i < lgth2 + 1; i++)
-  {
-    fprintf(stderr, "%5.2f ", initverticalw[i]);
-  }
+    {
+      fprintf(stderr, "%5.2f ", initverticalw[i]);
+    }
   fprintf(stderr, "\n");
 #endif
 
   for (i = 1; i < lasti; i++)
-  {
-    wtmp = previousw;
-    previousw = currentw;
-    currentw = wtmp;
-
-    previousw[0] = initverticalw[i - 1];
-
-    match_calc(currentw, seq1, seq2, i, lgth2);
-#if XXXXXXX
-    fprintf(stderr, "\n");
-    fprintf(stderr, "i=%d\n", i);
-    fprintf(stderr, "currentw = \n");
-    for (j = 0; j < lgth2; j++)
     {
-      fprintf(stderr, "%5.2f ", currentw[j]);
-    }
-    fprintf(stderr, "\n");
+      wtmp = previousw;
+      previousw = currentw;
+      currentw = wtmp;
+
+      previousw[0] = initverticalw[i - 1];
+
+      match_calc(currentw, seq1, seq2, i, lgth2);
+#if XXXXXXX
+      fprintf(stderr, "\n");
+      fprintf(stderr, "i=%d\n", i);
+      fprintf(stderr, "currentw = \n");
+      for (j = 0; j < lgth2; j++)
+        {
+          fprintf(stderr, "%5.2f ", currentw[j]);
+        }
+      fprintf(stderr, "\n");
 #endif
 #if XXXXXXX
-    fprintf(stderr, "\n");
-    fprintf(stderr, "i=%d\n", i);
-    fprintf(stderr, "currentw = \n");
-    for (j = 0; j < lgth2; j++)
-    {
-      fprintf(stderr, "%5.2f ", currentw[j]);
-    }
-    fprintf(stderr, "\n");
+      fprintf(stderr, "\n");
+      fprintf(stderr, "i=%d\n", i);
+      fprintf(stderr, "currentw = \n");
+      for (j = 0; j < lgth2; j++)
+        {
+          fprintf(stderr, "%5.2f ", currentw[j]);
+        }
+      fprintf(stderr, "\n");
 #endif
-    currentw[0] = initverticalw[i];
+      currentw[0] = initverticalw[i];
 
-    mi = previousw[0];
-    mpi = 0;
+      mi = previousw[0];
+      mpi = 0;
 
-    ijppt = ijp[i] + 1;
-    mjpt = m + 1;
-    prept = previousw;
-    curpt = currentw + 1;
-    mpjpt = mp + 1;
-    for (j = 1; j < lgth2 + 1; j++)
-    {
-      wm = *prept;
-      *ijppt = 0;
+      ijppt = ijp[i] + 1;
+      mjpt = m + 1;
+      prept = previousw;
+      curpt = currentw + 1;
+      mpjpt = mp + 1;
+      for (j = 1; j < lgth2 + 1; j++)
+        {
+          wm = *prept;
+          *ijppt = 0;
 
 #if 0
 			fprintf( stderr, "%5.0f->", wm );
@@ -358,58 +358,58 @@ float G__align11(char **seq1, char **seq2, int alloclen)
 #if 0
 			fprintf( stderr, "%5.0f?", g );
 #endif
-      if ((g = mi + fpenalty) > wm)
-      {
-        wm = g;
-        *ijppt = -(j - mpi);
-      }
-      if ((g = *prept) >= mi)
-      {
-        mi = g;
-        mpi = j - 1;
-      }
+          if ((g = mi + fpenalty) > wm)
+            {
+              wm = g;
+              *ijppt = -(j - mpi);
+            }
+          if ((g = *prept) >= mi)
+            {
+              mi = g;
+              mpi = j - 1;
+            }
 #if USE_PENALTY_EX
-      mi += fpenalty_ex;
+          mi += fpenalty_ex;
 #endif
 
 #if 0 
 			fprintf( stderr, "%5.0f?", g );
 #endif
-      if ((g = *mjpt + fpenalty) > wm)
-      {
-        wm = g;
-        *ijppt = +(i - *mpjpt);
-      }
-      if ((g = *prept) >= *mjpt)
-      {
-        *mjpt = g;
-        *mpjpt = i - 1;
-      }
+          if ((g = *mjpt + fpenalty) > wm)
+            {
+              wm = g;
+              *ijppt = +(i - *mpjpt);
+            }
+          if ((g = *prept) >= *mjpt)
+            {
+              *mjpt = g;
+              *mpjpt = i - 1;
+            }
 #if USE_PENALTY_EX
-      m[j] += fpenalty_ex;
+          m[j] += fpenalty_ex;
 #endif
 
 #if 0
 			fprintf( stderr, "%5.0f ", wm );
 #endif
-      *curpt++ += wm;
-      ijppt++;
-      mjpt++;
-      prept++;
-      mpjpt++;
+          *curpt++ += wm;
+          ijppt++;
+          mjpt++;
+          prept++;
+          mpjpt++;
+        }
+      lastverticalw[i] = currentw[lgth2 - 1];  // lgth2==0 no toki error
     }
-    lastverticalw[i] = currentw[lgth2 - 1];  // lgth2==0 no toki error
-  }
 
   Atracking(currentw, lastverticalw, seq1, seq2, mseq1, mseq2, ijp);
 
   resultlen = strlen(mseq1[0]);
   if (alloclen < resultlen || resultlen > N)
-  {
-    fprintf(stderr, "alloclen=%d, resultlen=%d, N=%d\n", alloclen, resultlen,
-            N);
-    ErrorExit("LENGTH OVER!\n");
-  }
+    {
+      fprintf(stderr, "alloclen=%d, resultlen=%d, N=%d\n", alloclen, resultlen,
+              N);
+      ErrorExit("LENGTH OVER!\n");
+    }
 
   strcpy(seq1[0], mseq1[0]);
   strcpy(seq2[0], mseq2[0]);
@@ -459,54 +459,54 @@ float G__align11_noalign(int scoremtx[0x80][0x80], int penal, int penal_ex,
   lgth2 = strlen(seq2[0]);
 
   if (lgth1 <= 0 || lgth2 <= 0)
-  {
-    fprintf(stderr, "WARNING (g11): lgth1=%d, lgth2=%d\n", lgth1, lgth2);
-  }
-
-  if (lgth1 > orlgth1 || lgth2 > orlgth2)
-  {
-    int ll1, ll2;
-
-    if (orlgth1 > 0 && orlgth2 > 0)
     {
-      FreeFloatVec(w1);
-      FreeFloatVec(w2);
-      FreeFloatVec(match);
-      FreeFloatVec(initverticalw);
-      FreeFloatVec(lastverticalw);
-
-      FreeFloatVec(m);
-
-      FreeFloatMtx(floatwork);
-      FreeIntMtx(intwork);
+      fprintf(stderr, "WARNING (g11): lgth1=%d, lgth2=%d\n", lgth1, lgth2);
     }
 
-    ll1 = MAX((int)(1.3 * lgth1), orlgth1) + 100;
-    ll2 = MAX((int)(1.3 * lgth2), orlgth2) + 100;
+  if (lgth1 > orlgth1 || lgth2 > orlgth2)
+    {
+      int ll1, ll2;
+
+      if (orlgth1 > 0 && orlgth2 > 0)
+        {
+          FreeFloatVec(w1);
+          FreeFloatVec(w2);
+          FreeFloatVec(match);
+          FreeFloatVec(initverticalw);
+          FreeFloatVec(lastverticalw);
+
+          FreeFloatVec(m);
+
+          FreeFloatMtx(floatwork);
+          FreeIntMtx(intwork);
+        }
+
+      ll1 = MAX((int)(1.3 * lgth1), orlgth1) + 100;
+      ll2 = MAX((int)(1.3 * lgth2), orlgth2) + 100;
 
 #if DEBUG
-    fprintf(stderr, "\ntrying to allocate (%d+%d)xn matrices ... ", ll1, ll2);
+      fprintf(stderr, "\ntrying to allocate (%d+%d)xn matrices ... ", ll1, ll2);
 #endif
 
-    w1 = AllocateFloatVec(ll2 + 2);
-    w2 = AllocateFloatVec(ll2 + 2);
-    match = AllocateFloatVec(ll2 + 2);
+      w1 = AllocateFloatVec(ll2 + 2);
+      w2 = AllocateFloatVec(ll2 + 2);
+      match = AllocateFloatVec(ll2 + 2);
 
-    initverticalw = AllocateFloatVec(ll1 + 2);
-    lastverticalw = AllocateFloatVec(ll1 + 2);
+      initverticalw = AllocateFloatVec(ll1 + 2);
+      lastverticalw = AllocateFloatVec(ll1 + 2);
 
-    m = AllocateFloatVec(ll2 + 2);
+      m = AllocateFloatVec(ll2 + 2);
 
-    floatwork = AllocateFloatMtx(26, MAX(ll1, ll2) + 2);
-    intwork = AllocateIntMtx(26, MAX(ll1, ll2) + 2);
+      floatwork = AllocateFloatMtx(26, MAX(ll1, ll2) + 2);
+      intwork = AllocateIntMtx(26, MAX(ll1, ll2) + 2);
 
 #if DEBUG
-    fprintf(stderr, "succeeded\n");
+      fprintf(stderr, "succeeded\n");
 #endif
 
-    orlgth1 = ll1 - 100;
-    orlgth2 = ll2 - 100;
-  }
+      orlgth1 = ll1 - 100;
+      orlgth2 = ll2 - 100;
+    }
 
 #if 0
 	for( i=0; i<lgth1; i++ ) 
@@ -521,94 +521,94 @@ float G__align11_noalign(int scoremtx[0x80][0x80], int penal, int penal_ex,
   match_calc_mtx(scoremtx, currentw, seq1, seq2, 0, lgth2);
 
   if (outgap == 1)
-  {
-    for (i = 1; i < lgth1 + 1; i++)
     {
-      initverticalw[i] += fpenalty;
+      for (i = 1; i < lgth1 + 1; i++)
+        {
+          initverticalw[i] += fpenalty;
+        }
+      for (j = 1; j < lgth2 + 1; j++)
+        {
+          currentw[j] += fpenalty;
+        }
     }
-    for (j = 1; j < lgth2 + 1; j++)
-    {
-      currentw[j] += fpenalty;
-    }
-  }
 
   for (j = 1; j < lgth2 + 1; ++j)
-  {
-    m[j] = currentw[j - 1];
-  }
+    {
+      m[j] = currentw[j - 1];
+    }
 
   if (lgth2 == 0)
-  {
-    lastverticalw[0] = 0.0;  // lgth2==0 no toki error
-  }
+    {
+      lastverticalw[0] = 0.0;  // lgth2==0 no toki error
+    }
   else
-  {
-    lastverticalw[0] = currentw[lgth2 - 1];  // lgth2==0 no toki error
-  }
+    {
+      lastverticalw[0] = currentw[lgth2 - 1];  // lgth2==0 no toki error
+    }
 
   if (outgap)
-  {
-    lasti = lgth1 + 1;
-  }
+    {
+      lasti = lgth1 + 1;
+    }
   else
-  {
-    lasti = lgth1;
-  }
+    {
+      lasti = lgth1;
+    }
 
 #if XXXXXXX
   fprintf(stderr, "currentw = \n");
   for (i = 0; i < lgth1 + 1; i++)
-  {
-    fprintf(stderr, "%5.2f ", currentw[i]);
-  }
+    {
+      fprintf(stderr, "%5.2f ", currentw[i]);
+    }
   fprintf(stderr, "\n");
   fprintf(stderr, "initverticalw = \n");
   for (i = 0; i < lgth2 + 1; i++)
-  {
-    fprintf(stderr, "%5.2f ", initverticalw[i]);
-  }
+    {
+      fprintf(stderr, "%5.2f ", initverticalw[i]);
+    }
   fprintf(stderr, "\n");
 #endif
 
   for (i = 1; i < lasti; i++)
-  {
-    wtmp = previousw;
-    previousw = currentw;
-    currentw = wtmp;
-
-    previousw[0] = initverticalw[i - 1];
-
-    match_calc_mtx(scoremtx, currentw, seq1, seq2, i, lgth2);
-#if XXXXXXX
-    fprintf(stderr, "\n");
-    fprintf(stderr, "i=%d\n", i);
-    fprintf(stderr, "currentw = \n");
-    for (j = 0; j < lgth2; j++)
     {
-      fprintf(stderr, "%5.2f ", currentw[j]);
-    }
-    fprintf(stderr, "\n");
+      wtmp = previousw;
+      previousw = currentw;
+      currentw = wtmp;
+
+      previousw[0] = initverticalw[i - 1];
+
+      match_calc_mtx(scoremtx, currentw, seq1, seq2, i, lgth2);
+#if XXXXXXX
+      fprintf(stderr, "\n");
+      fprintf(stderr, "i=%d\n", i);
+      fprintf(stderr, "currentw = \n");
+      for (j = 0; j < lgth2; j++)
+        {
+          fprintf(stderr, "%5.2f ", currentw[j]);
+        }
+      fprintf(stderr, "\n");
 #endif
 #if XXXXXXX
-    fprintf(stderr, "\n");
-    fprintf(stderr, "i=%d\n", i);
-    fprintf(stderr, "currentw = \n");
-    for (j = 0; j < lgth2; j++)
-    {
-      fprintf(stderr, "%5.2f ", currentw[j]);
-    }
-    fprintf(stderr, "\n");
+      fprintf(stderr, "\n");
+      fprintf(stderr, "i=%d\n", i);
+      fprintf(stderr, "currentw = \n");
+      for (j = 0; j < lgth2; j++)
+        {
+          fprintf(stderr, "%5.2f ", currentw[j]);
+        }
+      fprintf(stderr, "\n");
 #endif
-    currentw[0] = initverticalw[i];
+      currentw[0] = initverticalw[i];
 
-    mi = previousw[0];
+      mi = previousw[0];
 
-    mjpt = m + 1;
-    prept = previousw;
-    curpt = currentw + 1;
-    for (j = 1; j < lgth2 + 1; j++)
-    {
-      wm = *prept;
+      mjpt = m + 1;
+      prept = previousw;
+      curpt = currentw + 1;
+      for (j = 1; j < lgth2 + 1; j++)
+        {
+          wm = *prept;
 
 #if 0
 			fprintf( stderr, "%5.0f->", wm );
@@ -616,42 +616,42 @@ float G__align11_noalign(int scoremtx[0x80][0x80], int penal, int penal_ex,
 #if 0
 			fprintf( stderr, "%5.0f?", g );
 #endif
-      if ((g = mi + fpenalty) > wm)
-      {
-        wm = g;
-      }
-      if ((g = *prept) >= mi)
-      {
-        mi = g;
-      }
+          if ((g = mi + fpenalty) > wm)
+            {
+              wm = g;
+            }
+          if ((g = *prept) >= mi)
+            {
+              mi = g;
+            }
 #if USE_PENALTY_EX
-      mi += fpenalty_ex;
+          mi += fpenalty_ex;
 #endif
 
 #if 0 
 			fprintf( stderr, "%5.0f?", g );
 #endif
-      if ((g = *mjpt + fpenalty) > wm)
-      {
-        wm = g;
-      }
-      if ((g = *prept) >= *mjpt)
-      {
-        *mjpt = g;
-      }
+          if ((g = *mjpt + fpenalty) > wm)
+            {
+              wm = g;
+            }
+          if ((g = *prept) >= *mjpt)
+            {
+              *mjpt = g;
+            }
 #if USE_PENALTY_EX
-      m[j] += fpenalty_ex;
+          m[j] += fpenalty_ex;
 #endif
 
 #if 0
 			fprintf( stderr, "%5.0f ", wm );
 #endif
-      *curpt++ += wm;
-      mjpt++;
-      prept++;
+          *curpt++ += wm;
+          mjpt++;
+          prept++;
+        }
+      lastverticalw[i] = currentw[lgth2 - 1];  // lgth2==0 no toki error
     }
-    lastverticalw[i] = currentw[lgth2 - 1];  // lgth2==0 no toki error
-  }
 
 #if 0
 	fprintf( stderr, "\n" );

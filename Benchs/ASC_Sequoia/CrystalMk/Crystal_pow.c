@@ -6,10 +6,10 @@
  *                                                                      *
  *EHEADER****************************************************************/
 
-#include "Crystal.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "Crystal.h"
 
 //--------------
 //  test POW
@@ -29,17 +29,17 @@ double Crystal_pow(int nSlip, double slipRate[MS_XTAL_NSLIP_MAX])
   int n = 0;
 
   for (n = 0; n < nSlip; n++)
-  {
-    sgn[n] = 1.0;
-    rateFact[n] = 0.9 * (0.2 * n) / MS_XTAL_NSLIP_MAX;
-  }
+    {
+      sgn[n] = 1.0;
+      rateFact[n] = 0.9 * (0.2 * n) / MS_XTAL_NSLIP_MAX;
+    }
 
   for (n = 0; n < nSlip; n++)
-  {
-    rateFact[n] =
-        (muNew / muRef) *
-        pow((slipRate[n] * sgn[n] + rate_offset) / rate_norm, rate_exp);
-  }
+    {
+      rateFact[n] =
+          (muNew / muRef) *
+          pow((slipRate[n] * sgn[n] + rate_offset) / rate_norm, rate_exp);
+    }
 
   return rateFact[3];
 }

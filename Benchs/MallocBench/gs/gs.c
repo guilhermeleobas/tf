@@ -79,11 +79,11 @@ main(int argc, char *argv[])
   {
     char *lib = getenv("GS_LIB");
     if (lib != 0)
-    {
-      int len = strlen(lib);
-      gs_lib_env_path = gs_malloc(len + 1, 1, "GS_LIB");
-      strcpy(gs_lib_env_path, lib);
-    }
+      {
+        int len = strlen(lib);
+        gs_lib_env_path = gs_malloc(len + 1, 1, "GS_LIB");
+        strcpy(gs_lib_env_path, lib);
+      }
   }
   gs_lib_paths = (char **)gs_malloc(argc + 2, sizeof(char *), "-I array");
   gs_lib_count = 0;
@@ -96,14 +96,14 @@ main(int argc, char *argv[])
   user_errors = 1;
   num_files = gs_main(argc, argv, "GS.MAP", swproc, argproc);
   if (num_files == 0)
-  {
-    init2();
-  }
+    {
+      init2();
+    }
   /*
           code = interpret_string("start");
   */
   code = 0;
-  zflush((ref *)0);     /* flush stdout */
+  zflush((ref *)0); /* flush stdout */
   zflushpage((ref *)0); /* force display update */
   if (code < 0) debug_dump_stack(code);
   gs_exit((code == 0 ? 0 : 2));
@@ -113,108 +113,108 @@ main(int argc, char *argv[])
 int swproc(char sw, char *arg)
 {
   switch (sw)
-  {
-    default:
-      return -1;
-    case 'I': /* specify search path */
-      gs_lib_paths[gs_lib_count] = arg;
-      gs_lib_count++;
-      set_lib_paths();
-      break;
-    case 'q': /* quiet startup */
     {
-      ref vnull;
-      quiet = 1;
-      init1();
-      make_null(&vnull);
-      initial_enter_name("QUIET", &vnull);
-    }
-    break;
-    case 'D': /* define name */
-    case 'd':
-    case 'S': /* define name as string */
-    case 's':
-    {
-      char *eqp = strchr(arg, '=');
-      ref value;
-      /* Initialize the object memory, scanner, and */
-      /* name table now if needed. */
-      init1();
-      if (eqp == NULL)
-      {
-        make_null(&value);
-      }
-      else if (eqp == arg)
-      {
-        printf("Usage: -dname, -dname=token, -sname=string");
-        gs_exit(1);
-      }
-      else
-      {
-        int code;
-        *eqp++ = 0; /* delimit name */
-        if (sw == 'D' || sw == 'd')
+      default:
+        return -1;
+      case 'I': /* specify search path */
+        gs_lib_paths[gs_lib_count] = arg;
+        gs_lib_count++;
+        set_lib_paths();
+        break;
+      case 'q': /* quiet startup */
+        {
+          ref vnull;
+          quiet = 1;
+          init1();
+          make_null(&vnull);
+          initial_enter_name("QUIET", &vnull);
+        }
+        break;
+      case 'D': /* define name */
+      case 'd':
+      case 'S': /* define name as string */
+      case 's':
+        {
+          char *eqp = strchr(arg, '=');
+          ref value;
+          /* Initialize the object memory, scanner, and */
+          /* name table now if needed. */
+          init1();
+          if (eqp == NULL)
+            {
+              make_null(&value);
+            }
+          else if (eqp == arg)
+            {
+              printf("Usage: -dname, -dname=token, -sname=string");
+              gs_exit(1);
+            }
+          else
+            {
+              int code;
+              *eqp++ = 0; /* delimit name */
+              if (sw == 'D' || sw == 'd')
+                {
+                  stream astream;
+                  sread_string(&astream, (byte *)eqp, strlen(eqp));
+                  code = scan_token(&astream, 0, &value);
+                  if (code)
+                    {
+                      printf("-dname= must be followed by a valid token");
+                      gs_exit(1);
+                    }
+                }
+              else
+                {
+                  int len = strlen(eqp);
+                  char *str = gs_malloc((uint)len, 1, "-s");
+                  if (str == 0)
+                    {
+                      dprintf("Out of memory!\n");
+                      gs_exit(1);
+                    }
+                  strcpy(str, eqp);
+                  make_tasv(&value, t_string, a_read + a_execute, len, bytes,
+                            (byte *)str);
+                }
+            }
+          /* Enter the name in systemdict */
+          initial_enter_name(arg, &value);
+          break;
+        }
+      case 'w': /* define device width */
+      case 'h': /* define device height */
         {
           stream astream;
-          sread_string(&astream, (byte *)eqp, strlen(eqp));
+          ref value;
+          int code;
+          init1();
+          sread_string(&astream, (byte *)arg, strlen(arg));
           code = scan_token(&astream, 0, &value);
-          if (code)
-          {
-            printf("-dname= must be followed by a valid token");
-            gs_exit(1);
-          }
+          if (code || (r_type(&value) != t_integer && r_type(&value) != t_real))
+            {
+              printf("-w and -h must be followed by a number\n");
+              gs_exit(1);
+            }
+          initial_enter_name((sw == 'w' ? "DEVICEWIDTH" : "DEVICEHEIGHT"), &value);
+          break;
         }
-        else
+      case 'E': /* suppress normal error handling */
+        user_errors = 0;
+        break;
+      case 'M': /* set memory allocation increment */
         {
-          int len = strlen(eqp);
-          char *str = gs_malloc((uint)len, 1, "-s");
-          if (str == 0)
-          {
-            dprintf("Out of memory!\n");
-            gs_exit(1);
-          }
-          strcpy(str, eqp);
-          make_tasv(&value, t_string, a_read + a_execute, len, bytes,
-                    (byte *)str);
+          unsigned msize = 0;
+          sscanf(arg, "%d", &msize);
+          if (msize <= 0 || msize >= 64)
+            {
+              printf("-M must be between 1 and 64");
+              gs_exit(1);
+            }
+          memory_chunk_size = msize << 10;
         }
-      }
-      /* Enter the name in systemdict */
-      initial_enter_name(arg, &value);
-      break;
+        break;
     }
-    case 'w': /* define device width */
-    case 'h': /* define device height */
-    {
-      stream astream;
-      ref value;
-      int code;
-      init1();
-      sread_string(&astream, (byte *)arg, strlen(arg));
-      code = scan_token(&astream, 0, &value);
-      if (code || (r_type(&value) != t_integer && r_type(&value) != t_real))
-      {
-        printf("-w and -h must be followed by a number\n");
-        gs_exit(1);
-      }
-      initial_enter_name((sw == 'w' ? "DEVICEWIDTH" : "DEVICEHEIGHT"), &value);
-      break;
-    }
-    case 'E': /* suppress normal error handling */
-      user_errors = 0;
-      break;
-    case 'M': /* set memory allocation increment */
-    {
-      unsigned msize = 0;
-      sscanf(arg, "%d", &msize);
-      if (msize <= 0 || msize >= 64)
-      {
-        printf("-M must be between 1 and 64");
-        gs_exit(1);
-      }
-      memory_chunk_size = msize << 10;
-    }
-    break;
-  }
   return 0;
 }
 
@@ -248,31 +248,31 @@ private
 void init1()
 {
   if (!init1_done)
-  {
-    alloc_init(gs_malloc, gs_free, memory_chunk_size);
-    name_init();
-    obj_init();  /* requires name_init */
-    scan_init(); /* ditto */
-    init1_done = 1;
-  }
+    {
+      alloc_init(gs_malloc, gs_free, memory_chunk_size);
+      name_init();
+      obj_init(); /* requires name_init */
+      scan_init(); /* ditto */
+      init1_done = 1;
+    }
 }
 private
 void init2()
 {
   init1();
   if (!init2_done)
-  {
-    gs_init();
-    zfile_init();
-    zfont_init();
-    zmath_init();
-    zmatrix_init();
-    interp_init(1); /* requires obj_init */
-    op_init();      /* requires obj_init, scan_init */
-    /* Execute the standard initialization file. */
-    run_file("ghost.ps", user_errors);
-    init2_done = 1;
-  }
+    {
+      gs_init();
+      zfile_init();
+      zfont_init();
+      zmath_init();
+      zmatrix_init();
+      interp_init(1); /* requires obj_init */
+      op_init(); /* requires obj_init, scan_init */
+      /* Execute the standard initialization file. */
+      run_file("ghost.ps", user_errors);
+      init2_done = 1;
+    }
 }
 
 /* Complete the list of library search paths. */
@@ -292,23 +292,23 @@ void run_file(char *file_name, int user_errors)
   ref initial_file;
   int code;
   if (lib_file_open(file_name, strlen(file_name), &initial_file) < 0)
-  {
-    eprintf1("Can't find file %s (from command line)\n", file_name);
-    gs_exit(1);
-  }
+    {
+      eprintf1("Can't find file %s (from command line)\n", file_name);
+      gs_exit(1);
+    }
   if (!quiet)
-  {
-    printf("Reading %s... ", file_name);
-    fflush(stdout);
-  }
+    {
+      printf("Reading %s... ", file_name);
+      fflush(stdout);
+    }
   r_set_attrs(&initial_file, a_execute + a_executable);
   code = interpret(&initial_file, user_errors);
   if (code < 0) debug_dump_stack(code), gs_exit(1);
   if (!quiet)
-  {
-    printf("%s read.\n", file_name);
-    fflush(stdout);
-  }
+    {
+      printf("%s read.\n", file_name);
+      fflush(stdout);
+    }
 }
 
 /* Debugging code */

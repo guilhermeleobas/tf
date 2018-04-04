@@ -65,29 +65,30 @@ void endgame(void)
 
   cont = 1;
   do
-  {
-    printf("Dead piece? ");
-    scanf("%s", an);
-    if (strcmp(an, "stop"))
     {
-      getij(an, &i, &j);
-      if (p[i][j] == mymove)
-      {
-        p[i][j] = EMPTY;
-        mk++;
-      }
-      else if (p[i][j] == umove)
-      {
-        p[i][j] = EMPTY;
-        uk++;
-      }
-      showboard();
+      printf("Dead piece? ");
+      scanf("%s", an);
+      if (strcmp(an, "stop"))
+        {
+          getij(an, &i, &j);
+          if (p[i][j] == mymove)
+            {
+              p[i][j] = EMPTY;
+              mk++;
+            }
+          else if (p[i][j] == umove)
+            {
+              p[i][j] = EMPTY;
+              uk++;
+            }
+          showboard();
+        }
+      else
+        {
+          cont = 0;
+        }
     }
-    else
-    {
-      cont = 0;
-    }
-  } while (cont);
+  while (cont);
 
   /* fill in neutral */
   printf("Next, you need to fill in pieces (black and white) in all neutral");
@@ -96,54 +97,55 @@ void endgame(void)
   cont = 1;
 
   do
-  {
-    printf("Your piece? ");
-    scanf("%s", an);
-    if (strcmp(an, "stop"))
     {
-      getij(an, &i, &j);
-      p[i][j] = umove;
-      printf("My piece? ");
+      printf("Your piece? ");
       scanf("%s", an);
-      getij(an, &i, &j);
-      p[i][j] = mymove;
-      showboard();
+      if (strcmp(an, "stop"))
+        {
+          getij(an, &i, &j);
+          p[i][j] = umove;
+          printf("My piece? ");
+          scanf("%s", an);
+          getij(an, &i, &j);
+          p[i][j] = mymove;
+          showboard();
+        }
+      else
+        {
+          cont = 0;
+        }
     }
-    else
-    {
-      cont = 0;
-    }
-  } while (cont);
+  while (cont);
 
   /* set empty to side they belong to */
   for (i = 0; i < 19; i++)
-  {
-    for (j = 0; j < 19; j++)
     {
-      if (p[i][j] == EMPTY)
-      {
-        p[i][j] = findcolor(i, j);
-      }
+      for (j = 0; j < 19; j++)
+        {
+          if (p[i][j] == EMPTY)
+            {
+              p[i][j] = findcolor(i, j);
+            }
+        }
     }
-  }
 
   /* count total */
   mtot = 0;
   utot = 0;
   for (i = 0; i < 19; i++)
-  {
-    for (j = 0; j < 19; j++)
     {
-      if (p[i][j] == mymove)
-      {
-        ++mtot;
-      }
-      else if (p[i][j] == umove)
-      {
-        ++utot;
-      }
+      for (j = 0; j < 19; j++)
+        {
+          if (p[i][j] == mymove)
+            {
+              ++mtot;
+            }
+          else if (p[i][j] == umove)
+            {
+              ++utot;
+            }
+        }
     }
-  }
 
   showboard();
   printf("Your total number of pieces %d\n", utot);

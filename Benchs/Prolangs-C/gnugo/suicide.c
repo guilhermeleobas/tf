@@ -54,42 +54,42 @@ int suicide(int i, int j)
   lib = 0;
   countlib(i, j, umove);
   if (lib == 0)
-  /* new move is suicide then check if kill my pieces and Ko possibility */
-  {
-    /* assume alive */
-    p[i][j] = umove;
-
-    /* check my pieces */
-    eval(mymove);
-    k = 0;
-
-    for (m = 0; m < 19; m++)
+    /* new move is suicide then check if kill my pieces and Ko possibility */
     {
-      for (n = 0; n < 19; n++)
-      {
-        /* count pieces will be killed */
-        if ((p[m][n] == mymove) && !l[m][n])
+      /* assume alive */
+      p[i][j] = umove;
+
+      /* check my pieces */
+      eval(mymove);
+      k = 0;
+
+      for (m = 0; m < 19; m++)
         {
-          ++k;
+          for (n = 0; n < 19; n++)
+            {
+              /* count pieces will be killed */
+              if ((p[m][n] == mymove) && !l[m][n])
+                {
+                  ++k;
+                }
+            }
         }
-      }
-    }
 
-    if ((k == 0) || (k == 1 && ((i == uik) && (j == ujk))))
-    /* either no effect on my pieces or an illegal Ko take back */
-    {
-      p[i][j] = EMPTY; /* restore to open */
-      return 1;
+      if ((k == 0) || (k == 1 && ((i == uik) && (j == ujk))))
+        /* either no effect on my pieces or an illegal Ko take back */
+        {
+          p[i][j] = EMPTY; /* restore to open */
+          return 1;
+        }
+      else
+        {
+          /* good move */
+          return 0;
+        }
     }
-    else
+  else
     {
-      /* good move */
+      /* valid move */
       return 0;
     }
-  }
-  else
-  {
-    /* valid move */
-    return 0;
-  }
 } /* end suicide */

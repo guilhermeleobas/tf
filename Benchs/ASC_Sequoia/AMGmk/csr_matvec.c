@@ -84,33 +84,33 @@ int hypre_CSRMatrixMatvec(double alpha, hypre_CSRMatrix *A, hypre_Vector *x,
   hypre_assert(num_vectors == hypre_VectorNumVectors(y));
 
   if (num_cols != x_size)
-  {
-    ierr = 1;
-  }
+    {
+      ierr = 1;
+    }
 
   if (num_rows != y_size)
-  {
-    ierr = 2;
-  }
+    {
+      ierr = 2;
+    }
 
   if (num_cols != x_size && num_rows != y_size)
-  {
-    ierr = 3;
-  }
+    {
+      ierr = 3;
+    }
 
   /*-----------------------------------------------------------------------
    * Do (alpha == 0.0) computation - RDF: USE MACHINE EPS
    *-----------------------------------------------------------------------*/
 
   if (alpha == 0.0)
-  {
-    for (i = 0; i < num_rows * num_vectors; i++)
     {
-      y_data[i] *= beta;
-    }
+      for (i = 0; i < num_rows * num_vectors; i++)
+        {
+          y_data[i] *= beta;
+        }
 
-    return ierr;
-  }
+      return ierr;
+    }
 
   /*-----------------------------------------------------------------------
    * y = (beta/alpha)*y
@@ -119,22 +119,22 @@ int hypre_CSRMatrixMatvec(double alpha, hypre_CSRMatrix *A, hypre_Vector *x,
   temp = beta / alpha;
 
   if (temp != 1.0)
-  {
-    if (temp == 0.0)
     {
-      for (i = 0; i < num_rows * num_vectors; i++)
-      {
-        y_data[i] = 0.0;
-      }
+      if (temp == 0.0)
+        {
+          for (i = 0; i < num_rows * num_vectors; i++)
+            {
+              y_data[i] = 0.0;
+            }
+        }
+      else
+        {
+          for (i = 0; i < num_rows * num_vectors; i++)
+            {
+              y_data[i] *= temp;
+            }
+        }
     }
-    else
-    {
-      for (i = 0; i < num_rows * num_vectors; i++)
-      {
-        y_data[i] *= temp;
-      }
-    }
-  }
 
   /*-----------------------------------------------------------------
    * y += A*x
@@ -144,82 +144,82 @@ int hypre_CSRMatrixMatvec(double alpha, hypre_CSRMatrix *A, hypre_Vector *x,
    * than num_rows */
 
   if (num_rownnz < xpar * (num_rows))
-  {
-    for (i = 0; i < num_rownnz; i++)
     {
-      m = A_rownnz[i];
+      for (i = 0; i < num_rownnz; i++)
+        {
+          m = A_rownnz[i];
 
-      /*
+          /*
        * for (jj = A_i[m]; jj < A_i[m+1]; jj++)
        * {
        *         j = A_j[jj];
        *  y_data[m] += A_data[jj] * x_data[j];
        * } */
-      if (num_vectors == 1)
-      {
-        tempx = y_data[m];
-        for (jj = A_i[m]; jj < A_i[m + 1]; jj++)
-        {
-          tempx += A_data[jj] * x_data[A_j[jj]];
+          if (num_vectors == 1)
+            {
+              tempx = y_data[m];
+              for (jj = A_i[m]; jj < A_i[m + 1]; jj++)
+                {
+                  tempx += A_data[jj] * x_data[A_j[jj]];
+                }
+              y_data[m] = tempx;
+            }
+          else
+            {
+              for (j = 0; j < num_vectors; ++j)
+                {
+                  tempx = y_data[j * vecstride_y + m * idxstride_y];
+                  for (jj = A_i[m]; jj < A_i[m + 1]; jj++)
+                    {
+                      tempx +=
+                          A_data[jj] * x_data[j * vecstride_x + A_j[jj] * idxstride_x];
+                    }
+                  y_data[j * vecstride_y + m * idxstride_y] = tempx;
+                }
+            }
         }
-        y_data[m] = tempx;
-      }
-      else
-      {
-        for (j = 0; j < num_vectors; ++j)
-        {
-          tempx = y_data[j * vecstride_y + m * idxstride_y];
-          for (jj = A_i[m]; jj < A_i[m + 1]; jj++)
-          {
-            tempx +=
-                A_data[jj] * x_data[j * vecstride_x + A_j[jj] * idxstride_x];
-          }
-          y_data[j * vecstride_y + m * idxstride_y] = tempx;
-        }
-      }
     }
-  }
   else
-  {
-#pragma omp parallel for private(i, jj, temp) schedule(static)
-    for (i = 0; i < num_rows; i++)
     {
-      if (num_vectors == 1)
-      {
-        temp = y_data[i];
-        for (jj = A_i[i]; jj < A_i[i + 1]; jj++)
+#pragma omp parallel for private(i, jj, temp) schedule(static)
+      for (i = 0; i < num_rows; i++)
         {
-          temp += A_data[jj] * x_data[A_j[jj]];
+          if (num_vectors == 1)
+            {
+              temp = y_data[i];
+              for (jj = A_i[i]; jj < A_i[i + 1]; jj++)
+                {
+                  temp += A_data[jj] * x_data[A_j[jj]];
+                }
+              y_data[i] = temp;
+            }
+          else
+            {
+              for (j = 0; j < num_vectors; ++j)
+                {
+                  temp = y_data[j * vecstride_y + i * idxstride_y];
+                  for (jj = A_i[i]; jj < A_i[i + 1]; jj++)
+                    {
+                      temp +=
+                          A_data[jj] * x_data[j * vecstride_x + A_j[jj] * idxstride_x];
+                    }
+                  y_data[j * vecstride_y + i * idxstride_y] = temp;
+                }
+            }
         }
-        y_data[i] = temp;
-      }
-      else
-      {
-        for (j = 0; j < num_vectors; ++j)
-        {
-          temp = y_data[j * vecstride_y + i * idxstride_y];
-          for (jj = A_i[i]; jj < A_i[i + 1]; jj++)
-          {
-            temp +=
-                A_data[jj] * x_data[j * vecstride_x + A_j[jj] * idxstride_x];
-          }
-          y_data[j * vecstride_y + i * idxstride_y] = temp;
-        }
-      }
     }
-  }
 
   /*-----------------------------------------------------------------
    * y = alpha*y
    *-----------------------------------------------------------------*/
 
   if (alpha != 1.0)
-  {
-    for (i = 0; i < num_rows * num_vectors; i++)
     {
-      y_data[i] *= alpha;
+      for (i = 0; i < num_rows * num_vectors; i++)
+        {
+          y_data[i] *= alpha;
+        }
     }
-  }
 
   return ierr;
 }
@@ -272,32 +272,32 @@ int hypre_CSRMatrixMatvecT(double alpha, hypre_CSRMatrix *A, hypre_Vector *x,
   hypre_assert(num_vectors == hypre_VectorNumVectors(y));
 
   if (num_rows != x_size)
-  {
-    ierr = 1;
-  }
+    {
+      ierr = 1;
+    }
 
   if (num_cols != y_size)
-  {
-    ierr = 2;
-  }
+    {
+      ierr = 2;
+    }
 
   if (num_rows != x_size && num_cols != y_size)
-  {
-    ierr = 3;
-  }
+    {
+      ierr = 3;
+    }
   /*-----------------------------------------------------------------------
    * Do (alpha == 0.0) computation - RDF: USE MACHINE EPS
    *-----------------------------------------------------------------------*/
 
   if (alpha == 0.0)
-  {
-    for (i = 0; i < num_cols * num_vectors; i++)
     {
-      y_data[i] *= beta;
-    }
+      for (i = 0; i < num_cols * num_vectors; i++)
+        {
+          y_data[i] *= beta;
+        }
 
-    return ierr;
-  }
+      return ierr;
+    }
 
   /*-----------------------------------------------------------------------
    * y = (beta/alpha)*y
@@ -306,114 +306,114 @@ int hypre_CSRMatrixMatvecT(double alpha, hypre_CSRMatrix *A, hypre_Vector *x,
   temp = beta / alpha;
 
   if (temp != 1.0)
-  {
-    if (temp == 0.0)
     {
-      for (i = 0; i < num_cols * num_vectors; i++)
-      {
-        y_data[i] = 0.0;
-      }
+      if (temp == 0.0)
+        {
+          for (i = 0; i < num_cols * num_vectors; i++)
+            {
+              y_data[i] = 0.0;
+            }
+        }
+      else
+        {
+          for (i = 0; i < num_cols * num_vectors; i++)
+            {
+              y_data[i] *= temp;
+            }
+        }
     }
-    else
-    {
-      for (i = 0; i < num_cols * num_vectors; i++)
-      {
-        y_data[i] *= temp;
-      }
-    }
-  }
 
   /*-----------------------------------------------------------------
    * y += A^T*x
    *-----------------------------------------------------------------*/
   num_threads = hypre_NumThreads();
   if (num_threads > 1)
-  {
-    for (i1 = 0; i1 < num_threads; i1++)
     {
-      size = num_cols / num_threads;
-      rest = num_cols - size * num_threads;
-      if (i1 < rest)
-      {
-        ns = i1 * size + i1 - 1;
-        ne = (i1 + 1) * size + i1 + 1;
-      }
-      else
-      {
-        ns = i1 * size + rest - 1;
-        ne = (i1 + 1) * size + rest;
-      }
-      if (num_vectors == 1)
-      {
-        for (i = 0; i < num_rows; i++)
+      for (i1 = 0; i1 < num_threads; i1++)
         {
-          for (jj = A_i[i]; jj < A_i[i + 1]; jj++)
-          {
-            j = A_j[jj];
-            if (j > ns && j < ne)
+          size = num_cols / num_threads;
+          rest = num_cols - size * num_threads;
+          if (i1 < rest)
             {
-              y_data[j] += A_data[jj] * x_data[i];
+              ns = i1 * size + i1 - 1;
+              ne = (i1 + 1) * size + i1 + 1;
             }
-          }
-        }
-      }
-      else
-      {
-        for (i = 0; i < num_rows; i++)
-        {
-          for (jv = 0; jv < num_vectors; ++jv)
-          {
-            for (jj = A_i[i]; jj < A_i[i + 1]; jj++)
+          else
             {
-              j = A_j[jj];
-              if (j > ns && j < ne)
-              {
-                y_data[j * idxstride_y + jv * vecstride_y] +=
-                    A_data[jj] * x_data[i * idxstride_x + jv * vecstride_x];
-              }
+              ns = i1 * size + rest - 1;
+              ne = (i1 + 1) * size + rest;
             }
-          }
+          if (num_vectors == 1)
+            {
+              for (i = 0; i < num_rows; i++)
+                {
+                  for (jj = A_i[i]; jj < A_i[i + 1]; jj++)
+                    {
+                      j = A_j[jj];
+                      if (j > ns && j < ne)
+                        {
+                          y_data[j] += A_data[jj] * x_data[i];
+                        }
+                    }
+                }
+            }
+          else
+            {
+              for (i = 0; i < num_rows; i++)
+                {
+                  for (jv = 0; jv < num_vectors; ++jv)
+                    {
+                      for (jj = A_i[i]; jj < A_i[i + 1]; jj++)
+                        {
+                          j = A_j[jj];
+                          if (j > ns && j < ne)
+                            {
+                              y_data[j * idxstride_y + jv * vecstride_y] +=
+                                  A_data[jj] * x_data[i * idxstride_x + jv * vecstride_x];
+                            }
+                        }
+                    }
+                }
+            }
         }
-      }
     }
-  }
   else
-  {
-    for (i = 0; i < num_rows; i++)
     {
-      if (num_vectors == 1)
-      {
-        for (jj = A_i[i]; jj < A_i[i + 1]; jj++)
+      for (i = 0; i < num_rows; i++)
         {
-          j = A_j[jj];
-          y_data[j] += A_data[jj] * x_data[i];
+          if (num_vectors == 1)
+            {
+              for (jj = A_i[i]; jj < A_i[i + 1]; jj++)
+                {
+                  j = A_j[jj];
+                  y_data[j] += A_data[jj] * x_data[i];
+                }
+            }
+          else
+            {
+              for (jv = 0; jv < num_vectors; ++jv)
+                {
+                  for (jj = A_i[i]; jj < A_i[i + 1]; jj++)
+                    {
+                      j = A_j[jj];
+                      y_data[j * idxstride_y + jv * vecstride_y] +=
+                          A_data[jj] * x_data[i * idxstride_x + jv * vecstride_x];
+                    }
+                }
+            }
         }
-      }
-      else
-      {
-        for (jv = 0; jv < num_vectors; ++jv)
-        {
-          for (jj = A_i[i]; jj < A_i[i + 1]; jj++)
-          {
-            j = A_j[jj];
-            y_data[j * idxstride_y + jv * vecstride_y] +=
-                A_data[jj] * x_data[i * idxstride_x + jv * vecstride_x];
-          }
-        }
-      }
     }
-  }
   /*-----------------------------------------------------------------
    * y = alpha*y
    *-----------------------------------------------------------------*/
 
   if (alpha != 1.0)
-  {
-    for (i = 0; i < num_cols * num_vectors; i++)
     {
-      y_data[i] *= alpha;
+      for (i = 0; i < num_cols * num_vectors; i++)
+        {
+          y_data[i] *= alpha;
+        }
     }
-  }
 
   return ierr;
 }
@@ -455,36 +455,36 @@ int hypre_CSRMatrixMatvec_FF(double alpha, hypre_CSRMatrix *A, hypre_Vector *x,
    *--------------------------------------------------------------------*/
 
   if (num_cols != x_size)
-  {
-    ierr = 1;
-  }
+    {
+      ierr = 1;
+    }
 
   if (num_rows != y_size)
-  {
-    ierr = 2;
-  }
+    {
+      ierr = 2;
+    }
 
   if (num_cols != x_size && num_rows != y_size)
-  {
-    ierr = 3;
-  }
+    {
+      ierr = 3;
+    }
 
   /*-----------------------------------------------------------------------
    * Do (alpha == 0.0) computation - RDF: USE MACHINE EPS
    *-----------------------------------------------------------------------*/
 
   if (alpha == 0.0)
-  {
-    for (i = 0; i < num_rows; i++)
     {
-      if (CF_marker_x[i] == fpt)
-      {
-        y_data[i] *= beta;
-      }
-    }
+      for (i = 0; i < num_rows; i++)
+        {
+          if (CF_marker_x[i] == fpt)
+            {
+              y_data[i] *= beta;
+            }
+        }
 
-    return ierr;
-  }
+      return ierr;
+    }
 
   /*-----------------------------------------------------------------------
    * y = (beta/alpha)*y
@@ -493,63 +493,63 @@ int hypre_CSRMatrixMatvec_FF(double alpha, hypre_CSRMatrix *A, hypre_Vector *x,
   temp = beta / alpha;
 
   if (temp != 1.0)
-  {
-    if (temp == 0.0)
     {
-      for (i = 0; i < num_rows; i++)
-      {
-        if (CF_marker_x[i] == fpt)
+      if (temp == 0.0)
         {
-          y_data[i] = 0.0;
+          for (i = 0; i < num_rows; i++)
+            {
+              if (CF_marker_x[i] == fpt)
+                {
+                  y_data[i] = 0.0;
+                }
+            }
         }
-      }
-    }
-    else
-    {
-      for (i = 0; i < num_rows; i++)
-      {
-        if (CF_marker_x[i] == fpt)
+      else
         {
-          y_data[i] *= temp;
+          for (i = 0; i < num_rows; i++)
+            {
+              if (CF_marker_x[i] == fpt)
+                {
+                  y_data[i] *= temp;
+                }
+            }
         }
-      }
     }
-  }
 
   /*-----------------------------------------------------------------
    * y += A*x
    *-----------------------------------------------------------------*/
 
   for (i = 0; i < num_rows; i++)
-  {
-    if (CF_marker_x[i] == fpt)
     {
-      temp = y_data[i];
-      for (jj = A_i[i]; jj < A_i[i + 1]; jj++)
-      {
-        if (CF_marker_y[A_j[jj]] == fpt)
+      if (CF_marker_x[i] == fpt)
         {
-          temp += A_data[jj] * x_data[A_j[jj]];
+          temp = y_data[i];
+          for (jj = A_i[i]; jj < A_i[i + 1]; jj++)
+            {
+              if (CF_marker_y[A_j[jj]] == fpt)
+                {
+                  temp += A_data[jj] * x_data[A_j[jj]];
+                }
+            }
+          y_data[i] = temp;
         }
-      }
-      y_data[i] = temp;
     }
-  }
 
   /*-----------------------------------------------------------------
    * y = alpha*y
    *-----------------------------------------------------------------*/
 
   if (alpha != 1.0)
-  {
-    for (i = 0; i < num_rows; i++)
     {
-      if (CF_marker_x[i] == fpt)
-      {
-        y_data[i] *= alpha;
-      }
+      for (i = 0; i < num_rows; i++)
+        {
+          if (CF_marker_x[i] == fpt)
+            {
+              y_data[i] *= alpha;
+            }
+        }
     }
-  }
 
   return ierr;
 }
