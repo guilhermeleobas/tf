@@ -59,9 +59,9 @@ int zgsave(register ref *op)
 {
   int_state *pis = (int_state *)alloc(1, sizeof(int_state), "gsave");
   if (gs_gsave(igs) < 0 || pis == 0)
-  {
-    return e_limitcheck;
-  }
+    {
+      return e_limitcheck;
+    }
   *pis = istate;
   istate.saved = pis;
   return 0;
@@ -71,11 +71,11 @@ int zgsave(register ref *op)
 int zgrestore(register ref *op)
 {
   if (gs_grestore(igs) >= 0)
-  {
-    int_state *pis = istate.saved;
-    istate = *pis;
-    alloc_free((char *)pis, 1, sizeof(int_state), "grestore");
-  }
+    {
+      int_state *pis = istate.saved;
+      istate = *pis;
+      alloc_free((char *)pis, 1, sizeof(int_state), "grestore");
+    }
   return 0;
 }
 
@@ -84,11 +84,11 @@ int zgrestoreall(register ref *op)
 {
   gs_grestoreall(igs);
   while (istate.saved != 0)
-  {
-    int_state *pis = istate.saved;
-    istate = *pis;
-    alloc_free((char *)pis, 1, sizeof(int_state), "restoreall");
-  }
+    {
+      int_state *pis = istate.saved;
+      istate = *pis;
+      alloc_free((char *)pis, 1, sizeof(int_state), "restoreall");
+    }
   return 0;
 }
 
@@ -110,9 +110,9 @@ int zsetlinecap(register ref *op)
   int param;
   int code = line_param(op, &param);
   if (!code)
-  {
-    code = gs_setlinecap(igs, (gs_line_cap)param);
-  }
+    {
+      code = gs_setlinecap(igs, (gs_line_cap)param);
+    }
   return code;
 }
 
@@ -130,9 +130,9 @@ int zsetlinejoin(register ref *op)
   int param;
   int code = line_param(op, &param);
   if (!code)
-  {
-    code = gs_setlinejoin(igs, (gs_line_join)param);
-  }
+    {
+      code = gs_setlinejoin(igs, (gs_line_join)param);
+    }
   return code;
 }
 
@@ -163,9 +163,9 @@ int zsetdash(register ref *op)
   float *pattern, *dto;
   int code = real_param(op, &offset, 0);
   if (code)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   check_array(op[-1]);
   check_read(op[-1]);
   /* Unpack the dash pattern and check it */
@@ -173,26 +173,26 @@ int zsetdash(register ref *op)
   i = n = op[-1].size;
   pattern = dto = (float *)alloc(n, sizeof(float), "setdash");
   while (i--)
-  {
-    switch (r_type(dfrom))
     {
-      case t_integer:
-        *dto++ = dfrom->value.intval;
-        break;
-      case t_real:
-        *dto++ = dfrom->value.realval;
-        break;
-      default:
-        alloc_free((char *)dto, n, sizeof(float), "setdash");
-        return e_typecheck;
+      switch (r_type(dfrom))
+        {
+          case t_integer:
+            *dto++ = dfrom->value.intval;
+            break;
+          case t_real:
+            *dto++ = dfrom->value.realval;
+            break;
+          default:
+            alloc_free((char *)dto, n, sizeof(float), "setdash");
+            return e_typecheck;
+        }
+      dfrom++;
     }
-    dfrom++;
-  }
   code = gs_setdash(igs, pattern, n, offset);
   if (!code)
-  {
-    pop(2);
-  }
+    {
+      pop(2);
+    }
   return code;
 }
 
@@ -206,10 +206,10 @@ int zcurrentdash(register ref *op)
   float *dfrom = (float *)((char *)pattern + n * (sizeof(ref) - sizeof(float)));
   gs_currentdash_pattern(igs, dfrom);
   while (i--)
-  {
-    make_real(dto, *dfrom);
-    dto++, dfrom++;
-  }
+    {
+      make_real(dto, *dfrom);
+      dto++, dfrom++;
+    }
   push(2);
   make_tasv(op - 1, t_array, a_all, n, refs, pattern);
   make_real(op, gs_currentdash_offset(igs));
@@ -243,9 +243,9 @@ int zsethsbcolor(register ref *op)
   int code;
   if ((code = num_params(op, 3, par)) >= 0 &&
       (code = gs_sethsbcolor(igs, par[0], par[1], par[2])) >= 0)
-  {
-    pop(3);
-  }
+    {
+      pop(3);
+    }
   return code;
 }
 
@@ -266,9 +266,9 @@ int zsetrgbcolor(register ref *op)
   int code;
   if ((code = num_params(op, 3, par)) >= 0 &&
       (code = gs_setrgbcolor(igs, par[0], par[1], par[2])) >= 0)
-  {
-    pop(3);
-  }
+    {
+      pop(3);
+    }
   return code;
 }
 
@@ -354,13 +354,13 @@ int num_param(ref *op, int (*pproc)(P2(gs_state *, floatp)))
   float param;
   int code = real_param(op, &param, 0);
   if (!code)
-  {
-    code = (*pproc)(igs, param);
-  }
+    {
+      code = (*pproc)(igs, param);
+    }
   if (!code)
-  {
-    pop(1);
-  }
+    {
+      pop(1);
+    }
   return code;
 }
 
@@ -370,9 +370,9 @@ int line_param(register ref *op, int *pparam)
 {
   check_type(*op, t_integer);
   if (op->value.intval < 0 || op->value.intval > 2)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   *pparam = (int)op->value.intval;
   pop(1);
   return 0;

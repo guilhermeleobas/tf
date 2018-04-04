@@ -58,21 +58,21 @@ int zsetscreen(register ref *op)
   int code = num_params(op - 1, 2, fa);
   gs_screen_enum *penum;
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   check_proc(*op);
   penum = (gs_screen_enum *)alloc(1, gs_screen_enum_sizeof, "setscreen");
   if (penum == 0)
-  {
-    return e_VMerror;
-  }
+    {
+      return e_VMerror;
+    }
   code = gs_screen_init(penum, igs, fa[0], fa[1]);
   if (code < 0)
-  {
-    alloc_free((char *)penum, 1, gs_screen_enum_sizeof, "setscreen");
-    return code;
-  }
+    {
+      alloc_free((char *)penum, 1, gs_screen_enum_sizeof, "setscreen");
+      return code;
+    }
   /* Push everything on the estack */
   check_estack(snumpush);
   mark_estack(es_other);
@@ -93,15 +93,15 @@ int screen_sample(register ref *op)
   int set_screen_continue(P1(ref *));
   ref proc;
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   if (code != 0)
-  { /* All done */
-    istate.screen_proc = sproc;
-    esp -= snumpush;
-    return o_check_estack;
-  }
+    { /* All done */
+      istate.screen_proc = sproc;
+      esp -= snumpush;
+      return o_check_estack;
+    }
   push(2);
   make_real(op - 1, pt.x);
   make_real(op, pt.y);
@@ -117,14 +117,14 @@ int set_screen_continue(register ref *op)
   float value;
   int code = num_params(op, 1, &value);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   code = gs_screen_next(senum, value);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   pop(1);
   op--;
   return screen_sample(op);

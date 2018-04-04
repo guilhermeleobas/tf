@@ -54,9 +54,9 @@ int zcurrentpoint(register ref *op)
   gs_point pt;
   int code = gs_currentpoint(igs, &pt);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   push(2);
   make_real(op - 1, pt.x);
   make_real(op, pt.y);
@@ -79,9 +79,9 @@ int common_to(ref *op, int (*add_proc)(P3(gs_state *, floatp, floatp)))
   int code;
   if ((code = num_params(op, 2, opxy)) < 0 ||
       (code = (*add_proc)(igs, opxy[0], opxy[1])) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   pop(2);
   return 0;
 }
@@ -98,14 +98,14 @@ int common_arc(ref *op, int (*aproc)(P6(gs_state *, floatp, floatp, floatp,
   float xyra[5]; /* x, y, r, ang1, ang2 */
   int code;
   if ((code = num_params(op, 5, xyra)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   code = (*aproc)(igs, xyra[0], xyra[1], xyra[2], xyra[3], xyra[4]);
   if (code >= 0)
-  {
-    pop(5);
-  }
+    {
+      pop(5);
+    }
   return code;
 }
 
@@ -114,9 +114,9 @@ int zarct(register ref *op)
 {
   int code = common_arct(op, (float *)0);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   pop(5);
   return 0;
 }
@@ -127,9 +127,9 @@ int zarcto(register ref *op)
   float tanxy[4]; /* xt1, yt1, xt2, yt2 */
   int code = common_arct(op, tanxy);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   make_real(op - 4, tanxy[0]);
   make_real(op - 3, tanxy[1]);
   make_real(op - 2, tanxy[2]);
@@ -145,9 +145,9 @@ int common_arct(ref *op, float *tanxy)
   float args[5]; /* x1, y1, x2, y2, r */
   int code;
   if ((code = num_params(op, 5, args)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   return gs_arcto(igs, args[0], args[1], args[2], args[3], args[4], tanxy);
 }
 
@@ -163,14 +163,14 @@ int common_curve(ref *op, int (*add_proc)(P7(gs_state *, floatp, floatp, floatp,
   float opxy[6];
   int code;
   if ((code = num_params(op, 6, opxy)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   code = (*add_proc)(igs, opxy[0], opxy[1], opxy[2], opxy[3], opxy[4], opxy[5]);
   if (code >= 0)
-  {
-    pop(6);
-  }
+    {
+      pop(6);
+    }
   return code;
 }
 

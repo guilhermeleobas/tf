@@ -68,103 +68,103 @@ void genmove(int *i, int *j)
 
   /* find opponent piece to capture or attack */
   if (findwinner(&ti, &tj, &tval))
-  {
-    if (tval > val)
     {
-      val = tval;
-      *i = ti;
-      *j = tj;
+      if (tval > val)
+        {
+          val = tval;
+          *i = ti;
+          *j = tj;
+        }
     }
-  }
 
   /* save any piece if threaten */
   if (findsaver(&ti, &tj, &tval))
-  {
-    if (tval > val)
     {
-      val = tval;
-      *i = ti;
-      *j = tj;
+      if (tval > val)
+        {
+          val = tval;
+          *i = ti;
+          *j = tj;
+        }
     }
-  }
 
   /* try match local play pattern for new move */
   if (findpatn(&ti, &tj, &tval))
-  {
-    if (tval > val)
     {
-      val = tval;
-      *i = ti;
-      *j = tj;
+      if (tval > val)
+        {
+          val = tval;
+          *i = ti;
+          *j = tj;
+        }
     }
-  }
 
   /* no urgent move then do random move */
   if (val < 0)
-  {
-    do
     {
-      random_nasko(&rd);
-      *i = rd % 19;
-      /* avoid low line  and center region */
-      if ((*i < 2) || (*i > 16) || ((*i > 5) && (*i < 13)))
-      {
-        random_nasko(&rd);
-        *i = rd % 19;
-        if ((*i < 2) || (*i > 16))
+      do
         {
           random_nasko(&rd);
           *i = rd % 19;
-        }
-      }
-      random_nasko(&rd);
-      *j = rd % 19;
-      /* avoid low line and center region */
-      if ((*j < 2) || (*j > 16) || ((*j > 5) && (*j < 13)))
-      {
-        random_nasko(&rd);
-        *j = rd % 19;
-        if ((*j < 2) || (*j > 16))
-        {
+          /* avoid low line  and center region */
+          if ((*i < 2) || (*i > 16) || ((*i > 5) && (*i < 13)))
+            {
+              random_nasko(&rd);
+              *i = rd % 19;
+              if ((*i < 2) || (*i > 16))
+                {
+                  random_nasko(&rd);
+                  *i = rd % 19;
+                }
+            }
           random_nasko(&rd);
           *j = rd % 19;
+          /* avoid low line and center region */
+          if ((*j < 2) || (*j > 16) || ((*j > 5) && (*j < 13)))
+            {
+              random_nasko(&rd);
+              *j = rd % 19;
+              if ((*j < 2) || (*j > 16))
+                {
+                  random_nasko(&rd);
+                  *j = rd % 19;
+                }
+            }
+          lib = 0;
+          countlib(*i, *j, mymove);
         }
-      }
-      lib = 0;
-      countlib(*i, *j, mymove);
+      /* avoid illegal move, liberty one or suicide, fill in own eye */
+      while ((++try1 < MAXTRY) &&
+             ((p[*i][*j] != EMPTY) || (lib < 2) || fioe(*i, *j)));
     }
-    /* avoid illegal move, liberty one or suicide, fill in own eye */
-    while ((++try1 < MAXTRY) &&
-           ((p[*i][*j] != EMPTY) || (lib < 2) || fioe(*i, *j)));
-  }
 
   if (try1 >= MAXTRY) /* computer pass */
-  {
-    pass++;
-    printf("I pass.\n");
-    *i = -1;
-  }
+    {
+      pass++;
+      printf("I pass.\n");
+      *i = -1;
+    }
   else /* find valid move */
-  {
-    pass = 0;
-    printf("my move: ");
-    if (*j < 8)
     {
-      a = *j + 65;
+      pass = 0;
+      printf("my move: ");
+      if (*j < 8)
+        {
+          a = *j + 65;
+        }
+      else
+        {
+          a = *j + 66;
+        }
+      printf("%c", a);
+      ii = 19 - *i;
+      if (ii < 10)
+        {
+          printf("%1d\n", ii);
+        }
+      else
+        {
+          printf("%2d\n", ii);
+        }
     }
-    else
-    {
-      a = *j + 66;
-    }
-    printf("%c", a);
-    ii = 19 - *i;
-    if (ii < 10)
-    {
-      printf("%1d\n", ii);
-    }
-    else
-    {
-      printf("%2d\n", ii);
-    }
-  }
 } /* end genmove */

@@ -43,42 +43,42 @@ float dash_length = 10.0; /* short dashed */
 int linemod(char *s)
 {
   if ((strcmp(s, "longdashed") == 0) || (strcmp(s, "long-dashed") == 0))
-  {
-    line_style = 1;
-    dash_length = 20.0;
-  }
+    {
+      line_style = 1;
+      dash_length = 20.0;
+    }
   else if (strcmp(s, "disconnected") == 0)
-  {
-    line_style = 2;
-    dash_length = 999.0;
-  }
+    {
+      line_style = 2;
+      dash_length = 999.0;
+    }
   else if ((strcmp(s, "dotdashed") == 0) || (strcmp(s, "dot-dashed") == 0))
-  {
-    line_style = 1;
-    dash_length = 4.0;
-  }
+    {
+      line_style = 1;
+      dash_length = 4.0;
+    }
   else if (strcmp(s, "dotted") == 0)
-  {
-    line_style = 2;
-    dash_length = 2.0;
-  }
+    {
+      line_style = 2;
+      dash_length = 2.0;
+    }
   else if (strcmp(s, "solid") == 0)
-  {
-    line_style = 0;
-    dash_length = 1.0;
-  }
+    {
+      line_style = 0;
+      dash_length = 1.0;
+    }
   else if ((strcmp(s, "shortdashed") == 0) || (strcmp(s, "short-dashed") == 0))
-  {
-    line_style = 1;
-    dash_length = 10.0;
-  }
+    {
+      line_style = 1;
+      dash_length = 10.0;
+    }
   else
-  {
-    fprintf(stderr, "Unrecognized line mode `%s' ignored. Using solid.\n", s);
-    /* Set the line mode to SOLID if an unsupported mode is requested. */
-    line_style = 0;
-    dash_length = 1.0;
-  }
+    {
+      fprintf(stderr, "Unrecognized line mode `%s' ignored. Using solid.\n", s);
+      /* Set the line mode to SOLID if an unsupported mode is requested. */
+      line_style = 0;
+      dash_length = 1.0;
+    }
 
   return 0;
 }

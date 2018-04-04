@@ -6,8 +6,8 @@
 
 /* $Header$ */
 
-#include "gsm.h"
 #include "config.h"
+#include "gsm.h"
 #include "proto.h"
 
 #ifdef HAS_STDLIB_H
@@ -23,7 +23,7 @@ extern void free();
 void gsm_destroy P1((S), gsm S)
 {
   if (S)
-  {
-    free((char *)S);
-  }
+    {
+      free((char *)S);
+    }
 }

@@ -41,7 +41,6 @@
 #include "search.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdlib.h>
 #include <string.h>
 #include "url.h"
 #include "utils.h"
@@ -56,19 +55,19 @@ int *calculate_bm_table(char *pattern, int pattern_length)
   int *returnval = (int *)malloc(sizeof(int) * CHAR_SIZE);
 
   if (returnval == NULL)
-  {
-    fatal("Not enough virtual memory \n");
-  }
+    {
+      fatal("Not enough virtual memory \n");
+    }
 
   for (i = 0; i < CHAR_SIZE; ++i)
-  {
-    returnval[i] = pattern_length;
-  }
+    {
+      returnval[i] = pattern_length;
+    }
 
   for (i = 0; i < pattern_length; ++i)
-  {
-    returnval[(unsigned char)pattern[i]] = pattern_length - i - 1;
-  }
+    {
+      returnval[(unsigned char)pattern[i]] = pattern_length - i - 1;
+    }
 
   return returnval;
 }
@@ -95,23 +94,23 @@ int boyer_moore(char *y, int n, char *x, int m, int *bmBc)
   /* Changed while-loop bound to prevent reading off the end of the array.
    * -KF 2/2007 */
   while (j + m - 1 < n)
-  {
-    k = bmBc[(unsigned char)y[j + m - 1]];
-    /* while ((k !=  0) && (j < n)) */
-    /* Changed while-loop bound to prevent reading off the end of the array.
-     * -KF 2/2007 */
-    while ((k != 0) && (j + k + m - 1 < n))
     {
-      j += k;
       k = bmBc[(unsigned char)y[j + m - 1]];
-    }
+      /* while ((k !=  0) && (j < n)) */
+      /* Changed while-loop bound to prevent reading off the end of the array.
+     * -KF 2/2007 */
+      while ((k != 0) && (j + k + m - 1 < n))
+        {
+          j += k;
+          k = bmBc[(unsigned char)y[j + m - 1]];
+        }
 
-    if (memcmp(x, y + j, m - 1) == 0 && (j < n))
-    {
-      return (j);
+      if (memcmp(x, y + j, m - 1) == 0 && (j < n))
+        {
+          return (j);
+        }
+      j += shift;
     }
-    j += shift;
-  }
   return -1;
 }
 
@@ -120,54 +119,54 @@ struct rtentry *find_destination(char *packet, int packet_size)
   StrTreeNode *iterator = tree_head;
 
   while (iterator)
-  {
-#ifdef DEBUG_2
-    fprintf(stderr, "Comparing to %s \n", iterator->common_pattern);
-#endif
-
-    /* If the packet contains the pattern at the header... */
-    if ((boyer_moore(packet, packet_size, iterator->common_pattern,
-                     iterator->common_pattern_length,
-                     iterator->bm_table) != -1))
     {
-      /* We found a common substring in the header, so look into the list... */
-      PatternNode *list = iterator->list;
-      while (list)
-      {
-        int search_result;
 #ifdef DEBUG_2
-        fprintf(stderr, "Inside comparing to %s \n", iterator->common_pattern);
+      fprintf(stderr, "Comparing to %s \n", iterator->common_pattern);
 #endif
-        if (list->search_depth == 0)
-        {
-          search_result = boyer_moore(packet, packet_size, list->pattern,
-                                      list->pattern_length, list->bm_table);
-        }
-        else
-        {
-          search_result =
-              boyer_moore(packet, min(packet_size, list->search_depth),
-                          list->pattern, list->pattern_length, list->bm_table);
-        }
 
-        if (search_result != -1)
+      /* If the packet contains the pattern at the header... */
+      if ((boyer_moore(packet, packet_size, iterator->common_pattern,
+                       iterator->common_pattern_length,
+                       iterator->bm_table) != -1))
         {
-#ifdef DEBUG
-          fprintf(stderr, "Found a packet \n");
+          /* We found a common substring in the header, so look into the list... */
+          PatternNode *list = iterator->list;
+          while (list)
+            {
+              int search_result;
+#ifdef DEBUG_2
+              fprintf(stderr, "Inside comparing to %s \n", iterator->common_pattern);
 #endif
-          /* An exact match */
-          if (list->type == log)
-          {
-            fprintf(list->logto, "Source: %x Destination %x \n",
-                    PACKET_SOURCE(packet), PACKET_DESTINATION(packet));
-          }
-          return list->destination;
+              if (list->search_depth == 0)
+                {
+                  search_result = boyer_moore(packet, packet_size, list->pattern,
+                                              list->pattern_length, list->bm_table);
+                }
+              else
+                {
+                  search_result =
+                      boyer_moore(packet, min(packet_size, list->search_depth),
+                                  list->pattern, list->pattern_length, list->bm_table);
+                }
+
+              if (search_result != -1)
+                {
+#ifdef DEBUG
+                  fprintf(stderr, "Found a packet \n");
+#endif
+                  /* An exact match */
+                  if (list->type == log)
+                    {
+                      fprintf(list->logto, "Source: %x Destination %x \n",
+                              PACKET_SOURCE(packet), PACKET_DESTINATION(packet));
+                    }
+                  return list->destination;
+                }
+              list = list->below;
+            }
         }
-        list = list->below;
-      }
+      iterator = iterator->next;
     }
-    iterator = iterator->next;
-  }
 
   /* No match, no rule can be find for the packet... */
   return NULL;
@@ -182,16 +181,16 @@ PatternNode *NewPatternNode(int chainno, nodetype type, char *pattern,
   PatternNode *returnval;
 
   if ((returnval = (PatternNode *)malloc(sizeof(PatternNode))) == NULL)
-  {
-    fatal("Run out of virtual memory \n");
-  }
+    {
+      fatal("Run out of virtual memory \n");
+    }
 
   returnval->chain_node_number = chainno;
   returnval->type = type;
   if ((returnval->pattern = (char *)malloc(pattern_length)) == NULL)
-  {
-    fatal("Not enough virtual memory \n");
-  }
+    {
+      fatal("Not enough virtual memory \n");
+    }
   strncpy(returnval->pattern, pattern, pattern_length);
   returnval->pattern_length = pattern_length;
   returnval->search_depth = search_depth;
@@ -205,15 +204,15 @@ StrTreeNode *NewStrTreeNode(int chainno, char *pattern, int pattern_length)
   StrTreeNode *returnval;
 
   if ((returnval = (StrTreeNode *)malloc(sizeof(StrTreeNode))) == NULL)
-  {
-    fatal("Run out of virtual memory \n");
-  }
+    {
+      fatal("Run out of virtual memory \n");
+    }
 
   returnval->chain_node_number = chainno;
   if ((returnval->common_pattern = (char *)malloc(pattern_length)) == NULL)
-  {
-    fatal("Not enough virtual memory \n");
-  }
+    {
+      fatal("Not enough virtual memory \n");
+    }
   strncpy(returnval->common_pattern, pattern, pattern_length);
   returnval->common_pattern_length = pattern_length;
   returnval->bm_table =
@@ -242,14 +241,14 @@ char *find_lcs(char *largepattern, int largepatternsize, char *smallpattern,
 
   /* Make sure the large is larger */
   if (smallpatternsize > largepatternsize)
-  {
-    exchanger = smallpattern;
-    smallpattern = largepattern;
-    largepattern = exchanger;
-    exchangersize = smallpatternsize;
-    smallpatternsize = largepatternsize;
-    largepatternsize = exchangersize;
-  }
+    {
+      exchanger = smallpattern;
+      smallpattern = largepattern;
+      largepattern = exchanger;
+      exchangersize = smallpatternsize;
+      smallpatternsize = largepatternsize;
+      largepatternsize = exchangersize;
+    }
 
   bmBc = calculate_bm_table(smallpattern, smallpatternsize);
 
@@ -257,56 +256,56 @@ char *find_lcs(char *largepattern, int largepatternsize, char *smallpattern,
   j = 0;
   k = bmBc[(unsigned char)largepattern[j + smallpatternsize - 1]];
   while (j < largepatternsize)
-  {
-    j += k;
-    k = bmBc[(unsigned char)largepattern[j + smallpatternsize - 1]];
-    /* Unlike original BM we can not shift the whole subpattern */
-    if (k == smallpatternsize)
     {
-      k = sub_pat_size + 1;
-    }
-    else
-    {
-      /* Match in the characters, check how big the substring is */
-      int first_char = j + smallpatternsize - 1;
-      int temp_sub_size = 0;
-
-      /* First move back to find the start of the partial match */
-      while (
-          (k < smallpatternsize) &&
-          (smallpattern[smallpatternsize - k - 1] == largepattern[first_char]))
-      {
-        first_char--;
-        k++;
-      }
-      k--;
-      first_char++;
-
-      /* Now move forward until there is a mismatch */
-      while ((k >= 0) && (smallpattern[smallpatternsize - k - 1] ==
-                          largepattern[first_char]))
-      {
-        temp_sub_size++;
-        k--;
-        first_char++;
-      }
-
-      if (temp_sub_size > sub_pat_size)
-      {
-        sub_pat_size = temp_sub_size;
-        sub_pattern = &largepattern[first_char - temp_sub_size];
-
-        /* If it is equal to the small pattern, no need to continue */
-        if (sub_pat_size == smallpatternsize)
+      j += k;
+      k = bmBc[(unsigned char)largepattern[j + smallpatternsize - 1]];
+      /* Unlike original BM we can not shift the whole subpattern */
+      if (k == smallpatternsize)
         {
-          *lcssize = sub_pat_size;
-          return sub_pattern;
+          k = sub_pat_size + 1;
         }
-      }
+      else
+        {
+          /* Match in the characters, check how big the substring is */
+          int first_char = j + smallpatternsize - 1;
+          int temp_sub_size = 0;
 
-      k = 1;
+          /* First move back to find the start of the partial match */
+          while (
+              (k < smallpatternsize) &&
+              (smallpattern[smallpatternsize - k - 1] == largepattern[first_char]))
+            {
+              first_char--;
+              k++;
+            }
+          k--;
+          first_char++;
+
+          /* Now move forward until there is a mismatch */
+          while ((k >= 0) && (smallpattern[smallpatternsize - k - 1] ==
+                              largepattern[first_char]))
+            {
+              temp_sub_size++;
+              k--;
+              first_char++;
+            }
+
+          if (temp_sub_size > sub_pat_size)
+            {
+              sub_pat_size = temp_sub_size;
+              sub_pattern = &largepattern[first_char - temp_sub_size];
+
+              /* If it is equal to the small pattern, no need to continue */
+              if (sub_pat_size == smallpatternsize)
+                {
+                  *lcssize = sub_pat_size;
+                  return sub_pattern;
+                }
+            }
+
+          k = 1;
+        }
     }
-  }
   *lcssize = sub_pat_size;
   free(bmBc);
   return sub_pattern;
@@ -321,64 +320,64 @@ void insert_rule(char *pattern, int pattern_length, int depth)
 
   /* First traverse all the headers finding the longest common substring */
   while (head_iterator)
-  {
-    int temp_common;
-    char *temp_str = find_lcs(head_iterator->common_pattern,
-                              head_iterator->common_pattern_length, pattern,
-                              pattern_length, &temp_common);
+    {
+      int temp_common;
+      char *temp_str = find_lcs(head_iterator->common_pattern,
+                                head_iterator->common_pattern_length, pattern,
+                                pattern_length, &temp_common);
 
 #ifdef DEBUG_2
-    fprintf(stdout, "Compared %s to %s and found %s with size %d \n",
-            head_iterator->common_pattern, pattern, temp_str, temp_common);
+      fprintf(stdout, "Compared %s to %s and found %s with size %d \n",
+              head_iterator->common_pattern, pattern, temp_str, temp_common);
 #endif
 
-    if (temp_common > largest_common)
-    {
-      largest_common = temp_common;
-      found_largestcommon = head_iterator;
-      sub_str = temp_str;
+      if (temp_common > largest_common)
+        {
+          largest_common = temp_common;
+          found_largestcommon = head_iterator;
+          sub_str = temp_str;
+        }
+      head_iterator = head_iterator->next;
     }
-    head_iterator = head_iterator->next;
-  }
 
   if (largest_common < MIN_COMMON_SIZE)
-  {
-    /* We have to create a new head */
-    PatternNode *new_node;
-    StrTreeNode *new_head;
-
-    if (tree_head != NULL)
     {
-      new_head = NewStrTreeNode(tree_head->chain_node_number + 1, pattern,
-                                pattern_length);
-    }
-    else
-    {
-      new_head = NewStrTreeNode(0, pattern, pattern_length);
-    }
+      /* We have to create a new head */
+      PatternNode *new_node;
+      StrTreeNode *new_head;
 
-    new_node = NewPatternNode(0, route, pattern, pattern_length, depth);
-    new_node->below = NULL;
+      if (tree_head != NULL)
+        {
+          new_head = NewStrTreeNode(tree_head->chain_node_number + 1, pattern,
+                                    pattern_length);
+        }
+      else
+        {
+          new_head = NewStrTreeNode(0, pattern, pattern_length);
+        }
 
-    new_head->list = new_node;
-    new_head->next = tree_head;
-    tree_head = new_head;
-  }
+      new_node = NewPatternNode(0, route, pattern, pattern_length, depth);
+      new_node->below = NULL;
+
+      new_head->list = new_node;
+      new_head->next = tree_head;
+      tree_head = new_head;
+    }
   else
-  {
-    /* Found a header matching the common value that is large enough */
-    PatternNode *new_node;
+    {
+      /* Found a header matching the common value that is large enough */
+      PatternNode *new_node;
 
-    /* First change the head pattern (chunk it off) */
-    strncpy(found_largestcommon->common_pattern, sub_str, largest_common);
-    found_largestcommon->common_pattern_length = largest_common;
+      /* First change the head pattern (chunk it off) */
+      strncpy(found_largestcommon->common_pattern, sub_str, largest_common);
+      found_largestcommon->common_pattern_length = largest_common;
 
-    /* Add the entry to the head list */
-    new_node = NewPatternNode(found_largestcommon->list->chain_node_number + 1,
-                              route, pattern, pattern_length, depth);
-    new_node->below = found_largestcommon->list;
-    found_largestcommon->list = new_node;
-  }
+      /* Add the entry to the head list */
+      new_node = NewPatternNode(found_largestcommon->list->chain_node_number + 1,
+                                route, pattern, pattern_length, depth);
+      new_node->below = found_largestcommon->list;
+      found_largestcommon->list = new_node;
+    }
 }
 
 void db_init(char *file_name)
@@ -390,60 +389,60 @@ void db_init(char *file_name)
   char *pattern;
 
   if ((pattern_file = fopen(file_name, "r")) == NULL)
-  {
-    fatal("Can not open the input file\n");
-  }
+    {
+      fatal("Can not open the input file\n");
+    }
 
   /* Initialize the tree structure */
   while (fgets(line, BUF_SIZE, pattern_file) != NULL)
-  {
-    int value;
-    int pattern_length, search_depth;
-
-    reader = line + 1;
-    switch (line[0])
     {
-      case '1':
-        sscanf(reader, "(%d)", &pattern_length);
-        search_depth = 0;
-        break;
-      case '2':
-        sscanf(reader, "(%d:%d)", &pattern_length, &search_depth);
-        break;
-      default:
-        fatal("unrecognized input line start: %c \n", line[0]);
-    }
+      int value;
+      int pattern_length, search_depth;
 
-    if ((pattern = (char *)malloc(pattern_length + 1)) == NULL)
-    {
-      fatal("Not enough virtual memory \n");
-    }
+      reader = line + 1;
+      switch (line[0])
+        {
+          case '1':
+            sscanf(reader, "(%d)", &pattern_length);
+            search_depth = 0;
+            break;
+          case '2':
+            sscanf(reader, "(%d:%d)", &pattern_length, &search_depth);
+            break;
+          default:
+            fatal("unrecognized input line start: %c \n", line[0]);
+        }
 
-    for (i = 0; i < pattern_length; i++)
-    {
-      while (*reader != ',')
-      {
-        reader++;
-      }
-      reader++;
-      sscanf(reader, " %d", &value);
-      pattern[i] = (char)value;
+      if ((pattern = (char *)malloc(pattern_length + 1)) == NULL)
+        {
+          fatal("Not enough virtual memory \n");
+        }
+
+      for (i = 0; i < pattern_length; i++)
+        {
+          while (*reader != ',')
+            {
+              reader++;
+            }
+          reader++;
+          sscanf(reader, " %d", &value);
+          pattern[i] = (char)value;
 #ifdef DEBUG_2
-      fprintf(stdout, "Read value: %d \n", value);
+          fprintf(stdout, "Read value: %d \n", value);
 #endif
-    }
+        }
 
-    pattern[pattern_length] = '\0';
-
-#ifdef DEBUG_2
-    fprintf(stdout, "Pattern: %s, length: %d depth: %d, tree before: %x\n",
-            pattern, pattern_length, search_depth, tree_head);
-#endif
-
-    insert_rule(pattern, pattern_length, search_depth);
+      pattern[pattern_length] = '\0';
 
 #ifdef DEBUG_2
-    fprintf(stdout, "Tree after: %x\n", tree_head);
+      fprintf(stdout, "Pattern: %s, length: %d depth: %d, tree before: %x\n",
+              pattern, pattern_length, search_depth, tree_head);
 #endif
-  }
+
+      insert_rule(pattern, pattern_length, search_depth);
+
+#ifdef DEBUG_2
+      fprintf(stdout, "Tree after: %x\n", tree_head);
+#endif
+    }
 }

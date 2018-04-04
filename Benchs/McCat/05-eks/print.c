@@ -39,9 +39,9 @@ void printMatrix(Matrix A)
   int i;
 
   for (i = 0; i < n; i++)
-  {
-    printVector(A[i]);
-  }
+    {
+      printVector(A[i]);
+    }
   printf("\n");
 }
 
@@ -50,8 +50,8 @@ void printVector(Vector v)
   int i;
 
   for (i = 0; i < n; i++)
-  {
-    printf("%f ", v[i]);
-  }
+    {
+      printf("%f ", v[i]);
+    }
   printf("\n");
 }

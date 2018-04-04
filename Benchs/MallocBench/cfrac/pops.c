@@ -57,7 +57,7 @@
  *     palloc, pfree, pset -- together these account for 45% of execution time
  */
 #include <string.h>
-#include "pdefs.h"     /* private include file */
+#include "pdefs.h" /* private include file */
 #include "precision.h" /* public include file for forward refs */
 
 cacheType pcache[CACHESIZE];
@@ -75,17 +75,18 @@ void pnorm(u) register precision u;
 
   uPtr = u->value + u->size;
   do
-  {
-    if (*--uPtr != 0)
     {
-      break;
+      if (*--uPtr != 0)
+        {
+          break;
+        }
     }
-  } while (uPtr > u->value);
+  while (uPtr > u->value);
 
   if (uPtr == u->value && *uPtr == 0)
-  {
-    u->sign = false;
-  }
+    {
+      u->sign = false;
+    }
 
   u->size = (uPtr - u->value) + 1; /* normalize */
 }
@@ -100,21 +101,21 @@ precision palloc(size) register posit size;
 
 #if !(defined(NOMEMOPT) || defined(BWGC))
   if (size < CACHESIZE && (w = kludge->next) != pUndef)
-  {
-    kludge->next = ((cacheType *)w)->next;
-    --kludge->count;
-  }
-  else
-  {
-#endif
-    w = (precision)allocate(PrecisionSize + sizeof(digit) * size);
-    if (w == pUndef)
     {
-      w = errorp(PNOMEM, "palloc", "out of memory");
-      return w;
+      kludge->next = ((cacheType *)w)->next;
+      --kludge->count;
     }
+  else
+    {
+#endif
+      w = (precision)allocate(PrecisionSize + sizeof(digit) * size);
+      if (w == pUndef)
+        {
+          w = errorp(PNOMEM, "palloc", "out of memory");
+          return w;
+        }
 #if !(defined(NOMEMOPT) || defined(BWGC))
-  }
+    }
 #endif
 #ifndef BWGC
   w->refcount = 1;
@@ -146,17 +147,17 @@ int pfree(u) register precision u;
   kludge = pcache + size;
 #if !(defined(NOMEMOPT) || defined(BWGC))
   if (size < CACHESIZE && kludge->count < CACHELIMIT)
-  {
-    ((cacheType *)u)->next = kludge->next;
-    kludge->next = u;
-    kludge->count++;
-  }
+    {
+      ((cacheType *)u)->next = kludge->next;
+      kludge->next = u;
+      kludge->count++;
+    }
   else
-  {
+    {
 #endif
-    deallocate(u);
+      deallocate(u);
 #if !(defined(NOMEMOPT) || defined(BWGC))
-  }
+    }
 #endif
   return 0;
 }
@@ -197,36 +198,36 @@ precision psetv(up, v) register precision *up, v;
 #endif
 #endif
   if (up == pNull)
-  {
-    errorp(PDOMAIN, "pset", "lvalue is pNull");
-  }
+    {
+      errorp(PDOMAIN, "pset", "lvalue is pNull");
+    }
   u = *up;
 #ifdef DEBUGOPS
   printf(" %.8x", u);
 #endif
   *up = v;
   if (v != pUndef)
-  {
-#ifndef BWGC
-    v->refcount++;
-#endif
-  }
-  if (u != pUndef)
-  {
-    if (u->sign & ~1)
-    { /* a minimal check */
-      errorp(PDOMAIN, "pset", "invalid precision");
-    }
-#ifndef BWGC
-    if (--(u->refcount) == 0)
     {
-#ifdef DEBUGOPS
-      printf("->%u", u->refcount);
+#ifndef BWGC
+      v->refcount++;
 #endif
-      pfree(u);
     }
+  if (u != pUndef)
+    {
+      if (u->sign & ~1)
+        { /* a minimal check */
+          errorp(PDOMAIN, "pset", "invalid precision");
+        }
+#ifndef BWGC
+      if (--(u->refcount) == 0)
+        {
+#ifdef DEBUGOPS
+          printf("->%u", u->refcount);
 #endif
-  }
+          pfree(u);
+        }
+#endif
+    }
 #ifdef DEBUGOPS
   putchar('\n');
   fflush(stdout);
@@ -241,13 +242,13 @@ precision pparmv(u) register precision u;
   fflush(stdout);
 #endif
   if (u == pUndef)
-  {
-    errorp(PDOMAIN, "pparm", "undefined function argument");
-  }
+    {
+      errorp(PDOMAIN, "pparm", "undefined function argument");
+    }
   if (u->sign & ~1)
-  { /* a minimal check */
-    errorp(PDOMAIN, "pparm", "invalid precision");
-  }
+    { /* a minimal check */
+      errorp(PDOMAIN, "pparm", "invalid precision");
+    }
 #ifndef BWGC
   u->refcount++;
 #endif
@@ -261,9 +262,9 @@ precision pparmf(u) register precision u;
 {
 #ifndef BWGC
   if (u != pUndef)
-  {
-    u->refcount++;
-  }
+    {
+      u->refcount++;
+    }
 #endif
   return u;
 }
@@ -275,9 +276,9 @@ void pdestroyf(u) register precision u;
 {
 #ifndef BWGC
   if (u != pUndef && --u->refcount == 0)
-  {
-    pfree(u);
-  }
+    {
+      pfree(u);
+    }
 #endif
 }
 
@@ -302,9 +303,9 @@ precision presult(u) register precision u;
 {
 #ifndef BWGC
   if (u != pUndef)
-  {
-    --(u->refcount);
-  }
+    {
+      --(u->refcount);
+    }
 #endif
   return u;
 }
@@ -321,13 +322,13 @@ precision psetq(up, v) register precision *up, v;
   *up = v; /* up may be &v, OK */
 #ifndef BWGC
   if (v != pUndef)
-  { /* to allow:  x=func(); if (x==pUndef) ... */
-    v->refcount++;
-  }
+    { /* to allow:  x=func(); if (x==pUndef) ... */
+      v->refcount++;
+    }
   if (u != pUndef && --(u->refcount) == 0)
-  {
-    pfree(u);
-  }
+    {
+      pfree(u);
+    }
 #endif
   return v;
 }

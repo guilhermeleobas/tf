@@ -73,9 +73,9 @@ int ReadByte(FILE *fp)
 
   result = getc(fp) & 0xff;
   if (result & 0x80)
-  {
-    result = result - 0x100;
-  }
+    {
+      result = result - 0x100;
+    }
   return result;
 }
 
@@ -89,9 +89,9 @@ int Read16BitsLowHigh(FILE *fp)
   result = (second << 8) + first;
 #ifndef THINK_C42
   if (result & 0x8000)
-  {
-    result = result - 0x10000;
-  }
+    {
+      result = result - 0x10000;
+    }
 #endif /* THINK_C */
   return (result);
 }
@@ -106,9 +106,9 @@ int Read16BitsHighLow(FILE *fp)
   result = (first << 8) + second;
 #ifndef THINK_C42
   if (result & 0x8000)
-  {
-    result = result - 0x10000;
-  }
+    {
+      result = result - 0x10000;
+    }
 #endif /* THINK_C */
   return (result);
 }
@@ -137,9 +137,9 @@ int Read24BitsHighLow(FILE *fp)
 
   result = (first << 16) + (second << 8) + third;
   if (result & 0x800000)
-  {
-    result = result - 0x1000000;
-  }
+    {
+      result = result - 0x1000000;
+    }
   return (result);
 }
 
@@ -194,9 +194,9 @@ void Write32BitsHighLow(FILE *fp, int i)
 void ReadBytes(FILE *fp, char *p, int n)
 {
   while (!feof(fp) & (n-- > 0))
-  {
-    *p++ = getc(fp);
-  }
+    {
+      *p++ = getc(fp);
+    }
 }
 
 void ReadBytesSwapped(FILE *fp, char *p, int n)
@@ -204,33 +204,33 @@ void ReadBytesSwapped(FILE *fp, char *p, int n)
   register char *q = p;
 
   while (!feof(fp) & (n-- > 0))
-  {
-    *q++ = getc(fp);
-  }
+    {
+      *q++ = getc(fp);
+    }
 
   for (q--; p < q; p++, q--)
-  {
-    n = *p;
-    *p = *q;
-    *q = n;
-  }
+    {
+      n = *p;
+      *p = *q;
+      *q = n;
+    }
 }
 
 void WriteBytes(FILE *fp, char *p, int n)
 {
   while (n-- > 0)
-  {
-    putc(*p++, fp);
-  }
+    {
+      putc(*p++, fp);
+    }
 }
 
 void WriteBytesSwapped(FILE *fp, char *p, int n)
 {
   p += n - 1;
   while (n-- > 0)
-  {
-    putc(*p--, fp);
-  }
+    {
+      putc(*p--, fp);
+    }
 }
 
 defdouble ReadIeeeFloatHighLow(FILE *fp)

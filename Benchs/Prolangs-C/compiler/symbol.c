@@ -22,11 +22,11 @@ void OutputLocal(void) /* function used for testing only */
 
   printf("\n\nLOCAL SYMBOL TABLE\n------------------\n");
   for (i = 0; i <= Llastentry; i++)
-  {
-    printf("%s\t%d\t%d\t%d\t%d\t%d\n", LocalTable[i].lexptr,
-           LocalTable[i].token, LocalTable[i].type, LocalTable[i].size,
-           LocalTable[i].function, LocalTable[i].functionlabel);
-  } /* end for */
+    {
+      printf("%s\t%d\t%d\t%d\t%d\t%d\n", LocalTable[i].lexptr,
+             LocalTable[i].token, LocalTable[i].type, LocalTable[i].size,
+             LocalTable[i].function, LocalTable[i].functionlabel);
+    } /* end for */
   printf("\n\n");
 } /* end OutputLocal */
 
@@ -38,11 +38,11 @@ void OutputGlobal(void) /* function used for testing only */
 
   printf("\n\nGLOBAL SYMBOL TABLE\n-------------------\n");
   for (i = 0; i <= Glastentry; i++)
-  {
-    printf("%s\t%d\t%d\t%d\t%d\t%d\n", GlobalTable[i].lexptr,
-           GlobalTable[i].token, GlobalTable[i].type, GlobalTable[i].size,
-           GlobalTable[i].function, GlobalTable[i].functionlabel);
-  } /* end for */
+    {
+      printf("%s\t%d\t%d\t%d\t%d\t%d\n", GlobalTable[i].lexptr,
+             GlobalTable[i].token, GlobalTable[i].type, GlobalTable[i].size,
+             GlobalTable[i].function, GlobalTable[i].functionlabel);
+    } /* end for */
   printf("\n\n");
 } /* end OutputGlobal */
 
@@ -52,12 +52,12 @@ int GlobalLookup(char s[]) /* returns position of entry for s */
 {
   int p;
   for (p = Glastentry; p > 0; p = p - 1)
-  {
-    if (strcmp(GlobalTable[p].lexptr, s) == 0)
     {
-      return p;
+      if (strcmp(GlobalTable[p].lexptr, s) == 0)
+        {
+          return p;
+        }
     }
-  }
   return 0;
 }
 
@@ -67,12 +67,12 @@ int LocalLookup(char s[]) /* returns position of entry for s */
 {
   int p;
   for (p = Llastentry; p > 0; p = p - 1)
-  {
-    if (strcmp(LocalTable[p].lexptr, s) == 0)
     {
-      return p;
+      if (strcmp(LocalTable[p].lexptr, s) == 0)
+        {
+          return p;
+        }
     }
-  }
   return 0;
 }
 
@@ -87,15 +87,15 @@ int GlobalInsert(char s[], int tok, int type, int size, int function,
 
   len = strlen(s); /* strlen computes length of s */
   if (Glastentry + 1 >= SYMMAX)
-  {
-    error("symbol table full");
-    return (0);
-  }
+    {
+      error("symbol table full");
+      return (0);
+    }
   if (Glastchar + len + 1 >= STRMAX)
-  {
-    error("lexemes array full");
-    return (0);
-  }
+    {
+      error("lexemes array full");
+      return (0);
+    }
   Glastentry = Glastentry + 1;
   GlobalTable[Glastentry].token = tok;
   GlobalTable[Glastentry].lexptr = &Glexemes[Glastchar + 1];
@@ -120,15 +120,15 @@ int LocalInsert(char s[], int tok, int type, int size, int function,
 
   len = strlen(s); /* strlen computes length of s */
   if (Llastentry + 1 >= SYMMAX)
-  {
-    error("symbol table full");
-    return (0);
-  }
+    {
+      error("symbol table full");
+      return (0);
+    }
   if (Llastchar + len + 1 >= STRMAX)
-  {
-    error("lexemes array full");
-    return (0);
-  }
+    {
+      error("lexemes array full");
+      return (0);
+    }
   Llastentry = Llastentry + 1;
   LocalTable[Llastentry].token = tok;
   LocalTable[Llastentry].lexptr = &Llexemes[Llastchar + 1];
@@ -150,12 +150,12 @@ void ParamInt(void)
   int p;
 
   for (p = Llastentry; p > 0; p = p - 1)
-  {
-    if (LocalTable[p].type == PARAM)
     {
-      LocalTable[p].type = INT;
+      if (LocalTable[p].type == PARAM)
+        {
+          LocalTable[p].type = INT;
+        }
     }
-  }
 } /* end ParamInt */
 
 /* ------------------------------------------------------------------ */
@@ -175,13 +175,13 @@ void AllBodsParsed(void)
   int tmpflag = 0;
 
   for (p = Glastentry; p > 0; --p)
-  {
-    if (GlobalTable[p].function > 0)
     {
-      emit(NOTDEC, p, 0.0);
-      tmpflag = 1;
-    } /* end if statement */
-  }   /* end for loop */
+      if (GlobalTable[p].function > 0)
+        {
+          emit(NOTDEC, p, 0.0);
+          tmpflag = 1;
+        } /* end if statement */
+    } /* end for loop */
   ErrorFlag = tmpflag;
 } /* end function */
 
@@ -194,9 +194,9 @@ void CheckMain(void)
   temp = GlobalLookup("main");
 
   if (GlobalTable[temp].function > 0)
-  {
-    error("Main never declared");
-    GlobalTable[temp].function = -1;
-  }
+    {
+      error("Main never declared");
+      GlobalTable[temp].function = -1;
+    }
   ErrorFlag = 0; /* will get set again in parse's call to AllBodsParsed */
 } /* end check main */

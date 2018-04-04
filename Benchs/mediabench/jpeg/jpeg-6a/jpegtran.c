@@ -10,12 +10,12 @@
  * different JPEG file formats.
  */
 
-#include "cdjpeg.h"   /* Common decls for cjpeg/djpeg applications */
+#include "cdjpeg.h" /* Common decls for cjpeg/djpeg applications */
 #include "jversion.h" /* for version message */
 
 #ifdef USE_CCOMMAND /* command-line reader for Macintosh */
 #ifdef __MWERKS__
-#include <SIOUX.h>   /* Metrowerks needs this */
+#include <SIOUX.h> /* Metrowerks needs this */
 #include <console.h> /* ... and this */
 #endif
 #ifdef THINK_C
@@ -32,7 +32,7 @@
  */
 
 static const char *progname; /* program name for error messages */
-static char *outfilename;    /* for -outfile switch */
+static char *outfilename; /* for -outfile switch */
 
 LOCAL(void)
 usage(void)
@@ -96,168 +96,168 @@ parse_switches(j_compress_ptr cinfo, int argc, char **argv,
   /* Scan command line options, adjust parameters */
 
   for (argn = 1; argn < argc; argn++)
-  {
-    arg = argv[argn];
-    if (*arg != '-')
     {
-      /* Not a switch, must be a file name argument */
-      if (argn <= last_file_arg_seen)
-      {
-        outfilename = NULL; /* -outfile applies to just one input file */
-        continue;           /* ignore this name if previously processed */
-      }
-      break; /* else done parsing switches */
-    }
-    arg++; /* advance past switch marker character */
+      arg = argv[argn];
+      if (*arg != '-')
+        {
+          /* Not a switch, must be a file name argument */
+          if (argn <= last_file_arg_seen)
+            {
+              outfilename = NULL; /* -outfile applies to just one input file */
+              continue; /* ignore this name if previously processed */
+            }
+          break; /* else done parsing switches */
+        }
+      arg++; /* advance past switch marker character */
 
-    if (keymatch(arg, "arithmetic", 1))
-    {
+      if (keymatch(arg, "arithmetic", 1))
+        {
 /* Use arithmetic coding. */
 #ifdef C_ARITH_CODING_SUPPORTED
-      cinfo->arith_code = TRUE;
+          cinfo->arith_code = TRUE;
 #else
-      fprintf(stderr, "%s: sorry, arithmetic coding not supported\n", progname);
-      exit(EXIT_FAILURE);
+          fprintf(stderr, "%s: sorry, arithmetic coding not supported\n", progname);
+          exit(EXIT_FAILURE);
 #endif
-    }
-    else if (keymatch(arg, "debug", 1) || keymatch(arg, "verbose", 1))
-    {
-      /* Enable debug printouts. */
-      /* On first -d, print version identification */
-      static boolean printed_version = FALSE;
+        }
+      else if (keymatch(arg, "debug", 1) || keymatch(arg, "verbose", 1))
+        {
+          /* Enable debug printouts. */
+          /* On first -d, print version identification */
+          static boolean printed_version = FALSE;
 
-      if (!printed_version)
-      {
-        fprintf(stderr, "Independent JPEG Group's JPEGTRAN, version %s\n%s\n",
-                JVERSION, JCOPYRIGHT);
-        printed_version = TRUE;
-      }
-      cinfo->err->trace_level++;
-    }
-    else if (keymatch(arg, "maxmemory", 3))
-    {
-      /* Maximum memory in Kb (or Mb with 'm'). */
-      long lval;
-      char ch = 'x';
+          if (!printed_version)
+            {
+              fprintf(stderr, "Independent JPEG Group's JPEGTRAN, version %s\n%s\n",
+                      JVERSION, JCOPYRIGHT);
+              printed_version = TRUE;
+            }
+          cinfo->err->trace_level++;
+        }
+      else if (keymatch(arg, "maxmemory", 3))
+        {
+          /* Maximum memory in Kb (or Mb with 'm'). */
+          long lval;
+          char ch = 'x';
 
-      if (++argn >= argc)
-      { /* advance to next argument */
-        usage();
-      }
-      if (sscanf(argv[argn], "%ld%c", &lval, &ch) < 1)
-      {
-        usage();
-      }
-      if (ch == 'm' || ch == 'M')
-      {
-        lval *= 1000L;
-      }
-      cinfo->mem->max_memory_to_use = lval * 1000L;
-    }
-    else if (keymatch(arg, "optimize", 1) || keymatch(arg, "optimise", 1))
-    {
+          if (++argn >= argc)
+            { /* advance to next argument */
+              usage();
+            }
+          if (sscanf(argv[argn], "%ld%c", &lval, &ch) < 1)
+            {
+              usage();
+            }
+          if (ch == 'm' || ch == 'M')
+            {
+              lval *= 1000L;
+            }
+          cinfo->mem->max_memory_to_use = lval * 1000L;
+        }
+      else if (keymatch(arg, "optimize", 1) || keymatch(arg, "optimise", 1))
+        {
 /* Enable entropy parm optimization. */
 #ifdef ENTROPY_OPT_SUPPORTED
-      cinfo->optimize_coding = TRUE;
+          cinfo->optimize_coding = TRUE;
 #else
-      fprintf(stderr, "%s: sorry, entropy optimization was not compiled\n",
-              progname);
-      exit(EXIT_FAILURE);
+          fprintf(stderr, "%s: sorry, entropy optimization was not compiled\n",
+                  progname);
+          exit(EXIT_FAILURE);
 #endif
-    }
-    else if (keymatch(arg, "outfile", 4))
-    {
-      /* Set output file name. */
-      if (++argn >= argc)
-      { /* advance to next argument */
-        usage();
-      }
-      outfilename = argv[argn]; /* save it away for later use */
-    }
-    else if (keymatch(arg, "progressive", 1))
-    {
+        }
+      else if (keymatch(arg, "outfile", 4))
+        {
+          /* Set output file name. */
+          if (++argn >= argc)
+            { /* advance to next argument */
+              usage();
+            }
+          outfilename = argv[argn]; /* save it away for later use */
+        }
+      else if (keymatch(arg, "progressive", 1))
+        {
 /* Select simple progressive mode. */
 #ifdef C_PROGRESSIVE_SUPPORTED
-      simple_progressive = TRUE;
+          simple_progressive = TRUE;
 /* We must postpone execution until num_components is known. */
 #else
-      fprintf(stderr, "%s: sorry, progressive output was not compiled\n",
-              progname);
-      exit(EXIT_FAILURE);
+          fprintf(stderr, "%s: sorry, progressive output was not compiled\n",
+                  progname);
+          exit(EXIT_FAILURE);
 #endif
-    }
-    else if (keymatch(arg, "restart", 1))
-    {
-      /* Restart interval in MCU rows (or in MCUs with 'b'). */
-      long lval;
-      char ch = 'x';
+        }
+      else if (keymatch(arg, "restart", 1))
+        {
+          /* Restart interval in MCU rows (or in MCUs with 'b'). */
+          long lval;
+          char ch = 'x';
 
-      if (++argn >= argc)
-      { /* advance to next argument */
-        usage();
-      }
-      if (sscanf(argv[argn], "%ld%c", &lval, &ch) < 1)
-      {
-        usage();
-      }
-      if (lval < 0 || lval > 65535L)
-      {
-        usage();
-      }
-      if (ch == 'b' || ch == 'B')
-      {
-        cinfo->restart_interval = (unsigned int)lval;
-        cinfo->restart_in_rows = 0; /* else prior '-restart n' overrides me */
-      }
-      else
-      {
-        cinfo->restart_in_rows = (int)lval;
-        /* restart_interval will be computed during startup */
-      }
-    }
-    else if (keymatch(arg, "scans", 2))
-    {
+          if (++argn >= argc)
+            { /* advance to next argument */
+              usage();
+            }
+          if (sscanf(argv[argn], "%ld%c", &lval, &ch) < 1)
+            {
+              usage();
+            }
+          if (lval < 0 || lval > 65535L)
+            {
+              usage();
+            }
+          if (ch == 'b' || ch == 'B')
+            {
+              cinfo->restart_interval = (unsigned int)lval;
+              cinfo->restart_in_rows = 0; /* else prior '-restart n' overrides me */
+            }
+          else
+            {
+              cinfo->restart_in_rows = (int)lval;
+              /* restart_interval will be computed during startup */
+            }
+        }
+      else if (keymatch(arg, "scans", 2))
+        {
 /* Set scan script. */
 #ifdef C_MULTISCAN_FILES_SUPPORTED
-      if (++argn >= argc)
-      { /* advance to next argument */
-        usage();
-      }
-      scansarg = argv[argn];
+          if (++argn >= argc)
+            { /* advance to next argument */
+              usage();
+            }
+          scansarg = argv[argn];
 /* We must postpone reading the file in case -progressive appears. */
 #else
-      fprintf(stderr, "%s: sorry, multi-scan output was not compiled\n",
-              progname);
-      exit(EXIT_FAILURE);
+          fprintf(stderr, "%s: sorry, multi-scan output was not compiled\n",
+                  progname);
+          exit(EXIT_FAILURE);
 #endif
+        }
+      else
+        {
+          usage(); /* bogus switch */
+        }
     }
-    else
-    {
-      usage(); /* bogus switch */
-    }
-  }
 
   /* Post-switch-scanning cleanup */
 
   if (for_real)
-  {
+    {
 #ifdef C_PROGRESSIVE_SUPPORTED
-    if (simple_progressive)
-    { /* process -progressive; -scans can override */
-      jpeg_simple_progression(cinfo);
-    }
+      if (simple_progressive)
+        { /* process -progressive; -scans can override */
+          jpeg_simple_progression(cinfo);
+        }
 #endif
 
 #ifdef C_MULTISCAN_FILES_SUPPORTED
-    if (scansarg != NULL)
-    { /* process -scans if it was present */
-      if (!read_scan_script(cinfo, scansarg))
-      {
-        usage();
-      }
-    }
+      if (scansarg != NULL)
+        { /* process -scans if it was present */
+          if (!read_scan_script(cinfo, scansarg))
+            {
+              usage();
+            }
+        }
 #endif
-  }
+    }
 
   return argn; /* return index of next arg (file name) */
 }
@@ -286,11 +286,11 @@ int main(int argc, char **argv)
 
   progname = argv[0];
   if (progname == NULL || progname[0] == 0)
-  {
-    progname = "jpegtran"; /* in case C library doesn't provide it */
+    {
+      progname = "jpegtran"; /* in case C library doesn't provide it */
 
-    /* Initialize the JPEG decompression object with default error handling. */
-  }
+      /* Initialize the JPEG decompression object with default error handling. */
+    }
   srcinfo.err = jpeg_std_error(&jsrcerr);
   jpeg_create_decompress(&srcinfo);
   /* Initialize the JPEG compression object with default error handling. */
@@ -317,62 +317,62 @@ int main(int argc, char **argv)
 #ifdef TWO_FILE_COMMANDLINE
   /* Must have either -outfile switch or explicit output file name */
   if (outfilename == NULL)
-  {
-    if (file_index != argc - 2)
     {
-      fprintf(stderr, "%s: must name one input and one output file\n",
-              progname);
-      usage();
+      if (file_index != argc - 2)
+        {
+          fprintf(stderr, "%s: must name one input and one output file\n",
+                  progname);
+          usage();
+        }
+      outfilename = argv[file_index + 1];
     }
-    outfilename = argv[file_index + 1];
-  }
   else
-  {
-    if (file_index != argc - 1)
     {
-      fprintf(stderr, "%s: must name one input and one output file\n",
-              progname);
-      usage();
+      if (file_index != argc - 1)
+        {
+          fprintf(stderr, "%s: must name one input and one output file\n",
+                  progname);
+          usage();
+        }
     }
-  }
 #else
   /* Unix style: expect zero or one file name */
   if (file_index < argc - 1)
-  {
-    fprintf(stderr, "%s: only one input file\n", progname);
-    usage();
-  }
+    {
+      fprintf(stderr, "%s: only one input file\n", progname);
+      usage();
+    }
 #endif /* TWO_FILE_COMMANDLINE */
 
   /* Open the input file. */
   if (file_index < argc)
-  {
-    if ((input_file = fopen(argv[file_index], READ_BINARY)) == NULL)
     {
-      fprintf(stderr, "%s: can't open %s\n", progname, argv[file_index]);
-      exit(EXIT_FAILURE);
+      if ((input_file = fopen(argv[file_index], READ_BINARY)) == NULL)
+        {
+          fprintf(stderr, "%s: can't open %s\n", progname, argv[file_index]);
+          exit(EXIT_FAILURE);
+        }
     }
-  }
   else
-  {
-    /* default input file is stdin */
-    input_file = read_stdin();
-  }
+    {
+      /* default input file is stdin */
+      input_file = read_stdin();
+    }
 
   /* Open the output file. */
   if (outfilename != NULL)
-  {
-    if ((output_file = fopen(outfilename, WRITE_BINARY)) == NULL)
     {
-      fprintf(stderr, "%s: can't open %s\n", progname, outfilename);
-      exit(EXIT_FAILURE);
+      if ((output_file = fopen(outfilename, WRITE_BINARY)) == NULL)
+        {
+          fprintf(stderr, "%s: can't open %s\n", progname, outfilename);
+          exit(EXIT_FAILURE);
+        }
     }
-  }
   else
-  {
-    /* default output file is stdout */
-    output_file = write_stdout();
-  }
+    {
+      /* default output file is stdout */
+      output_file = write_stdout();
+    }
 
 #ifdef PROGRESS_REPORT
   start_progress_monitor((j_common_ptr)&dstinfo, &progress);
@@ -409,13 +409,13 @@ int main(int argc, char **argv)
 
   /* Close files, if we opened them */
   if (input_file != stdin)
-  {
-    fclose(input_file);
-  }
+    {
+      fclose(input_file);
+    }
   if (output_file != stdout)
-  {
-    fclose(output_file);
-  }
+    {
+      fclose(output_file);
+    }
 
 #ifdef PROGRESS_REPORT
   end_progress_monitor((j_common_ptr)&dstinfo);

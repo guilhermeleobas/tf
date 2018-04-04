@@ -32,26 +32,26 @@ int hypre_ProjectBox(hypre_Box *box, hypre_Index index, hypre_Index stride)
    *------------------------------------------------------*/
 
   for (d = 0; d < 3; d++)
-  {
-    i = hypre_IndexD(index, d);
-    s = hypre_IndexD(stride, d);
+    {
+      i = hypre_IndexD(index, d);
+      s = hypre_IndexD(stride, d);
 
-    hl = hypre_BoxIMinD(box, d) - i;
-    hu = hypre_BoxIMaxD(box, d) - i;
+      hl = hypre_BoxIMinD(box, d) - i;
+      hu = hypre_BoxIMaxD(box, d) - i;
 
-    if (hl <= 0)
-      kl = (int)(hl / s);
-    else
-      kl = (int)((hl + (s - 1)) / s);
+      if (hl <= 0)
+        kl = (int)(hl / s);
+      else
+        kl = (int)((hl + (s - 1)) / s);
 
-    if (hu >= 0)
-      ku = (int)(hu / s);
-    else
-      ku = (int)((hu - (s - 1)) / s);
+      if (hu >= 0)
+        ku = (int)(hu / s);
+      else
+        ku = (int)((hu - (s - 1)) / s);
 
-    hypre_BoxIMinD(box, d) = i + kl * s;
-    hypre_BoxIMaxD(box, d) = i + ku * s;
-  }
+      hypre_BoxIMinD(box, d) = i + kl * s;
+      hypre_BoxIMaxD(box, d) = i + ku * s;
+    }
 
   return ierr;
 }

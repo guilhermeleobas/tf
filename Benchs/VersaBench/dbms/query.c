@@ -55,14 +55,14 @@
  *	Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include "query.h"          /* for query return codes                       */
-#include <assert.h>         /* for assert()                                 */
-#include <stdlib.h>         /* for NULL definition                          */
+#include "query.h" /* for query return codes                       */
+#include <assert.h> /* for assert()                                 */
+#include <stdlib.h> /* for NULL definition                          */
 #include "dataManagement.h" /* for primitive type definitions               */
-#include "dataObject.h"     /* for DataAttribute and DataObject definitions */
-#include "errorMessage.h"   /* for errorMessage() definition                */
-#include "index.h"          /* for IndexNode and IndexEntry definitions     */
-#include "indexKey.h"       /* for IndexKey definition                      */
+#include "dataObject.h" /* for DataAttribute and DataObject definitions */
+#include "errorMessage.h" /* for errorMessage() definition                */
+#include "index.h" /* for IndexNode and IndexEntry definitions     */
+#include "indexKey.h" /* for IndexKey definition                      */
 
 /*
  *  Function prototypes
@@ -72,12 +72,12 @@ extern Boolean consistentNonKey(Char *A, Char *B);
 extern Boolean validIndexKey(IndexKey *key);
 extern Boolean validAttributes(DataAttribute *attributes);
 
-Int query(IndexNode *node,                   /*  current node of index   */
-          IndexKey *searchKey,               /*  index key search values */
-          DataAttribute *searchNonKey,       /*  non-key search values   */
-          Boolean checkValidity,             /*  flag to check validity  */
+Int query(IndexNode *node, /*  current node of index   */
+          IndexKey *searchKey, /*  index key search values */
+          DataAttribute *searchNonKey, /*  non-key search values   */
+          Boolean checkValidity, /*  flag to check validity  */
           void (*outputQuery)(DataObject *)) /*  output valid object     */
-{                                            /* beginning of query() */
+{ /* beginning of query() */
   static Char name[] = "query";
 
   assert(node);
@@ -88,20 +88,20 @@ Int query(IndexNode *node,                   /*  current node of index   */
    *  If flag is set, check validity of key and non-key values.
    */
   if (checkValidity == TRUE)
-  {
-    if (validIndexKey(searchKey) == FALSE)
     {
-      errorMessage("invalid index key search values", REPLACE);
-      errorMessage(name, PREPEND);
-      return (QUERY_INVALID_KEY_SEARCH_VALUE);
-    } /*  end validity check of key values    */
-    else if (validAttributes(searchNonKey) == FALSE)
-    {
-      errorMessage("invalid non-key search values", REPLACE);
-      errorMessage(name, PREPEND);
-      return (QUERY_INVALID_NON_KEY_SEARCH_VALUE);
-    } /*  end validity check of non-key values    */
-  }   /*  end of checkValidity == TRUE    */
+      if (validIndexKey(searchKey) == FALSE)
+        {
+          errorMessage("invalid index key search values", REPLACE);
+          errorMessage(name, PREPEND);
+          return (QUERY_INVALID_KEY_SEARCH_VALUE);
+        } /*  end validity check of key values    */
+      else if (validAttributes(searchNonKey) == FALSE)
+        {
+          errorMessage("invalid non-key search values", REPLACE);
+          errorMessage(name, PREPEND);
+          return (QUERY_INVALID_NON_KEY_SEARCH_VALUE);
+        } /*  end validity check of non-key values    */
+    } /*  end of checkValidity == TRUE    */
 
   /*
    *  The routine is applied recursively so the current node may or may not be
@@ -112,59 +112,59 @@ Int query(IndexNode *node,                   /*  current node of index   */
    *  consistent entry.
    */
   if (node->level > LEAF)
-  {
-    IndexEntry *entry; /*  temp entry for looping through list */
+    {
+      IndexEntry *entry; /*  temp entry for looping through list */
 
-    /*
+      /*
      *  Loop through each entry on current node and query each consistent
      *  child node.  Note that only the key values are available for
      *  consistency checks at any level greater than the LEAF level.
      */
-    for (entry = node->entries; entry != NULL; entry = entry->next)
-    {
-      if (consistentKey(&entry->key, searchKey) == TRUE)
-      {
-        query(entry->child.node, searchKey, searchNonKey, FALSE, outputQuery);
-      } /*  end of branch which is consistent   */
-    }   /*  end of loop for entry   */
-  }     /*  end of if ( node->level > LEAF ) */
+      for (entry = node->entries; entry != NULL; entry = entry->next)
+        {
+          if (consistentKey(&entry->key, searchKey) == TRUE)
+            {
+              query(entry->child.node, searchKey, searchNonKey, FALSE, outputQuery);
+            } /*  end of branch which is consistent   */
+        } /*  end of loop for entry   */
+    } /*  end of if ( node->level > LEAF ) */
   else
-  {
-    IndexEntry *entry; /*  temp entry for looping through list */
+    {
+      IndexEntry *entry; /*  temp entry for looping through list */
 
-    /*
+      /*
      *  Loop through each entry on current node and query each consistent
      *  child node.  The first consistency check is made on the key value.
      *  If the key values are consistent, then the data object is checked
      *  for its non-key values.  A temporary upperBound value is set to
      *  prevent out-of-range checks on the three types of data objects.
      */
-    for (entry = node->entries; entry != NULL; entry = entry->next)
-    {
-      if (consistentKey(&entry->key, searchKey) == TRUE)
-      {
-        DataAttribute *temp;    /*  attribute for list loop */
-        DataObject *object;     /*  allows easier reading   */
-        Int upperBound;         /*  prevents out-of-range   */
-        Boolean acceptanceFlag; /* flag to output object    */
-
-        object = entry->child.dataObject;
-
-        upperBound = 0;
-        if (object->type == SMALL)
+      for (entry = node->entries; entry != NULL; entry = entry->next)
         {
-          upperBound = NUM_OF_SMALL_ATTRIBUTES;
-        } /*  end of type == SMALL    */
-        else if (object->type == MEDIUM)
-        {
-          upperBound = NUM_OF_MEDIUM_ATTRIBUTES;
-        } /*  end of type == MEDIUM   */
-        else if (object->type == LARGE)
-        {
-          upperBound = NUM_OF_LARGE_ATTRIBUTES;
-        } /*  end of type == LARGE    */
+          if (consistentKey(&entry->key, searchKey) == TRUE)
+            {
+              DataAttribute *temp; /*  attribute for list loop */
+              DataObject *object; /*  allows easier reading   */
+              Int upperBound; /*  prevents out-of-range   */
+              Boolean acceptanceFlag; /* flag to output object    */
 
-        /*
+              object = entry->child.dataObject;
+
+              upperBound = 0;
+              if (object->type == SMALL)
+                {
+                  upperBound = NUM_OF_SMALL_ATTRIBUTES;
+                } /*  end of type == SMALL    */
+              else if (object->type == MEDIUM)
+                {
+                  upperBound = NUM_OF_MEDIUM_ATTRIBUTES;
+                } /*  end of type == MEDIUM   */
+              else if (object->type == LARGE)
+                {
+                  upperBound = NUM_OF_LARGE_ATTRIBUTES;
+                } /*  end of type == LARGE    */
+
+              /*
          *  The loop checks each value of the non-key search list and
          *  compares that value for that specific attribute code to the
          *  value stored in the data object.  If all of the attributes
@@ -174,26 +174,26 @@ Int query(IndexNode *node,                   /*  current node of index   */
          *  flag is set to FALSE and the loop exits and the next entry
          *  is checked.
          */
-        acceptanceFlag = TRUE;
-        temp = searchNonKey;
-        while (temp != NULL && acceptanceFlag == TRUE)
-        {
-          if (temp->code < upperBound)
-          {
-            acceptanceFlag =
-                consistentNonKey(object->attributes[temp->code].value.nonKey,
-                                 temp->attribute.value.nonKey);
-          } /*  end of code < upperBound    */
-          temp = temp->next;
-        } /*  end of loop through non-key search value list   */
+              acceptanceFlag = TRUE;
+              temp = searchNonKey;
+              while (temp != NULL && acceptanceFlag == TRUE)
+                {
+                  if (temp->code < upperBound)
+                    {
+                      acceptanceFlag =
+                          consistentNonKey(object->attributes[temp->code].value.nonKey,
+                                           temp->attribute.value.nonKey);
+                    } /*  end of code < upperBound    */
+                  temp = temp->next;
+                } /*  end of loop through non-key search value list   */
 
-        if (acceptanceFlag == TRUE)
-        {
-          outputQuery(entry->child.dataObject);
-        } /*  end of acceptanceFlag == TRUE   */
-      }   /*  end of if consistentKey == TRUE */
-    }     /*  end of loop for entry   */
-  }       /*  end of if ( node->level == LEAF )   */
+              if (acceptanceFlag == TRUE)
+                {
+                  outputQuery(entry->child.dataObject);
+                } /*  end of acceptanceFlag == TRUE   */
+            } /*  end of if consistentKey == TRUE */
+        } /*  end of loop for entry   */
+    } /*  end of if ( node->level == LEAF )   */
 
   return (QUERY_SUCCESS);
 } /*  end query() */

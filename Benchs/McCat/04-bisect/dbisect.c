@@ -83,74 +83,74 @@ mentioned in the code below.
   q = 1.0;
 
   for (i = 0; i < n; i++)
-  {
+    {
 #ifndef TESTFIRST
 
-    if (q != 0.0)
-    {
+      if (q != 0.0)
+        {
 #ifndef RECIPROCAL
-      q = (c[i] - x) - beta[i] / q;
+          q = (c[i] - x) - beta[i] / q;
 #else
-      /* A potentially NUMERICALLY DANGEROUS optimizations is used here.
+          /* A potentially NUMERICALLY DANGEROUS optimizations is used here.
        * The previous statement should read:
        *         q = (c[i] - x) - beta[i]/q
        * But computing the reciprocal might help on some architectures
        * that have multiply-add and/or reciprocal instuctions.
        */
-      iq = 1.0 / q;
-      q = (c[i] - x) - beta[i] * iq;
+          iq = 1.0 / q;
+          q = (c[i] - x) - beta[i] * iq;
 #endif
-    }
-    else
-    {
-      q = (c[i] - x) - fabs(b[i]) / DBL_EPSILON;
-    }
+        }
+      else
+        {
+          q = (c[i] - x) - fabs(b[i]) / DBL_EPSILON;
+        }
 
-    if (q < 0)
-    {
-      a = a + 1;
+      if (q < 0)
+        {
+          a = a + 1;
+        }
     }
-  }
 
 #else
 
-    if (q < 0)
-    {
-      a = a + 1;
+      if (q < 0)
+        {
+          a = a + 1;
 
 #ifndef RECIPROCAL
-      q = (c[i] - x) - beta[i] / q;
+          q = (c[i] - x) - beta[i] / q;
 #else
-      /* A potentially NUMERICALLY DANGEROUS optimizations is used here.
+          /* A potentially NUMERICALLY DANGEROUS optimizations is used here.
        * The previous statement should read:
        *         q = (c[i] - x) - beta[i]/q
        * But computing the reciprocal might help on some architectures
        * that have multiply-add and/or reciprocal instuctions.
        */
-      iq = 1.0 / q;
-      q = (c[i] - x) - beta[i] * iq;
+          iq = 1.0 / q;
+          q = (c[i] - x) - beta[i] * iq;
 #endif
-    }
-    else if (q > 0.0)
-    {
+        }
+      else if (q > 0.0)
+        {
 #ifndef RECIPROCAL
-      q = (c[i] - x) - beta[i] / q;
+          q = (c[i] - x) - beta[i] / q;
 #else
-      /* A potentially NUMERICALLY DANGEROUS optimizations is used here.
+          /* A potentially NUMERICALLY DANGEROUS optimizations is used here.
        * The previous statement should read:
        *         q = (c[i] - x) - beta[i]/q
        * But computing the reciprocal might help on some architectures
        * that have multiply-add and/or reciprocal instuctions.
        */
-      iq = 1.0 / q;
-      q = (c[i] - x) - beta[i] * iq;
+          iq = 1.0 / q;
+          q = (c[i] - x) - beta[i] * iq;
 #endif
+        }
+      else
+        {
+          q = (c[i] - x) - fabs(b[i]) / DBL_EPSILON;
+        }
     }
-    else
-    {
-      q = (c[i] - x) - fabs(b[i]) / DBL_EPSILON;
-    }
-  }
   if (q < 0) a = a + 1;
 #endif
 
@@ -224,26 +224,26 @@ Purpose:
   xmin = c[n - 1] - FUDGE * fabs(b[n - 1]);
   xmax = c[n - 1] + FUDGE * fabs(b[n - 1]);
   for (i = n - 2; i >= 0; i--)
-  {
-    h = FUDGE * (fabs(b[i]) + fabs(b[i + 1]));
-    if (c[i] + h > xmax)
     {
-      xmax = c[i] + h;
+      h = FUDGE * (fabs(b[i]) + fabs(b[i + 1]));
+      if (c[i] + h > xmax)
+        {
+          xmax = c[i] + h;
+        }
+      if (c[i] - h < xmin)
+        {
+          xmin = c[i] - h;
+        }
     }
-    if (c[i] - h < xmin)
-    {
-      xmin = c[i] - h;
-    }
-  }
 
   /*  printf("xmax = %lf  xmin = %lf\n",xmax,xmin); */
 
   /* estimate precision of calculated eigenvalues */
   *eps2 = DBL_EPSILON * (xmin + xmax > 0 ? xmax : -xmin);
   if (eps1 <= 0)
-  {
-    eps1 = *eps2;
-  }
+    {
+      eps1 = *eps2;
+    }
   *eps2 = 0.5 * eps1 + 7 * *eps2;
   {
     int a, k;
@@ -251,69 +251,69 @@ Purpose:
     double *wu;
 
     if ((wu = (double *)calloc(n + 1, sizeof(double))) == NULL)
-    {
-      fputs("bisect: Couldn't allocate memory for wu", stderr);
-      exit(1);
-    }
+      {
+        fputs("bisect: Couldn't allocate memory for wu", stderr);
+        exit(1);
+      }
 
     /* Start bisection process  */
     x0 = xmax;
     for (i = m2; i >= m1; i--)
-    {
-      x[i] = xmax;
-      wu[i] = xmin;
-    }
+      {
+        x[i] = xmax;
+        wu[i] = xmin;
+      }
     *z = 0;
     /* loop for the k-th eigenvalue */
     for (k = m2; k >= m1; k--)
-    {
-      xu = xmin;
-      for (i = k; i >= m1; i--)
       {
-        if (xu < wu[i])
-        {
-          xu = wu[i];
-          break;
-        }
-      }
-      if (x0 > x[k])
-      {
-        x0 = x[k];
-      }
-
-      x1 = (xu + x0) / 2;
-      while (x0 - xu > 2 * DBL_EPSILON * (fabs(xu) + fabs(x0)) + eps1)
-      {
-        *z = *z + 1;
-
-        /* Sturms Sequence  */
-
-        a = sturm(n, c, b, beta, x1);
-
-        /* Bisection step */
-        if (a < k)
-        {
-          if (a < m1)
+        xu = xmin;
+        for (i = k; i >= m1; i--)
           {
-            xu = wu[m1] = x1;
+            if (xu < wu[i])
+              {
+                xu = wu[i];
+                break;
+              }
           }
-          else
+        if (x0 > x[k])
           {
-            xu = wu[a + 1] = x1;
-            if (x[a] > x1)
-            {
-              x[a] = x1;
-            }
+            x0 = x[k];
           }
-        }
-        else
-        {
-          x0 = x1;
-        }
+
         x1 = (xu + x0) / 2;
+        while (x0 - xu > 2 * DBL_EPSILON * (fabs(xu) + fabs(x0)) + eps1)
+          {
+            *z = *z + 1;
+
+            /* Sturms Sequence  */
+
+            a = sturm(n, c, b, beta, x1);
+
+            /* Bisection step */
+            if (a < k)
+              {
+                if (a < m1)
+                  {
+                    xu = wu[m1] = x1;
+                  }
+                else
+                  {
+                    xu = wu[a + 1] = x1;
+                    if (x[a] > x1)
+                      {
+                        x[a] = x1;
+                      }
+                  }
+              }
+            else
+              {
+                x0 = x1;
+              }
+            x1 = (xu + x0) / 2;
+          }
+        x[k] = (xu + x0) / 2;
       }
-      x[k] = (xu + x0) / 2;
-    }
     free(wu);
   }
 }

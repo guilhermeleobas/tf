@@ -37,14 +37,14 @@ hypre_StructStencil *hypre_StructStencilCreate(int dim, int size,
   /* compute max_offset */
   max_offset = 0;
   for (s = 0; s < size; s++)
-  {
-    for (d = 0; d < 3; d++)
     {
-      abs_offset = hypre_IndexD(shape[s], d);
-      abs_offset = (abs_offset < 0) ? -abs_offset : abs_offset;
-      max_offset = hypre_max(abs_offset, max_offset);
+      for (d = 0; d < 3; d++)
+        {
+          abs_offset = hypre_IndexD(shape[s], d);
+          abs_offset = (abs_offset < 0) ? -abs_offset : abs_offset;
+          max_offset = hypre_max(abs_offset, max_offset);
+        }
     }
-  }
   hypre_StructStencilMaxOffset(stencil) = max_offset;
 
   return stencil;
@@ -70,14 +70,14 @@ int hypre_StructStencilDestroy(hypre_StructStencil *stencil)
   int ierr = 0;
 
   if (stencil)
-  {
-    hypre_StructStencilRefCount(stencil)--;
-    if (hypre_StructStencilRefCount(stencil) == 0)
     {
-      hypre_TFree(hypre_StructStencilShape(stencil));
-      hypre_TFree(stencil);
+      hypre_StructStencilRefCount(stencil)--;
+      if (hypre_StructStencilRefCount(stencil) == 0)
+        {
+          hypre_TFree(hypre_StructStencilShape(stencil));
+          hypre_TFree(stencil);
+        }
     }
-  }
 
   return ierr;
 }
@@ -98,15 +98,15 @@ int hypre_StructStencilElementRank(hypre_StructStencil *stencil,
   rank = -1;
   stencil_shape = hypre_StructStencilShape(stencil);
   for (i = 0; i < hypre_StructStencilSize(stencil); i++)
-  {
-    if ((hypre_IndexX(stencil_shape[i]) == hypre_IndexX(stencil_element)) &&
-        (hypre_IndexY(stencil_shape[i]) == hypre_IndexY(stencil_element)) &&
-        (hypre_IndexZ(stencil_shape[i]) == hypre_IndexZ(stencil_element)))
     {
-      rank = i;
-      break;
+      if ((hypre_IndexX(stencil_shape[i]) == hypre_IndexX(stencil_element)) &&
+          (hypre_IndexY(stencil_shape[i]) == hypre_IndexY(stencil_element)) &&
+          (hypre_IndexZ(stencil_shape[i]) == hypre_IndexZ(stencil_element)))
+        {
+          rank = i;
+          break;
+        }
     }
-  }
 
   return rank;
 }
@@ -144,9 +144,9 @@ int hypre_StructStencilSymmetrize(hypre_StructStencil *stencil,
 
   symm_stencil_shape = hypre_CTAlloc(hypre_Index, 2 * stencil_size);
   for (i = 0; i < stencil_size; i++)
-  {
-    hypre_CopyIndex(stencil_shape[i], symm_stencil_shape[i]);
-  }
+    {
+      hypre_CopyIndex(stencil_shape[i], symm_stencil_shape[i]);
+    }
 
   /*------------------------------------------------------
    * Create symmetric stencil elements and `symm_elements'
@@ -157,40 +157,40 @@ int hypre_StructStencilSymmetrize(hypre_StructStencil *stencil,
 
   symm_stencil_size = stencil_size;
   for (i = 0; i < stencil_size; i++)
-  {
-    if (symm_elements[i] < 0)
     {
-      /* note: start at i to handle "center" element correctly */
-      no_symmetric_stencil_element = 1;
-      for (j = i; j < stencil_size; j++)
-      {
-        if ((hypre_IndexX(symm_stencil_shape[j]) ==
-             -hypre_IndexX(symm_stencil_shape[i])) &&
-            (hypre_IndexY(symm_stencil_shape[j]) ==
-             -hypre_IndexY(symm_stencil_shape[i])) &&
-            (hypre_IndexZ(symm_stencil_shape[j]) ==
-             -hypre_IndexZ(symm_stencil_shape[i])))
+      if (symm_elements[i] < 0)
         {
-          /* only "off-center" elements have symmetric entries */
-          if (i != j) symm_elements[j] = i;
-          no_symmetric_stencil_element = 0;
-        }
-      }
+          /* note: start at i to handle "center" element correctly */
+          no_symmetric_stencil_element = 1;
+          for (j = i; j < stencil_size; j++)
+            {
+              if ((hypre_IndexX(symm_stencil_shape[j]) ==
+                   -hypre_IndexX(symm_stencil_shape[i])) &&
+                  (hypre_IndexY(symm_stencil_shape[j]) ==
+                   -hypre_IndexY(symm_stencil_shape[i])) &&
+                  (hypre_IndexZ(symm_stencil_shape[j]) ==
+                   -hypre_IndexZ(symm_stencil_shape[i])))
+                {
+                  /* only "off-center" elements have symmetric entries */
+                  if (i != j) symm_elements[j] = i;
+                  no_symmetric_stencil_element = 0;
+                }
+            }
 
-      if (no_symmetric_stencil_element)
-      {
-        /* add symmetric stencil element to `symm_stencil' */
-        for (d = 0; d < 3; d++)
-        {
-          hypre_IndexD(symm_stencil_shape[symm_stencil_size], d) =
-              -hypre_IndexD(symm_stencil_shape[i], d);
-        }
+          if (no_symmetric_stencil_element)
+            {
+              /* add symmetric stencil element to `symm_stencil' */
+              for (d = 0; d < 3; d++)
+                {
+                  hypre_IndexD(symm_stencil_shape[symm_stencil_size], d) =
+                      -hypre_IndexD(symm_stencil_shape[i], d);
+                }
 
-        symm_elements[symm_stencil_size] = i;
-        symm_stencil_size++;
-      }
+              symm_elements[symm_stencil_size] = i;
+              symm_stencil_size++;
+            }
+        }
     }
-  }
 
   symm_stencil = hypre_StructStencilCreate(
       hypre_StructStencilDim(stencil), symm_stencil_size, symm_stencil_shape);

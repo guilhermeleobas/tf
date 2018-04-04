@@ -30,13 +30,13 @@ void init_search(const char *string)
 
   len = strlen(string);
   for (i = 0; i <= UCHAR_MAX; i++)
-  { /* rdg 10/93 */
-    table[i] = len;
-  }
+    { /* rdg 10/93 */
+      table[i] = len;
+    }
   for (i = 0; i < len; i++)
-  {
-    table[(unsigned char)string[i]] = len - i - 1;
-  }
+    {
+      table[(unsigned char)string[i]] = len - i - 1;
+    }
   findme = (char *)string;
 }
 
@@ -52,23 +52,23 @@ char *strsearch(const char *string)
   size_t limit = strlen(string);
 
   while (pos < limit)
-  {
-    while (pos < limit && (shift = table[(unsigned char)string[pos]]) > 0)
     {
-      pos += shift;
+      while (pos < limit && (shift = table[(unsigned char)string[pos]]) > 0)
+        {
+          pos += shift;
+        }
+      if (0 == shift)
+        {
+          if (0 == strncmp(findme, here = (char *)&string[pos - len + 1], len))
+            {
+              return (here);
+            }
+          else
+            {
+              pos++;
+            }
+        }
     }
-    if (0 == shift)
-    {
-      if (0 == strncmp(findme, here = (char *)&string[pos - len + 1], len))
-      {
-        return (here);
-      }
-      else
-      {
-        pos++;
-      }
-    }
-  }
   return NULL;
 }
 
@@ -2746,17 +2746,17 @@ main()
   int i;
 
   for (i = 0; find_strings[i]; i++)
-  {
-    init_search(find_strings[i]);
-    here = strsearch(search_strings[i]);
-    printf("\"%s\" is%s in \"%s\"", find_strings[i], here ? "" : " not",
-           search_strings[i]);
-    if (here)
     {
-      printf(" [\"%s\"]", here);
+      init_search(find_strings[i]);
+      here = strsearch(search_strings[i]);
+      printf("\"%s\" is%s in \"%s\"", find_strings[i], here ? "" : " not",
+             search_strings[i]);
+      if (here)
+        {
+          printf(" [\"%s\"]", here);
+        }
+      putchar('\n');
     }
-    putchar('\n');
-  }
 
   return 0;
 }

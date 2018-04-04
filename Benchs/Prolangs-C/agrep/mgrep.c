@@ -44,12 +44,12 @@ void countline(unsigned char *text, int len)
 {
   int i;
   for (i = 0; i < len; i++)
-  {
-    if (text[i] == '\n')
     {
-      total_line++;
+      if (text[i] == '\n')
+        {
+          total_line++;
+        }
     }
-  }
 }
 
 void m_short(register unsigned char *text, int start, int end)
@@ -67,97 +67,97 @@ void m_short(register unsigned char *text, int start, int end)
   lastout = text + start + 1;
   text = text + start - 1;
   while (++text <= textend)
-  {
-    p = HASH[*text];
-    while (p != 0)
     {
-      pat_index = p->index;
-      p = p->next;
-      qx = text;
-      j = 0;
-      while (tr[patt[pat_index][j]] == tr[*(qx++)])
-      {
-        j++;
-      }
-      if (pat_len[pat_index] <= j)
-      {
-        if (text >= textend)
+      p = HASH[*text];
+      while (p != 0)
         {
-          return;
+          pat_index = p->index;
+          p = p->next;
+          qx = text;
+          j = 0;
+          while (tr[patt[pat_index][j]] == tr[*(qx++)])
+            {
+              j++;
+            }
+          if (pat_len[pat_index] <= j)
+            {
+              if (text >= textend)
+                {
+                  return;
+                }
+              num_of_matched++;
+              if (FILENAMEONLY || SILENT)
+                {
+                  return;
+                }
+              if (COUNT)
+                {
+                  while (*text != '\n')
+                    {
+                      text++;
+                    }
+                }
+              else
+                {
+                  if (FNAME)
+                    {
+                      printf("%s: ", CurrentFileName);
+                    }
+                  if (!INVERSE)
+                    {
+                      while (*(--text) != '\n')
+                        {
+                          ;
+                        }
+                      while (*(++text) != '\n')
+                        {
+                          putchar(*text);
+                        }
+                      printf("\n");
+                      MATCHED = 1;
+                    }
+                  else
+                    {
+                      while (*(--text) != '\n')
+                        {
+                          ;
+                        }
+                      if (lastout < text)
+                        {
+                          OUT = 1;
+                        }
+                      while (lastout < text)
+                        {
+                          putchar(*lastout++);
+                        }
+                      if (OUT)
+                        {
+                          putchar('\n');
+                          OUT = 0;
+                        }
+                      while (*(++text) != '\n')
+                        {
+                          ;
+                        }
+                      lastout = text + 1;
+                      MATCHED = 1;
+                    }
+                }
+            }
+          if (MATCHED)
+            {
+              break;
+            }
         }
-        num_of_matched++;
-        if (FILENAMEONLY || SILENT)
-        {
-          return;
-        }
-        if (COUNT)
-        {
-          while (*text != '\n')
-          {
-            text++;
-          }
-        }
-        else
-        {
-          if (FNAME)
-          {
-            printf("%s: ", CurrentFileName);
-          }
-          if (!INVERSE)
-          {
-            while (*(--text) != '\n')
-            {
-              ;
-            }
-            while (*(++text) != '\n')
-            {
-              putchar(*text);
-            }
-            printf("\n");
-            MATCHED = 1;
-          }
-          else
-          {
-            while (*(--text) != '\n')
-            {
-              ;
-            }
-            if (lastout < text)
-            {
-              OUT = 1;
-            }
-            while (lastout < text)
-            {
-              putchar(*lastout++);
-            }
-            if (OUT)
-            {
-              putchar('\n');
-              OUT = 0;
-            }
-            while (*(++text) != '\n')
-            {
-              ;
-            }
-            lastout = text + 1;
-            MATCHED = 1;
-          }
-        }
-      }
-      if (MATCHED)
-      {
-        break;
-      }
-    }
-    MATCHED = 0;
-  } /* while */
+      MATCHED = 0;
+    } /* while */
   if (INVERSE && !COUNT)
-  {
-    while (lastout <= textend)
     {
-      putchar(*lastout++);
+      while (lastout <= textend)
+        {
+          putchar(*lastout++);
+        }
     }
-  }
 }
 
 void f_prep(int pat_index, unsigned char *Pattern)
@@ -166,27 +166,27 @@ void f_prep(int pat_index, unsigned char *Pattern)
   register unsigned hash, Mask = 15;
   m = p_size;
   for (i = m - 1; i >= (1 + LONG); i--)
-  {
-    hash = (Pattern[i] & Mask);
-    hash = (hash << 4) + (Pattern[i - 1] & Mask);
-    if (LONG)
     {
-      hash = (hash << 4) + (Pattern[i - 2] & Mask);
+      hash = (Pattern[i] & Mask);
+      hash = (hash << 4) + (Pattern[i - 1] & Mask);
+      if (LONG)
+        {
+          hash = (hash << 4) + (Pattern[i - 2] & Mask);
+        }
+      if (SHIFT1[hash] >= m - 1 - i)
+        {
+          SHIFT1[hash] = m - 1 - i;
+        }
     }
-    if (SHIFT1[hash] >= m - 1 - i)
-    {
-      SHIFT1[hash] = m - 1 - i;
-    }
-  }
   if (SHORT)
-  {
-    Mask = 255; /* 011111111 */
-  }
+    {
+      Mask = 255; /* 011111111 */
+    }
   hash = 0;
   for (i = m - 1; i >= 0; i--)
-  {
-    hash = (hash << 4) + (tr[Pattern[i]] & Mask);
-  }
+    {
+      hash = (hash << 4) + (tr[Pattern[i]] & Mask);
+    }
   /*
           if(INVERSE) hash = Pattern[1];
   */
@@ -206,115 +206,115 @@ void prepf(int fp)
   int num_read;
 
   while ((num_read = read(fp, buf + length, BLOCKSIZE)) > 0)
-  {
-    length = length + num_read;
-    if (length > MAXPATFILE)
     {
-      fprintf(stderr, "%s: maximum pattern file size is %d\n", Progname,
-              MAXPATFILE);
-      exit(2);
+      length = length + num_read;
+      if (length > MAXPATFILE)
+        {
+          fprintf(stderr, "%s: maximum pattern file size is %d\n", Progname,
+                  MAXPATFILE);
+          exit(2);
+        }
     }
-  }
   buf[length] = '\n';
   i = 0;
   p = 1;
   while (i < length)
-  {
-    patt[p] = pat_ptr;
-    if (WORDBOUND)
     {
-      *pat_ptr++ = W_DELIM;
+      patt[p] = pat_ptr;
+      if (WORDBOUND)
+        {
+          *pat_ptr++ = W_DELIM;
+        }
+      if (WHOLELINE)
+        {
+          *pat_ptr++ = L_DELIM;
+        }
+      while ((*pat_ptr = buf[i++]) != '\n')
+        {
+          pat_ptr++;
+        }
+      if (WORDBOUND)
+        {
+          *pat_ptr++ = W_DELIM;
+        }
+      if (WHOLELINE)
+        {
+          *pat_ptr++ = L_DELIM; /* Can't be both on */
+        }
+      *pat_ptr++ = 0;
+      p++;
     }
-    if (WHOLELINE)
-    {
-      *pat_ptr++ = L_DELIM;
-    }
-    while ((*pat_ptr = buf[i++]) != '\n')
-    {
-      pat_ptr++;
-    }
-    if (WORDBOUND)
-    {
-      *pat_ptr++ = W_DELIM;
-    }
-    if (WHOLELINE)
-    {
-      *pat_ptr++ = L_DELIM; /* Can't be both on */
-    }
-    *pat_ptr++ = 0;
-    p++;
-  }
   if (p > max_num)
-  {
-    fprintf(stderr, "%s: maximum number of patterns is %d\n", Progname,
-            max_num);
-    exit(2);
-  }
+    {
+      fprintf(stderr, "%s: maximum number of patterns is %d\n", Progname,
+              max_num);
+      exit(2);
+    }
   for (i = 1; i < 20; i++)
-  {
-    *pat_ptr = i; /* boundary safety zone */
-  }
+    {
+      *pat_ptr = i; /* boundary safety zone */
+    }
   for (i = 0; i < MAXSYM; i++)
-  {
-    tr[i] = i;
-  }
+    {
+      tr[i] = i;
+    }
   if (NOUPPER)
-  {
-    for (i = 'A'; i <= 'Z'; i++)
     {
-      tr[i] = i + 'a' - 'A';
+      for (i = 'A'; i <= 'Z'; i++)
+        {
+          tr[i] = i + 'a' - 'A';
+        }
     }
-  }
   if (WORDBOUND)
-  {
-    for (i = 0; i < 128; i++)
     {
-      if (!isalnum(i))
-      {
-        tr[i] = W_DELIM;
-      }
+      for (i = 0; i < 128; i++)
+        {
+          if (!isalnum(i))
+            {
+              tr[i] = W_DELIM;
+            }
+        }
     }
-  }
   for (i = 0; i < MAXSYM; i++)
-  {
-    tr1[i] = tr[i] & Mask;
-  }
+    {
+      tr1[i] = tr[i] & Mask;
+    }
   num_pat = p - 1;
   p_size = MAXPAT;
   for (i = 1; i <= num_pat; i++)
-  {
-    p = strlen(patt[i]);
-    pat_len[i] = p;
-    if (p != 0 && p < p_size)
     {
-      p_size = p;
+      p = strlen(patt[i]);
+      pat_len[i] = p;
+      if (p != 0 && p < p_size)
+        {
+          p_size = p;
+        }
     }
-  }
   if (p_size == 0)
-  {
-    fprintf(stderr, "the pattern file is empty\n");
-    exit(2);
-  }
+    {
+      fprintf(stderr, "the pattern file is empty\n");
+      exit(2);
+    }
   if (length > 400 && p_size > 2)
-  {
-    LONG = 1;
-  }
+    {
+      LONG = 1;
+    }
   if (p_size == 1)
-  {
-    SHORT = 1;
-  }
+    {
+      SHORT = 1;
+    }
   for (i = 0; i < MAXMEMBER1; i++)
-  {
-    SHIFT1[i] = p_size - 2;
-  }
+    {
+      SHIFT1[i] = p_size - 2;
+    }
   for (i = 0; i < MAXHASH; i++)
-  {
-    HASH[i] = 0;
-  }
+    {
+      HASH[i] = 0;
+    }
   for (i = 1; i <= num_pat; i++)
-  {
-    f_prep(i, patt[i]);
-  }
+    {
+      f_prep(i, patt[i]);
+    }
 }
 
 void monkey1(register unsigned char *text, int start, int end)
@@ -335,103 +335,103 @@ void monkey1(register unsigned char *text, int start, int end)
   lastout = text + start + 1;
   text = text + start + m1;
   while (text <= textend)
-  {
-    hash = tr1[*text];
-    hash = (hash << 4) + (tr1[*(text - 1)]);
-    if (Long)
     {
-      hash = (hash << 4) + (tr1[*(text - 2)]);
-    }
-    shift = SHIFT1[hash];
-    if (shift == 0)
-    {
-      hash = 0;
-      for (i = 0; i <= m1; i++)
-      {
-        hash = (hash << 4) + (tr1[*(text - i)]);
-      }
-      hash = hash & mm;
-      p = HASH[hash];
-      while (p != 0)
-      {
-        pat_index = p->index;
-        p = p->next;
-        qx = text - m1;
-        j = 0;
-        while (tr[patt[pat_index][j]] == tr[*(qx++)])
+      hash = tr1[*text];
+      hash = (hash << 4) + (tr1[*(text - 1)]);
+      if (Long)
         {
-          j++;
+          hash = (hash << 4) + (tr1[*(text - 2)]);
         }
-        if (j > m1)
+      shift = SHIFT1[hash];
+      if (shift == 0)
         {
-          if (pat_len[pat_index] <= j)
-          {
-            if (text > textend)
+          hash = 0;
+          for (i = 0; i <= m1; i++)
             {
-              return;
+              hash = (hash << 4) + (tr1[*(text - i)]);
             }
-            num_of_matched++;
-            if (FILENAMEONLY || SILENT)
+          hash = hash & mm;
+          p = HASH[hash];
+          while (p != 0)
             {
-              return;
-            }
-            MATCHED = 1;
-            if (COUNT)
-            {
-              while (*text != '\n')
-              {
-                text++;
-              }
-            }
-            else
-            {
-              if (!INVERSE)
-              {
-                if (FNAME)
+              pat_index = p->index;
+              p = p->next;
+              qx = text - m1;
+              j = 0;
+              while (tr[patt[pat_index][j]] == tr[*(qx++)])
                 {
-                  printf("%s: ", CurrentFileName);
+                  j++;
                 }
-                while (*(--text) != '\n')
+              if (j > m1)
                 {
-                  ;
-                }
-                while (*(++text) != '\n')
-                {
-                  putchar(*text);
-                }
-                printf("\n");
-              }
-              else
-              {
-                if (FNAME)
-                {
-                  printf("%s: ", CurrentFileName);
-                }
-                while (*(--text) != '\n')
-                {
-                  ;
-                }
-                if (lastout < text)
-                {
-                  OUT = 1;
-                }
-                while (lastout < text)
-                {
-                  putchar(*lastout++);
-                }
-                if (OUT)
-                {
-                  putchar('\n');
-                  OUT = 0;
-                }
-                while (*(++text) != '\n')
-                {
-                  ;
-                }
-                lastout = text + 1;
-              }
-            }
-            /*
+                  if (pat_len[pat_index] <= j)
+                    {
+                      if (text > textend)
+                        {
+                          return;
+                        }
+                      num_of_matched++;
+                      if (FILENAMEONLY || SILENT)
+                        {
+                          return;
+                        }
+                      MATCHED = 1;
+                      if (COUNT)
+                        {
+                          while (*text != '\n')
+                            {
+                              text++;
+                            }
+                        }
+                      else
+                        {
+                          if (!INVERSE)
+                            {
+                              if (FNAME)
+                                {
+                                  printf("%s: ", CurrentFileName);
+                                }
+                              while (*(--text) != '\n')
+                                {
+                                  ;
+                                }
+                              while (*(++text) != '\n')
+                                {
+                                  putchar(*text);
+                                }
+                              printf("\n");
+                            }
+                          else
+                            {
+                              if (FNAME)
+                                {
+                                  printf("%s: ", CurrentFileName);
+                                }
+                              while (*(--text) != '\n')
+                                {
+                                  ;
+                                }
+                              if (lastout < text)
+                                {
+                                  OUT = 1;
+                                }
+                              while (lastout < text)
+                                {
+                                  putchar(*lastout++);
+                                }
+                              if (OUT)
+                                {
+                                  putchar('\n');
+                                  OUT = 0;
+                                }
+                              while (*(++text) != '\n')
+                                {
+                                  ;
+                                }
+                              lastout = text + 1;
+                            }
+                        }
+                      /*
                                             else {
                                                     if(FNAME) printf("%s:
                ",CurrentFileName);
@@ -441,32 +441,32 @@ void monkey1(register unsigned char *text, int start, int end)
                                                     printf("\n");
                                             }
             */
-          }
+                    }
+                }
+              if (MATCHED)
+                {
+                  break;
+                }
+            }
+          if (!MATCHED)
+            {
+              shift = 1;
+            }
+          else
+            {
+              MATCHED = 0;
+              shift = m1;
+            }
         }
-        if (MATCHED)
-        {
-          break;
-        }
-      }
-      if (!MATCHED)
-      {
-        shift = 1;
-      }
-      else
-      {
-        MATCHED = 0;
-        shift = m1;
-      }
+      text = text + shift;
     }
-    text = text + shift;
-  }
   if (INVERSE && !COUNT)
-  {
-    while (lastout <= textend)
     {
-      putchar(*lastout++);
+      while (lastout <= textend)
+        {
+          putchar(*lastout++);
+        }
     }
-  }
 }
 
 void mgrep(int fd)
@@ -479,50 +479,50 @@ void mgrep(int fd)
   start = MAXLINE - 1;
 
   while ((num_read = read(fd, text + MAXLINE, BLOCKSIZE)) > 0)
-  {
-    if (INVERSE && COUNT)
     {
-      countline(text + MAXLINE, num_read);
-    }
-    buf_end = end = MAXLINE + num_read - 1;
-    while (text[end] != r_newline && end > MAXLINE)
-    {
-      end--;
-    }
-    residue = buf_end - end + 1;
-    text[start - 1] = r_newline;
-    if (SHORT)
-    {
-      m_short(text, start, end);
-    }
-    else
-    {
-      monkey1(text, start, end);
-    }
-    if (FILENAMEONLY && num_of_matched)
-    {
-      printf("%s\n", CurrentFileName);
-      return;
-    }
-    start = MAXLINE - residue;
-    if (start < 0)
-    {
-      start = 1;
-    }
-    strncpy(text + start, text + end, residue);
-  } /* end of while(num_read = ... */
+      if (INVERSE && COUNT)
+        {
+          countline(text + MAXLINE, num_read);
+        }
+      buf_end = end = MAXLINE + num_read - 1;
+      while (text[end] != r_newline && end > MAXLINE)
+        {
+          end--;
+        }
+      residue = buf_end - end + 1;
+      text[start - 1] = r_newline;
+      if (SHORT)
+        {
+          m_short(text, start, end);
+        }
+      else
+        {
+          monkey1(text, start, end);
+        }
+      if (FILENAMEONLY && num_of_matched)
+        {
+          printf("%s\n", CurrentFileName);
+          return;
+        }
+      start = MAXLINE - residue;
+      if (start < 0)
+        {
+          start = 1;
+        }
+      strncpy(text + start, text + end, residue);
+    } /* end of while(num_read = ... */
   text[MAXLINE] = '\n';
   text[start - 1] = '\n';
   if (residue > 1)
-  {
-    if (SHORT)
     {
-      m_short(text, start, end);
+      if (SHORT)
+        {
+          m_short(text, start, end);
+        }
+      else
+        {
+          monkey1(text, start, end);
+        }
     }
-    else
-    {
-      monkey1(text, start, end);
-    }
-  }
   return;
 } /* end mgrep */

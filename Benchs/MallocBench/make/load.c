@@ -58,37 +58,37 @@ double load_average()
   register unsigned int i, j;
 
   if (cpus == 0)
-  {
-    register unsigned int c, i;
-    struct cpu_config conf;
-    struct stat_descr desc;
-
-    desc.sd_next = 0;
-    desc.sd_subsys = SUBSYS_CPU;
-    desc.sd_type = CPUTYPE_CONFIG;
-    desc.sd_addr = (char *)&conf;
-    desc.sd_size = sizeof conf;
-
-    if (inq_stats(1, &desc)) return 0.0;
-
-    c = 0;
-    for (i = 0; i < conf.config_maxclass; ++i)
     {
-      struct class_stats stats;
-      bzero((char *)&stats, sizeof stats);
+      register unsigned int c, i;
+      struct cpu_config conf;
+      struct stat_descr desc;
 
-      desc.sd_type = CPUTYPE_CLASS;
-      desc.sd_objid = i;
-      desc.sd_addr = (char *)&stats;
-      desc.sd_size = sizeof stats;
+      desc.sd_next = 0;
+      desc.sd_subsys = SUBSYS_CPU;
+      desc.sd_type = CPUTYPE_CONFIG;
+      desc.sd_addr = (char *)&conf;
+      desc.sd_size = sizeof conf;
 
       if (inq_stats(1, &desc)) return 0.0;
 
-      c += stats.class_numcpus;
+      c = 0;
+      for (i = 0; i < conf.config_maxclass; ++i)
+        {
+          struct class_stats stats;
+          bzero((char *)&stats, sizeof stats);
+
+          desc.sd_type = CPUTYPE_CLASS;
+          desc.sd_objid = i;
+          desc.sd_addr = (char *)&stats;
+          desc.sd_size = sizeof stats;
+
+          if (inq_stats(1, &desc)) return 0.0;
+
+          c += stats.class_numcpus;
+        }
+      cpus = c;
+      samples = cpus < 2 ? 3 : (2 * cpus / 3);
     }
-    cpus = c;
-    samples = cpus < 2 ? 3 : (2 * cpus / 3);
-  }
 
   proc_info.sd_next = 0;
   proc_info.sd_subsys = SUBSYS_PROC;
@@ -102,10 +102,10 @@ double load_average()
   load = proc_sum_data.ps_nrunnable;
   j = 0;
   for (i = samples - 1; i > 0; --i)
-  {
-    load += proc_sum_data.ps_nrun[j];
-    if (j++ == PS_NRUNSIZE) j = 0;
-  }
+    {
+      load += proc_sum_data.ps_nrun[j];
+      if (j++ == PS_NRUNSIZE) j = 0;
+    }
 
   return (load / samples / cpus);
 }
@@ -188,59 +188,59 @@ double load_average()
   static unsigned long int offset = 0;
 
   if (kmem < 0)
-  {
-    kmem = open("/dev/kmem", O_RDONLY);
-    if (kmem < 0)
     {
-      if (!complained) perror_with_name("open: ", "/dev/kmem");
-      goto lose;
+      kmem = open("/dev/kmem", O_RDONLY);
+      if (kmem < 0)
+        {
+          if (!complained) perror_with_name("open: ", "/dev/kmem");
+          goto lose;
+        }
     }
-  }
 
   if (offset == 0)
-  {
-    struct nlist nl[2];
+    {
+      struct nlist nl[2];
 
 #ifdef NLIST_NAME_ARRAY
-    strcpy(nl[0].nl_name, LDAV_SYMBOL);
-    strcpy(nl[1].nl_name, "");
-#else  /* Not NLIST_NAME_ARRAY.  */
-    nl[0].nl_name = LDAV_SYMBOL;
-    nl[1].nl_name = 0;
+      strcpy(nl[0].nl_name, LDAV_SYMBOL);
+      strcpy(nl[1].nl_name, "");
+#else /* Not NLIST_NAME_ARRAY.  */
+      nl[0].nl_name = LDAV_SYMBOL;
+      nl[1].nl_name = 0;
 #endif /* NLIST_NAME_ARRAY.  */
 
-    if (nlist(KERNEL_FILE_NAME, nl) < 0 || nl[0].n_type == 0)
-    {
-      if (!complained) perror_with_name("nlist: ", KERNEL_FILE_NAME);
-      goto lose;
+      if (nlist(KERNEL_FILE_NAME, nl) < 0 || nl[0].n_type == 0)
+        {
+          if (!complained) perror_with_name("nlist: ", KERNEL_FILE_NAME);
+          goto lose;
+        }
+      offset = nl[0].n_value;
     }
-    offset = nl[0].n_value;
-  }
 
   if (lseek(kmem, offset, 0) == -1L)
-  {
-    if (!complained) perror_with_name("lseek: ", "/dev/kmem");
-    goto lose;
-  }
+    {
+      if (!complained) perror_with_name("lseek: ", "/dev/kmem");
+      goto lose;
+    }
   if (read(kmem, &load, sizeof load) < 0)
-  {
-    if (!complained) perror_with_name("read: ", "/dev/kmem");
-    goto lose;
-  }
+    {
+      if (!complained) perror_with_name("read: ", "/dev/kmem");
+      goto lose;
+    }
 
   if (complained)
-  {
-    error("Load average limits will be enforced again.");
-    complained = 0;
-  }
+    {
+      error("Load average limits will be enforced again.");
+      complained = 0;
+    }
   return LDAV_CVT;
 
 lose:;
   if (!complained)
-  {
-    error("Load average limits will not be enforced.");
-    complained = 1;
-  }
+    {
+      error("Load average limits will not be enforced.");
+      complained = 1;
+    }
   return 0.0;
 }
 
@@ -264,27 +264,27 @@ void wait_to_start_job()
   if (max_load_average < 0.0) return;
 
   while (job_slots_used > 0)
-  {
-    double load = load_average();
-
-    if (load < max_load_average) return;
-
-    ++loops;
-    if (loops == 5 || load > max_load_average * 2)
     {
-      /* If the load is still too high after five loops or it is very
+      double load = load_average();
+
+      if (load < max_load_average) return;
+
+      ++loops;
+      if (loops == 5 || load > max_load_average * 2)
+        {
+          /* If the load is still too high after five loops or it is very
          high, just wait for a child to die before checking again.  */
-      loops = 0;
-      wait_for_children(1, 0);
-    }
-    else
-      /* Don't check the load again immediately, because that will
+          loops = 0;
+          wait_for_children(1, 0);
+        }
+      else
+        /* Don't check the load again immediately, because that will
          just worsen the load.  Check it progressively more slowly.  */
-      sleep(loops);
-  }
+        sleep(loops);
+    }
 }
 
-#else  /* Not LDAV_BASED.  */
+#else /* Not LDAV_BASED.  */
 
 /* How else to do it?  */
 

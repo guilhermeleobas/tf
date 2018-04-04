@@ -95,51 +95,51 @@ treeptr old_main()
 
   /* Creates a list of bodies */
   for (i = 0; i < 32; i++)
-  {
-    datapoints points;
-    int processor = i / (32 / NumNodes);
+    {
+      datapoints points;
+      int processor = i / (32 / NumNodes);
 
-    points = uniform_testdata(processor, nbody / 32, i + 1);
+      points = uniform_testdata(processor, nbody / 32, i + 1);
 
-    t->bodytab[i] = points.list;
-    if (prev) Next(prev) = points.list;
-    prev = points.tail;
-    ADDV(cmr, cmr, points.cmr);
-    ADDV(cmv, cmv, points.cmv);
-  }
+      t->bodytab[i] = points.list;
+      if (prev) Next(prev) = points.list;
+      prev = points.tail;
+      ADDV(cmr, cmr, points.cmr);
+      ADDV(cmv, cmv, points.cmv);
+    }
 
   chatting("bodies created \n");
   DIVVS(cmr, cmr, (real)nbody); /* normalize cm coords */
   DIVVS(cmv, cmv, (real)nbody);
 
   for (tmp = 0; tmp < MAX_NUM_NODES; tmp++)
-  {
-    bodiesper[tmp] = 0;
-    ptrper[tmp] = NULL;
-  }
+    {
+      bodiesper[tmp] = 0;
+      ptrper[tmp] = NULL;
+    }
 
   /* Recall particles are in lists by processor */
   for (p = t->bodytab[0]; p != NULL; p = Next(p))
-  { /* loop over particles */
-    icstruct xqic;
+    { /* loop over particles */
+      icstruct xqic;
 
-    SUBV(Pos(p), Pos(p), cmr); /*   offset by cm coords    */
-    SUBV(Vel(p), Vel(p), cmv);
+      SUBV(Pos(p), Pos(p), cmr); /*   offset by cm coords    */
+      SUBV(Vel(p), Vel(p), cmv);
 
-    xqic = intcoord(p, t);
-    tmp = ((old_subindex(xqic, IMAX >> 1) << NDIM) +
-           old_subindex(xqic, IMAX >> 2));
-    tmp = tmp / range;
-    bodiesper[tmp]++;
-    Proc_Next(p) = ptrper[tmp];
-    ptrper[tmp] = p;
-    Proc(p) = tmp;
-  }
+      xqic = intcoord(p, t);
+      tmp = ((old_subindex(xqic, IMAX >> 1) << NDIM) +
+             old_subindex(xqic, IMAX >> 2));
+      tmp = tmp / range;
+      bodiesper[tmp]++;
+      Proc_Next(p) = ptrper[tmp];
+      ptrper[tmp] = p;
+      Proc(p) = tmp;
+    }
   for (tmp = 0; tmp < NumNodes; tmp++)
-  {
-    chatting("Bodies per %d = %d\n", tmp, bodiesper[tmp]);
-    t->bodiesperproc[tmp] = ptrper[tmp];
-  }
+    {
+      chatting("Bodies per %d = %d\n", tmp, bodiesper[tmp]);
+      t->bodiesperproc[tmp] = ptrper[tmp];
+    }
 
 #ifdef DEBUG
   {
@@ -160,12 +160,12 @@ treeptr old_main()
   /*nsteps,tnow,tstop,dtime);*/
 
   while ((tnow < tstop + 0.1 * dtime) && (i < nsteps))
-  {
-    stepsystem(t, i); /*   advance N-body system  */
-    tnow = tnow + dtime;
-    /*chatting("tnow = %f sp = 0x%x\n", tnow, __getsp());*/
-    i++;
-  }
+    {
+      stepsystem(t, i); /*   advance N-body system  */
+      tnow = tnow + dtime;
+      /*chatting("tnow = %f sp = 0x%x\n", tnow, __getsp());*/
+      i++;
+    }
 
 /* t2 = mclock(); */
 #ifdef DEBUG
@@ -206,70 +206,73 @@ bodyptr testdata()
   real rad;
 
   assert(0, 99);
-  rsc = 3 * PI / 16;     /* set length scale factor  */
+  rsc = 3 * PI / 16; /* set length scale factor  */
   vsc = sqrt(1.0 / rsc); /* and recip. speed scale   */
-  CLRV(cmr);             /* init cm pos, vel         */
+  CLRV(cmr); /* init cm pos, vel         */
   CLRV(cmv);
   head = (bodyptr)ubody_alloc(0);
   prev = head;
 
   for (i = 0; i < nbody; i++)
-  { /* loop over particles      */
-    p = ubody_alloc(0);
-    /* alloc space for bodies   */
-    if (p == NULL)                            /* check space is available */
-      error("testdata: not enough memory\n"); /*   if not, cry            */
-    Next(prev) = p;
-    prev = p;
-    Type(p) = BODY;        /*   tag as a body          */
-    Mass(p) = 1.0 / nbody; /*   set masses equal       */
-    seed = my_rand(seed);
-    t1 = xrand(0.0, MFRAC, seed);
-    temp = pow(t1, /*   pick r in struct units */
-               -2.0 / 3.0) -
-           1;
-    r = 1 / sqrt(temp);
-
-    /*   pick scaled position   */
-    rad = rsc * r;
-    do
-    { /* pick point in NDIM-space */
-      for (k = 0; k < NDIM; k++)
-      { /*   loop over dimensions   */
-        seed = my_rand(seed);
-        Pos(p)[k] = xrand(-1.0, 1.0, seed); /* pick from unit cube  */
-      }
-      DOTVP(rsq, Pos(p), Pos(p)); /*   compute radius squared */
-    } while (rsq > 1.0);          /* reject if outside sphere */
-    rsc1 = rad / sqrt(rsq);       /* compute scaling factor   */
-    MULVS(Pos(p), Pos(p), rsc1);  /* rescale to radius given  */
-
-    ADDV(cmr, cmr, Pos(p)); /*   add to running sum     */
-    do
-    { /*   select from fn g(x)    */
+    { /* loop over particles      */
+      p = ubody_alloc(0);
+      /* alloc space for bodies   */
+      if (p == NULL) /* check space is available */
+        error("testdata: not enough memory\n"); /*   if not, cry            */
+      Next(prev) = p;
+      prev = p;
+      Type(p) = BODY; /*   tag as a body          */
+      Mass(p) = 1.0 / nbody; /*   set masses equal       */
       seed = my_rand(seed);
-      x = xrand(0.0, 1.0, seed); /*     for x in range 0:1   */
-      seed = my_rand(seed);
-      y = xrand(0.0, 0.1, seed);               /*     max of g(x) is 0.092 */
-    } while (y > x * x * pow(1 - x * x, 3.5)); /*   using von Neumann tech */
-    v = sqrt(2.0) * x / pow(1 + r * r, 0.25);  /*   find v in struct units */
+      t1 = xrand(0.0, MFRAC, seed);
+      temp = pow(t1, /*   pick r in struct units */
+                 -2.0 / 3.0) -
+             1;
+      r = 1 / sqrt(temp);
 
-    /*   pick scaled velocity   */
-    rad = vsc * v;
+      /*   pick scaled position   */
+      rad = rsc * r;
+      do
+        { /* pick point in NDIM-space */
+          for (k = 0; k < NDIM; k++)
+            { /*   loop over dimensions   */
+              seed = my_rand(seed);
+              Pos(p)[k] = xrand(-1.0, 1.0, seed); /* pick from unit cube  */
+            }
+          DOTVP(rsq, Pos(p), Pos(p)); /*   compute radius squared */
+        }
+      while (rsq > 1.0); /* reject if outside sphere */
+      rsc1 = rad / sqrt(rsq); /* compute scaling factor   */
+      MULVS(Pos(p), Pos(p), rsc1); /* rescale to radius given  */
 
-    do
-    { /* pick point in NDIM-space */
-      for (k = 0; k < NDIM; k++)
-      { /* loop over dimensions   */
-        seed = my_rand(seed);
-        Vel(p)[k] = xrand(-1.0, 1.0, seed); /* pick from unit cube  */
-      }
-      DOTVP(rsq, Vel(p), Vel(p)); /*   compute radius squared */
-    } while (rsq > 1.0);          /* reject if outside sphere */
-    rsc1 = rad / sqrt(rsq);       /* compute scaling factor   */
-    MULVS(Vel(p), Vel(p), rsc1);  /* rescale to radius given  */
-    ADDV(cmv, cmv, Vel(p));       /*   add to running sum     */
-  }
+      ADDV(cmr, cmr, Pos(p)); /*   add to running sum     */
+      do
+        { /*   select from fn g(x)    */
+          seed = my_rand(seed);
+          x = xrand(0.0, 1.0, seed); /*     for x in range 0:1   */
+          seed = my_rand(seed);
+          y = xrand(0.0, 0.1, seed); /*     max of g(x) is 0.092 */
+        }
+      while (y > x * x * pow(1 - x * x, 3.5)); /*   using von Neumann tech */
+      v = sqrt(2.0) * x / pow(1 + r * r, 0.25); /*   find v in struct units */
+
+      /*   pick scaled velocity   */
+      rad = vsc * v;
+
+      do
+        { /* pick point in NDIM-space */
+          for (k = 0; k < NDIM; k++)
+            { /* loop over dimensions   */
+              seed = my_rand(seed);
+              Vel(p)[k] = xrand(-1.0, 1.0, seed); /* pick from unit cube  */
+            }
+          DOTVP(rsq, Vel(p), Vel(p)); /*   compute radius squared */
+        }
+      while (rsq > 1.0); /* reject if outside sphere */
+      rsc1 = rad / sqrt(rsq); /* compute scaling factor   */
+      MULVS(Vel(p), Vel(p), rsc1); /* rescale to radius given  */
+      ADDV(cmv, cmv, Vel(p)); /*   add to running sum     */
+    }
 
   Next(prev) = NULL; /*   mark end of the list   */
   head = Next(head); /*   toss the dummy node    */
@@ -277,10 +280,10 @@ bodyptr testdata()
   DIVVS(cmr, cmr, (real)nbody); /* normalize cm coords      */
   DIVVS(cmv, cmv, (real)nbody);
   for (p = head; p != NULL; p = Next(p))
-  {                            /* loop over particles      */
-    SUBV(Pos(p), Pos(p), cmr); /*   offset by cm coords    */
-    SUBV(Vel(p), Vel(p), cmv);
-  }
+    { /* loop over particles      */
+      SUBV(Pos(p), Pos(p), cmr); /*   offset by cm coords    */
+      SUBV(Vel(p), Vel(p), cmv);
+    }
   return head;
 }
 
@@ -300,10 +303,10 @@ void stepsystem(treeptr t, int nstep)
 
   /*chatting("Entered stepsystem with t = 0x%x\n",t);*/
   if (Root(t) != NULL)
-  {
-    freetree1(Root(t));
-    Root(t) = NULL;
-  }
+    {
+      freetree1(Root(t));
+      Root(t) = NULL;
+    }
 
   /*chatting("Tree freed\n");*/
 
@@ -336,13 +339,13 @@ void freetree(nodeptr n)
 
   /* Type(n) == CELL */
   for (i = NSUB - 1; i >= 0; i--)
-  {
-    r = Subp((cellptr)n)[i];
-    if (r != NULL)
     {
-      freetree(r);
+      r = Subp((cellptr)n)[i];
+      if (r != NULL)
+        {
+          freetree(r);
+        }
     }
-  }
 
   my_free(n);
   RETEST();
@@ -355,15 +358,15 @@ bodyptr bp_free_list = NULL;
 void my_free(nodeptr n)
 {
   if (Type(n) == BODY)
-  {
-    Next((bodyptr)n) = bp_free_list;
-    bp_free_list = (bodyptr)n;
-  }
+    {
+      Next((bodyptr)n) = bp_free_list;
+      bp_free_list = (bodyptr)n;
+    }
   else /* CELL */
-  {
-    FL_Next((cellptr)n) = (cellptr)cp_free_list;
-    cp_free_list = n;
-  }
+    {
+      FL_Next((cellptr)n) = (cellptr)cp_free_list;
+      cp_free_list = n;
+    }
 }
 
 bodyptr ubody_alloc(int p)
@@ -385,14 +388,14 @@ cellptr cell_alloc(int p)
   register int i;
 
   if (cp_free_list != NULL)
-  {
-    tmp = (cellptr)cp_free_list;
-    cp_free_list = (nodeptr)FL_Next((cellptr)cp_free_list);
-  }
+    {
+      tmp = (cellptr)cp_free_list;
+      cp_free_list = (nodeptr)FL_Next((cellptr)cp_free_list);
+    }
   else
-  {
-    tmp = (cellptr)malloc(sizeof(cell));
-  }
+    {
+      tmp = (cellptr)malloc(sizeof(cell));
+    }
   Type(tmp) = CELL;
   Proc(tmp) = p;
   for (i = 0; i < NSUB; i++) Subp(tmp)[i] = NULL;
@@ -417,66 +420,68 @@ datapoints uniform_testdata(int proc, int nbodyx, int seedfactor)
   real coeff;
 
   /*NOTEST();*/
-  rsc = 3 * PI / 16;     /* set length scale factor  */
+  rsc = 3 * PI / 16; /* set length scale factor  */
   vsc = sqrt(1.0 / rsc); /* and recip. speed scale   */
-  CLRV(retval.cmr);      /* init cm pos, vel         */
+  CLRV(retval.cmr); /* init cm pos, vel         */
   CLRV(retval.cmv);
   head = (bodyptr)ubody_alloc(proc);
   prev = head;
 
   for (i = 0; i < nbodyx; i++)
-  { /* loop over particles      */
-    p = ubody_alloc(proc);
-    /* alloc space for bodies   */
-    if (p == NULL)                            /* check space is available */
-      error("testdata: not enough memory\n"); /*   if not, cry            */
-    Next(prev) = p;
-    prev = p;
-    Type(p) = BODY;         /*   tag as a body          */
-    Mass(p) = 1.0 / nbodyx; /*   set masses equal       */
-    seed = my_rand(seed);
-    t1 = xrand(0.0, MFRAC, seed);
-    temp = pow(t1, /*   pick r in struct units */
-               -2.0 / 3.0) -
-           1;
-    r = 1 / sqrt(temp);
-
-    coeff = 4.0; /* exp(log(nbodyx/DENSITY)/3.0); */
-    for (k = 0; k < NDIM; k++)
-    {
+    { /* loop over particles      */
+      p = ubody_alloc(proc);
+      /* alloc space for bodies   */
+      if (p == NULL) /* check space is available */
+        error("testdata: not enough memory\n"); /*   if not, cry            */
+      Next(prev) = p;
+      prev = p;
+      Type(p) = BODY; /*   tag as a body          */
+      Mass(p) = 1.0 / nbodyx; /*   set masses equal       */
       seed = my_rand(seed);
-      r = xrand(0.0, MFRAC, seed);
-      Pos(p)[k] = coeff * r;
+      t1 = xrand(0.0, MFRAC, seed);
+      temp = pow(t1, /*   pick r in struct units */
+                 -2.0 / 3.0) -
+             1;
+      r = 1 / sqrt(temp);
+
+      coeff = 4.0; /* exp(log(nbodyx/DENSITY)/3.0); */
+      for (k = 0; k < NDIM; k++)
+        {
+          seed = my_rand(seed);
+          r = xrand(0.0, MFRAC, seed);
+          Pos(p)[k] = coeff * r;
+        }
+
+      ADDV(retval.cmr, retval.cmr, Pos(p)); /*   add to running sum     */
+      do
+        { /*   select from fn g(x)    */
+          seed = my_rand(seed);
+          x = xrand(0.0, 1.0, seed); /*     for x in range 0:1   */
+          seed = my_rand(seed);
+          y = xrand(0.0, 0.1, seed); /*     max of g(x) is 0.092 */
+        }
+      while (y > x * x * pow(1 - x * x, 3.5)); /*   using von Neumann tech */
+      v = sqrt(2.0) * x / pow(1 + r * r, 0.25); /*   find v in struct units */
+
+      /*   pick scaled velocity   */
+      rad = vsc * v;
+
+      do
+        { /* pick point in NDIM-space */
+          for (k = 0; k < NDIM; k++)
+            { /* loop over dimensions   */
+              seed = my_rand(seed);
+              Vel(p)[k] = xrand(-1.0, 1.0, seed); /* pick from unit cube  */
+            }
+          DOTVP(rsq, Vel(p), Vel(p)); /*   compute radius squared */
+        }
+      while (rsq > 1.0); /* reject if outside sphere */
+      rsc1 = rad / sqrt(rsq); /* compute scaling factor   */
+      MULVS(Vel(p), Vel(p), rsc1); /* rescale to radius given  */
+      ADDV(retval.cmv, retval.cmv, Vel(p)); /*   add to running sum     */
     }
 
-    ADDV(retval.cmr, retval.cmr, Pos(p)); /*   add to running sum     */
-    do
-    { /*   select from fn g(x)    */
-      seed = my_rand(seed);
-      x = xrand(0.0, 1.0, seed); /*     for x in range 0:1   */
-      seed = my_rand(seed);
-      y = xrand(0.0, 0.1, seed);               /*     max of g(x) is 0.092 */
-    } while (y > x * x * pow(1 - x * x, 3.5)); /*   using von Neumann tech */
-    v = sqrt(2.0) * x / pow(1 + r * r, 0.25);  /*   find v in struct units */
-
-    /*   pick scaled velocity   */
-    rad = vsc * v;
-
-    do
-    { /* pick point in NDIM-space */
-      for (k = 0; k < NDIM; k++)
-      { /* loop over dimensions   */
-        seed = my_rand(seed);
-        Vel(p)[k] = xrand(-1.0, 1.0, seed); /* pick from unit cube  */
-      }
-      DOTVP(rsq, Vel(p), Vel(p));         /*   compute radius squared */
-    } while (rsq > 1.0);                  /* reject if outside sphere */
-    rsc1 = rad / sqrt(rsq);               /* compute scaling factor   */
-    MULVS(Vel(p), Vel(p), rsc1);          /* rescale to radius given  */
-    ADDV(retval.cmv, retval.cmv, Vel(p)); /*   add to running sum     */
-  }
-
-  Next(prev) = NULL;        /*   mark end of the list   */
+  Next(prev) = NULL; /*   mark end of the list   */
   retval.list = Next(head); /*   toss the dummy node    */
   retval.tail = prev;
 
@@ -503,9 +508,9 @@ datapoints uniform_testdata(int proc, int nbodyx, int seedfactor)
 typedef struct
 {
   bodyptr pskip; /* body to skip in force evaluation */
-  vector pos0;   /* point at which to evaluate field */
-  real phi0;     /* computed potential at pos0       */
-  vector acc0;   /* computed acceleration at pos0    */
+  vector pos0; /* point at which to evaluate field */
+  real phi0; /* computed potential at pos0       */
+  vector acc0; /* computed acceleration at pos0    */
 } hgstruct, *hgsptr;
 
 hgstruct gravsub(nodeptr p, hgstruct hg);
@@ -530,11 +535,11 @@ void computegrav(treeptr t, int nstep)
   dthf = 0.5 * dtime;
 
   for (i = NumNodes - 1; i >= 0; i--)
-  {
-    root = Root(t);
-    blist = t->bodiesperproc[i];
-    grav(rsize, root, blist, nstep, dthf);
-  }
+    {
+      root = Root(t);
+      blist = t->bodiesperproc[i];
+      grav(rsize, root, blist, nstep, dthf);
+    }
 }
 
 void grav(real rsize, nodeptr rt, bodyptr bodies, int nstep, real dthf)
@@ -544,19 +549,19 @@ void grav(real rsize, nodeptr rt, bodyptr bodies, int nstep, real dthf)
 
   /* get it to move to the right processor! */
   if (bodies != NULL)
-  {
-    bodyptr foo = bodies;
-  }
+    {
+      bodyptr foo = bodies;
+    }
   q = bodies;
 
   NOTEST();
 
   while (q != NULL)
-  {
-    gravstep(rsize, rt, q, nstep, dthf);
-    q = Proc_Next(q);
-    i++;
-  }
+    {
+      gravstep(rsize, rt, q, nstep, dthf);
+      q = Proc_Next(q);
+      i++;
+    }
   /*chatting("computed gravity on %d particles\n",i);*/
   RETEST();
 }
@@ -570,86 +575,86 @@ void vp(bodyptr q, int nstep)
 
   /* move to the correct processor */
   if (q != NULL)
-  {
-    bodyptr foo = q;
-  }
+    {
+      bodyptr foo = q;
+    }
 
   NOTEST();
 
   for (; q != NULL; q = Proc_Next(q))
-  {
-    SETV(acc1, New_Acc(q));
-    if (nstep > 0)
-    {                                 /*   past the first step?   */
-      SUBV(dacc, acc1, Acc(q));       /*     use change in accel  */
-      MULVS(dvel, dacc, dthf);        /*     to make 2nd order    */
-      /*ADDV(Vel(q), Vel(q), dvel);*/ /*     correction to vel    */
-      ADDV(dvel, Vel(q), dvel);
-      SETV(Vel(q), dvel);
-    }
     {
-      real p0, p1, p2;
-      p0 = Pos(q)[0];
-      p1 = Pos(q)[1];
-      p2 = Pos(q)[2];
-      assert(!isnan(p0), 99);
-      assert(!isnan(p1), 98);
-      assert(!isnan(p2), 97);
-      assert(fabs(p0) < 10.0, 96);
-      assert(fabs(p1) < 10.0, 95);
-      assert(fabs(p2) < 10.0, 94);
+      SETV(acc1, New_Acc(q));
+      if (nstep > 0)
+        { /*   past the first step?   */
+          SUBV(dacc, acc1, Acc(q)); /*     use change in accel  */
+          MULVS(dvel, dacc, dthf); /*     to make 2nd order    */
+          /*ADDV(Vel(q), Vel(q), dvel);*/ /*     correction to vel    */
+          ADDV(dvel, Vel(q), dvel);
+          SETV(Vel(q), dvel);
+        }
+      {
+        real p0, p1, p2;
+        p0 = Pos(q)[0];
+        p1 = Pos(q)[1];
+        p2 = Pos(q)[2];
+        assert(!isnan(p0), 99);
+        assert(!isnan(p1), 98);
+        assert(!isnan(p2), 97);
+        assert(fabs(p0) < 10.0, 96);
+        assert(fabs(p1) < 10.0, 95);
+        assert(fabs(p2) < 10.0, 94);
 #ifdef DEBUG
-      chatting("POSITION:vp--%f,%f,%f\n", p0, p1, p2);
+        chatting("POSITION:vp--%f,%f,%f\n", p0, p1, p2);
 #endif
-    }
-    SETV(Acc(q), acc1);
-    {
-      real p0, p1, p2;
-      p0 = Acc(q)[0];
-      p1 = Acc(q)[1];
-      p2 = Acc(q)[2];
-      assert(!isnan(p0), 89);
-      assert(!isnan(p1), 88);
-      assert(!isnan(p2), 87);
-      assert(fabs(p0) < 10000.0, 86);
-      assert(fabs(p1) < 10000.0, 85);
-      assert(fabs(p2) < 10000.0, 84);
-      /*chatting("ACCEL:vp--%f,%f,%f\n",p0,p1,p2);*/
-    }
+      }
+      SETV(Acc(q), acc1);
+      {
+        real p0, p1, p2;
+        p0 = Acc(q)[0];
+        p1 = Acc(q)[1];
+        p2 = Acc(q)[2];
+        assert(!isnan(p0), 89);
+        assert(!isnan(p1), 88);
+        assert(!isnan(p2), 87);
+        assert(fabs(p0) < 10000.0, 86);
+        assert(fabs(p1) < 10000.0, 85);
+        assert(fabs(p2) < 10000.0, 84);
+        /*chatting("ACCEL:vp--%f,%f,%f\n",p0,p1,p2);*/
+      }
 
-    MULVS(dvel, Acc(q), dthf); /*   use current accel'n    */
-    {
-      real p0, p1, p2;
-      p0 = Vel(q)[0];
-      p1 = Vel(q)[1];
-      p2 = Vel(q)[2];
-      assert(!isnan(p0), 79);
-      assert(!isnan(p1), 78);
-      assert(!isnan(p2), 77);
-      assert(fabs(p0) < 10000.0, 76);
-      assert(fabs(p1) < 10000.0, 75);
-      assert(fabs(p2) < 10000.0, 74);
-      /*chatting("VELOCITY:vp--%f,%f,%f\n",p0,p1,p2);*/
+      MULVS(dvel, Acc(q), dthf); /*   use current accel'n    */
+      {
+        real p0, p1, p2;
+        p0 = Vel(q)[0];
+        p1 = Vel(q)[1];
+        p2 = Vel(q)[2];
+        assert(!isnan(p0), 79);
+        assert(!isnan(p1), 78);
+        assert(!isnan(p2), 77);
+        assert(fabs(p0) < 10000.0, 76);
+        assert(fabs(p1) < 10000.0, 75);
+        assert(fabs(p2) < 10000.0, 74);
+        /*chatting("VELOCITY:vp--%f,%f,%f\n",p0,p1,p2);*/
+      }
+      ADDV(vel1, Vel(q), dvel); /*   find vel at midpoint   */
+      MULVS(dpos, vel1, dtime); /*   find pos at endpoint   */
+      ADDV(dpos, Pos(q), dpos); /*   advance position       */
+      SETV(Pos(q), dpos);
+      ADDV(Vel(q), vel1, dvel); /*   advance velocity       */
+      {
+        real p0, p1, p2;
+        p0 = Pos(q)[0];
+        p1 = Pos(q)[1];
+        p2 = Pos(q)[2];
+        assert(!isnan(p0), 69);
+        assert(!isnan(p1), 68);
+        assert(!isnan(p2), 67);
+        assert(fabs(p0) < 10000.0, 66);
+        assert(fabs(p1) < 10000.0, 65);
+        assert(fabs(p2) < 10000.0, 64);
+        /*chatting("vp--%f,%f,%f\n",p0,p1,p2);*/
+      }
     }
-    ADDV(vel1, Vel(q), dvel); /*   find vel at midpoint   */
-    MULVS(dpos, vel1, dtime); /*   find pos at endpoint   */
-    ADDV(dpos, Pos(q), dpos); /*   advance position       */
-    SETV(Pos(q), dpos);
-    ADDV(Vel(q), vel1, dvel); /*   advance velocity       */
-    {
-      real p0, p1, p2;
-      p0 = Pos(q)[0];
-      p1 = Pos(q)[1];
-      p2 = Pos(q)[2];
-      assert(!isnan(p0), 69);
-      assert(!isnan(p1), 68);
-      assert(!isnan(p2), 67);
-      assert(fabs(p0) < 10000.0, 66);
-      assert(fabs(p1) < 10000.0, 65);
-      assert(fabs(p2) < 10000.0, 64);
-      /*chatting("vp--%f,%f,%f\n",p0,p1,p2);*/
-    }
-  }
 
   RETEST();
 }
@@ -671,13 +676,13 @@ void hackgrav(bodyptr p, real rsize, nodeptr rt)
   real szsq;
 
   NOTEST();
-  hg.pskip = p;          /* exclude from force calc. */
+  hg.pskip = p; /* exclude from force calc. */
   SETV(hg.pos0, Pos(p)); /* eval force on this point */
-  hg.phi0 = 0.0;         /* init grav. potential and */
+  hg.phi0 = 0.0; /* init grav. potential and */
   CLRV(hg.acc0);
   szsq = rsize * rsize;
   hg = walksub(rt, szsq, tol * tol, hg, 0); /* recursively scan tree    */
-  Phi(p) = hg.phi0;                         /* stash resulting pot. and */
+  Phi(p) = hg.phi0; /* stash resulting pot. and */
   /*chatting("hg.acc : %f,%f,%f\n",hg.acc0[0],hg.acc0[1],hg.acc0[2]);*/
   SETV(New_Acc(p), hg.acc0); /* acceleration in body p   */
   RETEST();
@@ -698,29 +703,29 @@ hgstruct gravsub(nodeptr p, hgstruct hg)
   SUBV(dr, Pos(p), hg.pos0); /*<-- 14.6% load penalty */ /*  find seperation */
   DOTVP(drsq, dr, dr); /*   and square of distance */
 
-  drsq += eps * eps;          /* use standard softening   */
+  drsq += eps * eps; /* use standard softening   */
   drabs = sqrt((double)drsq); /* find norm of distance    */
-  phii = Mass(p) / drabs;     /* and contribution to phi  */
-  hg.phi0 -= phii;            /* add to total potential   */
-  mor3 = phii / drsq;         /* form mass / radius qubed */
-  MULVS(ai, dr, mor3);        /* and contribution to acc. */
+  phii = Mass(p) / drabs; /* and contribution to phi  */
+  hg.phi0 -= phii; /* add to total potential   */
+  mor3 = phii / drsq; /* form mass / radius qubed */
+  MULVS(ai, dr, mor3); /* and contribution to acc. */
   ADDV(hg.acc0, hg.acc0, ai); /* add to net acceleration  */
 
   if (Type(p) == CELL)
-  {                                       /* a body-cell interaction? */
-#ifdef QUADPOLE                           /*   add qpole correction   */
-    dr5inv = 1.0 / (drsq * drsq * drabs); /*   form dr ** (-5)        */
-    MULMV(quaddr, Quad(p), dr);           /*   form Q * dr            */
-    DOTVP(drquaddr, dr, quaddr);          /*   form dr * Q * dr       */
-    phiquad = -0.5 * dr5inv * drquaddr;   /*   quad. part of poten.   */
-    hg.phi0 = hg.phi0 + phiquad;          /*   increment potential    */
-    phiquad = 5.0 * phiquad / drsq;       /*   save for acceleration  */
-    MULVS(ai, dr, phiquad);               /*   components of acc.     */
-    SUBV(hg.acc0, hg.acc0, ai);           /*   increment              */
-    MULVS(quaddr, quaddr, dr5inv);
-    SUBV(hg.acc0, hg.acc0, quaddr); /*   acceleration           */
+    { /* a body-cell interaction? */
+#ifdef QUADPOLE /*   add qpole correction   */
+      dr5inv = 1.0 / (drsq * drsq * drabs); /*   form dr ** (-5)        */
+      MULMV(quaddr, Quad(p), dr); /*   form Q * dr            */
+      DOTVP(drquaddr, dr, quaddr); /*   form dr * Q * dr       */
+      phiquad = -0.5 * dr5inv * drquaddr; /*   quad. part of poten.   */
+      hg.phi0 = hg.phi0 + phiquad; /*   increment potential    */
+      phiquad = 5.0 * phiquad / drsq; /*   save for acceleration  */
+      MULVS(ai, dr, phiquad); /*   components of acc.     */
+      SUBV(hg.acc0, hg.acc0, ai); /*   increment              */
+      MULVS(quaddr, quaddr, dr5inv);
+      SUBV(hg.acc0, hg.acc0, quaddr); /*   acceleration           */
 #endif
-  }
+    }
 
   return hg;
 }
@@ -754,7 +759,7 @@ bool subdivp(nodeptr p, real dsq, real tolsq, hgstruct hg)
     return (FALSE); /*   then cant subdivide */
 
   SUBV(dr, Pos(local_p), hg.pos0);
-      /*<-- 13% load penalty */ /* compute displacement  */
+  /*<-- 13% load penalty */ /* compute displacement  */
   DOTVP(drsq, dr, dr); /* <-- 8.6% load penalty */ /* and find dist squared */
 
   return (tolsq * drsq < dsq); /* use geometrical rule     */
@@ -813,23 +818,23 @@ nodeptr maketree(bodyptr btab, int nb, treeptr t, int nsteps, int proc)
   nbody = nb;
 
   for (tmp = NumNodes - 1; tmp >= 0; tmp--)
-  {
-    btab = t->bodiesperproc[tmp];
+    {
+      btab = t->bodiesperproc[tmp];
 
-    /*chatting("Entering inner loop \n");*/
-    for (q = btab; q != NULL; q = Proc_Next(q))
-    { /* loop over all bodies  */
-      if (Mass(q) != 0.0)
-      {                                /*   only load massive ones */
-        expandbox(q, t, nsteps, proc); /*     expand root to fit   */
-        xqic = intcoord(q, t);
-        node1 = Root(t);
-        node1 = loadtree(q, xqic, node1, IMAX >> 1, t);
-        Root(t) = node1;
-        /*     insert into tree     */
-      } /* if Mass... */
-    }   /* for q = btab... */
-  }     /* for NumNodes... */
+      /*chatting("Entering inner loop \n");*/
+      for (q = btab; q != NULL; q = Proc_Next(q))
+        { /* loop over all bodies  */
+          if (Mass(q) != 0.0)
+            { /*   only load massive ones */
+              expandbox(q, t, nsteps, proc); /*     expand root to fit   */
+              xqic = intcoord(q, t);
+              node1 = Root(t);
+              node1 = loadtree(q, xqic, node1, IMAX >> 1, t);
+              Root(t) = node1;
+              /*     insert into tree     */
+            } /* if Mass... */
+        } /* for q = btab... */
+    } /* for NumNodes... */
 
   /*CMMD_node_timer_clear(2);*/
   /*CMMD_node_timer_start(2);*/
@@ -859,13 +864,13 @@ void expandbox(bodyptr p, treeptr t, int nsteps, int proc)
 
   inbox = ic_test(p, t);
   while (!inbox)
-  { /* expand box (rarely)      */
-    rsize = Rsize(t);
-    /*chatting("expanding box 0x%x, size=%f\n",p,rsize);*/
-    assert(rsize < 1000.0, 999);
-    ADDVS(rmid, Rmin(t), 0.5 * rsize); /*   find box midpoint      */
-                                       /*   loop over dimensions   */
-                                       /***
+    { /* expand box (rarely)      */
+      rsize = Rsize(t);
+      /*chatting("expanding box 0x%x, size=%f\n",p,rsize);*/
+      assert(rsize < 1000.0, 999);
+      ADDVS(rmid, Rmin(t), 0.5 * rsize); /*   find box midpoint      */
+      /*   loop over dimensions   */
+      /***
                                              chatting("midpoint:%f,%f,%f\n",rmid[0],rmid[1],rmid[2]);
                                        {
                                              vector pos;
@@ -876,32 +881,32 @@ void expandbox(bodyptr p, treeptr t, int nsteps, int proc)
                                        }
                                              chatting("rsize now = %f\n",rsize);
                                        ***/
-    for (k = 0; k < NDIM; k++)
-      if (Pos(p)[k] < rmid[k]) /*     is p left of mid?    */
-      {
-        real rmin;
-        rmin = Rmin(t)[k];
-        Rmin(t)[k] = rmin - rsize; /*       extend to left     */
-      }
-    /*chatting("rsize now = %f\n",rsize);*/
-    Rsize(t) = 2.0 * rsize; /*   double length of box   */
+      for (k = 0; k < NDIM; k++)
+        if (Pos(p)[k] < rmid[k]) /*     is p left of mid?    */
+          {
+            real rmin;
+            rmin = Rmin(t)[k];
+            Rmin(t)[k] = rmin - rsize; /*       extend to left     */
+          }
+      /*chatting("rsize now = %f\n",rsize);*/
+      Rsize(t) = 2.0 * rsize; /*   double length of box   */
 
-    rsize = Rsize(t);
-    /*chatting("rsize now = %f\n",rsize);*/
-    if (Root(t) != NULL)
-    { /*   repot existing tree?   */
-      register int i;
-      newt = cell_alloc(0);
+      rsize = Rsize(t);
+      /*chatting("rsize now = %f\n",rsize);*/
+      if (Root(t) != NULL)
+        { /*   repot existing tree?   */
+          register int i;
+          newt = cell_alloc(0);
 
-      ic = intcoord1(rmid[0], rmid[1], rmid[2], t);
-      /*   locate old root cell   */
-      assert(ic.inb, 1);               /* xmid                     */
-      k = old_subindex(ic, IMAX >> 1); /*     find old tree index  */
-      Subp(newt)[k] = Root(t);         /*     graft old on new     */
-      Root(t) = (nodeptr)newt;         /*     plant new tree       */
-      inbox = ic_test(p, t);
-    } /* if Root... */
-  }   /* while !inbox */
+          ic = intcoord1(rmid[0], rmid[1], rmid[2], t);
+          /*   locate old root cell   */
+          assert(ic.inb, 1); /* xmid                     */
+          k = old_subindex(ic, IMAX >> 1); /*     find old tree index  */
+          Subp(newt)[k] = Root(t); /*     graft old on new     */
+          Root(t) = (nodeptr)newt; /*     plant new tree       */
+          inbox = ic_test(p, t);
+        } /* if Root... */
+    } /* while !inbox */
 }
 
 /*
@@ -919,31 +924,31 @@ nodeptr loadtree(bodyptr p, icstruct xpic, nodeptr t, int l, treeptr tr)
   nodeptr rt;
 
   if (t == NULL)
-  {
-    return ((nodeptr)p);
-  }
-  else
-  {
-    assert(l != 0, 2); /*   dont run out of bits   */
-    if (Type(t) == BODY)
-    { /*   reached a "leaf"?      */
-      int i, j;
-      icstruct pic, tic;
-
-      /*chatting("Collision\n");*/
-      /*printtree(t); printtree(p);*/
-      i = PID(t);
-      c = (cellptr)cell_alloc(i);
-      si = subindex((bodyptr)t, tr, l);
-
-      Subp(c)[si] = (nodeptr)t; /*     put body in cell     */
-      t = (nodeptr)c;           /*     link cell in tree    */
+    {
+      return ((nodeptr)p);
     }
+  else
+    {
+      assert(l != 0, 2); /*   dont run out of bits   */
+      if (Type(t) == BODY)
+        { /*   reached a "leaf"?      */
+          int i, j;
+          icstruct pic, tic;
 
-    si = old_subindex(xpic, l); /* move down one level      */
-    rt = Subp((cellptr)t)[si];
-    Subp((cellptr)t)[si] = loadtree(p, xpic, rt, l >> 1, tr);
-  }
+          /*chatting("Collision\n");*/
+          /*printtree(t); printtree(p);*/
+          i = PID(t);
+          c = (cellptr)cell_alloc(i);
+          si = subindex((bodyptr)t, tr, l);
+
+          Subp(c)[si] = (nodeptr)t; /*     put body in cell     */
+          t = (nodeptr)c; /*     link cell in tree    */
+        }
+
+      si = old_subindex(xpic, l); /* move down one level      */
+      rt = Subp((cellptr)t)[si];
+      Subp((cellptr)t)[si] = loadtree(p, xpic, rt, l >> 1, tr);
+    }
   return (t);
 }
 
@@ -966,31 +971,31 @@ icstruct intcoord1(double rp0, double rp1, double rp2, treeptr t)
   ic.inb = TRUE; /* use to check bounds      */
 
   xsc = (rp0 - t->rmin[0]) / t->rsize; /*   scale to range [0,1)   */
-  if (0.0 <= xsc && xsc < 1.0)         /*   within unit interval?  */
-    ic.xp[0] = floor(IMAX * xsc);      /*     then integerize      */
+  if (0.0 <= xsc && xsc < 1.0) /*   within unit interval?  */
+    ic.xp[0] = floor(IMAX * xsc); /*     then integerize      */
   else
-  { /*   out of range           */
-    /*chatting("xsc0:%f\n",xsc);*/
-    ic.inb = FALSE; /*     then remember that   */
-  }
+    { /*   out of range           */
+      /*chatting("xsc0:%f\n",xsc);*/
+      ic.inb = FALSE; /*     then remember that   */
+    }
 
   xsc = (rp1 - t->rmin[1]) / t->rsize; /*   scale to range [0,1)   */
-  if (0.0 <= xsc && xsc < 1.0)         /*   within unit interval?  */
-    ic.xp[1] = floor(IMAX * xsc);      /*     then integerize      */
+  if (0.0 <= xsc && xsc < 1.0) /*   within unit interval?  */
+    ic.xp[1] = floor(IMAX * xsc); /*     then integerize      */
   else
-  { /*   out of range           */
-    /*chatting("xsc1:%f\n",xsc);*/
-    ic.inb = FALSE; /*     then remember that   */
-  }
+    { /*   out of range           */
+      /*chatting("xsc1:%f\n",xsc);*/
+      ic.inb = FALSE; /*     then remember that   */
+    }
 
   xsc = (rp2 - t->rmin[2]) / t->rsize; /*   scale to range [0,1)   */
-  if (0.0 <= xsc && xsc < 1.0)         /*   within unit interval?  */
-    ic.xp[2] = floor(IMAX * xsc);      /*     then integerize      */
+  if (0.0 <= xsc && xsc < 1.0) /*   within unit interval?  */
+    ic.xp[2] = floor(IMAX * xsc); /*     then integerize      */
   else
-  { /*   out of range           */
-    /*chatting("xsc2:%f\n",xsc);*/
-    ic.inb = FALSE; /*     then remember that   */
-  }
+    { /*   out of range           */
+      /*chatting("xsc2:%f\n",xsc);*/
+      ic.inb = FALSE; /*     then remember that   */
+    }
 
   return (ic);
 }
@@ -1018,31 +1023,31 @@ icstruct intcoord(bodyptr p, treeptr t)
   /*chatting("Intcoord:%f,%f,%f\n",pos[0],pos[1],pos[2]);*/
 
   xsc = (pos[0] - t->rmin[0]) / rsize; /*   scale to range [0,1)   */
-  if (0.0 <= xsc && xsc < 1.0)         /*   within unit interval?  */
-    ic.xp[0] = floor(IMAX * xsc);      /*     then integerize      */
+  if (0.0 <= xsc && xsc < 1.0) /*   within unit interval?  */
+    ic.xp[0] = floor(IMAX * xsc); /*     then integerize      */
   else
-  {                 /*   out of range           */
-    ic.inb = FALSE; /*     then remember that   */
-    ic.xp[0] = 0;
-  }
+    { /*   out of range           */
+      ic.inb = FALSE; /*     then remember that   */
+      ic.xp[0] = 0;
+    }
 
   xsc = (pos[1] - t->rmin[1]) / rsize; /*   scale to range [0,1)   */
-  if (0.0 <= xsc && xsc < 1.0)         /*   within unit interval?  */
-    ic.xp[1] = floor(IMAX * xsc);      /*     then integerize      */
+  if (0.0 <= xsc && xsc < 1.0) /*   within unit interval?  */
+    ic.xp[1] = floor(IMAX * xsc); /*     then integerize      */
   else
-  {                 /*   out of range           */
-    ic.inb = FALSE; /*     then remember that   */
-    ic.xp[1] = 0;
-  }
+    { /*   out of range           */
+      ic.inb = FALSE; /*     then remember that   */
+      ic.xp[1] = 0;
+    }
 
   xsc = (pos[2] - t->rmin[2]) / rsize; /*   scale to range [0,1)   */
-  if (0.0 <= xsc && xsc < 1.0)         /*   within unit interval?  */
-    ic.xp[2] = floor(IMAX * xsc);      /*     then integerize      */
+  if (0.0 <= xsc && xsc < 1.0) /*   within unit interval?  */
+    ic.xp[2] = floor(IMAX * xsc); /*     then integerize      */
   else
-  {                 /*   out of range           */
-    ic.inb = FALSE; /*     then remember that   */
-    ic.xp[2] = 0;
-  }
+    { /*   out of range           */
+      ic.inb = FALSE; /*     then remember that   */
+      ic.xp[2] = 0;
+    }
 
   /*chatting("Returning %d:%d:%d,
    * ic.inb=%d\n",ic.xp[0],ic.xp[1],ic.xp[2],ic.inb);*/
@@ -1063,18 +1068,18 @@ int ic_test(bodyptr p, treeptr t)
   rsize = t->rsize;
 
   xsc = (pos[0] - t->rmin[0]) / rsize; /*   scale to range [0,1)   */
-  if (!(0.0 <= xsc && xsc < 1.0))      /*   within unit interval?  */
-    result = FALSE;                    /*     then remember that   */
+  if (!(0.0 <= xsc && xsc < 1.0)) /*   within unit interval?  */
+    result = FALSE; /*     then remember that   */
   /*if (result==FALSE) chatting("rsize=%f,xsc=%f\n",rsize,xsc);*/
 
   xsc = (pos[1] - t->rmin[1]) / rsize; /*   scale to range [0,1)   */
-  if (!(0.0 <= xsc && xsc < 1.0))      /*   within unit interval?  */
-    result = FALSE;                    /*     then remember that   */
+  if (!(0.0 <= xsc && xsc < 1.0)) /*   within unit interval?  */
+    result = FALSE; /*     then remember that   */
   /*if (result==FALSE) chatting("rsize=%f,xsc=%f\n",rsize,xsc);*/
 
   xsc = (pos[2] - t->rmin[2]) / rsize; /*   scale to range [0,1)   */
-  if (!(0.0 <= xsc && xsc < 1.0))      /*   within unit interval?  */
-    result = FALSE;                    /*     then remember that   */
+  if (!(0.0 <= xsc && xsc < 1.0)) /*   within unit interval?  */
+    result = FALSE; /*     then remember that   */
   /*if (result==FALSE) chatting("rsize=%f,xsc=%f\n",rsize,xsc);*/
 
   /*if (result==FALSE)
@@ -1120,10 +1125,10 @@ int subindex(bodyptr p, treeptr t, int l)
   assert((0.0 <= xsc) && (xsc < 1.0), 7);
   xp[2] = floor(IMAX * xsc); /*   then integerize      */
 
-  i = 0;                     /* sum index in i           */
+  i = 0; /* sum index in i           */
   for (k = 0; k < NDIM; k++) /* check each dimension     */
-    if (xp[k] & l)           /*   if beyond midpoint     */
-      i += NSUB >> (k + 1);  /*     skip over subcells   */
+    if (xp[k] & l) /*   if beyond midpoint     */
+      i += NSUB >> (k + 1); /*     skip over subcells   */
 
   return (i);
 }
@@ -1132,10 +1137,10 @@ int old_subindex(icstruct ic, int l)
 {
   register int i, k;
 
-  i = 0;                     /* sum index in i           */
+  i = 0; /* sum index in i           */
   for (k = 0; k < NDIM; k++) /* check each dimension     */
-    if (ic.xp[k] & l)        /*   if beyond midpoint     */
-      i += NSUB >> (k + 1);  /*     skip over subcells   */
+    if (ic.xp[k] & l) /*   if beyond midpoint     */
+      i += NSUB >> (k + 1); /*     skip over subcells   */
   return (i);
 }
 
@@ -1154,32 +1159,32 @@ real hackcofm(nodeptr q)
   /*chatting("Entered hackcofm,
    * q=0x%x,fp=0x%x,sp=0x%x\n",q,__getfp(),__getsp());*/
   if (Type(q) == CELL)
-  { /* is this a cell?          */
-    mq = 0.0;
-    CLRV(tmp_pos); /*   and c. of m.           */
-    for (i = 0; i < NSUB; i++)
-    {
-      r = Subp((cellptr)q)[i];
-      if (r != NULL)
-      {
-        mr = hackcofm(r);
-        mq = mr + mq;
-        MULVS(tmpv, Pos(r), mr);      /*       find moment        */
-        ADDV(tmp_pos, tmp_pos, tmpv); /*       sum tot. moment    */
-      }
-    }
+    { /* is this a cell?          */
+      mq = 0.0;
+      CLRV(tmp_pos); /*   and c. of m.           */
+      for (i = 0; i < NSUB; i++)
+        {
+          r = Subp((cellptr)q)[i];
+          if (r != NULL)
+            {
+              mr = hackcofm(r);
+              mq = mr + mq;
+              MULVS(tmpv, Pos(r), mr); /*       find moment        */
+              ADDV(tmp_pos, tmp_pos, tmpv); /*       sum tot. moment    */
+            }
+        }
 
-    Mass(q) = mq;
-    NOTEST();
-    Pos(q)[0] = tmp_pos[0];
-    Pos(q)[1] = tmp_pos[1];
-    Pos(q)[2] = tmp_pos[2];
-    DIVVS(Pos(q), Pos(q), Mass(q)); /*   rescale cms position   */
-    RETEST();
-    /*chatting("leaving hackcofm cell,q=0x%x,fp=0x%x,sp=0x%x\n",*/
-    /*q,__getfp(),__getsp());*/
-    return mq;
-  }
+      Mass(q) = mq;
+      NOTEST();
+      Pos(q)[0] = tmp_pos[0];
+      Pos(q)[1] = tmp_pos[1];
+      Pos(q)[2] = tmp_pos[2];
+      DIVVS(Pos(q), Pos(q), Mass(q)); /*   rescale cms position   */
+      RETEST();
+      /*chatting("leaving hackcofm cell,q=0x%x,fp=0x%x,sp=0x%x\n",*/
+      /*q,__getfp(),__getsp());*/
+      return mq;
+    }
   /*chatting("0x%x::Hackcofm mass = %f, type = %d\n",q,Mass(q),Type(q));*/
   /*chatting("0x%x:position:%f::%f::%f\n",q,Pos(q)[0],Pos(q)[1],Pos(q)[2]);*/
   mq = Mass(q);
@@ -1197,25 +1202,25 @@ void ptree(nodeptr n, int level)
   nodeptr r;
 
   if (n != NULL)
-  {
-    if (Type(n) == BODY)
     {
-      chatting("%2d BODY@%x %f, %f, %f\n", level, n, Pos(n)[0], Pos(n)[1],
-               Pos(n)[2]);
-    }
-    else /* CELL */
-    {
-      int i;
+      if (Type(n) == BODY)
+        {
+          chatting("%2d BODY@%x %f, %f, %f\n", level, n, Pos(n)[0], Pos(n)[1],
+                   Pos(n)[2]);
+        }
+      else /* CELL */
+        {
+          int i;
 
-      chatting("%2d CELL@%x %f, %f, %f\n", level, n, Pos(n)[0], Pos(n)[1],
-               Pos(n)[2]);
-      for (i = 0; i < NSUB; i++)
-      {
-        r = Subp((cellptr)n)[i];
-        ptree(r, level + 1);
-      }
+          chatting("%2d CELL@%x %f, %f, %f\n", level, n, Pos(n)[0], Pos(n)[1],
+                   Pos(n)[2]);
+          for (i = 0; i < NSUB; i++)
+            {
+              r = Subp((cellptr)n)[i];
+              ptree(r, level + 1);
+            }
+        }
     }
-  }
   else
     printf("%2d NULL TREE\n", level);
 }
@@ -1241,24 +1246,24 @@ int dis2_number(nodeptr n, int prev_bodies, int tnperproc)
     return prev_bodies;
 
   else if (Type(n) == BODY)
-  {
-    New_Proc(n) = (prev_bodies + 1) / tnperproc;
-    return prev_bodies + 1;
-  }
-
-  else
-  { /* cell */
-    register int i;
-    register nodeptr r;
-
-    /*NOTEST();*/
-    for (i = 0; i < NSUB; i++)
     {
-      r = Subp((cellptr)n)[i];
-      prev_bodies = dis2_number(r, prev_bodies, tnperproc);
+      New_Proc(n) = (prev_bodies + 1) / tnperproc;
+      return prev_bodies + 1;
     }
 
-    RETEST();
-    return prev_bodies;
-  }
+  else
+    { /* cell */
+      register int i;
+      register nodeptr r;
+
+      /*NOTEST();*/
+      for (i = 0; i < NSUB; i++)
+        {
+          r = Subp((cellptr)n)[i];
+          prev_bodies = dis2_number(r, prev_bodies, tnperproc);
+        }
+
+      RETEST();
+      return prev_bodies;
+    }
 }

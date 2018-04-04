@@ -36,19 +36,19 @@ int check_file(char *fname)
   struct stat buf;
 
   if (stat(fname, &buf) != 0)
-  {
-    if (errno == ENOENT)
     {
-      return NOSUCHFILE;
+      if (errno == ENOENT)
+        {
+          return NOSUCHFILE;
+        }
+      else
+        {
+          return STATFAILED;
+        }
     }
-    else
-    {
-      return STATFAILED;
-    }
-  }
   else
-  {
-    /*
+    {
+      /*
           if (S_ISREG(buf.st_mode)) {
             if ((ftype = samplefile(fname)) == ISASCIIFILE) {
               return ISASCIIFILE;
@@ -68,7 +68,7 @@ int check_file(char *fname)
             return ISSOCKET;
           }
     */
-  }
+    }
   return 0;
 }
 

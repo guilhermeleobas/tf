@@ -47,9 +47,9 @@ int gs_currentpoint(gs_state *pgs, gs_point *ppt)
   gs_fixed_point pt;
   int code = gx_path_current_point(pgs->path, &pt);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   return gs_itransform(pgs, fixed2float(pt.x), fixed2float(pt.y), ppt);
 }
 
@@ -58,9 +58,9 @@ int gs_moveto(gs_state *pgs, floatp x, floatp y)
   int code;
   gs_fixed_point pt;
   if ((code = gs_point_transform2fixed(&pgs->ctm, x, y, &pt)) >= 0)
-  {
-    code = gx_path_add_point(pgs->path, pt.x, pt.y);
-  }
+    {
+      code = gx_path_add_point(pgs->path, pt.x, pt.y);
+    }
   return code;
 }
 
@@ -69,9 +69,9 @@ int gs_rmoveto(gs_state *pgs, floatp x, floatp y)
   int code;
   gs_fixed_point dpt;
   if ((code = gs_distance_transform2fixed(&pgs->ctm, x, y, &dpt)) >= 0)
-  {
-    code = gx_path_add_relative_point(pgs->path, dpt.x, dpt.y);
-  }
+    {
+      code = gx_path_add_relative_point(pgs->path, dpt.x, dpt.y);
+    }
   return code;
 }
 
@@ -80,9 +80,9 @@ int gs_lineto(gs_state *pgs, floatp x, floatp y)
   int code;
   gs_fixed_point pt;
   if ((code = gs_point_transform2fixed(&pgs->ctm, x, y, &pt)) >= 0)
-  {
-    code = gx_path_add_line(pgs->path, pt.x, pt.y);
-  }
+    {
+      code = gx_path_add_line(pgs->path, pt.x, pt.y);
+    }
   return code;
 }
 
@@ -91,13 +91,13 @@ int gs_rlineto(gs_state *pgs, floatp x, floatp y)
   gs_fixed_point cpt, dpt;
   int code = gx_path_current_point(pgs->path, &cpt);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   if ((code = gs_distance_transform2fixed(&pgs->ctm, x, y, &dpt)) >= 0)
-  {
-    code = gx_path_add_line(pgs->path, cpt.x + dpt.x, cpt.y + dpt.y);
-  }
+    {
+      code = gx_path_add_line(pgs->path, cpt.x + dpt.x, cpt.y + dpt.y);
+    }
   return code;
 }
 
@@ -133,76 +133,76 @@ int arc_either(gs_state *pgs, floatp axc, floatp ayc, floatp ar, floatp aang1,
   int first = 1;
   int code;
   if (ar < 0)
-  {
-    return_error(gs_error_rangecheck);
-  }
+    {
+      return_error(gs_error_rangecheck);
+    }
 #define fixed90 int2fixed(90)
 #define fixed360 int2fixed(360)
   /* Reduce the arc to at most 360 degrees. */
   if (ang1 != ang2)
-  {
-    ang1 %= fixed360;
-    ang2 %= fixed360;
-    if (clockwise)
     {
-      if (ang2 >= ang1)
-      {
-        ang1 += fixed360;
-      }
+      ang1 %= fixed360;
+      ang2 %= fixed360;
+      if (clockwise)
+        {
+          if (ang2 >= ang1)
+            {
+              ang1 += fixed360;
+            }
+        }
+      else
+        {
+          if (ang2 <= ang1)
+            {
+              ang2 += fixed360;
+            }
+        }
     }
-    else
-    {
-      if (ang2 <= ang1)
-      {
-        ang2 += fixed360;
-      }
-    }
-  }
   ang1r = fixed2float(ang1) * degrees_to_radians;
   sin0 = ar * sin(ang1r), cos0 = ar * cos(ang1r);
   x0 = axc + cos0, y0 = ayc + sin0;
   if (clockwise)
-  { /* Quadrant reduction */
-    while ((adiff = ang2 - ang1) < -fixed90)
-    {
-      float w = sin0;
-      sin0 = -cos0;
-      cos0 = w;
-      x3r = axc + cos0, y3r = ayc + sin0;
-      /* Must cast doubles to floats explicitly */
-      code = arc_add(pgs, x0, y0, x3r, y3r, (x0 + cos0), (y0 + sin0), first);
-      if (code < 0)
-      {
-        return code;
-      }
-      x0 = x3r, y0 = y3r;
-      ang1 -= fixed90;
-      first = 0;
+    { /* Quadrant reduction */
+      while ((adiff = ang2 - ang1) < -fixed90)
+        {
+          float w = sin0;
+          sin0 = -cos0;
+          cos0 = w;
+          x3r = axc + cos0, y3r = ayc + sin0;
+          /* Must cast doubles to floats explicitly */
+          code = arc_add(pgs, x0, y0, x3r, y3r, (x0 + cos0), (y0 + sin0), first);
+          if (code < 0)
+            {
+              return code;
+            }
+          x0 = x3r, y0 = y3r;
+          ang1 -= fixed90;
+          first = 0;
+        }
     }
-  }
   else
-  { /* Quadrant reduction */
-    while ((adiff = ang2 - ang1) > fixed90)
-    {
-      float w = cos0;
-      cos0 = -sin0;
-      sin0 = w;
-      x3r = axc + cos0, y3r = ayc + sin0;
-      /* Must cast doubles to floats explicitly */
-      code = arc_add(pgs, x0, y0, x3r, y3r, (x0 + cos0), (y0 + sin0), first);
-      if (code < 0)
-      {
-        return code;
-      }
-      x0 = x3r, y0 = y3r;
-      ang1 += fixed90;
-      first = 0;
+    { /* Quadrant reduction */
+      while ((adiff = ang2 - ang1) > fixed90)
+        {
+          float w = cos0;
+          cos0 = -sin0;
+          sin0 = w;
+          x3r = axc + cos0, y3r = ayc + sin0;
+          /* Must cast doubles to floats explicitly */
+          code = arc_add(pgs, x0, y0, x3r, y3r, (x0 + cos0), (y0 + sin0), first);
+          if (code < 0)
+            {
+              return code;
+            }
+          x0 = x3r, y0 = y3r;
+          ang1 += fixed90;
+          first = 0;
+        }
     }
-  }
   if (adiff == 0)
-  {
-    return 0; /* exact multiple of 90 */
-  }
+    {
+      return 0; /* exact multiple of 90 */
+    }
   /* Compute the intersection of the tangents. */
   {
     float trad = tan(fixed2float(adiff) * (degrees_to_radians / 2));
@@ -223,14 +223,14 @@ int gs_arcto(gs_state *pgs, floatp ax1, floatp ay1, floatp ax2, floatp ay2,
 #define ay0 up0.y
   int code;
   if (arad < 0)
-  {
-    return_error(gs_error_undefinedresult);
-  }
+    {
+      return_error(gs_error_undefinedresult);
+    }
   /* Transform the current point back into user coordinates */
   if ((code = gs_currentpoint(pgs, &up0)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   { /* Now we have to compute the tangent points. */
     /* Basically, the idea is to compute the tangent */
     /* of the bisector by using tan(x+y) and tan(z/2) */
@@ -246,34 +246,34 @@ int gs_arcto(gs_state *pgs, floatp ax1, floatp ay1, floatp ax2, floatp ay2,
     double denom = sqrt(sql0 * sql2) - (dx0 * dx2 + dy0 * dy2);
     /* Check for collinear points. */
     if (fabs(num) < 1.0e-6 || fabs(denom) < 1.0e-6)
-    {
-      gs_fixed_point pt;
-      code = gs_point_transform2fixed(&pgs->ctm, ax1, ay1, &pt);
-      if (code >= 0)
       {
-        code = gx_path_add_line(pgs->path, pt.x, pt.y);
+        gs_fixed_point pt;
+        code = gs_point_transform2fixed(&pgs->ctm, ax1, ay1, &pt);
+        if (code >= 0)
+          {
+            code = gx_path_add_line(pgs->path, pt.x, pt.y);
+          }
+        xt0 = xt2 = ax1;
+        yt0 = yt2 = ay1;
       }
-      xt0 = xt2 = ax1;
-      yt0 = yt2 = ay1;
-    }
     else /* not collinear */
-    {
-      double dist = fabs(arad * num / denom);
-      double l0 = dist / sqrt(sql0), l2 = dist / sqrt(sql2);
-      xt0 = ax1 + dx0 * l0;
-      yt0 = ay1 + dy0 * l0;
-      xt2 = ax1 + dx2 * l2;
-      yt2 = ay1 + dy2 * l2;
-      code = arc_add(pgs, xt0, yt0, xt2, yt2, ax1, ay1, 1);
-    }
+      {
+        double dist = fabs(arad * num / denom);
+        double l0 = dist / sqrt(sql0), l2 = dist / sqrt(sql2);
+        xt0 = ax1 + dx0 * l0;
+        yt0 = ay1 + dy0 * l0;
+        xt2 = ax1 + dx2 * l2;
+        yt2 = ay1 + dy2 * l2;
+        code = arc_add(pgs, xt0, yt0, xt2, yt2, ax1, ay1, 1);
+      }
   }
   if (retxy != 0)
-  {
-    retxy[0] = xt0;
-    retxy[1] = yt0;
-    retxy[2] = xt2;
-    retxy[3] = yt2;
-  }
+    {
+      retxy[0] = xt0;
+      retxy[1] = yt0;
+      retxy[2] = xt2;
+      retxy[3] = yt2;
+    }
   return code;
 }
 
@@ -297,9 +297,9 @@ int arc_add(gs_state *pgs, floatp x0, floatp y0, floatp x3, floatp y3,
        (code = (gx_path_current_point(path, &cpt) >= 0
                     ? gx_path_add_line(path, p0.x, p0.y)
                     : gx_path_add_point(path, p0.x, p0.y))) < 0))
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   return gx_path_add_arc(path, p0.x, p0.y, p3.x, p3.y, pt.x, pt.y);
 }
 
@@ -313,9 +313,9 @@ int gs_curveto(gs_state *pgs, floatp x1, floatp y1, floatp x2, floatp y2,
   if ((code = gs_point_transform2fixed(&pgs->ctm, x1, y1, &p1)) < 0 ||
       (code = gs_point_transform2fixed(&pgs->ctm, x2, y2, &p2)) < 0 ||
       (code = gs_point_transform2fixed(&pgs->ctm, x3, y3, &p3)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   return gx_path_add_curve(pgs->path, p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
 }
 
@@ -325,15 +325,15 @@ int gs_rcurveto(gs_state *pgs, floatp dx1, floatp dy1, floatp dx2, floatp dy2,
   gs_fixed_point pt, p1, p2, p3;
   int code = gx_path_current_point(pgs->path, &pt);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   if ((code = gs_distance_transform2fixed(&pgs->ctm, dx1, dy1, &p1)) < 0 ||
       (code = gs_distance_transform2fixed(&pgs->ctm, dx2, dy2, &p2)) < 0 ||
       (code = gs_distance_transform2fixed(&pgs->ctm, dx3, dy3, &p3)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   return gx_path_add_curve(pgs->path, pt.x + p1.x, pt.y + p1.y, pt.x + p2.x,
                            pt.y + p2.y, pt.x + p3.x, pt.y + p3.y);
 }

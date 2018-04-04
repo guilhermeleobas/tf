@@ -32,13 +32,13 @@
  *              Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include <assert.h>         /* for assert()                   */
-#include <ctype.h>          /* for isspace() definition       */
-#include <stdio.h>          /* for FILE definition            */
-#include <stdlib.h>         /* for NULL definition            */
-#include <string.h>         /* for strlen() definition        */
+#include <assert.h> /* for assert()                   */
+#include <ctype.h> /* for isspace() definition       */
+#include <stdio.h> /* for FILE definition            */
+#include <stdlib.h> /* for NULL definition            */
+#include <string.h> /* for strlen() definition        */
 #include "dataManagement.h" /* for primitive type definitions */
-#include "errorMessage.h"   /* for errorMessage() definition  */
+#include "errorMessage.h" /* for errorMessage() definition  */
 
 /*
  *  Maximum length of buffer for temporary storage of string
@@ -46,9 +46,9 @@
 #define MAXIMUM_BUFFER_LENGTH 1024
 
 Char *getString(FILE *file) /*  input stream to get string from */
-{                           /*  begin getString()   */
-  Int nextChar;             /* next character read from stream   */
-  Int bufferLength;         /* current length of static buffer   */
+{ /*  begin getString()   */
+  Int nextChar; /* next character read from stream   */
+  Int bufferLength; /* current length of static buffer   */
   /* static buffer for reading */
   static Char buffer[MAXIMUM_BUFFER_LENGTH + 1];
 
@@ -71,19 +71,19 @@ Char *getString(FILE *file) /*  input stream to get string from */
   nextChar = fgetc(file);
   while (nextChar != EOF && nextChar != '\n' && nextChar != '\r' &&
          isspace(nextChar))
-  {
-    nextChar = fgetc(file);
-  } /*  end of loop while ( !EOF || '\n', etc. )    */
+    {
+      nextChar = fgetc(file);
+    } /*  end of loop while ( !EOF || '\n', etc. )    */
 
   if (nextChar == EOF)
-  {
-    return (NULL); /*  return output value of NULL     */
-  }                /*  end of if ( nextChar == EOF )   */
+    {
+      return (NULL); /*  return output value of NULL     */
+    } /*  end of if ( nextChar == EOF )   */
   else if (nextChar == '\n' || nextChar == '\r')
-  {
-    ungetc(nextChar, file); /*  "push" character back on stream */
-    return (NULL);          /*  return output value of NULL     */
-  } /*  end of if ( nextChar == '\n' || nextChar == '\r' )  */
+    {
+      ungetc(nextChar, file); /*  "push" character back on stream */
+      return (NULL); /*  return output value of NULL     */
+    } /*  end of if ( nextChar == '\n' || nextChar == '\r' )  */
 
   /*
    *  Read string until next delimiter, i.e., a white space, or EOF.  Add
@@ -97,22 +97,22 @@ Char *getString(FILE *file) /*  input stream to get string from */
 
   nextChar = fgetc(file);
   while (nextChar != EOF && !isspace(nextChar))
-  {
-    if (bufferLength >= MAXIMUM_BUFFER_LENGTH)
     {
-      errorMessage("maximum buffer length exceeded", REPLACE);
-      errorMessage(name, PREPEND);
-      flushErrorMessage();
+      if (bufferLength >= MAXIMUM_BUFFER_LENGTH)
+        {
+          errorMessage("maximum buffer length exceeded", REPLACE);
+          errorMessage(name, PREPEND);
+          flushErrorMessage();
 
-      buffer[bufferLength + 1] = '\0'; /*  terminate string        */
-      return (buffer);                 /*  return current buffer   */
-    } /*  end of if ( bufferLength >= MAXIMUM_BUFFER_LENGTH ) */
+          buffer[bufferLength + 1] = '\0'; /*  terminate string        */
+          return (buffer); /*  return current buffer   */
+        } /*  end of if ( bufferLength >= MAXIMUM_BUFFER_LENGTH ) */
 
-    buffer[bufferLength] = (Char)nextChar;
-    bufferLength++;
+      buffer[bufferLength] = (Char)nextChar;
+      bufferLength++;
 
-    nextChar = fgetc(file);
-  } /*  end of loop for nextChar != EOF and !isspace    */
+      nextChar = fgetc(file);
+    } /*  end of loop for nextChar != EOF and !isspace    */
 
   buffer[bufferLength] = '\0'; /*  terminate string        */
 
@@ -125,19 +125,19 @@ Char *getString(FILE *file) /*  input stream to get string from */
    *  back onto the stream fails, delete the string and return error code.
    */
   if (nextChar != EOF)
-  {
-    Int check;
-
-    check = ungetc(nextChar, file);
-    if (check != nextChar || check == EOF)
     {
-      errorMessage("error pushing character back onto stream", REPLACE);
-      errorMessage(name, PREPEND);
-      flushErrorMessage();
+      Int check;
 
-      return (NULL); /*  return current buffer */
-    }                /*  end of if check != nextChar || check == EOF */
-  }                  /*  end of if ( nextChar != EOF )   */
+      check = ungetc(nextChar, file);
+      if (check != nextChar || check == EOF)
+        {
+          errorMessage("error pushing character back onto stream", REPLACE);
+          errorMessage(name, PREPEND);
+          flushErrorMessage();
+
+          return (NULL); /*  return current buffer */
+        } /*  end of if check != nextChar || check == EOF */
+    } /*  end of if ( nextChar != EOF )   */
 
   return (buffer);
 } /*  end of getString()  */

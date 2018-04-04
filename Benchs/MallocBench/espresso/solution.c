@@ -47,10 +47,10 @@ int col;
   /* delete rows covered by this column */
   pcol = sm_get_col(A, col);
   for (p = pcol->first_row; p != 0; p = pnext)
-  {
-    pnext = p->next_row; /* grab it before it disappears */
-    sm_delrow(A, p->row_num);
-  }
+    {
+      pnext = p->next_row; /* grab it before it disappears */
+      sm_delrow(A, p->row_num);
+    }
 }
 
 /* ARGSUSED */
@@ -65,34 +65,34 @@ int col;
 solution_t *solution_choose_best(best1, best2) solution_t *best1, *best2;
 {
   if (best1 != NIL(solution_t))
-  {
-    if (best2 != NIL(solution_t))
     {
-      if (best1->cost <= best2->cost)
-      {
-        solution_free(best2);
-        return best1;
-      }
+      if (best2 != NIL(solution_t))
+        {
+          if (best1->cost <= best2->cost)
+            {
+              solution_free(best2);
+              return best1;
+            }
+          else
+            {
+              solution_free(best1);
+              return best2;
+            }
+        }
       else
-      {
-        solution_free(best1);
-        return best2;
-      }
+        {
+          return best1;
+        }
     }
-    else
-    {
-      return best1;
-    }
-  }
   else
-  {
-    if (best2 != NIL(solution_t))
     {
-      return best2;
+      if (best2 != NIL(solution_t))
+        {
+          return best2;
+        }
+      else
+        {
+          return NIL(solution_t);
+        }
     }
-    else
-    {
-      return NIL(solution_t);
-    }
-  }
 }

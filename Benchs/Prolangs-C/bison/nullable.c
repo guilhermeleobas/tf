@@ -61,62 +61,62 @@ void set_nullable(void)
 
   r = ritem;
   while (*r)
-  {
-    if (*r < 0)
     {
-      symbol = rlhs[-(*r++)];
-      if (!nullable[symbol])
-      {
-        nullable[symbol] = 1;
-        *s2++ = symbol;
-      }
-    }
-    else
-    {
-      r1 = r;
-      any_tokens = 0;
-      for (symbol = *r++; symbol > 0; symbol = *r++)
-      {
-        if (ISTOKEN(symbol))
+      if (*r < 0)
         {
-          any_tokens = 1;
+          symbol = rlhs[-(*r++)];
+          if (!nullable[symbol])
+            {
+              nullable[symbol] = 1;
+              *s2++ = symbol;
+            }
         }
-      }
+      else
+        {
+          r1 = r;
+          any_tokens = 0;
+          for (symbol = *r++; symbol > 0; symbol = *r++)
+            {
+              if (ISTOKEN(symbol))
+                {
+                  any_tokens = 1;
+                }
+            }
 
-      if (!any_tokens)
-      {
-        ruleno = -symbol;
-        r = r1;
-        for (symbol = *r++; symbol > 0; symbol = *r++)
-        {
-          rcount[ruleno]++;
-          p->next = rsets[symbol];
-          p->value = ruleno;
-          rsets[symbol] = p;
-          p++;
+          if (!any_tokens)
+            {
+              ruleno = -symbol;
+              r = r1;
+              for (symbol = *r++; symbol > 0; symbol = *r++)
+                {
+                  rcount[ruleno]++;
+                  p->next = rsets[symbol];
+                  p->value = ruleno;
+                  rsets[symbol] = p;
+                  p++;
+                }
+            }
         }
-      }
     }
-  }
 
   while (s1 < s2)
-  {
-    p = rsets[*s1++];
-    while (p)
     {
-      ruleno = p->value;
-      p = p->next;
-      if (--rcount[ruleno] == 0)
-      {
-        symbol = rlhs[ruleno];
-        if (!nullable[symbol])
+      p = rsets[*s1++];
+      while (p)
         {
-          nullable[symbol] = 1;
-          *s2++ = symbol;
+          ruleno = p->value;
+          p = p->next;
+          if (--rcount[ruleno] == 0)
+            {
+              symbol = rlhs[ruleno];
+              if (!nullable[symbol])
+                {
+                  nullable[symbol] = 1;
+                  *s2++ = symbol;
+                }
+            }
         }
-      }
     }
-  }
 
   FREE(squeue);
   FREE(rcount);

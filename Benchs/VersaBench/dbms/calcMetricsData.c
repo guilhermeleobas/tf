@@ -31,10 +31,10 @@
  *	Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include <assert.h>         /* for assert()                   */
-#include <math.h>           /* for sqrt() definition          */
+#include <assert.h> /* for assert()                   */
+#include <math.h> /* for sqrt() definition          */
 #include "dataManagement.h" /* for primitive type definitions */
-#include "metrics.h"        /* for Metrics definition         */
+#include "metrics.h" /* for Metrics definition         */
 
 /*
  *  Function prototype
@@ -42,7 +42,7 @@
 extern Time getTime(void);
 
 void calcMetricsData(Metrics *metrics) /*  metrics struct to calculate */
-{                                      /*  begin calcMetricsData()  */
+{ /*  begin calcMetricsData()  */
   Double temp;
 
   assert(metrics);
@@ -58,34 +58,34 @@ void calcMetricsData(Metrics *metrics) /*  metrics struct to calculate */
    *  deviation.
    */
   if (metrics->insertCommandMetric.numOfCommands > 0)
-  {
-    /*
+    {
+      /*
      *  Calculate metrics for Insert Command: calculate the average and the
      *  the variance.  If the variance is non-negative, calculate the standard
      *  deviation.
      */
-    metrics->insertCommandMetric.avg =
-        metrics->insertCommandMetric.sum /
-        metrics->insertCommandMetric.numOfCommands;
-    temp = metrics->insertCommandMetric.sumSquares -
-           metrics->insertCommandMetric.sum * metrics->insertCommandMetric.sum /
-               metrics->insertCommandMetric.numOfCommands;
-    if (temp < 0.0)
+      metrics->insertCommandMetric.avg =
+          metrics->insertCommandMetric.sum /
+          metrics->insertCommandMetric.numOfCommands;
+      temp = metrics->insertCommandMetric.sumSquares -
+             metrics->insertCommandMetric.sum * metrics->insertCommandMetric.sum /
+                 metrics->insertCommandMetric.numOfCommands;
+      if (temp < 0.0)
+        {
+          metrics->insertCommandMetric.avg = MINIMUM_VALUE_OF_FLOAT;
+          metrics->insertCommandMetric.deviation = MINIMUM_VALUE_OF_FLOAT;
+        } /* end of temp < 0.0 - round-off error for variance */
+      else
+        {
+          metrics->insertCommandMetric.deviation =
+              sqrt(temp / metrics->insertCommandMetric.numOfCommands);
+        } /* end of temp >= 0.0 */
+    } /* end of insert->numOfCommands > 0 */
+  else
     {
       metrics->insertCommandMetric.avg = MINIMUM_VALUE_OF_FLOAT;
       metrics->insertCommandMetric.deviation = MINIMUM_VALUE_OF_FLOAT;
-    } /* end of temp < 0.0 - round-off error for variance */
-    else
-    {
-      metrics->insertCommandMetric.deviation =
-          sqrt(temp / metrics->insertCommandMetric.numOfCommands);
-    } /* end of temp >= 0.0 */
-  }   /* end of insert->numOfCommands > 0 */
-  else
-  {
-    metrics->insertCommandMetric.avg = MINIMUM_VALUE_OF_FLOAT;
-    metrics->insertCommandMetric.deviation = MINIMUM_VALUE_OF_FLOAT;
-  } /* end of insert->numOfCommands == 0 */
+    } /* end of insert->numOfCommands == 0 */
 
   /*
    *  Calculate metrics for Query Command: calculate the average and the
@@ -93,28 +93,28 @@ void calcMetricsData(Metrics *metrics) /*  metrics struct to calculate */
    *  deviation.
    */
   if (metrics->queryCommandMetric.numOfCommands > 0)
-  {
-    metrics->queryCommandMetric.avg = metrics->queryCommandMetric.sum /
-                                      metrics->queryCommandMetric.numOfCommands;
-    temp = metrics->queryCommandMetric.sumSquares -
-           metrics->queryCommandMetric.sum * metrics->queryCommandMetric.sum /
-               metrics->queryCommandMetric.numOfCommands;
-    if (temp < 0.0)
+    {
+      metrics->queryCommandMetric.avg = metrics->queryCommandMetric.sum /
+                                        metrics->queryCommandMetric.numOfCommands;
+      temp = metrics->queryCommandMetric.sumSquares -
+             metrics->queryCommandMetric.sum * metrics->queryCommandMetric.sum /
+                 metrics->queryCommandMetric.numOfCommands;
+      if (temp < 0.0)
+        {
+          metrics->queryCommandMetric.avg = MINIMUM_VALUE_OF_FLOAT;
+          metrics->queryCommandMetric.deviation = MINIMUM_VALUE_OF_FLOAT;
+        } /* end of temp < 0.0 - round-off error for variance */
+      else
+        {
+          metrics->queryCommandMetric.deviation =
+              sqrt(temp / metrics->queryCommandMetric.numOfCommands);
+        } /* end of temp >= 0.0 */
+    } /* end of query->numOfCommands > 0 */
+  else
     {
       metrics->queryCommandMetric.avg = MINIMUM_VALUE_OF_FLOAT;
       metrics->queryCommandMetric.deviation = MINIMUM_VALUE_OF_FLOAT;
-    } /* end of temp < 0.0 - round-off error for variance */
-    else
-    {
-      metrics->queryCommandMetric.deviation =
-          sqrt(temp / metrics->queryCommandMetric.numOfCommands);
-    } /* end of temp >= 0.0 */
-  }   /* end of query->numOfCommands > 0 */
-  else
-  {
-    metrics->queryCommandMetric.avg = MINIMUM_VALUE_OF_FLOAT;
-    metrics->queryCommandMetric.deviation = MINIMUM_VALUE_OF_FLOAT;
-  } /* end of query->numOfCommands == 0 */
+    } /* end of query->numOfCommands == 0 */
 
   /*
    *  Calculate metrics for Delete Command: calculate the average and the
@@ -122,29 +122,29 @@ void calcMetricsData(Metrics *metrics) /*  metrics struct to calculate */
    *  deviation.
    */
   if (metrics->deleteCommandMetric.numOfCommands > 0)
-  {
-    metrics->deleteCommandMetric.avg =
-        metrics->deleteCommandMetric.sum /
-        metrics->deleteCommandMetric.numOfCommands;
-    temp = metrics->deleteCommandMetric.sumSquares -
-           metrics->deleteCommandMetric.sum * metrics->deleteCommandMetric.sum /
-               metrics->deleteCommandMetric.numOfCommands;
-    if (temp < 0.0)
+    {
+      metrics->deleteCommandMetric.avg =
+          metrics->deleteCommandMetric.sum /
+          metrics->deleteCommandMetric.numOfCommands;
+      temp = metrics->deleteCommandMetric.sumSquares -
+             metrics->deleteCommandMetric.sum * metrics->deleteCommandMetric.sum /
+                 metrics->deleteCommandMetric.numOfCommands;
+      if (temp < 0.0)
+        {
+          metrics->deleteCommandMetric.avg = MINIMUM_VALUE_OF_FLOAT;
+          metrics->deleteCommandMetric.deviation = MINIMUM_VALUE_OF_FLOAT;
+        } /* end of temp < 0.0 - round-off error for variance */
+      else
+        {
+          metrics->deleteCommandMetric.deviation =
+              sqrt(temp / metrics->deleteCommandMetric.numOfCommands);
+        } /* end of temp >= 0.0 */
+    } /* end of delete->numOfCommands > 0 */
+  else
     {
       metrics->deleteCommandMetric.avg = MINIMUM_VALUE_OF_FLOAT;
       metrics->deleteCommandMetric.deviation = MINIMUM_VALUE_OF_FLOAT;
-    } /* end of temp < 0.0 - round-off error for variance */
-    else
-    {
-      metrics->deleteCommandMetric.deviation =
-          sqrt(temp / metrics->deleteCommandMetric.numOfCommands);
-    } /* end of temp >= 0.0 */
-  }   /* end of delete->numOfCommands > 0 */
-  else
-  {
-    metrics->deleteCommandMetric.avg = MINIMUM_VALUE_OF_FLOAT;
-    metrics->deleteCommandMetric.deviation = MINIMUM_VALUE_OF_FLOAT;
-  } /* end of delete->numOfCommands == 0 */
+    } /* end of delete->numOfCommands == 0 */
 
   return;
 } /*  end of calcMetricsData() */

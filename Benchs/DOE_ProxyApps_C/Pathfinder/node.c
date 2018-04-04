@@ -61,9 +61,9 @@ Node *Node_new(int id, int nodeCount)
   Node *node = malloc(sizeof(Node));
 
   if (!node)
-  {
-    return (NULL);
-  }
+    {
+      return (NULL);
+    }
 
   node->id = id;
   node->nodeCount =
@@ -86,19 +86,19 @@ void Node_delete(Node *trash)
 {
   /* Some basic error checking */
   if (!trash)
-  {
-    return;
-  }
+    {
+      return;
+    }
 
   if (trash->interiorNodes)
-  { /* "true" tells clearNodeList to free the mallocs */
-    NodeList_clear(trash->interiorNodes, true);
-  }
+    { /* "true" tells clearNodeList to free the mallocs */
+      NodeList_clear(trash->interiorNodes, true);
+    }
 
   if (trash->edges)
-  {
-    EdgeList_clear(trash->edges);
-  }
+    {
+      EdgeList_clear(trash->edges);
+    }
 
   free(trash);
 }
@@ -109,9 +109,9 @@ Node *Node_duplicate(Node *from, int newIndex)
   Node *copy = malloc(sizeof(Node));
 
   if (!copy || !from)
-  {
-    return (NULL);
-  }
+    {
+      return (NULL);
+    }
 
   copy->id = from->id;
   copy->nodeCount = newIndex; /* index into bitfield - caller must increment! */
@@ -133,9 +133,9 @@ void Node_setParent(Node *this, Node *parent)
 {
   /* Some basic error checking */
   if (!this || !parent)
-  {
-    return;
-  }
+    {
+      return;
+    }
 
   this->container = parent;
   this->type = interiorNode;
@@ -146,23 +146,23 @@ void Node_addInteriorNode(Node *this, Node *interior)
 {
   /* some basic error checking */
   if (!this || !interior)
-  {
-    return;
-  }
+    {
+      return;
+    }
 
   if (this->interiorNodes == NULL)
-  {
-    this->interiorNodes = NodeList_new();
-    if (this->interiorNodes == NULL)
     {
-      return; /* malloc failed */
+      this->interiorNodes = NodeList_new();
+      if (this->interiorNodes == NULL)
+        {
+          return; /* malloc failed */
+        }
+      this->interiorNodes->node = interior;
     }
-    this->interiorNodes->node = interior;
-  }
   else
-  {
-    NodeList_insertBack(this->interiorNodes, interior);
-  }
+    {
+      NodeList_insertBack(this->interiorNodes, interior);
+    }
 
   Node_setParent(interior, this);
   return;
@@ -178,25 +178,25 @@ bool Node_addEdgeToNode(Node *this, Node *node)
   EdgeList *newEdge = NULL;
 
   if (!this || !node)
-  {
-    return (false);
-  }
+    {
+      return (false);
+    }
 
   /* Scream through the list and make sure edge doesn't already exist */
   for (end = this->edges; end != NULL; end = end->nextEdge)
-  {
-    if (end->targetNode == node)
     {
-      return true;
+      if (end->targetNode == node)
+        {
+          return true;
+        }
     }
-  }
 
   /* Otherwise, we have a new edge. Insert it at the head of the list */
   newEdge = EdgeList_new();
   if (!newEdge)
-  { /* allocation error */
-    return false;
-  }
+    { /* allocation error */
+      return false;
+    }
   newEdge->targetNode = node;
   newEdge->targetNodeId = node->id;
   newEdge->nextEdge =
@@ -217,9 +217,9 @@ NodeList *NodeList_new()
   NodeList *list = malloc(sizeof(NodeList));
 
   if (!list)
-  {
-    return (NULL);
-  }
+    {
+      return (NULL);
+    }
 
   list->node = NULL;
   list->nextNode = NULL;
@@ -234,19 +234,19 @@ void NodeList_clear(NodeList *trash, bool deleteNodes)
 {
   /* Some basic error checking */
   if (!trash)
-  {
-    return;
-  }
+    {
+      return;
+    }
 
   if (trash->nextNode)
-  {
-    NodeList_clear(trash->nextNode, deleteNodes);
-  }
+    {
+      NodeList_clear(trash->nextNode, deleteNodes);
+    }
 
   if (deleteNodes)
-  {
-    Node_delete(trash->node);
-  }
+    {
+      Node_delete(trash->node);
+    }
   free(trash);
 }
 
@@ -265,9 +265,9 @@ bool NodeList_insertFront(NodeList *this, Node *newFront)
 
   /* Some basic error checking */
   if (!this || !newFront || !oldFront)
-  {
-    return (false);
-  }
+    {
+      return (false);
+    }
 
   /* move the formerly front data to the new element */
   oldFront->node = this->node;
@@ -291,30 +291,30 @@ bool NodeList_insertBack(NodeList *this, Node *newBack)
 
   /* Some basic error checking */
   if (!this || !newBack)
-  {
-    return (false);
-  }
+    {
+      return (false);
+    }
 
   /* If the node portion of "this" is null,
    * then we're starting with an empty list.
    */
 
   if (this->node == NULL)
-  {
-    this->node = newBack;
-    return (true); /* We're done! */
-  }
+    {
+      this->node = newBack;
+      return (true); /* We're done! */
+    }
 
   /* Otherwise, we need to find the end of the list */
   for (end = this; end->nextNode != NULL; end = end->nextNode)
-  { /* No-op */
-  }
+    { /* No-op */
+    }
 
   newElement = NodeList_new();
   if (!newElement)
-  {
-    return (false);
-  }
+    {
+      return (false);
+    }
 
   newElement->node = newBack;
   end->nextNode = newElement; /* new nodelist element has a null next */
@@ -332,12 +332,12 @@ EdgeList *EdgeList_new()
 {
   EdgeList *newNode = malloc(sizeof(struct EdgeListStruct));
   if (newNode)
-  {
-    newNode->targetNodeId =
-        -1; /* Potentially a bug. what if there's a node named -1? */
-    newNode->targetNode = NULL;
-    newNode->nextEdge = NULL;
-  }
+    {
+      newNode->targetNodeId =
+          -1; /* Potentially a bug. what if there's a node named -1? */
+      newNode->targetNode = NULL;
+      newNode->nextEdge = NULL;
+    }
   return (newNode);
 }
 
@@ -346,14 +346,14 @@ void EdgeList_clear(EdgeList *this)
 {
   /* Some basic error checking */
   if (!this)
-  {
-    return;
-  }
+    {
+      return;
+    }
 
   if (this->nextEdge)
-  {
-    EdgeList_clear(this->nextEdge);
-  }
+    {
+      EdgeList_clear(this->nextEdge);
+    }
 
   free(this);
 }
@@ -370,29 +370,29 @@ bool EdgeList_insertNodeId(EdgeList *this, int targetNodeId)
 
   /* some basic error checking */
   if (!this)
-  {
-    return (false);
-  }
+    {
+      return (false);
+    }
 
   /* Check to see if this is the initial insertion into the
    * Edge list
    */
   if (this->targetNodeId == -1)
-  {
-    this->targetNodeId = targetNodeId;
-    return (true);
-  }
+    {
+      this->targetNodeId = targetNodeId;
+      return (true);
+    }
 
   /* Otherwise we find the end of the list and make a new entry */
   for (end = this; end->nextEdge != NULL; end = end->nextEdge)
-  { /* No-op */
-  }
+    { /* No-op */
+    }
 
   newElement = EdgeList_new();
   if (!newElement)
-  {
-    return (false);
-  }
+    {
+      return (false);
+    }
 
   newElement->targetNodeId = targetNodeId;
   end->nextEdge =

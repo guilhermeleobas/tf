@@ -48,7 +48,7 @@
 #define W3 2408 /* 2048*sqrt(2)*cos(3*pi/16) */
 #define W5 1609 /* 2048*sqrt(2)*cos(5*pi/16) */
 #define W6 1108 /* 2048*sqrt(2)*cos(6*pi/16) */
-#define W7 565  /* 2048*sqrt(2)*cos(7*pi/16) */
+#define W7 565 /* 2048*sqrt(2)*cos(7*pi/16) */
 
 /* global declarations */
 void Initialize_Fast_IDCT _ANSI_ARGS_((void));
@@ -79,11 +79,11 @@ static void idctrow(blk) short *blk;
   /* shortcut */
   if (!((x1 = blk[4] << 11) | (x2 = blk[6]) | (x3 = blk[2]) | (x4 = blk[1]) |
         (x5 = blk[7]) | (x6 = blk[5]) | (x7 = blk[3])))
-  {
-    blk[0] = blk[1] = blk[2] = blk[3] = blk[4] = blk[5] = blk[6] = blk[7] =
-        blk[0] << 3;
-    return;
-  }
+    {
+      blk[0] = blk[1] = blk[2] = blk[3] = blk[4] = blk[5] = blk[6] = blk[7] =
+          blk[0] << 3;
+      return;
+    }
 
   x0 = (blk[0] << 11) + 128; /* for proper rounding in the fourth stage */
 
@@ -142,11 +142,11 @@ static void idctcol(blk) short *blk;
   if (!((x1 = (blk[8 * 4] << 8)) | (x2 = blk[8 * 6]) | (x3 = blk[8 * 2]) |
         (x4 = blk[8 * 1]) | (x5 = blk[8 * 7]) | (x6 = blk[8 * 5]) |
         (x7 = blk[8 * 3])))
-  {
-    blk[8 * 0] = blk[8 * 1] = blk[8 * 2] = blk[8 * 3] = blk[8 * 4] =
-        blk[8 * 5] = blk[8 * 6] = blk[8 * 7] = iclp[(blk[8 * 0] + 32) >> 6];
-    return;
-  }
+    {
+      blk[8 * 0] = blk[8 * 1] = blk[8 * 2] = blk[8 * 3] = blk[8 * 4] =
+          blk[8 * 5] = blk[8 * 6] = blk[8 * 7] = iclp[(blk[8 * 0] + 32) >> 6];
+      return;
+    }
 
   x0 = (blk[8 * 0] << 8) + 8192;
 
@@ -194,14 +194,14 @@ void Fast_IDCT(block) short *block;
   int i;
 
   for (i = 0; i < 8; i++)
-  {
-    idctrow(block + 8 * i);
-  }
+    {
+      idctrow(block + 8 * i);
+    }
 
   for (i = 0; i < 8; i++)
-  {
-    idctcol(block + i);
-  }
+    {
+      idctcol(block + i);
+    }
 }
 
 void Initialize_Fast_IDCT()
@@ -210,7 +210,7 @@ void Initialize_Fast_IDCT()
 
   iclp = iclip + 512;
   for (i = -512; i < 512; i++)
-  {
-    iclp[i] = (i < -256) ? -256 : ((i > 255) ? 255 : i);
-  }
+    {
+      iclp[i] = (i < -256) ? -256 : ((i > 255) ? 255 : i);
+    }
 }

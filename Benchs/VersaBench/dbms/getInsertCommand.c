@@ -47,24 +47,24 @@
  *              Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include "getInsertCommand.h"   /* for getInsertCommand() return codes        */
-#include <assert.h>             /* for assert()                               */
-#include <stdio.h>              /* for FILE definition                        */
-#include "dataManagement.h"     /* for primitive data types                   */
-#include "dataObject.h"         /* for DataObject definition                  */
-#include "errorMessage.h"       /* for errorMessage() definition              */
-#include "getInt.h"             /* for getInt() and return code definitions   */
-#include "getKeyAttribute.h"    /* for prototype and return code definitions  */
+#include "getInsertCommand.h" /* for getInsertCommand() return codes        */
+#include <assert.h> /* for assert()                               */
+#include <stdio.h> /* for FILE definition                        */
+#include "dataManagement.h" /* for primitive data types                   */
+#include "dataObject.h" /* for DataObject definition                  */
+#include "errorMessage.h" /* for errorMessage() definition              */
+#include "getInt.h" /* for getInt() and return code definitions   */
+#include "getKeyAttribute.h" /* for prototype and return code definitions  */
 #include "getNonKeyAttribute.h" /* for prototype and return code definitions  */
 
-Int getInsertCommand(FILE *file,              /*  file for reading    */
+Int getInsertCommand(FILE *file, /*  file for reading    */
                      DataObject **dataObject) /*  data object         */
-{                                             /*  begin getInsertCommand()    */
-  Int i;                  /* looping index variable for attributes      */
-  Int returnCode;         /* return code from various routines          */
-  Int dataObjectType;     /* data object type read from file            */
+{ /*  begin getInsertCommand()    */
+  Int i; /* looping index variable for attributes      */
+  Int returnCode; /* return code from various routines          */
+  Int dataObjectType; /* data object type read from file            */
   Int numberOfAttributes; /* number of attributes to read from file and */
-                          /* based on data object type                  */
+  /* based on data object type                  */
 
   static Char name[] = "getInsertCommand";
 
@@ -90,67 +90,67 @@ Int getInsertCommand(FILE *file,              /*  file for reading    */
    */
   returnCode = getInt(file, &dataObjectType);
   if (returnCode == GET_INT_SUCCESS)
-  {
-    /*
+    {
+      /*
      *  empty
      */
-  }
+    }
   else if (returnCode == GET_INT_EOI)
-  {
-    errorMessage("improper format - early EOI", REPLACE);
-    errorMessage(name, PREPEND);
-    return (GET_INSERT_EARLY_EOI);
-  } /*  end of if ( returnCode == GET_INT_EOI ) */
+    {
+      errorMessage("improper format - early EOI", REPLACE);
+      errorMessage(name, PREPEND);
+      return (GET_INSERT_EARLY_EOI);
+    } /*  end of if ( returnCode == GET_INT_EOI ) */
   else if (returnCode == GET_INT_RANGE_EXCEEDED)
-  {
-    errorMessage("unknown data object type", REPLACE);
-    errorMessage(name, PREPEND);
-    return (GET_INSERT_IO_ERROR);
-  } /*  end of if ( returnCode == GET_INT_GET_STRING_FAILURE ) */
+    {
+      errorMessage("unknown data object type", REPLACE);
+      errorMessage(name, PREPEND);
+      return (GET_INSERT_IO_ERROR);
+    } /*  end of if ( returnCode == GET_INT_GET_STRING_FAILURE ) */
   else if (returnCode == GET_INT_BAD_CONVERSION)
-  {
-    errorMessage("improper format - type must be an integer", REPLACE);
-    errorMessage(name, PREPEND);
-    return (GET_INSERT_IO_ERROR);
-  } /*  end of if ( returnCode == GET_INT_GET_STRING_FAILURE ) */
+    {
+      errorMessage("improper format - type must be an integer", REPLACE);
+      errorMessage(name, PREPEND);
+      return (GET_INSERT_IO_ERROR);
+    } /*  end of if ( returnCode == GET_INT_GET_STRING_FAILURE ) */
 
   /*
    *  Create proper data object from type and store number of attributes
    */
   if (dataObjectType == SMALL)
-  {
-    *dataObject = createDataObject(SMALL);
-    numberOfAttributes = NUM_OF_SMALL_ATTRIBUTES;
-  } /*  end of if ( dataObjectType == SMALL )   */
+    {
+      *dataObject = createDataObject(SMALL);
+      numberOfAttributes = NUM_OF_SMALL_ATTRIBUTES;
+    } /*  end of if ( dataObjectType == SMALL )   */
   else if (dataObjectType == MEDIUM)
-  {
-    *dataObject = createDataObject(MEDIUM);
-    numberOfAttributes = NUM_OF_MEDIUM_ATTRIBUTES;
-  } /*  end of if ( dataObjectType == MEDIUM )  */
+    {
+      *dataObject = createDataObject(MEDIUM);
+      numberOfAttributes = NUM_OF_MEDIUM_ATTRIBUTES;
+    } /*  end of if ( dataObjectType == MEDIUM )  */
   else if (dataObjectType == LARGE)
-  {
-    *dataObject = createDataObject(LARGE);
-    numberOfAttributes = NUM_OF_LARGE_ATTRIBUTES;
-  } /*  end of if ( dataObjectType == LARGE )   */
+    {
+      *dataObject = createDataObject(LARGE);
+      numberOfAttributes = NUM_OF_LARGE_ATTRIBUTES;
+    } /*  end of if ( dataObjectType == LARGE )   */
   else
-  {
-    /*
+    {
+      /*
      *  Done: unknown data object type
      */
-    errorMessage("unknown data object type", REPLACE);
-    errorMessage(name, PREPEND);
-    return (GET_INSERT_UNKNOWN_DATA_OBJECT_TYPE);
-  } /*  end of data object type branches    */
+      errorMessage("unknown data object type", REPLACE);
+      errorMessage(name, PREPEND);
+      return (GET_INSERT_UNKNOWN_DATA_OBJECT_TYPE);
+    } /*  end of data object type branches    */
 
   /*
    *  Check memory allocation error for data object
    */
   if (*dataObject == NULL)
-  {
-    errorMessage("allocation failure", REPLACE);
-    errorMessage(name, PREPEND);
-    return (GET_INSERT_ALLOCATION_ERROR);
-  } /*  end of if ( *dataObject == NULL )   */
+    {
+      errorMessage("allocation failure", REPLACE);
+      errorMessage(name, PREPEND);
+      return (GET_INSERT_ALLOCATION_ERROR);
+    } /*  end of if ( *dataObject == NULL )   */
 
   /*
    *  The attributes for the data object are specified to be in the "proper"
@@ -161,29 +161,29 @@ Int getInsertCommand(FILE *file,              /*  file for reading    */
    *  condition causes a return with appropriate error code.
    */
   for (i = MIN_ATTRIBUTE_CODE; i < NUM_OF_KEY_ATTRIBUTES; i++)
-  {
-    Float temp;
+    {
+      Float temp;
 
-    returnCode = getKeyAttribute(file, &temp);
-    if (returnCode == GET_KEY_ATTRIBUTE_SUCCESS)
-    {
-      (*dataObject)->attributes[i].value.key = temp;
-    } /* end of if returnCode == GET_KEY_ATTRIBUTE_SUCCESS */
-    else if (returnCode == GET_KEY_ATTRIBUTE_EOI)
-    {
-      errorMessage("improper format - early EOI", REPLACE);
-      errorMessage(name, PREPEND);
-      (*dataObject)->attributes[i].value.key = MINIMUM_VALUE_OF_FLOAT;
-      return (GET_INSERT_EARLY_EOI);
-    } /*  end of if returnCode == GET_KEY_ATTRIBUTE_EOI */
-    else if (returnCode == GET_KEY_ATTRIBUTE_GET_FLOAT_FAILURE)
-    {
-      errorMessage("low-level I/O error", REPLACE);
-      errorMessage(name, PREPEND);
-      (*dataObject)->attributes[i].value.key = MINIMUM_VALUE_OF_FLOAT;
-      return (GET_INSERT_IO_ERROR);
-    } /*  end of if returnCode == GET_KEY_ATTRIBUTE_GET_FLOAT_FAILURE */
-  }   /*  end of loop for key attributes  */
+      returnCode = getKeyAttribute(file, &temp);
+      if (returnCode == GET_KEY_ATTRIBUTE_SUCCESS)
+        {
+          (*dataObject)->attributes[i].value.key = temp;
+        } /* end of if returnCode == GET_KEY_ATTRIBUTE_SUCCESS */
+      else if (returnCode == GET_KEY_ATTRIBUTE_EOI)
+        {
+          errorMessage("improper format - early EOI", REPLACE);
+          errorMessage(name, PREPEND);
+          (*dataObject)->attributes[i].value.key = MINIMUM_VALUE_OF_FLOAT;
+          return (GET_INSERT_EARLY_EOI);
+        } /*  end of if returnCode == GET_KEY_ATTRIBUTE_EOI */
+      else if (returnCode == GET_KEY_ATTRIBUTE_GET_FLOAT_FAILURE)
+        {
+          errorMessage("low-level I/O error", REPLACE);
+          errorMessage(name, PREPEND);
+          (*dataObject)->attributes[i].value.key = MINIMUM_VALUE_OF_FLOAT;
+          return (GET_INSERT_IO_ERROR);
+        } /*  end of if returnCode == GET_KEY_ATTRIBUTE_GET_FLOAT_FAILURE */
+    } /*  end of loop for key attributes  */
 
   /*
    *  The next series of attributes are non-key values (character sequences).
@@ -195,29 +195,29 @@ Int getInsertCommand(FILE *file,              /*  file for reading    */
    *  error code.
    */
   for (i = NUM_OF_KEY_ATTRIBUTES; i < numberOfAttributes; i++)
-  {
-    Char *temp;
+    {
+      Char *temp;
 
-    returnCode = getNonKeyAttribute(file, &temp);
-    if (returnCode == GET_NON_KEY_ATTRIBUTE_SUCCESS)
-    {
-      (*dataObject)->attributes[i].value.nonKey = temp;
-    } /*  end of if ( returnCode == GET_STRING_SUCCESS ) */
-    else if (returnCode == GET_NON_KEY_ATTRIBUTE_EOI)
-    {
-      errorMessage("improper format - early EOI", REPLACE);
-      errorMessage(name, PREPEND);
-      (*dataObject)->attributes[i].value.nonKey = NULL;
-      return (GET_INSERT_EARLY_EOI);
-    } /*  end of returnCode == GET_NON_KEY_ATTRIBUTE_EOI */
-    else if (returnCode == GET_NON_KEY_ATTRIBUTE_ALLOCATION_FAILURE)
-    {
-      errorMessage("allocation failure for non-key attribute", REPLACE);
-      errorMessage(name, PREPEND);
-      (*dataObject)->attributes[i].value.nonKey = NULL;
-      return (GET_INSERT_ALLOCATION_ERROR);
-    } /*  end of returnCode == GET_NON_KEY_ATTRIBUTE_ALLOCATION_FAILURE */
-  }   /*  end of loop for non-key attributes  */
+      returnCode = getNonKeyAttribute(file, &temp);
+      if (returnCode == GET_NON_KEY_ATTRIBUTE_SUCCESS)
+        {
+          (*dataObject)->attributes[i].value.nonKey = temp;
+        } /*  end of if ( returnCode == GET_STRING_SUCCESS ) */
+      else if (returnCode == GET_NON_KEY_ATTRIBUTE_EOI)
+        {
+          errorMessage("improper format - early EOI", REPLACE);
+          errorMessage(name, PREPEND);
+          (*dataObject)->attributes[i].value.nonKey = NULL;
+          return (GET_INSERT_EARLY_EOI);
+        } /*  end of returnCode == GET_NON_KEY_ATTRIBUTE_EOI */
+      else if (returnCode == GET_NON_KEY_ATTRIBUTE_ALLOCATION_FAILURE)
+        {
+          errorMessage("allocation failure for non-key attribute", REPLACE);
+          errorMessage(name, PREPEND);
+          (*dataObject)->attributes[i].value.nonKey = NULL;
+          return (GET_INSERT_ALLOCATION_ERROR);
+        } /*  end of returnCode == GET_NON_KEY_ATTRIBUTE_ALLOCATION_FAILURE */
+    } /*  end of loop for non-key attributes  */
 
   return (GET_INSERT_SUCCESS);
 } /*  end of getInsertCommand()   */

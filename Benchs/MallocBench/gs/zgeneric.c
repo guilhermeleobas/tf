@@ -43,37 +43,37 @@ int zcopy(register ref *op)
 {
   int code;
   switch (r_type(op))
-  {
-    case t_integer:
     {
-      int count;
-      if ((ulong)op->value.intval > op - osbot)
-      {
-        return e_rangecheck;
-      }
-      count = op->value.intval;
-      if (op - 1 + count > ostop)
-      {
-        return e_stackoverflow;
-      }
-      memcpy((char *)op, (char *)(op - count), count * sizeof(ref));
-      push(count - 1);
-      return 0;
+      case t_integer:
+        {
+          int count;
+          if ((ulong)op->value.intval > op - osbot)
+            {
+              return e_rangecheck;
+            }
+          count = op->value.intval;
+          if (op - 1 + count > ostop)
+            {
+              return e_stackoverflow;
+            }
+          memcpy((char *)op, (char *)(op - count), count * sizeof(ref));
+          push(count - 1);
+          return 0;
+        }
+      case t_array:
+      case t_packedarray:
+      case t_string:
+        code = copy_interval(op, 0, op - 1);
+        break;
+      case t_dictionary:
+        return zcopy_dict(op);
+      default:
+        return e_typecheck;
     }
-    case t_array:
-    case t_packedarray:
-    case t_string:
-      code = copy_interval(op, 0, op - 1);
-      break;
-    case t_dictionary:
-      return zcopy_dict(op);
-    default:
-      return e_typecheck;
-  }
   if (code)
-  {
-    return code; /* error */
-  }
+    {
+      return code; /* error */
+    }
   op->size = op[-1].size;
   op[-1] = *op;
   r_set_attrs(op - 1, a_subrange);
@@ -85,28 +85,28 @@ int zcopy(register ref *op)
 int zlength(register ref *op)
 {
   switch (r_type(op))
-  {
-    case t_array:
-    case t_packedarray:
-    case t_string:
-      check_read(*op);
-      make_int(op, op->size);
-      return 0;
-    case t_dictionary:
-      check_dict_read(*op);
-      make_int(op, dict_length(op));
-      return 0;
-    case t_name:
-    { /* The PostScript manual doesn't allow length on names, */
-      /* but the implementations apparently do. */
-      ref str;
-      name_string_ref(op, &str);
-      make_int(op, str.size);
+    {
+      case t_array:
+      case t_packedarray:
+      case t_string:
+        check_read(*op);
+        make_int(op, op->size);
+        return 0;
+      case t_dictionary:
+        check_dict_read(*op);
+        make_int(op, dict_length(op));
+        return 0;
+      case t_name:
+        { /* The PostScript manual doesn't allow length on names, */
+          /* but the implementations apparently do. */
+          ref str;
+          name_string_ref(op, &str);
+          make_int(op, str.size);
+        }
+        return 0;
+      default:
+        return e_typecheck;
     }
-      return 0;
-    default:
-      return e_typecheck;
-  }
 }
 
 /* get */
@@ -115,40 +115,40 @@ int zget(register ref *op)
   ref *op1 = op - 1;
   ref *pvalue;
   switch (r_type(op1))
-  {
-    case t_dictionary:
-      check_dict_read(*op1);
-      if (dict_find(op1, op, &pvalue) <= 0)
-      {
-        return e_undefined;
-      }
-      break;
-    case t_array:
-    case t_packedarray:
-      check_type(*op, t_integer);
-      check_read(*op1);
-      if ((ulong)(op->value.intval) >= op1->size)
-      {
-        return e_rangecheck;
-      }
-      pvalue = op1->value.refs + (uint)op->value.intval;
-      break;
-    case t_string:
-      check_type(*op, t_integer);
-      check_read(*op1);
-      if ((ulong)(op->value.intval) >= op1->size)
-      {
-        return e_rangecheck;
-      }
-      {
-        int element = op1->value.bytes[(uint)op->value.intval];
-        make_int(op1, element);
-        pop(1);
-      }
-      return 0;
-    default:
-      return e_typecheck;
-  }
+    {
+      case t_dictionary:
+        check_dict_read(*op1);
+        if (dict_find(op1, op, &pvalue) <= 0)
+          {
+            return e_undefined;
+          }
+        break;
+      case t_array:
+      case t_packedarray:
+        check_type(*op, t_integer);
+        check_read(*op1);
+        if ((ulong)(op->value.intval) >= op1->size)
+          {
+            return e_rangecheck;
+          }
+        pvalue = op1->value.refs + (uint)op->value.intval;
+        break;
+      case t_string:
+        check_type(*op, t_integer);
+        check_read(*op1);
+        if ((ulong)(op->value.intval) >= op1->size)
+          {
+            return e_rangecheck;
+          }
+        {
+          int element = op1->value.bytes[(uint)op->value.intval];
+          make_int(op1, element);
+          pop(1);
+        }
+        return 0;
+      default:
+        return e_typecheck;
+    }
   op[-1] = *pvalue;
   pop(1);
   return 0;
@@ -160,45 +160,45 @@ int zput(register ref *op)
   ref *op1 = op - 1;
   ref *op2 = op1 - 1;
   switch (r_type(op2))
-  {
-    case t_dictionary:
-      check_dict_write(*op2);
-      {
-        int code = dict_put(op2, op1, op);
-        if (code)
+    {
+      case t_dictionary:
+        check_dict_write(*op2);
         {
-          return code; /* error */
+          int code = dict_put(op2, op1, op);
+          if (code)
+            {
+              return code; /* error */
+            }
         }
-      }
-      break;
-    case t_array:
-      check_type(*op1, t_integer);
-      check_write(*op2);
-      if (op1->value.intval < 0 || op1->value.intval >= op2->size)
-      {
-        return e_rangecheck;
-      }
-      store_i(op2->value.refs + (uint)op1->value.intval, op);
-      break;
-    case t_packedarray: /* packed arrays are read-only */
-      return e_invalidaccess;
-    case t_string:
-      check_type(*op1, t_integer);
-      check_write(*op2);
-      if (op1->value.intval < 0 || op1->value.intval >= op2->size)
-      {
-        return e_rangecheck;
-      }
-      check_type(*op, t_integer);
-      if ((ulong)op->value.intval > 0xff)
-      {
-        return e_rangecheck;
-      }
-      op2->value.bytes[(uint)op1->value.intval] = (byte)op->value.intval;
-      break;
-    default:
-      return e_typecheck;
-  }
+        break;
+      case t_array:
+        check_type(*op1, t_integer);
+        check_write(*op2);
+        if (op1->value.intval < 0 || op1->value.intval >= op2->size)
+          {
+            return e_rangecheck;
+          }
+        store_i(op2->value.refs + (uint)op1->value.intval, op);
+        break;
+      case t_packedarray: /* packed arrays are read-only */
+        return e_invalidaccess;
+      case t_string:
+        check_type(*op1, t_integer);
+        check_write(*op2);
+        if (op1->value.intval < 0 || op1->value.intval >= op2->size)
+          {
+            return e_rangecheck;
+          }
+        check_type(*op, t_integer);
+        if ((ulong)op->value.intval > 0xff)
+          {
+            return e_rangecheck;
+          }
+        op2->value.bytes[(uint)op1->value.intval] = (byte)op->value.intval;
+        break;
+      default:
+        return e_typecheck;
+    }
   pop(3);
   return 0;
 }
@@ -213,34 +213,34 @@ int zgetinterval(register ref *op)
   check_type(*op1, t_integer);
   check_type(*op, t_integer);
   switch (r_type(op2))
-  {
-    default:
-      return e_typecheck;
-    case t_array:
-    case t_packedarray:
-    case t_string:;
-  }
+    {
+      default:
+        return e_typecheck;
+      case t_array:
+      case t_packedarray:
+      case t_string:;
+    }
   check_read(*op2);
   if ((ulong)op1->value.intval > op2->size)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   index = op1->value.intval;
   if ((ulong)op->value.intval > op2->size - index)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   count = op->value.intval;
   switch (r_type(op2))
-  {
-    case t_array:
-    case t_packedarray:
-      op2->value.refs += index;
-      break;
-    case t_string:
-      op2->value.bytes += index;
-      break;
-  }
+    {
+      case t_array:
+      case t_packedarray:
+        op2->value.refs += index;
+        break;
+      case t_string:
+        op2->value.bytes += index;
+        break;
+    }
   op2->size = count;
   r_set_attrs(op2, a_subrange);
   pop(2);
@@ -255,24 +255,24 @@ int zputinterval(register ref *op)
   int code;
   check_type(*opindex, t_integer);
   switch (r_type(opto))
-  {
-    default:
-      return e_typecheck;
-    case t_packedarray:
-      return e_invalidaccess;
-    case t_array:
-    case t_string:;
-  }
+    {
+      default:
+        return e_typecheck;
+      case t_packedarray:
+        return e_invalidaccess;
+      case t_array:
+      case t_string:;
+    }
   check_write(*opto);
   if ((ulong)opindex->value.intval > opto->size)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   code = copy_interval(opto, (uint)(opindex->value.intval), op);
   if (code >= 0)
-  {
-    pop(3);
-  }
+    {
+      pop(3);
+    }
   return 0;
 }
 
@@ -286,26 +286,26 @@ int zforall(register ref *op)
   ref *obj = op - 1;
   uint index;
   switch (r_type(obj))
-  {
-    default:
-      return e_typecheck;
-    case t_array:
-    case t_packedarray:
-      check_read(*obj);
-      cproc = array_continue;
-      index = 0; /* not used */
-      break;
-    case t_string:
-      check_read(*obj);
-      cproc = string_continue;
-      index = 0; /* not used */
-      break;
-    case t_dictionary:
-      check_dict_read(*obj);
-      cproc = dict_continue;
-      index = dict_first(obj);
-      break;
-  }
+    {
+      default:
+        return e_typecheck;
+      case t_array:
+      case t_packedarray:
+        check_read(*obj);
+        cproc = array_continue;
+        index = 0; /* not used */
+        break;
+      case t_string:
+        check_read(*obj);
+        cproc = string_continue;
+        index = 0; /* not used */
+        break;
+      case t_dictionary:
+        check_dict_read(*obj);
+        cproc = dict_continue;
+        index = dict_first(obj);
+        break;
+    }
   /* Push a mark, the composite object, the iteration index, */
   /* and the procedure, and invoke the continuation operator. */
   check_estack(6);
@@ -324,17 +324,17 @@ int array_continue(register ref *op)
 {
   ref *obj = esp - 2;
   if (obj->size--) /* continue */
-  {
-    push(1);
-    *op = *obj->value.refs;
-    obj->value.refs++;
-    push_op_estack(array_continue); /* push continuation */
-    *++esp = obj[2];
-  }
+    {
+      push(1);
+      *op = *obj->value.refs;
+      obj->value.refs++;
+      push_op_estack(array_continue); /* push continuation */
+      *++esp = obj[2];
+    }
   else /* done */
-  {
-    esp -= 4; /* pop mark, object, index, proc */
-  }
+    {
+      esp -= 4; /* pop mark, object, index, proc */
+    }
   return o_check_estack;
 }
 /* Continuation operator for strings */
@@ -343,17 +343,17 @@ int string_continue(register ref *op)
 {
   ref *obj = esp - 2;
   if (obj->size--) /* continue */
-  {
-    push(1);
-    make_int(op, *obj->value.bytes);
-    obj->value.bytes++;
-    push_op_estack(string_continue); /* push continuation */
-    *++esp = obj[2];
-  }
+    {
+      push(1);
+      make_int(op, *obj->value.bytes);
+      obj->value.bytes++;
+      push_op_estack(string_continue); /* push continuation */
+      *++esp = obj[2];
+    }
   else /* done */
-  {
-    esp -= 4; /* pop mark, object, index, proc */
-  }
+    {
+      esp -= 4; /* pop mark, object, index, proc */
+    }
   return o_check_estack;
 }
 /* Continuation operator for dictionaries */
@@ -364,16 +364,16 @@ int dict_continue(register ref *op)
   int index = (int)esp[-1].value.intval;
   push(2); /* make room for key and value */
   if ((index = dict_next(obj, index, op - 1)) >= 0) /* continue */
-  {
-    esp[-1].value.intval = index;
-    push_op_estack(dict_continue); /* push continuation */
-    *++esp = obj[2];
-  }
+    {
+      esp[-1].value.intval = index;
+      push_op_estack(dict_continue); /* push continuation */
+      *++esp = obj[2];
+    }
   else /* done */
-  {
-    pop(2);   /* undo push */
-    esp -= 4; /* pop mark, object, index, proc */
-  }
+    {
+      pop(2); /* undo push */
+      esp -= 4; /* pop mark, object, index, proc */
+    }
   return o_check_estack;
 }
 
@@ -403,23 +403,23 @@ private
 int copy_interval(ref *prto, uint index, ref *prfrom)
 {
   if (r_type(prfrom) != r_type(prto))
-  {
-    return e_typecheck;
-  }
+    {
+      return e_typecheck;
+    }
   check_read(*prfrom);
   check_write(*prto);
   if (prfrom->size > prto->size - index)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   switch (r_type(prto))
-  {
-    case t_array:
-    case t_packedarray:
-      refcpy(prto->value.refs + index, prfrom->value.refs, prfrom->size);
-      break;
-    case t_string:
-      memcpy(prto->value.bytes + index, prfrom->value.bytes, prfrom->size);
-  }
+    {
+      case t_array:
+      case t_packedarray:
+        refcpy(prto->value.refs + index, prfrom->value.refs, prfrom->size);
+        break;
+      case t_string:
+        memcpy(prto->value.bytes + index, prfrom->value.bytes, prfrom->size);
+    }
   return 0;
 }

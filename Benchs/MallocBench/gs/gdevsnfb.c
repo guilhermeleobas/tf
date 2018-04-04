@@ -65,10 +65,10 @@ private
 int sonyfb_prn_close(gx_device *dev)
 {
   if (fb_file >= 0)
-  {
-    close(fb_file);
-    fb_file = -1;
-  }
+    {
+      close(fb_file);
+      fb_file = -1;
+    }
   return gdev_prn_close(dev);
 }
 

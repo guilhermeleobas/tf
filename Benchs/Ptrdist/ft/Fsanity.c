@@ -37,24 +37,25 @@ int SanityCheck1(HeapP* h, Item* i)
   HeapP* h1;
 
   if (h == NULL_HEAP)
-  {
-    return (TRUE);
-  }
+    {
+      return (TRUE);
+    }
 
   h1 = h;
   do
-  {
-    if (LessThan(ITEM(h1), i))
     {
-      return (FALSE);
-    }
-    if (!SanityCheck1(CHILD(h1), ITEM(h1)))
-    {
-      return (FALSE);
-    }
+      if (LessThan(ITEM(h1), i))
+        {
+          return (FALSE);
+        }
+      if (!SanityCheck1(CHILD(h1), ITEM(h1)))
+        {
+          return (FALSE);
+        }
 
-    h1 = FORWARD(h1);
-  } while (h1 != h);
+      h1 = FORWARD(h1);
+    }
+  while (h1 != h);
 
   return (TRUE);
 }
@@ -66,36 +67,38 @@ int SanityCheck2(HeapP* h)
   HeapP* h2;
 
   if (h == NULL_HEAP)
-  {
-    return (TRUE);
-  }
+    {
+      return (TRUE);
+    }
 
   h1 = h;
   do
-  {
-    if (CHILD(h1) != NULL_HEAP)
     {
-      sum = 0;
-      h2 = CHILD(h1);
-      do
-      {
-        sum += RANK(h2) + 1;
+      if (CHILD(h1) != NULL_HEAP)
+        {
+          sum = 0;
+          h2 = CHILD(h1);
+          do
+            {
+              sum += RANK(h2) + 1;
 
-        h2 = FORWARD(h2);
-      } while (h2 != CHILD(h1));
-      if (sum != RANK(h1))
-      {
-        return (FALSE);
-      }
+              h2 = FORWARD(h2);
+            }
+          while (h2 != CHILD(h1));
+          if (sum != RANK(h1))
+            {
+              return (FALSE);
+            }
 
-      if (!SanityCheck2(CHILD(h1)))
-      {
-        return (FALSE);
-      }
+          if (!SanityCheck2(CHILD(h1)))
+            {
+              return (FALSE);
+            }
+        }
+
+      h1 = FORWARD(h1);
     }
-
-    h1 = FORWARD(h1);
-  } while (h1 != h);
+  while (h1 != h);
 
   return (TRUE);
 }
@@ -107,32 +110,33 @@ int SanityCheck3(HeapP* h, int rank)
   HeapP* h2;
 
   if ((h == NULL_HEAP) && (rank == 0))
-  {
-    return (TRUE);
-  }
+    {
+      return (TRUE);
+    }
 
   sum = 0;
   h1 = h;
   do
-  {
-    sum += RANK(h1) + 1;
+    {
+      sum += RANK(h1) + 1;
 
-    if (!SanityCheck3(CHILD(h1), RANK(h1)))
+      if (!SanityCheck3(CHILD(h1), RANK(h1)))
+        {
+          return (FALSE);
+        }
+
+      h1 = FORWARD(h1);
+    }
+  while (h1 != h);
+
+  if (sum == rank)
+    {
+      return (TRUE);
+    }
+  else
     {
       return (FALSE);
     }
-
-    h1 = FORWARD(h1);
-  } while (h1 != h);
-
-  if (sum == rank)
-  {
-    return (TRUE);
-  }
-  else
-  {
-    return (FALSE);
-  }
 }
 
 void PrettyPrint(HeapP* h)
@@ -140,21 +144,22 @@ void PrettyPrint(HeapP* h)
   HeapP* h1;
 
   if (h == NULL_HEAP)
-  {
-    printf(" nil ");
-    return;
-  }
+    {
+      printf(" nil ");
+      return;
+    }
 
   printf("(");
 
   h1 = h;
   do
-  {
-    // PrintItem(ITEM(h1));
-    printf("[%u] ", RANK(h1));
-    PrettyPrint(CHILD(h1));
-    h1 = FORWARD(h1);
-  } while (h1 != h);
+    {
+      // PrintItem(ITEM(h1));
+      printf("[%u] ", RANK(h1));
+      PrettyPrint(CHILD(h1));
+      h1 = FORWARD(h1);
+    }
+  while (h1 != h);
 
   printf(")");
 }

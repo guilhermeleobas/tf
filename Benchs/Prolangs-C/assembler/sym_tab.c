@@ -21,14 +21,14 @@ struct SYMBOL_TABLE_ENTRY *LOOK_UP_SYMBOL(char MODULE[], char LABEL[],
   struct SYMBOL_TABLE_ENTRY *TABLE_ENTRY;
   TABLE_ENTRY = *TABLE;
   while (TABLE_ENTRY != NULL)
-  {
-    if (!strcmp((*TABLE_ENTRY).MODULE, MODULE) &&
-        !strcmp((*TABLE_ENTRY).LABEL, LABEL))
     {
-      return TABLE_ENTRY;
+      if (!strcmp((*TABLE_ENTRY).MODULE, MODULE) &&
+          !strcmp((*TABLE_ENTRY).LABEL, LABEL))
+        {
+          return TABLE_ENTRY;
+        }
+      TABLE_ENTRY = (*TABLE_ENTRY).NEXT;
     }
-    TABLE_ENTRY = (*TABLE_ENTRY).NEXT;
-  }
   return NULL;
 }
 
@@ -43,20 +43,20 @@ int INSERT_IN_SYM_TAB(char *MODULE, char *LABEL, int LOCATION, enum kind TYPE,
 
   TABLE_ENTRY = LOOK_UP_SYMBOL(MODULE, LABEL, TABLE);
   if (TABLE_ENTRY == NULL)
-  {
-    TABLE_ENTRY =
-        (struct SYMBOL_TABLE_ENTRY *)malloc(sizeof(struct SYMBOL_TABLE_ENTRY));
-    (*TABLE_ENTRY).NEXT = *TABLE;
-    (void)strcpy((*TABLE_ENTRY).MODULE, MODULE);
-    (void)strcpy((*TABLE_ENTRY).LABEL, LABEL);
-    (*TABLE_ENTRY).LOCATION = LOCATION;
-    (*TABLE_ENTRY).LENGTH = 0;
-    (*TABLE_ENTRY).TYPE = TYPE;
-    *TABLE = TABLE_ENTRY;
-    return 1;
-  }
+    {
+      TABLE_ENTRY =
+          (struct SYMBOL_TABLE_ENTRY *)malloc(sizeof(struct SYMBOL_TABLE_ENTRY));
+      (*TABLE_ENTRY).NEXT = *TABLE;
+      (void)strcpy((*TABLE_ENTRY).MODULE, MODULE);
+      (void)strcpy((*TABLE_ENTRY).LABEL, LABEL);
+      (*TABLE_ENTRY).LOCATION = LOCATION;
+      (*TABLE_ENTRY).LENGTH = 0;
+      (*TABLE_ENTRY).TYPE = TYPE;
+      *TABLE = TABLE_ENTRY;
+      return 1;
+    }
   else
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
 }

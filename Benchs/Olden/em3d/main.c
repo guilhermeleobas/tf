@@ -13,16 +13,16 @@ void print_graph(graph_t *graph, int id)
   cur_node = graph->e_nodes[id];
 
   for (; cur_node; cur_node = cur_node->next)
-  {
-    chatting("E: value %f, from_count %d\n", *cur_node->value,
-             cur_node->from_count);
-  }
+    {
+      chatting("E: value %f, from_count %d\n", *cur_node->value,
+               cur_node->from_count);
+    }
   cur_node = graph->h_nodes[id];
   for (; cur_node; cur_node = cur_node->next)
-  {
-    chatting("H: value %f, from_count %d\n", *cur_node->value,
-             cur_node->from_count);
-  }
+    {
+      chatting("H: value %f, from_count %d\n", *cur_node->value,
+               cur_node->from_count);
+    }
 }
 
 extern int nonlocals;
@@ -38,12 +38,12 @@ int main(int argc, char *argv[])
            local_p, NumNodes);
   graph = initialize_graph();
   if (DebugFlag)
-  {
-    for (i = 0; i < NumNodes; i++)
     {
-      print_graph(graph, i);
+      for (i = 0; i < NumNodes; i++)
+        {
+          print_graph(graph, i);
+        }
     }
-  }
 
   compute_nodes(graph->e_nodes[0]);
   compute_nodes(graph->h_nodes[0]);

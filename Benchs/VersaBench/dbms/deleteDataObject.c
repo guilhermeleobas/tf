@@ -22,14 +22,14 @@
  *              Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include <assert.h>         /* for assert()                                  */
-#include <stdlib.h>         /* for free() and NULL definitions               */
+#include <assert.h> /* for assert()                                  */
+#include <stdlib.h> /* for free() and NULL definitions               */
 #include "dataManagement.h" /* for primitive type definitions                */
-#include "dataObject.h"     /* for DataObject and DataObjectType definitions */
+#include "dataObject.h" /* for DataObject and DataObjectType definitions */
 
 void deleteDataObject(DataObject* dataObject) /* object to delete */
-{                         /*  beginning of deleteDataObject() */
-  Int i;                  /* looping index for attributes                  */
+{ /*  beginning of deleteDataObject() */
+  Int i; /* looping index for attributes                  */
   Int numberOfAttributes; /* number of attributes specified by object type */
 
   assert(dataObject);
@@ -47,29 +47,29 @@ void deleteDataObject(DataObject* dataObject) /* object to delete */
    */
   numberOfAttributes = 0;
   if (dataObject->type == SMALL)
-  {
-    numberOfAttributes = NUM_OF_SMALL_ATTRIBUTES;
-  } /*  end if ( dataObjectType == SMALL )      */
+    {
+      numberOfAttributes = NUM_OF_SMALL_ATTRIBUTES;
+    } /*  end if ( dataObjectType == SMALL )      */
   else if (dataObject->type == MEDIUM)
-  {
-    numberOfAttributes = NUM_OF_MEDIUM_ATTRIBUTES;
-  } /*  end if ( dataObjectType == MEDIUM )    */
+    {
+      numberOfAttributes = NUM_OF_MEDIUM_ATTRIBUTES;
+    } /*  end if ( dataObjectType == MEDIUM )    */
   else if (dataObject->type == LARGE)
-  {
-    numberOfAttributes = NUM_OF_LARGE_ATTRIBUTES;
-  } /*  end if ( dataObjectType == LARGE )      */
+    {
+      numberOfAttributes = NUM_OF_LARGE_ATTRIBUTES;
+    } /*  end if ( dataObjectType == LARGE )      */
 
   /*
    *  Delete the object's non-key attribute values.  The number of values is
    *  based on the data object type.
    */
   for (i = NUM_OF_KEY_ATTRIBUTES; i < numberOfAttributes; i++)
-  {
-    if (dataObject->attributes[i].value.nonKey != NULL)
     {
-      free(dataObject->attributes[i].value.nonKey);
-    } /*  end of if ( dataObject->attributes[ i ].nonKey != NULL )    */
-  }   /*  end of loop for i   */
+      if (dataObject->attributes[i].value.nonKey != NULL)
+        {
+          free(dataObject->attributes[i].value.nonKey);
+        } /*  end of if ( dataObject->attributes[ i ].nonKey != NULL )    */
+    } /*  end of loop for i   */
 
   /*
    *  Delete data object

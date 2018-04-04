@@ -44,17 +44,17 @@ void printBinaryTree(struct binaryTree* tree)
 /***************************************************************************/
 {
   if (tree == NULL)
-  {
-    printf("X");
-  }
+    {
+      printf("X");
+    }
   else
-  {
-    printf("(%d <L ", tree->value);
-    printBinaryTree(tree->left);
-    printf(" L> <R ");
-    printBinaryTree(tree->right);
-    printf(" R>)\n");
-  }
+    {
+      printf("(%d <L ", tree->value);
+      printBinaryTree(tree->left);
+      printf(" L> <R ");
+      printBinaryTree(tree->right);
+      printf(" R>)\n");
+    }
 }
 /***************************************************************************/
 
@@ -63,11 +63,11 @@ void printSortedBinaryTree(struct binaryTree* tree)
 /***************************************************************************/
 {
   if (tree)
-  {
-    printSortedBinaryTree(tree->left);
-    printf("%d ", tree->value);
-    printSortedBinaryTree(tree->right);
-  }
+    {
+      printSortedBinaryTree(tree->left);
+      printf("%d ", tree->value);
+      printSortedBinaryTree(tree->right);
+    }
 }
 /***************************************************************************/
 
@@ -81,45 +81,46 @@ struct binaryTree* insertSortedBinaryTree(int newValue,
   int done = FALSE;
 
   if (*sortedTree == NULL)
-  {
-    *sortedTree = newTree;
-  }
-  else
-  {
-    temp = *sortedTree;
-
-    do
     {
-      if (newValue < temp->value)
-      {
-        if (temp->left == NULL)
+      *sortedTree = newTree;
+    }
+  else
+    {
+      temp = *sortedTree;
+
+      do
         {
-          temp->left = newTree;
-          done = TRUE;
+          if (newValue < temp->value)
+            {
+              if (temp->left == NULL)
+                {
+                  temp->left = newTree;
+                  done = TRUE;
+                }
+              else
+                {
+                  temp = temp->left;
+                }
+            }
+          else if (newValue > temp->value)
+            {
+              if (temp->right == NULL)
+                {
+                  temp->right = newTree;
+                  done = TRUE;
+                }
+              else
+                {
+                  temp = temp->right;
+                }
+            }
+          else
+            {
+              done = TRUE;
+            }
         }
-        else
-        {
-          temp = temp->left;
-        }
-      }
-      else if (newValue > temp->value)
-      {
-        if (temp->right == NULL)
-        {
-          temp->right = newTree;
-          done = TRUE;
-        }
-        else
-        {
-          temp = temp->right;
-        }
-      }
-      else
-      {
-        done = TRUE;
-      }
-    } while (!done);
-  }
+      while (!done);
+    }
 
   return newTree;
 }
@@ -151,12 +152,12 @@ void getArithmeticMeanOptimizedRecurs(struct binaryTree* tree, double* sum,
 /**************************************************************************************************************/
 {
   if (tree)
-  {
-    *sum = *sum + tree->value;
-    *count = *count + 1;
-    getArithmeticMeanOptimizedRecurs(tree->left, sum, count);
-    getArithmeticMeanOptimizedRecurs(tree->right, sum, count);
-  }
+    {
+      *sum = *sum + tree->value;
+      *count = *count + 1;
+      getArithmeticMeanOptimizedRecurs(tree->left, sum, count);
+      getArithmeticMeanOptimizedRecurs(tree->right, sum, count);
+    }
 }
 /**************************************************************************************************************/
 
@@ -178,20 +179,20 @@ void memberOfBinaryTreeRecurs(struct binaryTree* tree, int searchedValue,
 /*************************************************************************************************************/
 {
   if (tree)
-  {
-    if (tree->value == searchedValue)
     {
-      *found = TRUE;
+      if (tree->value == searchedValue)
+        {
+          *found = TRUE;
+        }
+      else
+        {
+          memberOfBinaryTreeRecurs(tree->left, searchedValue, found);
+          if (!(*found))
+            {
+              memberOfBinaryTreeRecurs(tree->right, searchedValue, found);
+            }
+        }
     }
-    else
-    {
-      memberOfBinaryTreeRecurs(tree->left, searchedValue, found);
-      if (!(*found))
-      {
-        memberOfBinaryTreeRecurs(tree->right, searchedValue, found);
-      }
-    }
-  }
 }
 /*************************************************************************************************************/
 
@@ -203,20 +204,20 @@ int memberOfSortedBinaryTree(struct binaryTree* tree, int searchedValue)
   int found = FALSE;
 
   while ((!found) && (seeker))
-  {
-    if (searchedValue < seeker->value)
     {
-      seeker = seeker->left;
+      if (searchedValue < seeker->value)
+        {
+          seeker = seeker->left;
+        }
+      else if (searchedValue > seeker->value)
+        {
+          seeker = seeker->right;
+        }
+      else
+        {
+          found = TRUE;
+        }
     }
-    else if (searchedValue > seeker->value)
-    {
-      seeker = seeker->right;
-    }
-    else
-    {
-      found = TRUE;
-    }
-  }
 
   return found;
 }
@@ -227,13 +228,13 @@ int getSizeBinaryTree(struct binaryTree* tree)
 /**************************************************************************************************************/
 {
   if (tree)
-  {
-    return 1 + getSizeBinaryTree(tree->left) + getSizeBinaryTree(tree->right);
-  }
+    {
+      return 1 + getSizeBinaryTree(tree->left) + getSizeBinaryTree(tree->right);
+    }
   else
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
 }
 /**************************************************************************************************************/
 
@@ -242,13 +243,13 @@ double getSumBinaryTree(struct binaryTree* tree)
 /**************************************************************************************************************/
 {
   if (tree)
-  {
-    return (double)tree->value + getSumBinaryTree(tree->left) +
-           getSumBinaryTree(tree->right);
-  }
+    {
+      return (double)tree->value + getSumBinaryTree(tree->left) +
+             getSumBinaryTree(tree->right);
+    }
   else
-  {
-    return (double)0;
-  }
+    {
+      return (double)0;
+    }
 }
 /**************************************************************************************************************/

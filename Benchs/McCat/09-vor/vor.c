@@ -19,15 +19,15 @@
 #include "headers.h"
 #include "struktur.h"
 
-splay_node *Splaytree;     /* Tree-Structure */
+splay_node *Splaytree; /* Tree-Structure */
 CHsplay_node *CHSplaytree; /* Another Tree-Structure */
-CHpoints *S;               /* S-structure */
-int default_radius;        /* Default radius */
-int CHno = 0;              /* Number of points in the circular list */
-Knode *K;                  /* The Voroni vertices */
-Enode *E;                  /* The Voroni edges */
-int Kcount = 1;            /* Kcount-1 is the number of Vertices */
-int Ecount = 1;            /* Ecount-1 is the number of Edges */
+CHpoints *S; /* S-structure */
+int default_radius; /* Default radius */
+int CHno = 0; /* Number of points in the circular list */
+Knode *K; /* The Voroni vertices */
+Enode *E; /* The Voroni edges */
+int Kcount = 1; /* Kcount-1 is the number of Vertices */
+int Ecount = 1; /* Ecount-1 is the number of Edges */
 
 /* ********************************************************************* */
 /* PROCEDURE: clean_up - cleans up                                       */
@@ -62,10 +62,10 @@ void get_file(void)
   Splaytree = init();
   fscanf(stdin, "%d", &no_p);
   for (i = 1; i <= no_p; i++)
-  {
-    fscanf(stdin, "%d %d\n", &x, &y);
-    getpoint(x, y);
-  }
+    {
+      fscanf(stdin, "%d %d\n", &x, &y);
+      getpoint(x, y);
+    }
 }
 
 /* ********************************************************************* */
@@ -95,8 +95,8 @@ point compute_v(CHpoints *P)
                     D                                                    */
 
   point An, Bn, Cn, Dn; /* Normalvectors to the Screen borders A,B,C,D */
-  point n;              /* Normalvector to the bisector between P and Next(p) */
-  double c;             /* the constant in the equation ax+by=c, where (a,b) is
+  point n; /* Normalvector to the bisector between P and Next(p) */
+  double c; /* the constant in the equation ax+by=c, where (a,b) is
                                                    normalvector to the bisetor */
   point i;
   dpoint di;
@@ -125,58 +125,58 @@ point compute_v(CHpoints *P)
   c = calculate_c(n, midpoint(p, np));
 
   if ((p.x < np.x) && (p.y < np.y))
-  { /* intersects either D or A */
-    di = intersect(n, Dn, c, maxY);
-    if ((minX > di.x) || (di.x > maxX))
-    {
-      di = intersect(n, An, c, minX);
+    { /* intersects either D or A */
+      di = intersect(n, Dn, c, maxY);
+      if ((minX > di.x) || (di.x > maxX))
+        {
+          di = intersect(n, An, c, minX);
+        }
     }
-  }
   else if ((p.x < np.x) && (p.y == np.y))
-  { /* intersects D */
-    di = intersect(n, Dn, c, maxY);
-  }
-  else if ((p.x < np.x) && (p.y > np.y))
-  { /* intersects either D or C */
-    di = intersect(n, Dn, c, maxY);
-    if ((minX > di.x) || (di.x > maxX))
-    {
-      di = intersect(n, Cn, c, maxX);
+    { /* intersects D */
+      di = intersect(n, Dn, c, maxY);
     }
-  }
+  else if ((p.x < np.x) && (p.y > np.y))
+    { /* intersects either D or C */
+      di = intersect(n, Dn, c, maxY);
+      if ((minX > di.x) || (di.x > maxX))
+        {
+          di = intersect(n, Cn, c, maxX);
+        }
+    }
   else if ((p.x == np.x) && (p.y < np.y))
-  { /* intersects A */
-    di = intersect(n, An, c, minX);
-  }
-  else if ((p.x == np.x) && (p.y > np.y))
-  { /* intersects C */
-    di = intersect(n, Cn, c, maxX);
-  }
-  else if ((p.x > np.x) && (p.y < np.y))
-  { /* intersects either A or B */
-    di = intersect(n, Bn, c, minY);
-    if ((minX > di.x) || (di.x > maxX))
-    {
+    { /* intersects A */
       di = intersect(n, An, c, minX);
     }
-  }
-  else if ((p.x > np.x) && (p.y == np.y))
-  { /* intersects B */
-    di = intersect(n, Bn, c, minY);
-  }
-  else if ((p.x > np.x) && (p.y > np.y))
-  { /* intersects either C or B */
-    di = intersect(n, Bn, c, minY);
-    if ((minX > di.x) || (di.x > maxX))
-    {
+  else if ((p.x == np.x) && (p.y > np.y))
+    { /* intersects C */
       di = intersect(n, Cn, c, maxX);
     }
-  }
+  else if ((p.x > np.x) && (p.y < np.y))
+    { /* intersects either A or B */
+      di = intersect(n, Bn, c, minY);
+      if ((minX > di.x) || (di.x > maxX))
+        {
+          di = intersect(n, An, c, minX);
+        }
+    }
+  else if ((p.x > np.x) && (p.y == np.y))
+    { /* intersects B */
+      di = intersect(n, Bn, c, minY);
+    }
+  else if ((p.x > np.x) && (p.y > np.y))
+    { /* intersects either C or B */
+      di = intersect(n, Bn, c, minY);
+      if ((minX > di.x) || (di.x > maxX))
+        {
+          di = intersect(n, Cn, c, maxX);
+        }
+    }
   else
-  {
-    printf("Error: Can't intersect\n");
-    exit(1);
-  }
+    {
+      printf("Error: Can't intersect\n");
+      exit(1);
+    }
   i.x = (int)di.x;
   i.y = (int)di.y;
   return i;
@@ -200,19 +200,19 @@ void add_infinit_points_to_K(CHpoints *S)
 
   /* Add v(S) to K. (1) */
   add_point(compute_v(S)); /* Add the point to K */
-  S->v = Kcount - 1;       /* Update the "pointer" in S
+  S->v = Kcount - 1; /* Update the "pointer" in S
                               to point to v(S) in K     */
   CHinsert(&CHSplaytree, S);
 
   while (temp != S)
-  {
-    /* Add v(S) to K. (1) */
-    add_point(compute_v(temp)); /* Add the point to K */
-    temp->v = Kcount - 1;       /* Update the "pointer" in temp
+    {
+      /* Add v(S) to K. (1) */
+      add_point(compute_v(temp)); /* Add the point to K */
+      temp->v = Kcount - 1; /* Update the "pointer" in temp
                                    to point to v(S) in K        */
-    CHinsert(&CHSplaytree, temp);
-    temp = temp->next;
-  }
+      CHinsert(&CHSplaytree, temp);
+      temp = temp->next;
+    }
 }
 
 /* ********************************************************************* */
@@ -230,60 +230,60 @@ void add_edge(int v1, int v2)
   /* getMouse(&x,&y);*/
 
   if (K[v1].e1 == 0)
-  { /* Point not in any edges */
-    K[v1].e1 = Ecount;
-    E[Ecount].p1 = Ecount; /* Set up p1 and q2 */
-    E[Ecount].q1 = Ecount;
-  }
+    { /* Point not in any edges */
+      K[v1].e1 = Ecount;
+      E[Ecount].p1 = Ecount; /* Set up p1 and q2 */
+      E[Ecount].q1 = Ecount;
+    }
   else if (K[v1].e2 == 0)
-  { /* Point in _one_ edge already */
-    K[v1].e2 = Ecount;
-    E[Ecount].p1 = K[v1].e1; /* Set up p1 and q2 */
-    E[Ecount].q1 = K[v1].e1;
-    if (v1 == E[K[v1].e1].v1)
-    {                          /* Set either p1,q2 or p2,q2 */
-      E[K[v1].e1].p1 = Ecount; /* in the edge that already */
-      E[K[v1].e1].q1 = Ecount; /* has v1 as an endpoint */
+    { /* Point in _one_ edge already */
+      K[v1].e2 = Ecount;
+      E[Ecount].p1 = K[v1].e1; /* Set up p1 and q2 */
+      E[Ecount].q1 = K[v1].e1;
+      if (v1 == E[K[v1].e1].v1)
+        { /* Set either p1,q2 or p2,q2 */
+          E[K[v1].e1].p1 = Ecount; /* in the edge that already */
+          E[K[v1].e1].q1 = Ecount; /* has v1 as an endpoint */
+        }
+      else
+        {
+          E[K[v1].e1].p2 = Ecount;
+          E[K[v1].e1].q2 = Ecount;
+        }
     }
-    else
-    {
-      E[K[v1].e1].p2 = Ecount;
-      E[K[v1].e1].q2 = Ecount;
-    }
-  }
   else
-  { /* Point already in 2 edges */
-    K[v1].e3 = Ecount;
-    /* more */
-  }
+    { /* Point already in 2 edges */
+      K[v1].e3 = Ecount;
+      /* more */
+    }
 
   if (K[v2].e1 == 0)
-  { /* Point not in any edges */
-    K[v2].e1 = Ecount;
-    E[Ecount].p1 = Ecount; /* Set up p1 and q2 */
-    E[Ecount].q1 = Ecount;
-  }
+    { /* Point not in any edges */
+      K[v2].e1 = Ecount;
+      E[Ecount].p1 = Ecount; /* Set up p1 and q2 */
+      E[Ecount].q1 = Ecount;
+    }
   else if (K[v2].e2 == 0)
-  { /* Point in _one_ edge already */
-    K[v2].e2 = Ecount;
-    E[Ecount].p1 = K[v2].e1; /* Set up p1 and q2 */
-    E[Ecount].q1 = K[v2].e1;
-    if (v2 == E[K[v2].e1].v1)
-    {                          /* Set either p1,q2 or p2,q2 */
-      E[K[v2].e1].p1 = Ecount; /* in the edge that already */
-      E[K[v2].e1].q1 = Ecount; /* has v2 as an endpoint */
+    { /* Point in _one_ edge already */
+      K[v2].e2 = Ecount;
+      E[Ecount].p1 = K[v2].e1; /* Set up p1 and q2 */
+      E[Ecount].q1 = K[v2].e1;
+      if (v2 == E[K[v2].e1].v1)
+        { /* Set either p1,q2 or p2,q2 */
+          E[K[v2].e1].p1 = Ecount; /* in the edge that already */
+          E[K[v2].e1].q1 = Ecount; /* has v2 as an endpoint */
+        }
+      else
+        {
+          E[K[v2].e1].p2 = Ecount;
+          E[K[v2].e1].q2 = Ecount;
+        }
     }
-    else
-    {
-      E[K[v2].e1].p2 = Ecount;
-      E[K[v2].e1].q2 = Ecount;
-    }
-  }
   else
-  { /* Point already in 2 edges */
-    K[v2].e3 = Ecount;
-    /* more */
-  }
+    { /* Point already in 2 edges */
+      K[v2].e3 = Ecount;
+      /* more */
+    }
   Ecount++;
 }
 
@@ -320,34 +320,34 @@ void draw_sec(CHpoints *p)
   if ((length2(before(p)->node, p->node) > length2(p->node, next(p)->node)) &&
       (length2(before(p)->node, p->node) >
        length2(before(p)->node, next(p)->node)))
-  {
-    p2 = next(p); /* the angle at next(p) is the biggest */
-  }
+    {
+      p2 = next(p); /* the angle at next(p) is the biggest */
+    }
   else if ((length2(p->node, next(p)->node) >
             length2(before(p)->node, next(p)->node)) &&
            (length2(p->node, next(p)->node) >
             length2(p->node, before(p)->node)))
-  {
-    p2 = before(p); /* the angle at before(p) is the biggest */
-  }
+    {
+      p2 = before(p); /* the angle at before(p) is the biggest */
+    }
   else
-  {
-    p2 = p; /* the angle at p is the biggest */
-  }
+    {
+      p2 = p; /* the angle at p is the biggest */
+    }
   p1 = before(p2);
   p3 = next(p2);
 
   if (angle(p1, p2, p3) < 0)
-  {
-    c.x = (midpoint(p1->node, p3->node)).x; /* center is midpoint of */
-    c.y = (midpoint(p1->node, p3->node)).y; /* p1 and p3             */
-    radius = sqrt((double)length2(p1->node, p3->node)) / 2.00;
-  }
+    {
+      c.x = (midpoint(p1->node, p3->node)).x; /* center is midpoint of */
+      c.y = (midpoint(p1->node, p3->node)).y; /* p1 and p3             */
+      radius = sqrt((double)length2(p1->node, p3->node)) / 2.00;
+    }
   else
-  {
-    c = centre(p1->node, p2->node, p3->node);
-    radius = sqrt((double)radius2(p->node, c));
-  }
+    {
+      c = centre(p1->node, p2->node, p3->node);
+      radius = sqrt((double)radius2(p->node, c));
+    }
   printf("The center is (%d,%d)\n", (int)c.x, (int)c.y);
   printf("The radius is %9.2f\n", radius);
 }
@@ -365,38 +365,38 @@ void alg2()
   /* p next(p), and count the number of points in S.                    */
   add_infinit_points_to_K(S);
   if (CHno > 2)
-  {
-    while (CHno > 2)
     {
-      p = maximize_radius_and_angle(S);
-      if (CHno == 3)
-      {
-        draw_sec(p);
-      }
-      q = before(p);
-      dc = centre(q->node, p->node, next(p)->node);
-      c.x = (int)dc.x;
-      c.y = (int)dc.y;
-      add_point(c);
-      add_edge(Kcount - 1, p->v); /* add_edge(c,v(p)) */
-      add_edge(Kcount - 1, q->v); /* add_edge(c,v(q)) */
-      q->v = Kcount - 1;          /* K[Kcount-1] is c */
-      q->next = next(p);
-      next(q)->prev = q;
-      /* Make sure that we don't loose the handle to the circular list S
+      while (CHno > 2)
+        {
+          p = maximize_radius_and_angle(S);
+          if (CHno == 3)
+            {
+              draw_sec(p);
+            }
+          q = before(p);
+          dc = centre(q->node, p->node, next(p)->node);
+          c.x = (int)dc.x;
+          c.y = (int)dc.y;
+          add_point(c);
+          add_edge(Kcount - 1, p->v); /* add_edge(c,v(p)) */
+          add_edge(Kcount - 1, q->v); /* add_edge(c,v(q)) */
+          q->v = Kcount - 1; /* K[Kcount-1] is c */
+          q->next = next(p);
+          next(q)->prev = q;
+          /* Make sure that we don't loose the handle to the circular list S
          by making a point is S the new handle                           */
-      S = q;
-      CHno--;
-      /* re-insert before(P) and next(p) with a new radius & angle */
-      CHinsert(&CHSplaytree, next(p));
-      CHinsert(&CHSplaytree, before(p));
+          S = q;
+          CHno--;
+          /* re-insert before(P) and next(p) with a new radius & angle */
+          CHinsert(&CHSplaytree, next(p));
+          CHinsert(&CHSplaytree, before(p));
+        }
+      add_edge(q->v, (next(q))->v);
     }
-    add_edge(q->v, (next(q))->v);
-  }
   else if ((CHno == 2))
-  {
-    add_edge(S->v, (next(S))->v);
-  }
+    {
+      add_edge(S->v, (next(S))->v);
+    }
   free(S);
   CHfree_tree(CHSplaytree);
 }

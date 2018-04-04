@@ -11,9 +11,9 @@ int loop(complex double c)
   complex double z = c;
   int i = 1;
   while (cnorm2(z) <= 4.0 && i++ < max_i)
-  {
-    z = z * z + c;
-  }
+    {
+      z = z * z + c;
+    }
   return i;
 }
 
@@ -21,12 +21,12 @@ int main()
 {
   int i, j;
   for (j = -39; j < 39; ++j)
-  {
-    for (i = -39; i < 39; ++i)
     {
-      printf(loop(j / 40.0 - 0.5 + i / 40.0 * I) > max_i ? "*" : " ");
+      for (i = -39; i < 39; ++i)
+        {
+          printf(loop(j / 40.0 - 0.5 + i / 40.0 * I) > max_i ? "*" : " ");
+        }
+      printf("\n");
     }
-    printf("\n");
-  }
   return 0;
 }

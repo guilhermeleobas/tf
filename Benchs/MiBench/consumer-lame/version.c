@@ -40,56 +40,56 @@ void lame_print_version(FILE* ofile)
 char* get_lame_version(void)
 {
   if (LAME_ALPHAVERSION > 0)
-  {
-    sprintf(lpszVersion, "%d.%02d (alpha %d)", LAME_MAJOR_VERSION,
-            LAME_MINOR_VERSION, LAME_ALPHAVERSION);
-  }
+    {
+      sprintf(lpszVersion, "%d.%02d (alpha %d)", LAME_MAJOR_VERSION,
+              LAME_MINOR_VERSION, LAME_ALPHAVERSION);
+    }
   else if (LAME_BETAVERSION > 0)
-  {
-    sprintf(lpszVersion, "%d.%02d (beta %d)", LAME_MAJOR_VERSION,
-            LAME_MINOR_VERSION, LAME_BETAVERSION);
-  }
+    {
+      sprintf(lpszVersion, "%d.%02d (beta %d)", LAME_MAJOR_VERSION,
+              LAME_MINOR_VERSION, LAME_BETAVERSION);
+    }
   else
-  {
-    sprintf(lpszVersion, "%d.%02d", LAME_MAJOR_VERSION, LAME_MINOR_VERSION);
-  }
+    {
+      sprintf(lpszVersion, "%d.%02d", LAME_MAJOR_VERSION, LAME_MINOR_VERSION);
+    }
   return lpszVersion;
 }
 
 char* get_psy_version(void)
 {
   if (PSY_ALPHAVERSION > 0)
-  {
-    sprintf(lpszVersion, "%d.%02d (alpha %d)", PSY_MAJOR_VERSION,
-            PSY_MINOR_VERSION, PSY_ALPHAVERSION);
-  }
+    {
+      sprintf(lpszVersion, "%d.%02d (alpha %d)", PSY_MAJOR_VERSION,
+              PSY_MINOR_VERSION, PSY_ALPHAVERSION);
+    }
   else if (PSY_BETAVERSION > 0)
-  {
-    sprintf(lpszVersion, "%d.%02d (beta %d)", PSY_MAJOR_VERSION,
-            PSY_MINOR_VERSION, PSY_BETAVERSION);
-  }
+    {
+      sprintf(lpszVersion, "%d.%02d (beta %d)", PSY_MAJOR_VERSION,
+              PSY_MINOR_VERSION, PSY_BETAVERSION);
+    }
   else
-  {
-    sprintf(lpszVersion, "%d.%02d", PSY_MAJOR_VERSION, PSY_MINOR_VERSION);
-  }
+    {
+      sprintf(lpszVersion, "%d.%02d", PSY_MAJOR_VERSION, PSY_MINOR_VERSION);
+    }
   return lpszVersion;
 }
 
 char* get_mp3x_version(void)
 {
   if (MP3X_ALPHAVERSION > 0)
-  {
-    sprintf(lpszVersion, "%d:%02d (alpha %d)", MP3X_MAJOR_VERSION,
-            MP3X_MINOR_VERSION, MP3X_ALPHAVERSION);
-  }
+    {
+      sprintf(lpszVersion, "%d:%02d (alpha %d)", MP3X_MAJOR_VERSION,
+              MP3X_MINOR_VERSION, MP3X_ALPHAVERSION);
+    }
   else if (MP3X_BETAVERSION > 0)
-  {
-    sprintf(lpszVersion, "%d:%02d (beta %d)", MP3X_MAJOR_VERSION,
-            MP3X_MINOR_VERSION, MP3X_BETAVERSION);
-  }
+    {
+      sprintf(lpszVersion, "%d:%02d (beta %d)", MP3X_MAJOR_VERSION,
+              MP3X_MINOR_VERSION, MP3X_BETAVERSION);
+    }
   else
-  {
-    sprintf(lpszVersion, "%d:%02d", MP3X_MAJOR_VERSION, MP3X_MINOR_VERSION);
-  }
+    {
+      sprintf(lpszVersion, "%d:%02d", MP3X_MAJOR_VERSION, MP3X_MINOR_VERSION);
+    }
   return lpszVersion;
 }

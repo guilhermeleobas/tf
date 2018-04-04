@@ -14,35 +14,35 @@ register int v;
   (void)pparm(u);
 
   if (u->sign)
-  {
-    i = -1;
-    if (v < 0)
     {
-      if (-v >= BASE)
-      {
-        errorp(PDOMAIN, "picmp", cmpError);
-      }
-      if (u->size == 1)
-      {
-        i = -(int)*(u->value) - v;
-      }
+      i = -1;
+      if (v < 0)
+        {
+          if (-v >= BASE)
+            {
+              errorp(PDOMAIN, "picmp", cmpError);
+            }
+          if (u->size == 1)
+            {
+              i = -(int)*(u->value) - v;
+            }
+        }
     }
-  }
   else
-  {
-    i = 1;
-    if (v >= 0)
     {
-      if (v >= BASE)
-      {
-        errorp(PDOMAIN, "picmp", cmpError);
-      }
-      if (u->size == 1)
-      {
-        i = (int)*(u->value) - v;
-      }
+      i = 1;
+      if (v >= 0)
+        {
+          if (v >= BASE)
+            {
+              errorp(PDOMAIN, "picmp", cmpError);
+            }
+          if (u->size == 1)
+            {
+              i = (int)*(u->value) - v;
+            }
+        }
     }
-  }
 
   pdestroy(u);
   return i;

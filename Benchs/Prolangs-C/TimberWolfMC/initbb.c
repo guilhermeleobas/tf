@@ -14,32 +14,32 @@ void initbb(void)
   bbright = 0;
 
   for (cell = 1; cell <= numcells; cell++)
-  {
-    cellptr = cellarray[cell];
-    xcenter = cellptr->xcenter;
-    ycenter = cellptr->ycenter;
-    tileptr = cellptr->config[cellptr->orient];
-    l = xcenter + tileptr->left;
-    r = xcenter + tileptr->right;
-    b = ycenter + tileptr->bottom;
-    t = ycenter + tileptr->top;
-    if (l < bbleft)
     {
-      bbleft = l;
+      cellptr = cellarray[cell];
+      xcenter = cellptr->xcenter;
+      ycenter = cellptr->ycenter;
+      tileptr = cellptr->config[cellptr->orient];
+      l = xcenter + tileptr->left;
+      r = xcenter + tileptr->right;
+      b = ycenter + tileptr->bottom;
+      t = ycenter + tileptr->top;
+      if (l < bbleft)
+        {
+          bbleft = l;
+        }
+      if (r > bbright)
+        {
+          bbright = r;
+        }
+      if (b < bbbottom)
+        {
+          bbbottom = b;
+        }
+      if (t > bbtop)
+        {
+          bbtop = t;
+        }
     }
-    if (r > bbright)
-    {
-      bbright = r;
-    }
-    if (b < bbbottom)
-    {
-      bbbottom = b;
-    }
-    if (t > bbtop)
-    {
-      bbtop = t;
-    }
-  }
   return;
 }
 
@@ -60,101 +60,101 @@ int deltaBB(int cell, int xb, int yb)
   b = ycenter + tileptr->bottom;
   t = ycenter + tileptr->top;
   if (l == bbleft)
-  {
-    bbbl = 1000000;
-    for (c = 1; c <= numcells; c++)
     {
-      if (cell == c)
-      {
-        continue;
-      }
-      cellptr = cellarray[c];
-      xcenter = cellptr->xcenter;
-      tileptr = cellptr->config[cellptr->orient];
-      l = xcenter + tileptr->left;
-      if (l < bbbl)
-      {
-        bbbl = l;
-      }
+      bbbl = 1000000;
+      for (c = 1; c <= numcells; c++)
+        {
+          if (cell == c)
+            {
+              continue;
+            }
+          cellptr = cellarray[c];
+          xcenter = cellptr->xcenter;
+          tileptr = cellptr->config[cellptr->orient];
+          l = xcenter + tileptr->left;
+          if (l < bbbl)
+            {
+              bbbl = l;
+            }
+        }
+      cost -= bbbl - bbleft;
     }
-    cost -= bbbl - bbleft;
-  }
   else
-  {
-    bbbl = bbleft;
-  }
+    {
+      bbbl = bbleft;
+    }
   if (r == bbright)
-  {
-    bbbr = 0;
-    for (c = 1; c <= numcells; c++)
     {
-      if (cell == c)
-      {
-        continue;
-      }
-      cellptr = cellarray[c];
-      xcenter = cellptr->xcenter;
-      tileptr = cellptr->config[cellptr->orient];
-      r = xcenter + tileptr->right;
-      if (r > bbbr)
-      {
-        bbbr = r;
-      }
+      bbbr = 0;
+      for (c = 1; c <= numcells; c++)
+        {
+          if (cell == c)
+            {
+              continue;
+            }
+          cellptr = cellarray[c];
+          xcenter = cellptr->xcenter;
+          tileptr = cellptr->config[cellptr->orient];
+          r = xcenter + tileptr->right;
+          if (r > bbbr)
+            {
+              bbbr = r;
+            }
+        }
+      cost -= bbright - bbbr;
     }
-    cost -= bbright - bbbr;
-  }
   else
-  {
-    bbbr = bbright;
-  }
+    {
+      bbbr = bbright;
+    }
   if (b == bbbottom)
-  {
-    bbbb = 1000000;
-    for (c = 1; c <= numcells; c++)
     {
-      if (cell == c)
-      {
-        continue;
-      }
-      cellptr = cellarray[c];
-      ycenter = cellptr->ycenter;
-      tileptr = cellptr->config[cellptr->orient];
-      b = ycenter + tileptr->bottom;
-      if (b < bbbb)
-      {
-        bbbb = b;
-      }
+      bbbb = 1000000;
+      for (c = 1; c <= numcells; c++)
+        {
+          if (cell == c)
+            {
+              continue;
+            }
+          cellptr = cellarray[c];
+          ycenter = cellptr->ycenter;
+          tileptr = cellptr->config[cellptr->orient];
+          b = ycenter + tileptr->bottom;
+          if (b < bbbb)
+            {
+              bbbb = b;
+            }
+        }
+      cost -= bbbb - bbbottom;
     }
-    cost -= bbbb - bbbottom;
-  }
   else
-  {
-    bbbb = bbbottom;
-  }
+    {
+      bbbb = bbbottom;
+    }
   if (t == bbtop)
-  {
-    bbbt = 0;
-    for (c = 1; c <= numcells; c++)
     {
-      if (cell == c)
-      {
-        continue;
-      }
-      cellptr = cellarray[c];
-      ycenter = cellptr->ycenter;
-      tileptr = cellptr->config[cellptr->orient];
-      t = ycenter + tileptr->top;
-      if (t > bbbt)
-      {
-        bbbt = t;
-      }
+      bbbt = 0;
+      for (c = 1; c <= numcells; c++)
+        {
+          if (cell == c)
+            {
+              continue;
+            }
+          cellptr = cellarray[c];
+          ycenter = cellptr->ycenter;
+          tileptr = cellptr->config[cellptr->orient];
+          t = ycenter + tileptr->top;
+          if (t > bbbt)
+            {
+              bbbt = t;
+            }
+        }
+      cost -= bbtop - bbbt;
     }
-    cost -= bbtop - bbbt;
-  }
   else
-  {
-    bbbt = bbtop;
-  }
+    {
+      bbbt = bbtop;
+    }
 
   cellptr = cellarray[cell];
   tileptr = cellptr->config[cellptr->orient];
@@ -163,24 +163,24 @@ int deltaBB(int cell, int xb, int yb)
   b = yb + tileptr->bottom;
   t = yb + tileptr->top;
   if (l < bbbl)
-  {
-    bbbl = l;
-    cost += bbbl - l;
-  }
+    {
+      bbbl = l;
+      cost += bbbl - l;
+    }
   if (r > bbbr)
-  {
-    bbbr = r;
-    cost += r - bbbr;
-  }
+    {
+      bbbr = r;
+      cost += r - bbbr;
+    }
   if (b < bbbb)
-  {
-    bbbb = b;
-    cost += bbbb - b;
-  }
+    {
+      bbbb = b;
+      cost += bbbb - b;
+    }
   if (t > bbbt)
-  {
-    bbbt = t;
-    cost += t - bbbt;
-  }
+    {
+      bbbt = t;
+      cost += t - bbbt;
+    }
   return (cost);
 }

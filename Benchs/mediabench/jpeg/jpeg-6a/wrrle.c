@@ -54,8 +54,8 @@ Sorry, this code only copes with 8 -
   struct djpeg_dest_struct pub; /* public fields */
 
   jvirt_sarray_ptr image; /* virtual array to store the output image */
-  rle_map *colormap;      /* RLE-style color map, or NULL if none */
-  rle_pixel **rle_row;    /* To pass rows to rle_putrow() */
+  rle_map *colormap; /* RLE-style color map, or NULL if none */
+  rle_pixel **rle_row; /* To pass rows to rle_putrow() */
 
 } rle_dest_struct;
 
@@ -111,24 +111,24 @@ start_output_rle(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo)
   dest->colormap = NULL;
 
   if (cinfo->quantize_colors)
-  {
-    /* Allocate storage for RLE-style cmap, zero any extra entries */
-    cmapsize = cinfo->out_color_components * CMAPLENGTH * SIZEOF(rle_map);
-    dest->colormap = (rle_map *)(*cinfo->mem->alloc_small)(
-        (j_common_ptr)cinfo, JPOOL_IMAGE, cmapsize);
-    MEMZERO(dest->colormap, cmapsize);
-
-    /* Save away data in RLE format --- note 8-bit left shift! */
-    /* Shifting would need adjustment for JSAMPLEs wider than 8 bits. */
-    for (ci = 0; ci < cinfo->out_color_components; ci++)
     {
-      for (i = 0; i < cinfo->actual_number_of_colors; i++)
-      {
-        dest->colormap[ci * CMAPLENGTH + i] = GETJSAMPLE(cinfo->colormap[ci][i])
-                                              << 8;
-      }
+      /* Allocate storage for RLE-style cmap, zero any extra entries */
+      cmapsize = cinfo->out_color_components * CMAPLENGTH * SIZEOF(rle_map);
+      dest->colormap = (rle_map *)(*cinfo->mem->alloc_small)(
+          (j_common_ptr)cinfo, JPOOL_IMAGE, cmapsize);
+      MEMZERO(dest->colormap, cmapsize);
+
+      /* Save away data in RLE format --- note 8-bit left shift! */
+      /* Shifting would need adjustment for JSAMPLEs wider than 8 bits. */
+      for (ci = 0; ci < cinfo->out_color_components; ci++)
+        {
+          for (i = 0; i < cinfo->actual_number_of_colors; i++)
+            {
+              dest->colormap[ci * CMAPLENGTH + i] = GETJSAMPLE(cinfo->colormap[ci][i])
+                                                    << 8;
+            }
+        }
     }
-  }
 
   /* Set the output buffer to the first row */
   dest->pub.buffer = (*cinfo->mem->access_virt_sarray)(
@@ -139,9 +139,9 @@ start_output_rle(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo)
 
 #ifdef PROGRESS_REPORT
   if (progress != NULL)
-  {
-    progress->total_extra_passes++; /* count file writing as separate pass */
-  }
+    {
+      progress->total_extra_passes++; /* count file writing as separate pass */
+    }
 #endif
 }
 
@@ -158,11 +158,11 @@ rle_put_pixel_rows(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo,
   rle_dest_ptr dest = (rle_dest_ptr)dinfo;
 
   if (cinfo->output_scanline < cinfo->output_height)
-  {
-    dest->pub.buffer = (*cinfo->mem->access_virt_sarray)(
-        (j_common_ptr)cinfo, dest->image, cinfo->output_scanline, (JDIMENSION)1,
-        TRUE);
-  }
+    {
+      dest->pub.buffer = (*cinfo->mem->access_virt_sarray)(
+          (j_common_ptr)cinfo, dest->image, cinfo->output_scanline, (JDIMENSION)1,
+          TRUE);
+    }
 }
 
 /*
@@ -195,80 +195,80 @@ finish_output_rle(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo)
   header.alpha = 0;
   header.ncolors = cinfo->output_components;
   for (ci = 0; ci < cinfo->output_components; ci++)
-  {
-    RLE_SET_BIT(header, ci);
-  }
+    {
+      RLE_SET_BIT(header, ci);
+    }
   if (cinfo->quantize_colors)
-  {
-    header.ncmap = cinfo->out_color_components;
-    header.cmaplen = CMAPBITS;
-    header.cmap = dest->colormap;
-    /* Add a comment to the output image with the true colormap length. */
-    sprintf(cmapcomment, "color_map_length=%d", cinfo->actual_number_of_colors);
-    rle_putcom(cmapcomment, &header);
-  }
+    {
+      header.ncmap = cinfo->out_color_components;
+      header.cmaplen = CMAPBITS;
+      header.cmap = dest->colormap;
+      /* Add a comment to the output image with the true colormap length. */
+      sprintf(cmapcomment, "color_map_length=%d", cinfo->actual_number_of_colors);
+      rle_putcom(cmapcomment, &header);
+    }
 
   /* Emit the RLE header and color map (if any) */
   rle_put_setup(&header);
 
-/* Now output the RLE data from our virtual array.
+  /* Now output the RLE data from our virtual array.
  * We assume here that (a) rle_pixel is represented the same as JSAMPLE,
  * and (b) we are not on a machine where FAR pointers differ from regular.
  */
 
 #ifdef PROGRESS_REPORT
   if (progress != NULL)
-  {
-    progress->pub.pass_limit = cinfo->output_height;
-    progress->pub.pass_counter = 0;
-    (*progress->pub.progress_monitor)((j_common_ptr)cinfo);
-  }
+    {
+      progress->pub.pass_limit = cinfo->output_height;
+      progress->pub.pass_counter = 0;
+      (*progress->pub.progress_monitor)((j_common_ptr)cinfo);
+    }
 #endif
 
   if (cinfo->output_components == 1)
-  {
-    for (row = cinfo->output_height - 1; row >= 0; row--)
     {
-      rle_row = (rle_pixel **)(*cinfo->mem->access_virt_sarray)(
-          (j_common_ptr)cinfo, dest->image, (JDIMENSION)row, (JDIMENSION)1,
-          FALSE);
-      rle_putrow(rle_row, (int)cinfo->output_width, &header);
+      for (row = cinfo->output_height - 1; row >= 0; row--)
+        {
+          rle_row = (rle_pixel **)(*cinfo->mem->access_virt_sarray)(
+              (j_common_ptr)cinfo, dest->image, (JDIMENSION)row, (JDIMENSION)1,
+              FALSE);
+          rle_putrow(rle_row, (int)cinfo->output_width, &header);
 #ifdef PROGRESS_REPORT
-      if (progress != NULL)
-      {
-        progress->pub.pass_counter++;
-        (*progress->pub.progress_monitor)((j_common_ptr)cinfo);
-      }
+          if (progress != NULL)
+            {
+              progress->pub.pass_counter++;
+              (*progress->pub.progress_monitor)((j_common_ptr)cinfo);
+            }
 #endif
+        }
     }
-  }
   else
-  {
-    for (row = cinfo->output_height - 1; row >= 0; row--)
     {
-      rle_row = (rle_pixel **)dest->rle_row;
-      output_row = *(*cinfo->mem->access_virt_sarray)(
-          (j_common_ptr)cinfo, dest->image, (JDIMENSION)row, (JDIMENSION)1,
-          FALSE);
-      red = rle_row[0];
-      green = rle_row[1];
-      blue = rle_row[2];
-      for (col = cinfo->output_width; col > 0; col--)
-      {
-        *red++ = GETJSAMPLE(*output_row++);
-        *green++ = GETJSAMPLE(*output_row++);
-        *blue++ = GETJSAMPLE(*output_row++);
-      }
-      rle_putrow(rle_row, (int)cinfo->output_width, &header);
+      for (row = cinfo->output_height - 1; row >= 0; row--)
+        {
+          rle_row = (rle_pixel **)dest->rle_row;
+          output_row = *(*cinfo->mem->access_virt_sarray)(
+              (j_common_ptr)cinfo, dest->image, (JDIMENSION)row, (JDIMENSION)1,
+              FALSE);
+          red = rle_row[0];
+          green = rle_row[1];
+          blue = rle_row[2];
+          for (col = cinfo->output_width; col > 0; col--)
+            {
+              *red++ = GETJSAMPLE(*output_row++);
+              *green++ = GETJSAMPLE(*output_row++);
+              *blue++ = GETJSAMPLE(*output_row++);
+            }
+          rle_putrow(rle_row, (int)cinfo->output_width, &header);
 #ifdef PROGRESS_REPORT
-      if (progress != NULL)
-      {
-        progress->pub.pass_counter++;
-        (*progress->pub.progress_monitor)((j_common_ptr)cinfo);
-      }
+          if (progress != NULL)
+            {
+              progress->pub.pass_counter++;
+              (*progress->pub.progress_monitor)((j_common_ptr)cinfo);
+            }
 #endif
+        }
     }
-  }
 
 #ifdef PROGRESS_REPORT
   if (progress != NULL) progress->completed_extra_passes++;

@@ -77,9 +77,9 @@ Trie tAlloc(void)
 
   t = (Trie)calloc(1, sizeof(struct trie));
   if (t == NULL)
-  {
-    abort();
-  }
+    {
+      abort();
+    }
   return t;
 };
 
@@ -100,74 +100,74 @@ Trie tNew(char c)
 void insertWord(TrieRoot r, String w)
 {
   if (*w == '\0')
-  {
-    return;
-  }
+    {
+      return;
+    }
   else
-  {
-    if (r->t == (Trie)NULL)
     {
-      r->t = insertRestOfWord(w);
+      if (r->t == (Trie)NULL)
+        {
+          r->t = insertRestOfWord(w);
+        }
+      else
+        {
+          insertW(r->t, w);
+        }
     }
-    else
-    {
-      insertW(r->t, w);
-    }
-  }
 }
 
 void insertW(Trie tr, String w)
 /* Insert a word in a NON-EMPTY trie */
 {
   if (tr == (Trie)NULL)
-  {
-    abort();
-    /* error("Cannot insert in an empty Trie") */;
-  }
+    {
+      abort();
+      /* error("Cannot insert in an empty Trie") */;
+    }
   else
-  {
-    if (*w == '\0') /* Should not happen but does not harm. */
     {
-      return;
-    }
-    else
-    {
-      if (*w == tr->val)
-      {
-        if (*(w + 1) == '\0')
+      if (*w == '\0') /* Should not happen but does not harm. */
         {
-          tr->word = True;
           return;
         }
-        else
-        {
-          if (tr->postfix == (Trie)NULL)
-          {
-            tr->postfix = insertRestOfWord(++w);
-            return;
-          }
-          else
-          {
-            insertW(tr->postfix, ++w);
-            return;
-          }
-        }
-      }
       else
-      {
-        if (tr->otherChar == (Trie)NULL)
         {
-          tr->otherChar = insertRestOfWord(w);
-          return;
+          if (*w == tr->val)
+            {
+              if (*(w + 1) == '\0')
+                {
+                  tr->word = True;
+                  return;
+                }
+              else
+                {
+                  if (tr->postfix == (Trie)NULL)
+                    {
+                      tr->postfix = insertRestOfWord(++w);
+                      return;
+                    }
+                  else
+                    {
+                      insertW(tr->postfix, ++w);
+                      return;
+                    }
+                }
+            }
+          else
+            {
+              if (tr->otherChar == (Trie)NULL)
+                {
+                  tr->otherChar = insertRestOfWord(w);
+                  return;
+                }
+              else
+                {
+                  insertW(tr->otherChar, w);
+                  return;
+                }
+            }
         }
-        else
-        {
-          insertW(tr->otherChar, w);
-          return;
-        }
-      }
     }
-  }
 }
 
 Trie insertRestOfWord(String w)
@@ -175,24 +175,24 @@ Trie insertRestOfWord(String w)
 {
   Trie t;
   if (*w == '\0')
-  {
-    /* error("Cannot insert the empty string. \0") */;
-  }
+    {
+      /* error("Cannot insert the empty string. \0") */;
+    }
   else
-  {
-    t = tNew(*w);
-    w++;
-    if (*w == '\0')
     {
-      t->word = True;
-      return t;
+      t = tNew(*w);
+      w++;
+      if (*w == '\0')
+        {
+          t->word = True;
+          return t;
+        }
+      else
+        {
+          t->postfix = insertRestOfWord(w);
+          return t;
+        }
     }
-    else
-    {
-      t->postfix = insertRestOfWord(w);
-      return t;
-    }
-  }
 }
 
 /*End of insert functions */
@@ -200,75 +200,75 @@ Trie insertRestOfWord(String w)
 void insertChar(SString word, char c)
 {
   if (word == NULL)
-  {
-    abort();
-  }
+    {
+      abort();
+    }
   else
-  {
-    if (word->s == NULL)
     {
-      String sTemp;
-      sTemp = (String)calloc(1, sizeof(char) + 1);
-      if (sTemp == NULL)
-      {
-        abort();
-      }
+      if (word->s == NULL)
+        {
+          String sTemp;
+          sTemp = (String)calloc(1, sizeof(char) + 1);
+          if (sTemp == NULL)
+            {
+              abort();
+            }
+          else
+            {
+              word->s = sTemp;
+              word->max = 1; /* don't count \0 */
+              word->len = 0;
+            }
+        }
       else
-      {
-        word->s = sTemp;
-        word->max = 1; /* don't count \0 */
-        word->len = 0;
-      }
-    }
-    else
-    {
-      if (word->len == word->max)
-      {
-        String tmp;
-        tmp = (String)calloc(1, 2 * word->max * sizeof(char) + 1);
-        if (tmp == NULL)
         {
-          abort();
+          if (word->len == word->max)
+            {
+              String tmp;
+              tmp = (String)calloc(1, 2 * word->max * sizeof(char) + 1);
+              if (tmp == NULL)
+                {
+                  abort();
+                }
+              else
+                {
+                  tmp = strcpy(tmp, word->s);
+                  free(word->s);
+                  word->s = tmp;
+                  word->max *= 2;
+                }
+            }
         }
-        else
-        {
-          tmp = strcpy(tmp, word->s);
-          free(word->s);
-          word->s = tmp;
-          word->max *= 2;
-        }
-      }
+      word->s[word->len++] = c;
+      word->s[word->len] = '\0';
     }
-    word->s[word->len++] = c;
-    word->s[word->len] = '\0';
-  }
 }
 
 void deleteChar(SString word)
 /* word must be NON-NULL */
 {
   if (word == NULL)
-  {
-    abort();
-  }
-  else
-  {
-    if (word->s == NULL)
     {
       abort();
     }
-    else
+  else
     {
-      if (word->len > 0)
-      {
-        word->s[--word->len] = '\0';
-      }
+      if (word->s == NULL)
+        {
+          abort();
+        }
       else
-      { /* OK */
-        ;
-      }
+        {
+          if (word->len > 0)
+            {
+              word->s[--word->len] = '\0';
+            }
+          else
+            { /* OK */
+              ;
+            }
+        }
     }
-  }
 }
 
 /*Print function */
@@ -278,52 +278,52 @@ void printT(TrieRoot tr)
 {
   SString word = ssInit();
   if (tr == NULL)
-  {
-    abort();
-  }
+    {
+      abort();
+    }
   else
-  {
-    printTheRest(tr->t, word);
-  }
+    {
+      printTheRest(tr->t, word);
+    }
 }
 
 void printTheRest(Trie t, SString word)
 {
   if (t == NULL)
-  {
-    return;
-  }
+    {
+      return;
+    }
   else
-  {
-    insertChar(word, t->val);
-    if (t->word == True)
     {
-      printf("%s\n", word->s);
+      insertChar(word, t->val);
+      if (t->word == True)
+        {
+          printf("%s\n", word->s);
+        }
+      else
+        {
+          ;
+        }
+      printTheRest(t->postfix, word);
+      deleteChar(word);
+      printTheRest(t->otherChar, word);
     }
-    else
-    {
-      ;
-    }
-    printTheRest(t->postfix, word);
-    deleteChar(word);
-    printTheRest(t->otherChar, word);
-  }
 }
 
 SString ssInit(void)
 {
   SString word = (SString)calloc(1, sizeof(struct SString));
   if (word == NULL)
-  {
-    abort();
-  }
+    {
+      abort();
+    }
   else
-  {
-    word->s = (String)NULL;
-    word->max = 0;
-    word->len = 0;
-    return word;
-  }
+    {
+      word->s = (String)NULL;
+      word->max = 0;
+      word->len = 0;
+      return word;
+    }
 }
 
 TrieRoot trInit(void)
@@ -345,28 +345,28 @@ int main(int argc, char **argv)
 
   tr = trInit();
   if (argc != 2)
-  {
-    fprintf(stdout, "Usage: %s <sourcefile>\n", argv[0]);
-    return 1;
-  }
+    {
+      fprintf(stdout, "Usage: %s <sourcefile>\n", argv[0]);
+      return 1;
+    }
   if (!(file = fopen(argv[1], "r")))
-  {
-    perror(argv[1]);
-    return 1;
-  }
+    {
+      perror(argv[1]);
+      return 1;
+    }
   while (!feof(file))
-  {
-    if (fscanf(file, "%s", word) < 0)
     {
-      break;
+      if (fscanf(file, "%s", word) < 0)
+        {
+          break;
+        }
+      else
+        {
+          pos = strlen(word) + pos + 1;
+          fseek(file, pos, 0);
+          insertWord(tr, word);
+        }
     }
-    else
-    {
-      pos = strlen(word) + pos + 1;
-      fseek(file, pos, 0);
-      insertWord(tr, word);
-    }
-  }
   fclose(file);
   printT(tr);
   return 0;

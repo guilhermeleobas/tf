@@ -53,11 +53,11 @@ void mark_irredundant(F, D) pcover F, D;
   }
 
   if (debug & IRRED)
-  {
-    printf("# IRRED: F=%d E=%d R=%d Rt=%d Rp=%d Rc=%d Final=%d Bound=%d\n",
-           F->count, E->count, Rt->count + Rp->count, Rt->count, Rp->count,
-           cover->length, E->count + cover->length, 0);
-  }
+    {
+      printf("# IRRED: F=%d E=%d R=%d Rt=%d Rp=%d Rc=%d Final=%d Bound=%d\n",
+             F->count, E->count, Rt->count + Rp->count, Rt->count, Rp->count,
+             cover->length, E->count + cover->length, 0);
+    }
 
   free_cover(E);
   free_cover(Rt);
@@ -100,19 +100,19 @@ pcover *E, *Rt, *Rp;
   foreach_set(F, last, p)
   {
     if (cube_is_covered(FD, p))
-    {
-      R = sf_addset(R, p);
-    }
+      {
+        R = sf_addset(R, p);
+      }
     else
-    {
-      *E = sf_addset(*E, p);
-    }
+      {
+        *E = sf_addset(*E, p);
+      }
     if (debug & IRRED1)
-    {
-      (void)printf("IRRED1: zr=%d ze=%d to-go=%d time=%s\n", R->count,
-                   (*E)->count, F->count - (R->count + (*E)->count),
-                   print_time(ptime()));
-    }
+      {
+        (void)printf("IRRED1: zr=%d ze=%d to-go=%d time=%s\n", R->count,
+                     (*E)->count, F->count - (R->count + (*E)->count),
+                     print_time(ptime()));
+      }
   }
   free_cubelist(FD);
 
@@ -121,19 +121,19 @@ pcover *E, *Rt, *Rp;
   foreach_set(R, last, p)
   {
     if (cube_is_covered(ED, p))
-    {
-      *Rt = sf_addset(*Rt, p);
-    }
+      {
+        *Rt = sf_addset(*Rt, p);
+      }
     else
-    {
-      *Rp = sf_addset(*Rp, p);
-    }
+      {
+        *Rp = sf_addset(*Rp, p);
+      }
     if (debug & IRRED1)
-    {
-      (void)printf("IRRED1: zr=%d zrt=%d to-go=%d time=%s\n", (*Rp)->count,
-                   (*Rt)->count, R->count - ((*Rp)->count + (*Rt)->count),
-                   print_time(ptime()));
-    }
+      {
+        (void)printf("IRRED1: zr=%d zrt=%d to-go=%d time=%s\n", (*Rp)->count,
+                     (*Rt)->count, R->count - ((*Rp)->count + (*Rt)->count),
+                     print_time(ptime()));
+      }
   }
   free_cubelist(ED);
 
@@ -168,22 +168,22 @@ sm_matrix *irred_derive_table(D, E, Rp) pcover D, E, Rp;
     fcube_is_covered(list, p, table);
     RESET(p, REDUND); /* can now consider this cube redundant */
     if (debug & IRRED1)
-    {
-      (void)printf("IRRED1: %d of %d to-go=%d, table=%dx%d time=%s\n", i,
-                   Rp->count, Rp->count - i, table->nrows, table->ncols,
-                   print_time(ptime()));
-    }
+      {
+        (void)printf("IRRED1: %d of %d to-go=%d, table=%dx%d time=%s\n", i,
+                     Rp->count, Rp->count - i, table->nrows, table->ncols,
+                     print_time(ptime()));
+      }
     /* try to keep memory limits down by reducing table as we go along */
     if (table->nrows - size_last_dominance > 1000)
-    {
-      (void)sm_row_dominance(table);
-      size_last_dominance = table->nrows;
-      if (debug & IRRED1)
       {
-        (void)printf("IRRED1: delete redundant rows, now %dx%d\n", table->nrows,
-                     table->ncols);
+        (void)sm_row_dominance(table);
+        size_last_dominance = table->nrows;
+        if (debug & IRRED1)
+          {
+            (void)printf("IRRED1: delete redundant rows, now %dx%d\n", table->nrows,
+                         table->ncols);
+          }
       }
-    }
     i++;
   }
   free_cubelist(list);
@@ -205,26 +205,26 @@ bool tautology(T) pcube *T; /* T will be disposed of */
   static int taut_level = 0;
 
   if (debug & TAUT)
-  {
-    debug_print(T, "TAUTOLOGY", taut_level++);
-  }
+    {
+      debug_print(T, "TAUTOLOGY", taut_level++);
+    }
 
   if ((result = taut_special_cases(T)) == MAYBE)
-  {
-    cl = new_cube();
-    cr = new_cube();
-    best = binate_split_select(T, cl, cr, TAUT);
-    result =
-        tautology(scofactor(T, cl, best)) && tautology(scofactor(T, cr, best));
-    free_cubelist(T);
-    free_cube(cl);
-    free_cube(cr);
-  }
+    {
+      cl = new_cube();
+      cr = new_cube();
+      best = binate_split_select(T, cl, cr, TAUT);
+      result =
+          tautology(scofactor(T, cl, best)) && tautology(scofactor(T, cr, best));
+      free_cubelist(T);
+      free_cube(cl);
+      free_cube(cr);
+    }
 
   if (debug & TAUT)
-  {
-    printf("exit TAUTOLOGY[%d]: %s\n", --taut_level, print_bool(result));
-  }
+    {
+      printf("exit TAUTOLOGY[%d]: %s\n", --taut_level, print_bool(result));
+    }
   return result;
 }
 
@@ -241,97 +241,97 @@ bool taut_special_cases(
 
   /* Check for a row of all 1's which implies tautology */
   for (T1 = T + 2; (p = *T1++) != NULL;)
-  {
-    if (full_row(p, T[0]))
     {
-      free_cubelist(T);
-      return TRUE;
+      if (full_row(p, T[0]))
+        {
+          free_cubelist(T);
+          return TRUE;
+        }
     }
-  }
 
 /* Check for a column of all 0's which implies no tautology */
 start:
   INLINEset_copy(ceil, T[0]);
   for (T1 = T + 2; (p = *T1++) != NULL;)
-  {
-    INLINEset_or(ceil, ceil, p);
-  }
+    {
+      INLINEset_or(ceil, ceil, p);
+    }
   if (!setp_equal(ceil, cube.fullset))
-  {
-    free_cubelist(T);
-    return FALSE;
-  }
+    {
+      free_cubelist(T);
+      return FALSE;
+    }
 
   /* Collect column counts, determine unate variables, etc. */
   massive_count(T);
 
   /* If function is unate (and no row of all 1's), then no tautology */
   if (cdata.vars_unate == cdata.vars_active)
-  {
-    free_cubelist(T);
-    return FALSE;
-
-    /* If active in a single variable (and no column of 0's) then tautology */
-  }
-  else if (cdata.vars_active == 1)
-  {
-    free_cubelist(T);
-    return TRUE;
-
-    /* Check for unate variables, and reduce cover if there are any */
-  }
-  else if (cdata.vars_unate != 0)
-  {
-    /* Form a cube "ceil" with full variables in the unate variables */
-    (void)set_copy(ceil, cube.emptyset);
-    for (var = 0; var < cube.num_vars; var++)
-    {
-      if (cdata.is_unate[var])
-      {
-        INLINEset_or(ceil, ceil, cube.var_mask[var]);
-      }
-    }
-
-    /* Save only those cubes that are "full" in all unate variables */
-    for (Tsave = T1 = T + 2; (p = *T1++) != 0;)
-    {
-      if (setp_implies(ceil, set_or(temp, p, T[0])))
-      {
-        *Tsave++ = p;
-      }
-    }
-    *Tsave++ = NULL;
-    T[1] = (pcube)Tsave;
-
-    if (debug & TAUT)
-    {
-      printf("UNATE_REDUCTION: %d unate variables, reduced to %ld\n",
-             cdata.vars_unate, CUBELISTSIZE(T));
-    }
-    goto start;
-
-    /* Check for component reduction */
-  }
-  else if (cdata.var_zeros[cdata.best] < CUBELISTSIZE(T) / 2)
-  {
-    if (cubelist_partition(T, &A, &B, debug & TAUT) == 0)
-    {
-      return MAYBE;
-    }
-    else
     {
       free_cubelist(T);
-      if (tautology(A))
-      {
-        free_cubelist(B);
-        return TRUE;
-      }
-      else
-      {
-        return tautology(B);
-      }
+      return FALSE;
+
+      /* If active in a single variable (and no column of 0's) then tautology */
     }
-  }
+  else if (cdata.vars_active == 1)
+    {
+      free_cubelist(T);
+      return TRUE;
+
+      /* Check for unate variables, and reduce cover if there are any */
+    }
+  else if (cdata.vars_unate != 0)
+    {
+      /* Form a cube "ceil" with full variables in the unate variables */
+      (void)set_copy(ceil, cube.emptyset);
+      for (var = 0; var < cube.num_vars; var++)
+        {
+          if (cdata.is_unate[var])
+            {
+              INLINEset_or(ceil, ceil, cube.var_mask[var]);
+            }
+        }
+
+      /* Save only those cubes that are "full" in all unate variables */
+      for (Tsave = T1 = T + 2; (p = *T1++) != 0;)
+        {
+          if (setp_implies(ceil, set_or(temp, p, T[0])))
+            {
+              *Tsave++ = p;
+            }
+        }
+      *Tsave++ = NULL;
+      T[1] = (pcube)Tsave;
+
+      if (debug & TAUT)
+        {
+          printf("UNATE_REDUCTION: %d unate variables, reduced to %ld\n",
+                 cdata.vars_unate, CUBELISTSIZE(T));
+        }
+      goto start;
+
+      /* Check for component reduction */
+    }
+  else if (cdata.var_zeros[cdata.best] < CUBELISTSIZE(T) / 2)
+    {
+      if (cubelist_partition(T, &A, &B, debug & TAUT) == 0)
+        {
+          return MAYBE;
+        }
+      else
+        {
+          free_cubelist(T);
+          if (tautology(A))
+            {
+              free_cubelist(B);
+              return TRUE;
+            }
+          else
+            {
+              return tautology(B);
+            }
+        }
+    }
 
   /* We tried as hard as we could, but must recurse from here on */
   return MAYBE;
@@ -353,29 +353,29 @@ sm_matrix *table;
   static int ftaut_level = 0;
 
   if (debug & TAUT)
-  {
-    debug_print(T, "FIND_TAUTOLOGY", ftaut_level++);
-  }
+    {
+      debug_print(T, "FIND_TAUTOLOGY", ftaut_level++);
+    }
 
   if (ftaut_special_cases(T, table) == MAYBE)
-  {
-    cl = new_cube();
-    cr = new_cube();
-    best = binate_split_select(T, cl, cr, TAUT);
+    {
+      cl = new_cube();
+      cr = new_cube();
+      best = binate_split_select(T, cl, cr, TAUT);
 
-    ftautology(scofactor(T, cl, best), table);
-    ftautology(scofactor(T, cr, best), table);
+      ftautology(scofactor(T, cl, best), table);
+      ftautology(scofactor(T, cr, best), table);
 
-    free_cubelist(T);
-    free_cube(cl);
-    free_cube(cr);
-  }
+      free_cubelist(T);
+      free_cube(cl);
+      free_cube(cr);
+    }
 
   if (debug & TAUT)
-  {
-    (void)printf("exit FIND_TAUTOLOGY[%d]: table is %d by %d\n", --ftaut_level,
-                 table->nrows, table->ncols);
-  }
+    {
+      (void)printf("exit FIND_TAUTOLOGY[%d]: table is %d by %d\n", --ftaut_level,
+                   table->nrows, table->ncols);
+    }
 }
 
 static bool ftaut_special_cases(
@@ -387,17 +387,17 @@ sm_matrix *table;
 
   /* Check for a row of all 1's in the essential cubes */
   for (T1 = T + 2; (p = *T1++) != 0;)
-  {
-    if (!TESTP(p, REDUND))
     {
-      if (full_row(p, T[0]))
-      {
-        /* subspace is covered by essentials -- no new rows for table */
-        free_cubelist(T);
-        return TRUE;
-      }
+      if (!TESTP(p, REDUND))
+        {
+          if (full_row(p, T[0]))
+            {
+              /* subspace is covered by essentials -- no new rows for table */
+              free_cubelist(T);
+              return TRUE;
+            }
+        }
     }
-  }
 
 /* Collect column counts, determine unate variables, etc. */
 start:
@@ -405,56 +405,56 @@ start:
 
   /* If function is unate, find the rows of all 1's */
   if (cdata.vars_unate == cdata.vars_active)
-  {
-    /* find which nonessentials cover this subspace */
-    rownum = table->last_row ? table->last_row->row_num + 1 : 0;
-    (void)sm_insert(table, rownum, Rp_current);
-    for (T1 = T + 2; (p = *T1++) != 0;)
     {
-      if (TESTP(p, REDUND))
-      {
-        /* See if a redundant cube covers this leaf */
-        if (full_row(p, T[0]))
+      /* find which nonessentials cover this subspace */
+      rownum = table->last_row ? table->last_row->row_num + 1 : 0;
+      (void)sm_insert(table, rownum, Rp_current);
+      for (T1 = T + 2; (p = *T1++) != 0;)
         {
-          (void)sm_insert(table, rownum, (int)SIZE(p));
+          if (TESTP(p, REDUND))
+            {
+              /* See if a redundant cube covers this leaf */
+              if (full_row(p, T[0]))
+                {
+                  (void)sm_insert(table, rownum, (int)SIZE(p));
+                }
+            }
         }
-      }
-    }
-    free_cubelist(T);
-    return TRUE;
+      free_cubelist(T);
+      return TRUE;
 
-    /* Perform unate reduction if there are any unate variables */
-  }
+      /* Perform unate reduction if there are any unate variables */
+    }
   else if (cdata.vars_unate != 0)
-  {
-    /* Form a cube "ceil" with full variables in the unate variables */
-    (void)set_copy(ceil, cube.emptyset);
-    for (var = 0; var < cube.num_vars; var++)
     {
-      if (cdata.is_unate[var])
-      {
-        INLINEset_or(ceil, ceil, cube.var_mask[var]);
-      }
-    }
+      /* Form a cube "ceil" with full variables in the unate variables */
+      (void)set_copy(ceil, cube.emptyset);
+      for (var = 0; var < cube.num_vars; var++)
+        {
+          if (cdata.is_unate[var])
+            {
+              INLINEset_or(ceil, ceil, cube.var_mask[var]);
+            }
+        }
 
-    /* Save only those cubes that are "full" in all unate variables */
-    for (Tsave = T1 = T + 2; (p = *T1++) != 0;)
-    {
-      if (setp_implies(ceil, set_or(temp, p, T[0])))
-      {
-        *Tsave++ = p;
-      }
-    }
-    *Tsave++ = 0;
-    T[1] = (pcube)Tsave;
+      /* Save only those cubes that are "full" in all unate variables */
+      for (Tsave = T1 = T + 2; (p = *T1++) != 0;)
+        {
+          if (setp_implies(ceil, set_or(temp, p, T[0])))
+            {
+              *Tsave++ = p;
+            }
+        }
+      *Tsave++ = 0;
+      T[1] = (pcube)Tsave;
 
-    if (debug & TAUT)
-    {
-      printf("UNATE_REDUCTION: %d unate variables, reduced to %ld\n",
-             cdata.vars_unate, CUBELISTSIZE(T));
+      if (debug & TAUT)
+        {
+          printf("UNATE_REDUCTION: %d unate variables, reduced to %ld\n",
+                 cdata.vars_unate, CUBELISTSIZE(T));
+        }
+      goto start;
     }
-    goto start;
-  }
 
   /* Not much we can do about it */
   return MAYBE;

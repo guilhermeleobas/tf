@@ -55,20 +55,20 @@ static short qtab_721[7] = {-124, 80, 178, 246, 300, 349, 400};
  * Maps G.721 code word to reconstructed scale factor normalized log
  * magnitude values.
  */
-static short _dqlntab[16] = {-2048, 4,   135, 213, 273, 323, 373, 425,
-                             425,   373, 323, 273, 213, 135, 4,   -2048};
+static short _dqlntab[16] = {-2048, 4, 135, 213, 273, 323, 373, 425,
+                             425, 373, 323, 273, 213, 135, 4, -2048};
 
 /* Maps G.721 code word to log of scale factor multiplier. */
-static short _witab[16] = {-12,  18,  41,  64,  112, 198, 355, 1122,
-                           1122, 355, 198, 112, 64,  41,  18,  -12};
+static short _witab[16] = {-12, 18, 41, 64, 112, 198, 355, 1122,
+                           1122, 355, 198, 112, 64, 41, 18, -12};
 /*
  * Maps G.721 code words to a set of values whose long and short
  * term averages are computed and then compared to give an indication
  * how stationary (steady state) the signal is.
  */
-static short _fitab[16] = {0,     0,     0,     0x200, 0x200, 0x200,
+static short _fitab[16] = {0, 0, 0, 0x200, 0x200, 0x200,
                            0x600, 0xE00, 0xE00, 0x600, 0x200, 0x200,
-                           0x200, 0,     0,     0};
+                           0x200, 0, 0, 0};
 
 /*
  * g721_encoder()
@@ -79,26 +79,26 @@ static short _fitab[16] = {0,     0,     0,     0x200, 0x200, 0x200,
 int g721_encoder(int sl, int in_coding, struct g72x_state *state_ptr)
 {
   short sezi, se, sez; /* ACCUM */
-  short d;             /* SUBTA */
-  short sr;            /* ADDB */
-  short y;             /* MIX */
-  short dqsez;         /* ADDC */
+  short d; /* SUBTA */
+  short sr; /* ADDB */
+  short y; /* MIX */
+  short dqsez; /* ADDC */
   short dq, i;
 
   switch (in_coding)
-  { /* linearize input sample to 14-bit PCM */
-    case AUDIO_ENCODING_ALAW:
-      sl = alaw2linear(sl) >> 2;
-      break;
-    case AUDIO_ENCODING_ULAW:
-      sl = ulaw2linear(sl) >> 2;
-      break;
-    case AUDIO_ENCODING_LINEAR:
-      sl >>= 2; /* 14-bit dynamic range */
-      break;
-    default:
-      return (-1);
-  }
+    { /* linearize input sample to 14-bit PCM */
+      case AUDIO_ENCODING_ALAW:
+        sl = alaw2linear(sl) >> 2;
+        break;
+      case AUDIO_ENCODING_ULAW:
+        sl = ulaw2linear(sl) >> 2;
+        break;
+      case AUDIO_ENCODING_LINEAR:
+        sl >>= 2; /* 14-bit dynamic range */
+        break;
+      default:
+        return (-1);
+    }
 
   sezi = predictor_zero(state_ptr);
   sez = sezi >> 1;
@@ -107,7 +107,7 @@ int g721_encoder(int sl, int in_coding, struct g72x_state *state_ptr)
   d = sl - se; /* estimation difference */
 
   /* quantize the prediction difference */
-  y = step_size(state_ptr);        /* quantizer step size */
+  y = step_size(state_ptr); /* quantizer step size */
   i = quantize(d, y, qtab_721, 7); /* i = ADPCM code */
 
   dq = reconstruct(i & 8, _dqlntab[i], y); /* quantized est diff */
@@ -133,8 +133,8 @@ int g721_encoder(int sl, int in_coding, struct g72x_state *state_ptr)
 int g721_decoder(int i, int out_coding, struct g72x_state *state_ptr)
 {
   short sezi, sei, sez, se; /* ACCUM */
-  short y;                  /* MIX */
-  short sr;                 /* ADDB */
+  short y; /* MIX */
+  short sr; /* ADDB */
   short dq;
   short dqsez;
 
@@ -155,14 +155,14 @@ int g721_decoder(int i, int out_coding, struct g72x_state *state_ptr)
   update(4, y, _witab[i] << 5, _fitab[i], dq, sr, dqsez, state_ptr);
 
   switch (out_coding)
-  {
-    case AUDIO_ENCODING_ALAW:
-      return (tandem_adjust_alaw(sr, se, y, i, 8, qtab_721));
-    case AUDIO_ENCODING_ULAW:
-      return (tandem_adjust_ulaw(sr, se, y, i, 8, qtab_721));
-    case AUDIO_ENCODING_LINEAR:
-      return (sr << 2); /* sr was 14-bit dynamic range */
-    default:
-      return (-1);
-  }
+    {
+      case AUDIO_ENCODING_ALAW:
+        return (tandem_adjust_alaw(sr, se, y, i, 8, qtab_721));
+      case AUDIO_ENCODING_ULAW:
+        return (tandem_adjust_ulaw(sr, se, y, i, 8, qtab_721));
+      case AUDIO_ENCODING_LINEAR:
+        return (sr << 2); /* sr was 14-bit dynamic range */
+      default:
+        return (-1);
+    }
 }

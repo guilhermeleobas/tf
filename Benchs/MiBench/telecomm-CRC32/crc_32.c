@@ -2,8 +2,8 @@
 
 /* Crc - 32 BIT ANSI X3.66 CRC checksum files */
 
-#include "crc.h"
 #include <stdio.h>
+#include "crc.h"
 
 #ifdef __TURBOC__
 #pragma warn - cln
@@ -131,21 +131,21 @@ Boolean_T crc32file(char *name, DWORD *crc, long *charcnt)
 #else
   if ((fin = fopen(name, "r")) == NULL)
 #endif
-  {
-    perror(name);
-    return Error_;
-  }
+    {
+      perror(name);
+      return Error_;
+    }
   while ((c = getc(fin)) != EOF)
-  {
-    ++*charcnt;
-    oldcrc32 = UPDC32(c, oldcrc32);
-  }
+    {
+      ++*charcnt;
+      oldcrc32 = UPDC32(c, oldcrc32);
+    }
 
   if (ferror(fin))
-  {
-    perror(name);
-    *charcnt = -1;
-  }
+    {
+      perror(name);
+      *charcnt = -1;
+    }
   fclose(fin);
 
   *crc = oldcrc32 = ~oldcrc32;
@@ -160,9 +160,9 @@ DWORD crc32buf(char *buf, size_t len)
   oldcrc32 = 0xFFFFFFFF;
 
   for (; len; --len, ++buf)
-  {
-    oldcrc32 = UPDC32(*buf, oldcrc32);
-  }
+    {
+      oldcrc32 = UPDC32(*buf, oldcrc32);
+    }
 
   return ~oldcrc32;
 }
@@ -180,9 +180,9 @@ int main(int argc, char *argv[])
   register errors = 0;
 
   while (--argc > 0)
-  {
-    errors |= crc32file(*++argv, &crc, &charcnt);
-    printf("%08X %7ld %s\n", (int)crc, charcnt, mybasename(*argv));
-  }
+    {
+      errors |= crc32file(*++argv, &crc, &charcnt);
+      printf("%08X %7ld %s\n", (int)crc, charcnt, mybasename(*argv));
+    }
   return (errors != 0);
 }

@@ -90,63 +90,63 @@ int encrypt;
   /* I don't know if it is worth the effort of loop unrolling the
    * inner loop */
   if (encrypt)
-  {
-#ifdef DES_UNROLL
-    D_ENCRYPT(l, r, 0);  /*  1 */
-    D_ENCRYPT(r, l, 2);  /*  2 */
-    D_ENCRYPT(l, r, 4);  /*  3 */
-    D_ENCRYPT(r, l, 6);  /*  4 */
-    D_ENCRYPT(l, r, 8);  /*  5 */
-    D_ENCRYPT(r, l, 10); /*  6 */
-    D_ENCRYPT(l, r, 12); /*  7 */
-    D_ENCRYPT(r, l, 14); /*  8 */
-    D_ENCRYPT(l, r, 16); /*  9 */
-    D_ENCRYPT(r, l, 18); /*  10 */
-    D_ENCRYPT(l, r, 20); /*  11 */
-    D_ENCRYPT(r, l, 22); /*  12 */
-    D_ENCRYPT(l, r, 24); /*  13 */
-    D_ENCRYPT(r, l, 26); /*  14 */
-    D_ENCRYPT(l, r, 28); /*  15 */
-    D_ENCRYPT(r, l, 30); /*  16 */
-#else
-    for (i = 0; i < 32; i += 8)
     {
-      D_ENCRYPT(l, r, i + 0); /*  1 */
-      D_ENCRYPT(r, l, i + 2); /*  2 */
-      D_ENCRYPT(l, r, i + 4); /*  3 */
-      D_ENCRYPT(r, l, i + 6); /*  4 */
-    }
+#ifdef DES_UNROLL
+      D_ENCRYPT(l, r, 0); /*  1 */
+      D_ENCRYPT(r, l, 2); /*  2 */
+      D_ENCRYPT(l, r, 4); /*  3 */
+      D_ENCRYPT(r, l, 6); /*  4 */
+      D_ENCRYPT(l, r, 8); /*  5 */
+      D_ENCRYPT(r, l, 10); /*  6 */
+      D_ENCRYPT(l, r, 12); /*  7 */
+      D_ENCRYPT(r, l, 14); /*  8 */
+      D_ENCRYPT(l, r, 16); /*  9 */
+      D_ENCRYPT(r, l, 18); /*  10 */
+      D_ENCRYPT(l, r, 20); /*  11 */
+      D_ENCRYPT(r, l, 22); /*  12 */
+      D_ENCRYPT(l, r, 24); /*  13 */
+      D_ENCRYPT(r, l, 26); /*  14 */
+      D_ENCRYPT(l, r, 28); /*  15 */
+      D_ENCRYPT(r, l, 30); /*  16 */
+#else
+      for (i = 0; i < 32; i += 8)
+        {
+          D_ENCRYPT(l, r, i + 0); /*  1 */
+          D_ENCRYPT(r, l, i + 2); /*  2 */
+          D_ENCRYPT(l, r, i + 4); /*  3 */
+          D_ENCRYPT(r, l, i + 6); /*  4 */
+        }
 #endif
-  }
+    }
   else
-  {
-#ifdef DES_UNROLL
-    D_ENCRYPT(l, r, 30); /* 16 */
-    D_ENCRYPT(r, l, 28); /* 15 */
-    D_ENCRYPT(l, r, 26); /* 14 */
-    D_ENCRYPT(r, l, 24); /* 13 */
-    D_ENCRYPT(l, r, 22); /* 12 */
-    D_ENCRYPT(r, l, 20); /* 11 */
-    D_ENCRYPT(l, r, 18); /* 10 */
-    D_ENCRYPT(r, l, 16); /*  9 */
-    D_ENCRYPT(l, r, 14); /*  8 */
-    D_ENCRYPT(r, l, 12); /*  7 */
-    D_ENCRYPT(l, r, 10); /*  6 */
-    D_ENCRYPT(r, l, 8);  /*  5 */
-    D_ENCRYPT(l, r, 6);  /*  4 */
-    D_ENCRYPT(r, l, 4);  /*  3 */
-    D_ENCRYPT(l, r, 2);  /*  2 */
-    D_ENCRYPT(r, l, 0);  /*  1 */
-#else
-    for (i = 30; i > 0; i -= 8)
     {
-      D_ENCRYPT(l, r, i - 0); /* 16 */
-      D_ENCRYPT(r, l, i - 2); /* 15 */
-      D_ENCRYPT(l, r, i - 4); /* 14 */
-      D_ENCRYPT(r, l, i - 6); /* 13 */
-    }
+#ifdef DES_UNROLL
+      D_ENCRYPT(l, r, 30); /* 16 */
+      D_ENCRYPT(r, l, 28); /* 15 */
+      D_ENCRYPT(l, r, 26); /* 14 */
+      D_ENCRYPT(r, l, 24); /* 13 */
+      D_ENCRYPT(l, r, 22); /* 12 */
+      D_ENCRYPT(r, l, 20); /* 11 */
+      D_ENCRYPT(l, r, 18); /* 10 */
+      D_ENCRYPT(r, l, 16); /*  9 */
+      D_ENCRYPT(l, r, 14); /*  8 */
+      D_ENCRYPT(r, l, 12); /*  7 */
+      D_ENCRYPT(l, r, 10); /*  6 */
+      D_ENCRYPT(r, l, 8); /*  5 */
+      D_ENCRYPT(l, r, 6); /*  4 */
+      D_ENCRYPT(r, l, 4); /*  3 */
+      D_ENCRYPT(l, r, 2); /*  2 */
+      D_ENCRYPT(r, l, 0); /*  1 */
+#else
+      for (i = 30; i > 0; i -= 8)
+        {
+          D_ENCRYPT(l, r, i - 0); /* 16 */
+          D_ENCRYPT(r, l, i - 2); /* 15 */
+          D_ENCRYPT(l, r, i - 4); /* 14 */
+          D_ENCRYPT(r, l, i - 6); /* 13 */
+        }
 #endif
-  }
+    }
 
   /* rotate and clear the top bits on machines with 8byte longs */
   l = ROTATE(l, 3) & 0xffffffffL;
@@ -188,63 +188,63 @@ int encrypt;
   /* I don't know if it is worth the effort of loop unrolling the
    * inner loop */
   if (encrypt)
-  {
-#ifdef DES_UNROLL
-    D_ENCRYPT(l, r, 0);  /*  1 */
-    D_ENCRYPT(r, l, 2);  /*  2 */
-    D_ENCRYPT(l, r, 4);  /*  3 */
-    D_ENCRYPT(r, l, 6);  /*  4 */
-    D_ENCRYPT(l, r, 8);  /*  5 */
-    D_ENCRYPT(r, l, 10); /*  6 */
-    D_ENCRYPT(l, r, 12); /*  7 */
-    D_ENCRYPT(r, l, 14); /*  8 */
-    D_ENCRYPT(l, r, 16); /*  9 */
-    D_ENCRYPT(r, l, 18); /*  10 */
-    D_ENCRYPT(l, r, 20); /*  11 */
-    D_ENCRYPT(r, l, 22); /*  12 */
-    D_ENCRYPT(l, r, 24); /*  13 */
-    D_ENCRYPT(r, l, 26); /*  14 */
-    D_ENCRYPT(l, r, 28); /*  15 */
-    D_ENCRYPT(r, l, 30); /*  16 */
-#else
-    for (i = 0; i < 32; i += 8)
     {
-      D_ENCRYPT(l, r, i + 0); /*  1 */
-      D_ENCRYPT(r, l, i + 2); /*  2 */
-      D_ENCRYPT(l, r, i + 4); /*  3 */
-      D_ENCRYPT(r, l, i + 6); /*  4 */
-    }
+#ifdef DES_UNROLL
+      D_ENCRYPT(l, r, 0); /*  1 */
+      D_ENCRYPT(r, l, 2); /*  2 */
+      D_ENCRYPT(l, r, 4); /*  3 */
+      D_ENCRYPT(r, l, 6); /*  4 */
+      D_ENCRYPT(l, r, 8); /*  5 */
+      D_ENCRYPT(r, l, 10); /*  6 */
+      D_ENCRYPT(l, r, 12); /*  7 */
+      D_ENCRYPT(r, l, 14); /*  8 */
+      D_ENCRYPT(l, r, 16); /*  9 */
+      D_ENCRYPT(r, l, 18); /*  10 */
+      D_ENCRYPT(l, r, 20); /*  11 */
+      D_ENCRYPT(r, l, 22); /*  12 */
+      D_ENCRYPT(l, r, 24); /*  13 */
+      D_ENCRYPT(r, l, 26); /*  14 */
+      D_ENCRYPT(l, r, 28); /*  15 */
+      D_ENCRYPT(r, l, 30); /*  16 */
+#else
+      for (i = 0; i < 32; i += 8)
+        {
+          D_ENCRYPT(l, r, i + 0); /*  1 */
+          D_ENCRYPT(r, l, i + 2); /*  2 */
+          D_ENCRYPT(l, r, i + 4); /*  3 */
+          D_ENCRYPT(r, l, i + 6); /*  4 */
+        }
 #endif
-  }
+    }
   else
-  {
-#ifdef DES_UNROLL
-    D_ENCRYPT(l, r, 30); /* 16 */
-    D_ENCRYPT(r, l, 28); /* 15 */
-    D_ENCRYPT(l, r, 26); /* 14 */
-    D_ENCRYPT(r, l, 24); /* 13 */
-    D_ENCRYPT(l, r, 22); /* 12 */
-    D_ENCRYPT(r, l, 20); /* 11 */
-    D_ENCRYPT(l, r, 18); /* 10 */
-    D_ENCRYPT(r, l, 16); /*  9 */
-    D_ENCRYPT(l, r, 14); /*  8 */
-    D_ENCRYPT(r, l, 12); /*  7 */
-    D_ENCRYPT(l, r, 10); /*  6 */
-    D_ENCRYPT(r, l, 8);  /*  5 */
-    D_ENCRYPT(l, r, 6);  /*  4 */
-    D_ENCRYPT(r, l, 4);  /*  3 */
-    D_ENCRYPT(l, r, 2);  /*  2 */
-    D_ENCRYPT(r, l, 0);  /*  1 */
-#else
-    for (i = 30; i > 0; i -= 8)
     {
-      D_ENCRYPT(l, r, i - 0); /* 16 */
-      D_ENCRYPT(r, l, i - 2); /* 15 */
-      D_ENCRYPT(l, r, i - 4); /* 14 */
-      D_ENCRYPT(r, l, i - 6); /* 13 */
-    }
+#ifdef DES_UNROLL
+      D_ENCRYPT(l, r, 30); /* 16 */
+      D_ENCRYPT(r, l, 28); /* 15 */
+      D_ENCRYPT(l, r, 26); /* 14 */
+      D_ENCRYPT(r, l, 24); /* 13 */
+      D_ENCRYPT(l, r, 22); /* 12 */
+      D_ENCRYPT(r, l, 20); /* 11 */
+      D_ENCRYPT(l, r, 18); /* 10 */
+      D_ENCRYPT(r, l, 16); /*  9 */
+      D_ENCRYPT(l, r, 14); /*  8 */
+      D_ENCRYPT(r, l, 12); /*  7 */
+      D_ENCRYPT(l, r, 10); /*  6 */
+      D_ENCRYPT(r, l, 8); /*  5 */
+      D_ENCRYPT(l, r, 6); /*  4 */
+      D_ENCRYPT(r, l, 4); /*  3 */
+      D_ENCRYPT(l, r, 2); /*  2 */
+      D_ENCRYPT(r, l, 0); /*  1 */
+#else
+      for (i = 30; i > 0; i -= 8)
+        {
+          D_ENCRYPT(l, r, i - 0); /* 16 */
+          D_ENCRYPT(r, l, i - 2); /* 15 */
+          D_ENCRYPT(l, r, i - 4); /* 14 */
+          D_ENCRYPT(r, l, i - 6); /* 13 */
+        }
 #endif
-  }
+    }
   /* rotate and clear the top bits on machines with 8byte longs */
   data[0] = ROTATE(l, 3) & 0xffffffff;
   data[1] = ROTATE(r, 3) & 0xffffffff;

@@ -13,12 +13,12 @@ static inline void double_array_divs_variable(double *__restrict dvec1,
 {
   long i, j;
   for (j = 0; j < ITERATIONS; j++)
-  {
-    for (i = 0; i < size; i++)
     {
-      dvec1[i] /= dvec2[i];
+      for (i = 0; i < size; i++)
+        {
+          dvec1[i] /= dvec2[i];
+        }
     }
-  }
 
   // Can use loop interchange to turn this into:
   //  for(i = 0; i < size; i++) {
@@ -46,10 +46,10 @@ int main(int argc, char *argv[])
   // With better alias analysis of posix_memalign, we'd avoid reloading
   // dvec1/dvec2 each time through the loop.
   for (i = 0; i < size; i++)
-  {
-    dvec1[i] = 1.0000001 * cosf((float)(size - i));
-    dvec2[i] = 1.0 + 0.0000000001 * sinf((float)i);
-  }
+    {
+      dvec1[i] = 1.0000001 * cosf((float)(size - i));
+      dvec2[i] = 1.0 + 0.0000000001 * sinf((float)i);
+    }
 
   double_array_divs_variable(dvec1, dvec2);
   printf("%f\n", dvec1[0]);

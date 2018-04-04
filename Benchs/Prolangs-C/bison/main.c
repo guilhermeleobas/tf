@@ -73,13 +73,13 @@ int main(int argc, char *argv[])
 
   /* print information about results, if requested.  In file print. */
   if (verboseflag)
-  {
-    verbose();
-  }
+    {
+      verbose();
+    }
   else
-  {
-    terse();
-  }
+    {
+      terse();
+    }
 
   /* output the tables and the parser to ftable.  In file output. */
   output();
@@ -94,13 +94,13 @@ void fatal(char *s)
   extern char *infile;
 
   if (infile == 0)
-  {
-    fprintf(stderr, "fatal error: %s\n", s);
-  }
+    {
+      fprintf(stderr, "fatal error: %s\n", s);
+    }
   else
-  {
-    fprintf(stderr, "\"%s\", line %d: %s\n", infile, lineno, s);
-  }
+    {
+      fprintf(stderr, "\"%s\", line %d: %s\n", infile, lineno, s);
+    }
   done(1);
 }
 

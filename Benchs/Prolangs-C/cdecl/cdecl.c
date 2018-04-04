@@ -93,11 +93,12 @@ extern int errno;
 
 #define NullCP ((char *)NULL)
 #ifdef dodebug
-#define Debug(x)                    \
-  do                                \
-  {                                 \
-    if (DebugFlag) (void)fprintf x; \
-  } while (0)
+#define Debug(x)                      \
+  do                                  \
+    {                                 \
+      if (DebugFlag) (void)fprintf x; \
+    }                                 \
+  while (0)
 #else
 #define Debug(x) /* nothing */
 #endif
@@ -141,25 +142,25 @@ int arbdims = 1;
 char *savedname = 0;
 char unknown_name[] = "unknown_name";
 char prev = 0; /* the current type of the variable being examined */
-               /*    values	type				   */
-               /*	p	pointer				   */
-               /*	r	reference			   */
-               /*	f	function			   */
-               /*	a	array (of arbitrary dimensions)    */
-               /*	A	array with dimensions		   */
-               /*	n	name				   */
-               /*	v	void				   */
-               /*	s	struct | class			   */
-               /*	t	simple type (int, long, etc.)	   */
+/*    values	type				   */
+/*	p	pointer				   */
+/*	r	reference			   */
+/*	f	function			   */
+/*	a	array (of arbitrary dimensions)    */
+/*	A	array with dimensions		   */
+/*	n	name				   */
+/*	v	void				   */
+/*	s	struct | class			   */
+/*	t	simple type (int, long, etc.)	   */
 
 /* options */
-int RitchieFlag = 0;            /* -r, assume Ritchie PDP C language */
-int MkProgramFlag = 0;          /* -c, output {} and ; after declarations */
-int PreANSIFlag = 0;            /* -p, assume pre-ANSI C language */
-int CplusplusFlag = 0;          /* -+, assume C++ language */
-int OnATty = 0;                 /* stdin is coming from a terminal */
-int Interactive = 0;            /* -i, overrides OnATty */
-int KeywordName = 0;            /* $0 is a keyword (declare, explain, cast) */
+int RitchieFlag = 0; /* -r, assume Ritchie PDP C language */
+int MkProgramFlag = 0; /* -c, output {} and ; after declarations */
+int PreANSIFlag = 0; /* -p, assume pre-ANSI C language */
+int CplusplusFlag = 0; /* -+, assume C++ language */
+int OnATty = 0; /* stdin is coming from a terminal */
+int Interactive = 0; /* -i, overrides OnATty */
+int KeywordName = 0; /* $0 is a keyword (declare, explain, cast) */
 const char *progname = "cdecl"; /* $0 */
 
 #if dodebug
@@ -189,15 +190,15 @@ int DebugFlag = 0; /* -d, output debugging trace info */
 /* to save 9 bytes, the "long" row can be removed. */
 char crosscheck[9][9] = {
     /*			L, I, S, C, V, U, S, F, D, */
-    /* long */ _,     _, _, _, _, _, _, _, _,
-    /* int */ _,      _, _, _, _, _, _, _, _,
-    /* short */ X,    _, _, _, _, _, _, _, _,
-    /* char */ X,     X, X, _, _, _, _, _, _,
-    /* void */ X,     X, X, X, _, _, _, _, _,
+    /* long */ _, _, _, _, _, _, _, _, _,
+    /* int */ _, _, _, _, _, _, _, _, _,
+    /* short */ X, _, _, _, _, _, _, _, _,
+    /* char */ X, X, X, _, _, _, _, _, _,
+    /* void */ X, X, X, X, _, _, _, _, _,
     /* unsigned */ R, _, R, R, X, _, _, _, _,
-    /* signed */ P,   P, P, P, X, X, _, _, _,
-    /* float */ A,    X, X, X, X, X, X, _, _,
-    /* double */ P,   X, X, X, X, X, X, X, _};
+    /* signed */ P, P, P, P, X, X, _, _, _,
+    /* float */ A, X, X, X, X, X, X, _, _,
+    /* double */ P, X, X, X, X, X, X, X, _};
 
 /* the names and bits checked for each row in the above array */
 struct
@@ -205,9 +206,7 @@ struct
   char *name;
   int bit;
 } crosstypes[9] = {
-    {"long", MB_LONG},     {"int", MB_INT},     {"short", MB_SHORT},
-    {"char", MB_CHAR},     {"void", MB_VOID},   {"unsigned", MB_UNSIGNED},
-    {"signed", MB_SIGNED}, {"float", MB_FLOAT}, {"double", MB_DOUBLE}};
+    {"long", MB_LONG}, {"int", MB_INT}, {"short", MB_SHORT}, {"char", MB_CHAR}, {"void", MB_VOID}, {"unsigned", MB_UNSIGNED}, {"signed", MB_SIGNED}, {"float", MB_FLOAT}, {"double", MB_DOUBLE}};
 
 /* Run through the crosscheck array looking */
 /* for unsupported combinations of types. */
@@ -219,47 +218,47 @@ void mbcheck()
   /* Loop through the types */
   /* (skip the "long" row) */
   for (i = 1; i < 9; i++)
-  {
-    /* if this type is in use */
-    if ((modbits & crosstypes[i].bit) != 0)
     {
-      /* check for other types also in use */
-      for (j = 0; j < i; j++)
-      {
-        /* this type is not in use */
-        if (!(modbits & crosstypes[j].bit)) continue;
-        /* check the type of restriction */
-        restrict = crosscheck[i][j];
-        if (restrict == ALWAYS) continue;
-        t1 = crosstypes[i].name;
-        t2 = crosstypes[j].name;
-        if (restrict == NEVER)
+      /* if this type is in use */
+      if ((modbits & crosstypes[i].bit) != 0)
         {
-          notsupported("", t1, t2);
+          /* check for other types also in use */
+          for (j = 0; j < i; j++)
+            {
+              /* this type is not in use */
+              if (!(modbits & crosstypes[j].bit)) continue;
+              /* check the type of restriction */
+              restrict = crosscheck[i][j];
+              if (restrict == ALWAYS) continue;
+              t1 = crosstypes[i].name;
+              t2 = crosstypes[j].name;
+              if (restrict == NEVER)
+                {
+                  notsupported("", t1, t2);
+                }
+              else if (restrict == RITCHIE)
+                {
+                  if (RitchieFlag) notsupported(" (Ritchie Compiler)", t1, t2);
+                }
+              else if (restrict == PREANSI)
+                {
+                  if (PreANSIFlag || RitchieFlag)
+                    notsupported(" (Pre-ANSI Compiler)", t1, t2);
+                }
+              else if (restrict == ANSI)
+                {
+                  if (!RitchieFlag && !PreANSIFlag)
+                    notsupported(" (ANSI Compiler)", t1, t2);
+                }
+              else
+                {
+                  (void)fprintf(stderr, "%s: Internal error in crosscheck[%d,%d]=%d!\n",
+                                progname, i, j, restrict);
+                  exit(1); /* NOTREACHED */
+                }
+            }
         }
-        else if (restrict == RITCHIE)
-        {
-          if (RitchieFlag) notsupported(" (Ritchie Compiler)", t1, t2);
-        }
-        else if (restrict == PREANSI)
-        {
-          if (PreANSIFlag || RitchieFlag)
-            notsupported(" (Pre-ANSI Compiler)", t1, t2);
-        }
-        else if (restrict == ANSI)
-        {
-          if (!RitchieFlag && !PreANSIFlag)
-            notsupported(" (ANSI Compiler)", t1, t2);
-        }
-        else
-        {
-          (void)fprintf(stderr, "%s: Internal error in crosscheck[%d,%d]=%d!\n",
-                        progname, i, j, restrict);
-          exit(1); /* NOTREACHED */
-        }
-      }
     }
-  }
 }
 
 /* undefine these as they are no longer needed */
@@ -337,9 +336,9 @@ int yywrap_nasko() { return 1; }
 #define va_arg(list, type) ((type *)(list += sizeof(type)))[-1]
 #define va_end(p) /* nothing */
 typedef char *va_list;
-#endif            /* NOVARARGS */
-#endif            /* DOS */
-#endif            /* __STDC__ */
+#endif /* NOVARARGS */
+#endif /* DOS */
+#endif /* __STDC__ */
 
 /* VARARGS */
 char *cat VA_DCL(char *, s1)
@@ -357,19 +356,19 @@ char *cat VA_DCL(char *, s1)
   /* allocate it */
   newstr = malloc(len);
   if (newstr == 0)
-  {
-    (void)fprintf(stderr, "%s: out of malloc space within cat()!\n", progname);
-    exit(1);
-  }
+    {
+      (void)fprintf(stderr, "%s: out of malloc space within cat()!\n", progname);
+      exit(1);
+    }
   newstr[0] = '\0';
 
   /* copy in the strings */
   str = VA_START(args, s1, char *);
   for (; str; str = va_arg(args, char *))
-  {
-    (void)strcat(newstr, str);
-    free(str);
-  }
+    {
+      (void)strcat(newstr, str);
+      free(str);
+    }
   va_end(args);
 
   Debug((stderr, "\tcat created '%s'\n", newstr));
@@ -386,10 +385,10 @@ char *ds(s) char *s;
   if (p)
     (void)strcpy(p, s);
   else
-  {
-    (void)fprintf(stderr, "%s: malloc() failed!\n", progname);
-    exit(1);
-  }
+    {
+      (void)fprintf(stderr, "%s: malloc() failed!\n", progname);
+      exit(1);
+    }
   return p;
 }
 
@@ -400,10 +399,10 @@ char *visible(c) int c;
 
   c &= 0377;
   if (isprint(c))
-  {
-    buf[0] = c;
-    buf[1] = '\0';
-  }
+    {
+      buf[0] = c;
+      buf[1] = '\0';
+    }
   else
     (void)sprintf(buf, "\\%03o", c);
   return buf;
@@ -428,14 +427,14 @@ FILE *tmpfile()
 
   char **listp = listtmpfiles;
   for (; *listp; listp++)
-  {
-    FILE *retfp;
-    (void)mktemp(*listp);
-    retfp = fopen(*listp, "w+");
-    if (!retfp) continue;
-    file4tmpfile = *listp;
-    return retfp;
-  }
+    {
+      FILE *retfp;
+      (void)mktemp(*listp);
+      retfp = fopen(*listp, "w+");
+      if (!retfp) continue;
+      file4tmpfile = *listp;
+      return retfp;
+    }
 
   return 0;
 }
@@ -447,7 +446,7 @@ void rmtmpfile()
 #else
 /* provide a mock rmtmpfile() for normal systems */
 #define rmtmpfile() /* nothing */
-#endif              /* NOTMPFILE */
+#endif /* NOTMPFILE */
 
 #ifndef NOGETOPT
 extern int optind;
@@ -468,7 +467,7 @@ char *optstring;
 #ifdef DOS
       && (argv[optind][0] != '/')
 #endif /* DOS */
-          )
+  )
     return EOF;
 
   ret = argv[optind][1];
@@ -486,7 +485,7 @@ char *optstring;
 /* the help messages */
 struct helpstruct
 {
-  char *text;    /* generic text */
+  char *text; /* generic text */
   char *cpptext; /* C++ specific text */
 } helptext[] =
     {/* up-to 23 lines of help text so it fits on (24x80) screens */
@@ -510,8 +509,7 @@ struct helpstruct
      /* 14 */ {"  <type>", 0},
      /* 15 */ {"type:", 0},
      /* 16 */ {"  {[<storage-class>] [{<modifier>}] [<C-type>]}", 0},
-     /* 17 */ {"  { struct | union | enum } <name>",
-               "  {struct|class|union|enum} <name>"},
+     /* 17 */ {"  { struct | union | enum } <name>", "  {struct|class|union|enum} <name>"},
      /* 18 */ {"decllist: a comma separated list of <name>, <english> or "
                "<name> as <english>",
                0},
@@ -554,7 +552,7 @@ void usage()
 #else
                 ""
 #endif /* doyydebug */
-                );
+  );
   (void)fprintf(stderr, "\t-r Check against Ritchie PDP C Compiler\n");
   (void)fprintf(stderr, "\t-p Check against Pre-ANSI C Compiler\n");
   (void)fprintf(stderr, "\t-a Check against ANSI C Compiler%s\n",
@@ -581,10 +579,10 @@ void noprompt() { prompting = 0; }
 void prompt()
 {
   if ((OnATty || Interactive) && prompting)
-  {
-    (void)printf("%s> ", progname);
-    (void)fflush(stdout);
-  }
+    {
+      (void)printf("%s> ", progname);
+      (void)fflush(stdout);
+    }
 }
 
 /* Save away the name of the program from argv[0] */
@@ -618,16 +616,16 @@ void setprogname(argv0) const char *argv0;
 int namedkeyword(argn) char *argn;
 {
   static char *cmdlist[] = {"explain", "declare", "cast", "help",
-                            "?",       "set",     0};
+                            "?", "set", 0};
 
   /* first check the program name */
   char **cmdptr = cmdlist;
   for (; *cmdptr; cmdptr++)
     if (strcmp(*cmdptr, progname) == 0)
-    {
-      KeywordName = 1;
-      return 1;
-    }
+      {
+        KeywordName = 1;
+        return 1;
+      }
 
   /* now check $1 */
   for (cmdptr = cmdlist; *cmdptr; cmdptr++)
@@ -644,10 +642,10 @@ int dostdin()
   int ret;
   OnATty = isatty(0);
   if (OnATty || Interactive)
-  {
-    (void)printf("Type `help' or `?' for help\n");
-    prompt();
-  }
+    {
+      (void)printf("Type `help' or `?' for help\n");
+      prompt();
+    }
 
   yyin = stdin;
   ret = yyparse();
@@ -663,27 +661,27 @@ char **argv;
   int ret = 0;
   FILE *tmpfp = tmpfile();
   if (!tmpfp)
-  {
-    int sverrno = errno;
-    (void)fprintf(stderr, "%s: cannot open temp file\n", progname);
-    errno = sverrno;
-    perror(progname);
-    return 1;
-  }
+    {
+      int sverrno = errno;
+      (void)fprintf(stderr, "%s: cannot open temp file\n", progname);
+      errno = sverrno;
+      perror(progname);
+      return 1;
+    }
 
   if (KeywordName)
     if (fputs(progname, tmpfp) == EOF)
-    {
-      int sverrno;
-    errwrite:
-      sverrno = errno;
-      (void)fprintf(stderr, "%s: error writing to temp file\n", progname);
-      errno = sverrno;
-      perror(progname);
-      (void)fclose(tmpfp);
-      rmtmpfile();
-      return 1;
-    }
+      {
+        int sverrno;
+      errwrite:
+        sverrno = errno;
+        (void)fprintf(stderr, "%s: error writing to temp file\n", progname);
+        errno = sverrno;
+        perror(progname);
+        (void)fclose(tmpfp);
+        rmtmpfile();
+        return 1;
+      }
 
   for (; optind < argc; optind++)
     if (fprintf(tmpfp, " %s", argv[optind]) == EOF) goto errwrite;
@@ -711,19 +709,19 @@ char **argv;
       ret += dostdin();
 
     else if ((ifp = fopen(argv[optind], "r")) == NULL)
-    {
-      int sverrno = errno;
-      (void)fprintf(stderr, "%s: cannot open %s\n", progname, argv[optind]);
-      errno = sverrno;
-      perror(argv[optind]);
-      ret++;
-    }
+      {
+        int sverrno = errno;
+        (void)fprintf(stderr, "%s: cannot open %s\n", progname, argv[optind]);
+        errno = sverrno;
+        perror(argv[optind]);
+        ret++;
+      }
 
     else
-    {
-      yyin = ifp;
-      ret += yyparse();
-    }
+      {
+        yyin = ifp;
+        ret += yyparse();
+      }
 
   return ret;
 }
@@ -753,33 +751,33 @@ void dodeclare(name, storage, left, right, type) char *name, *storage, *left,
     unsupp("Variable of type void", "variable of type pointer to void");
 
   if (*storage == 'r') switch (prev)
-    {
-      case 'f':
-        unsupp("Register function", NullCP);
-        break;
-      case 'A':
-      case 'a':
-        unsupp("Register array", NullCP);
-        break;
-      case 's':
-        unsupp("Register struct/class", NullCP);
-        break;
-    }
+      {
+        case 'f':
+          unsupp("Register function", NullCP);
+          break;
+        case 'A':
+        case 'a':
+          unsupp("Register array", NullCP);
+          break;
+        case 's':
+          unsupp("Register struct/class", NullCP);
+          break;
+      }
 
   if (*storage) (void)printf("%s ", storage);
   (void)printf("%s %s%s%s", type, left,
                name ? name : (prev == 'f') ? "f" : "var", right);
   if (MkProgramFlag)
-  {
-    if ((prev == 'f') && (*storage != 'e'))
-      (void)printf(" { }\n");
-    else
-      (void)printf(";\n");
-  }
+    {
+      if ((prev == 'f') && (*storage != 'e'))
+        (void)printf(" { }\n");
+      else
+        (void)printf(";\n");
+    }
   else
-  {
-    (void)printf("\n");
-  }
+    {
+      (void)printf("\n");
+    }
   free(storage);
   free(left);
   free(right);
@@ -799,18 +797,18 @@ void dodexplain(storage, constvol, type, decl) char *storage, *constvol, *type,
       unsupp("reference to type void", "pointer to void");
 
   if (*storage == 'r') switch (prev)
-    {
-      case 'f':
-        unsupp("Register function", NullCP);
-        break;
-      case 'A':
-      case 'a':
-        unsupp("Register array", NullCP);
-        break;
-      case 's':
-        unsupp("Register struct/union/enum/class", NullCP);
-        break;
-    }
+      {
+        case 'f':
+          unsupp("Register function", NullCP);
+          break;
+        case 'A':
+        case 'a':
+          unsupp("Register array", NullCP);
+          break;
+        case 's':
+          unsupp("Register struct/union/enum/class", NullCP);
+          break;
+      }
 
   (void)printf("declare %s as ", savedname);
   if (*storage) (void)printf("%s ", storage);
@@ -835,109 +833,109 @@ void docexplain(constvol, type, cast, name) char *constvol, *type, *cast, *name;
 void doset(opt) char *opt;
 {
   if (strcmp(opt, "create") == 0)
-  {
-    MkProgramFlag = 1;
-  }
+    {
+      MkProgramFlag = 1;
+    }
   else if (strcmp(opt, "nocreate") == 0)
-  {
-    MkProgramFlag = 0;
-  }
+    {
+      MkProgramFlag = 0;
+    }
   else if (strcmp(opt, "interactive") == 0)
-  {
-    Interactive = 1;
-  }
+    {
+      Interactive = 1;
+    }
   else if (strcmp(opt, "nointeractive") == 0)
-  {
-    Interactive = 0;
-    OnATty = 0;
-  }
+    {
+      Interactive = 0;
+      OnATty = 0;
+    }
   else if (strcmp(opt, "ritchie") == 0)
-  {
-    CplusplusFlag = 0;
-    RitchieFlag = 1;
-    PreANSIFlag = 0;
-  }
+    {
+      CplusplusFlag = 0;
+      RitchieFlag = 1;
+      PreANSIFlag = 0;
+    }
   else if (strcmp(opt, "preansi") == 0)
-  {
-    CplusplusFlag = 0;
-    RitchieFlag = 0;
-    PreANSIFlag = 1;
-  }
+    {
+      CplusplusFlag = 0;
+      RitchieFlag = 0;
+      PreANSIFlag = 1;
+    }
   else if (strcmp(opt, "ansi") == 0)
-  {
-    CplusplusFlag = 0;
-    RitchieFlag = 0;
-    PreANSIFlag = 0;
-  }
+    {
+      CplusplusFlag = 0;
+      RitchieFlag = 0;
+      PreANSIFlag = 0;
+    }
   else if (strcmp(opt, "cplusplus") == 0)
-  {
-    CplusplusFlag = 1;
-    RitchieFlag = 0;
-    PreANSIFlag = 0;
-  }
+    {
+      CplusplusFlag = 1;
+      RitchieFlag = 0;
+      PreANSIFlag = 0;
+    }
 #ifdef dodebug
   else if (strcmp(opt, "debug") == 0)
-  {
-    DebugFlag = 1;
-  }
+    {
+      DebugFlag = 1;
+    }
   else if (strcmp(opt, "nodebug") == 0)
-  {
-    DebugFlag = 0;
-  }
+    {
+      DebugFlag = 0;
+    }
 #endif /* dodebug */
 #ifdef doyydebug
   else if (strcmp(opt, "yydebug") == 0)
-  {
-    yydebug = 1;
-  }
+    {
+      yydebug = 1;
+    }
   else if (strcmp(opt, "noyydebug") == 0)
-  {
-    yydebug = 0;
-  }
+    {
+      yydebug = 0;
+    }
 #endif /* doyydebug */
   else
-  {
-    if ((strcmp(opt, unknown_name) != 0) && (strcmp(opt, "options") != 0))
-      (void)printf("Unknown set option: '%s'\n", opt);
+    {
+      if ((strcmp(opt, unknown_name) != 0) && (strcmp(opt, "options") != 0))
+        (void)printf("Unknown set option: '%s'\n", opt);
 
-    (void)printf("Valid set options (and command line equivalents) are:\n");
-    (void)printf("\toptions\n");
-    (void)printf("\tcreate (-c), nocreate\n");
-    (void)printf("\tinteractive (-i), nointeractive\n");
-    (void)printf("\tritchie (-r), preansi (-p), ansi (-a) or cplusplus (-+)\n");
+      (void)printf("Valid set options (and command line equivalents) are:\n");
+      (void)printf("\toptions\n");
+      (void)printf("\tcreate (-c), nocreate\n");
+      (void)printf("\tinteractive (-i), nointeractive\n");
+      (void)printf("\tritchie (-r), preansi (-p), ansi (-a) or cplusplus (-+)\n");
 #ifdef dodebug
-    (void)printf("\tdebug (-d), nodebug\n");
+      (void)printf("\tdebug (-d), nodebug\n");
 #endif /* dodebug */
 #ifdef doyydebug
-    (void)printf("\tyydebug (-D), noyydebug\n");
+      (void)printf("\tyydebug (-D), noyydebug\n");
 #endif /* doyydebug */
 
-    (void)printf("\nCurrent set values are:\n");
-    (void)printf("\t%screate\n", MkProgramFlag ? "   " : " no");
-    (void)printf("\t%sinteractive\n", (OnATty || Interactive) ? "   " : " no");
-    if (RitchieFlag)
-      (void)printf("\t   ritchie\n");
-    else
-      (void)printf("\t(noritchie)\n");
-    if (PreANSIFlag)
-      (void)printf("\t   preansi\n");
-    else
-      (void)printf("\t(nopreansi)\n");
-    if (!RitchieFlag && !PreANSIFlag && !CplusplusFlag)
-      (void)printf("\t   ansi\n");
-    else
-      (void)printf("\t(noansi)\n");
-    if (CplusplusFlag)
-      (void)printf("\t   cplusplus\n");
-    else
-      (void)printf("\t(nocplusplus)\n");
+      (void)printf("\nCurrent set values are:\n");
+      (void)printf("\t%screate\n", MkProgramFlag ? "   " : " no");
+      (void)printf("\t%sinteractive\n", (OnATty || Interactive) ? "   " : " no");
+      if (RitchieFlag)
+        (void)printf("\t   ritchie\n");
+      else
+        (void)printf("\t(noritchie)\n");
+      if (PreANSIFlag)
+        (void)printf("\t   preansi\n");
+      else
+        (void)printf("\t(nopreansi)\n");
+      if (!RitchieFlag && !PreANSIFlag && !CplusplusFlag)
+        (void)printf("\t   ansi\n");
+      else
+        (void)printf("\t(noansi)\n");
+      if (CplusplusFlag)
+        (void)printf("\t   cplusplus\n");
+      else
+        (void)printf("\t(nocplusplus)\n");
 #ifdef dodebug
-    (void)printf("\t%sdebug\n", DebugFlag ? "   " : " no");
+      (void)printf("\t%sdebug\n", DebugFlag ? "   " : " no");
 #endif /* dodebug */
 #ifdef doyydebug
-    (void)printf("\t%syydebug\n", yydebug ? "   " : " no");
+      (void)printf("\t%syydebug\n", yydebug ? "   " : " no");
 #endif /* doyydebug */
-  }
+    }
 }
 
 void versions()
@@ -960,54 +958,54 @@ int main(int argc, char **argv)
     CplusplusFlag = 1;
 
   while ((c = getopt(argc, argv, "cirpa+dDV")) != EOF) switch (c)
-    {
-      case 'c':
-        MkProgramFlag = 1;
-        break;
-      case 'i':
-        Interactive = 1;
-        break;
+      {
+        case 'c':
+          MkProgramFlag = 1;
+          break;
+        case 'i':
+          Interactive = 1;
+          break;
 
-      /* The following are mutually exclusive. */
-      /* Only the last one set prevails. */
-      case 'r':
-        CplusplusFlag = 0;
-        RitchieFlag = 1;
-        PreANSIFlag = 0;
-        break;
-      case 'p':
-        CplusplusFlag = 0;
-        RitchieFlag = 0;
-        PreANSIFlag = 1;
-        break;
-      case 'a':
-        CplusplusFlag = 0;
-        RitchieFlag = 0;
-        PreANSIFlag = 0;
-        break;
-      case '+':
-        CplusplusFlag = 1;
-        RitchieFlag = 0;
-        PreANSIFlag = 0;
-        break;
+        /* The following are mutually exclusive. */
+        /* Only the last one set prevails. */
+        case 'r':
+          CplusplusFlag = 0;
+          RitchieFlag = 1;
+          PreANSIFlag = 0;
+          break;
+        case 'p':
+          CplusplusFlag = 0;
+          RitchieFlag = 0;
+          PreANSIFlag = 1;
+          break;
+        case 'a':
+          CplusplusFlag = 0;
+          RitchieFlag = 0;
+          PreANSIFlag = 0;
+          break;
+        case '+':
+          CplusplusFlag = 1;
+          RitchieFlag = 0;
+          PreANSIFlag = 0;
+          break;
 
 #ifdef dodebug
-      case 'd':
-        DebugFlag = 1;
-        break;
+        case 'd':
+          DebugFlag = 1;
+          break;
 #endif /* dodebug */
 #ifdef doyydebug
-      case 'D':
-        yydebug = 1;
-        break;
+        case 'D':
+          yydebug = 1;
+          break;
 #endif /* doyydebug */
-      case 'V':
-        versions();
-        break;
-      case '?':
-        usage();
-        break;
-    }
+        case 'V':
+          versions();
+          break;
+        case '?':
+          usage();
+          break;
+      }
 
   /* Run down the list of arguments, parsing each one. */
 

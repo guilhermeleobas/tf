@@ -27,23 +27,23 @@ void mandel()
 {
   int x, y, n;
   for (x = 0; x < IMAGE_SIZE; ++x)
-  {
-    for (y = 0; y < IMAGE_SIZE; ++y)
     {
-      double __complex__ c = (START_X + x * step) + (START_Y - y * step) * I;
-      double __complex__ z = 0.0;
-
-      for (n = 0; n < MAX_ITER; ++n)
-      {
-        z = z * z + c;
-        if (hypot(__real__ z, __imag__ z) >= ESCAPE)
+      for (y = 0; y < IMAGE_SIZE; ++y)
         {
-          break;
+          double __complex__ c = (START_X + x * step) + (START_Y - y * step) * I;
+          double __complex__ z = 0.0;
+
+          for (n = 0; n < MAX_ITER; ++n)
+            {
+              z = z * z + c;
+              if (hypot(__real__ z, __imag__ z) >= ESCAPE)
+                {
+                  break;
+                }
+            }
+          emit(z);
         }
-      }
-      emit(z);
     }
-  }
 }
 
 int main()

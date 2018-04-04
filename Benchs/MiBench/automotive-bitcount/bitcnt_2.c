@@ -26,13 +26,13 @@ main(int argc, char *argv[])
   long n;
 
   while (--argc)
-  {
-    int i;
+    {
+      int i;
 
-    n = atol(*++argv);
-    i = bitcount(n);
-    printf("%ld contains %d bit%s set\n", n, i, plural_text(i));
-  }
+      n = atol(*++argv);
+      i = bitcount(n);
+      printf("%ld contains %d bit%s set\n", n, i, plural_text(i));
+    }
   return 0;
 }
 

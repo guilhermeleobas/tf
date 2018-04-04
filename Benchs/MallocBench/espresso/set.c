@@ -12,9 +12,9 @@ register long n;
 {
   register int i;
   for (i = 0; i < n; i++)
-  {
-    *d++ = *s++;
-  }
+    {
+      *d++ = *s++;
+    }
 }
 
 /* bit_index -- find first bit (from LSB) in a word (MSB=bit n, LSB=bit 0) */
@@ -22,13 +22,13 @@ int bit_index(a) register unsigned int a;
 {
   register int i;
   if (a == 0)
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
   for (i = 0; (a & 1) == 0; a >>= 1, i++)
-  {
-    ;
-  }
+    {
+      ;
+    }
   return i;
 }
 
@@ -38,12 +38,12 @@ int set_ord(a) register pset a;
   register int i, sum = 0;
   register unsigned int val;
   for (i = LOOP(a); i > 0; i--)
-  {
-    if ((val = a[i]) != 0)
     {
-      sum += count_ones(val);
+      if ((val = a[i]) != 0)
+        {
+          sum += count_ones(val);
+        }
     }
-  }
   return sum;
 }
 
@@ -53,12 +53,12 @@ int set_dist(a, b) register pset a, b;
   register int i, sum = 0;
   register unsigned int val;
   for (i = LOOP(a); i > 0; i--)
-  {
-    if ((val = a[i] & b[i]) != 0)
     {
-      sum += count_ones(val);
+      if ((val = a[i] & b[i]) != 0)
+        {
+          sum += count_ones(val);
+        }
     }
-  }
   return sum;
 }
 
@@ -69,9 +69,10 @@ int size;
   register int i = LOOPINIT(size);
   *r = i;
   do
-  {
-    r[i] = 0;
-  } while (--i > 0);
+    {
+      r[i] = 0;
+    }
+  while (--i > 0);
   return r;
 }
 
@@ -84,9 +85,9 @@ register int size;
   r[i] = ~(unsigned)0;
   r[i] >>= i * BPI - size;
   while (--i > 0)
-  {
-    r[i] = ~(unsigned)0;
-  }
+    {
+      r[i] = ~(unsigned)0;
+    }
   return r;
 }
 
@@ -95,9 +96,10 @@ pset set_copy(r, a) register pset r, a;
 {
   register int i = LOOPCOPY(a);
   do
-  {
-    r[i] = a[i];
-  } while (--i >= 0);
+    {
+      r[i] = a[i];
+    }
+  while (--i >= 0);
   return r;
 }
 
@@ -107,9 +109,10 @@ pset set_and(r, a, b) register pset r, a, b;
   register int i = LOOP(a);
   PUTLOOP(r, i);
   do
-  {
-    r[i] = a[i] & b[i];
-  } while (--i > 0);
+    {
+      r[i] = a[i] & b[i];
+    }
+  while (--i > 0);
   return r;
 }
 
@@ -119,9 +122,10 @@ pset set_or(r, a, b) register pset r, a, b;
   register int i = LOOP(a);
   PUTLOOP(r, i);
   do
-  {
-    r[i] = a[i] | b[i];
-  } while (--i > 0);
+    {
+      r[i] = a[i] | b[i];
+    }
+  while (--i > 0);
   return r;
 }
 
@@ -131,9 +135,10 @@ pset set_diff(r, a, b) register pset r, a, b;
   register int i = LOOP(a);
   PUTLOOP(r, i);
   do
-  {
-    r[i] = a[i] & ~b[i];
-  } while (--i > 0);
+    {
+      r[i] = a[i] & ~b[i];
+    }
+  while (--i > 0);
   return r;
 }
 
@@ -149,9 +154,10 @@ pset set_xor(r, a, b) register pset r, a, b;
 #else
   PUTLOOP(r, i);
   do
-  {
-    r[i] = a[i] ^ b[i];
-  } while (--i > 0);
+    {
+      r[i] = a[i] ^ b[i];
+    }
+  while (--i > 0);
 #endif
   return r;
 }
@@ -162,9 +168,10 @@ pset set_merge(r, a, b, mask) register pset r, a, b, mask;
   register int i = LOOP(a);
   PUTLOOP(r, i);
   do
-  {
-    r[i] = (a[i] & mask[i]) | (b[i] & ~mask[i]);
-  } while (--i > 0);
+    {
+      r[i] = (a[i] & mask[i]) | (b[i] & ~mask[i]);
+    }
+  while (--i > 0);
   return r;
 }
 
@@ -175,10 +182,11 @@ bool set_andp(r, a, b) register pset r, a, b;
   register unsigned int x = 0;
   PUTLOOP(r, i);
   do
-  {
-    r[i] = a[i] & b[i];
-    x |= r[i];
-  } while (--i > 0);
+    {
+      r[i] = a[i] & b[i];
+      x |= r[i];
+    }
+  while (--i > 0);
   return x != 0;
 }
 
@@ -189,10 +197,11 @@ bool set_orp(r, a, b) register pset r, a, b;
   register unsigned int x = 0;
   PUTLOOP(r, i);
   do
-  {
-    r[i] = a[i] | b[i];
-    x |= r[i];
-  } while (--i > 0);
+    {
+      r[i] = a[i] | b[i];
+      x |= r[i];
+    }
+  while (--i > 0);
   return x != 0;
 }
 
@@ -201,12 +210,13 @@ bool setp_empty(a) register pset a;
 {
   register int i = LOOP(a);
   do
-  {
-    if (a[i])
     {
-      return FALSE;
+      if (a[i])
+        {
+          return FALSE;
+        }
     }
-  } while (--i > 0);
+  while (--i > 0);
   return TRUE;
 }
 
@@ -219,16 +229,16 @@ register int size;
   test = ~(unsigned)0;
   test >>= i * BPI - size;
   if (a[i] != test)
-  {
-    return FALSE;
-  }
-  while (--i > 0)
-  {
-    if (a[i] != (~(unsigned)0))
     {
       return FALSE;
     }
-  }
+  while (--i > 0)
+    {
+      if (a[i] != (~(unsigned)0))
+        {
+          return FALSE;
+        }
+    }
   return TRUE;
 }
 
@@ -237,12 +247,13 @@ bool setp_equal(a, b) register pset a, b;
 {
   register int i = LOOP(a);
   do
-  {
-    if (a[i] != b[i])
     {
-      return FALSE;
+      if (a[i] != b[i])
+        {
+          return FALSE;
+        }
     }
-  } while (--i > 0);
+  while (--i > 0);
   return TRUE;
 }
 
@@ -251,12 +262,13 @@ bool setp_disjoint(a, b) register pset a, b;
 {
   register int i = LOOP(a);
   do
-  {
-    if (a[i] & b[i])
     {
-      return FALSE;
+      if (a[i] & b[i])
+        {
+          return FALSE;
+        }
     }
-  } while (--i > 0);
+  while (--i > 0);
   return TRUE;
 }
 
@@ -265,12 +277,13 @@ bool setp_implies(a, b) register pset a, b;
 {
   register int i = LOOP(a);
   do
-  {
-    if (a[i] & ~b[i])
     {
-      return FALSE;
+      if (a[i] & ~b[i])
+        {
+          return FALSE;
+        }
     }
-  } while (--i > 0);
+  while (--i > 0);
   return TRUE;
 }
 
@@ -312,17 +325,17 @@ pset_family sf_inactive(A) pset_family A;
   foreach_set(A, last, p)
   {
     if (TESTP(p, ACTIVE))
-    {
-      if (pdest != p)
       {
-        INLINEset_copy(pdest, p);
+        if (pdest != p)
+          {
+            INLINEset_copy(pdest, p);
+          }
+        pdest += A->wsize;
       }
-      pdest += A->wsize;
-    }
     else
-    {
-      A->count--;
-    }
+      {
+        A->count--;
+      }
   }
   return A;
 }
@@ -348,9 +361,9 @@ pset_family sf_join(A, B) pset_family A, B;
   long bsize = B->count * B->wsize;
 
   if (A->sf_size != B->sf_size)
-  {
-    fatal("sf_join: sf_size mismatch");
-  }
+    {
+      fatal("sf_join: sf_size mismatch");
+    }
   R = sf_new(A->count + B->count, A->sf_size);
   R->count = A->count + B->count;
   R->active_count = A->active_count + B->active_count;
@@ -366,9 +379,9 @@ pset_family sf_append(A, B) pset_family A, B;
   long bsize = B->count * B->wsize;
 
   if (A->sf_size != B->sf_size)
-  {
-    fatal("sf_append: sf_size mismatch");
-  }
+    {
+      fatal("sf_append: sf_size mismatch");
+    }
   A->capacity = A->count + B->count;
   A->data = REALLOC(unsigned int, A->data, (long)A->capacity * A->wsize);
   intcpy(A->data + asize, B->data, bsize);
@@ -383,14 +396,14 @@ pset_family sf_new(num, size) int num, size;
 {
   pset_family A;
   if (set_family_garbage == NULL)
-  {
-    A = ALLOC(set_family_t, 1);
-  }
+    {
+      A = ALLOC(set_family_t, 1);
+    }
   else
-  {
-    A = set_family_garbage;
-    set_family_garbage = A->next;
-  }
+    {
+      A = set_family_garbage;
+      set_family_garbage = A->next;
+    }
   A->sf_size = size;
   A->wsize = SET_SIZE(size);
   A->capacity = num;
@@ -419,10 +432,10 @@ void sf_cleanup()
 {
   register pset_family p, pnext;
   for (p = set_family_garbage; p != (pset_family)NULL; p = pnext)
-  {
-    pnext = p->next;
-    FREE(p);
-  }
+    {
+      pnext = p->next;
+      FREE(p);
+    }
   set_family_garbage = (pset_family)NULL;
 }
 
@@ -433,10 +446,10 @@ pset s;
   register pset p;
 
   if (A->count >= A->capacity)
-  {
-    A->capacity = A->capacity + A->capacity / 2 + 1;
-    A->data = REALLOC(unsigned int, A->data, (long)A->capacity * A->wsize);
-  }
+    {
+      A->capacity = A->capacity + A->capacity / 2 + 1;
+      A->data = REALLOC(unsigned int, A->data, (long)A->capacity * A->wsize);
+    }
   p = GETSET(A, A->count++);
   INLINEset_copy(p, s);
   return A;
@@ -491,9 +504,9 @@ pset_family sf_read(fp) FILE *fp;
   {
     (void)fscanf(fp, "%x", p);
     for (j = 1; j <= LOOP(p); j++)
-    {
-      (void)fscanf(fp, "%x", p + j);
-    }
+      {
+        (void)fscanf(fp, "%x", p + j);
+      }
   }
   return A;
 }
@@ -505,13 +518,13 @@ register pset a;
   register int n = LOOP(a), j;
 
   for (j = 0; j <= n; j++)
-  {
-    fprintf(fp, "%x ", a[j]);
-    if ((j + 1) % 8 == 0 && j != n)
     {
-      fprintf(fp, "\n\t");
+      fprintf(fp, "%x ", a[j]);
+      if ((j + 1) % 8 == 0 && j != n)
+        {
+          fprintf(fp, "\n\t");
+        }
     }
-  }
   fprintf(fp, "\n");
 }
 
@@ -525,27 +538,27 @@ pset_family sf_bm_read(fp) FILE *fp;
   (void)fscanf(fp, "%d %d\n", &rows, &cols);
   A = sf_new(rows, cols);
   for (i = 0; i < rows; i++)
-  {
-    pdest = GETSET(A, A->count++);
-    (void)set_clear(pdest, A->sf_size);
-    for (j = 0; j < cols; j++)
     {
-      switch (getc(fp))
-      {
-        case '0':
-          break;
-        case '1':
-          set_insert(pdest, j);
-          break;
-        default:
-          fatal("Error reading set family");
-      }
+      pdest = GETSET(A, A->count++);
+      (void)set_clear(pdest, A->sf_size);
+      for (j = 0; j < cols; j++)
+        {
+          switch (getc(fp))
+            {
+              case '0':
+                break;
+              case '1':
+                set_insert(pdest, j);
+                break;
+              default:
+                fatal("Error reading set family");
+            }
+        }
+      if (getc(fp) != '\n')
+        {
+          fatal("Error reading set family (at end of line)");
+        }
     }
-    if (getc(fp) != '\n')
-    {
-      fatal("Error reading set family (at end of line)");
-    }
-  }
   return A;
 }
 
@@ -560,35 +573,37 @@ char *ps1(a) register pset a;
 
   s1[len++] = '[';
   for (i = 0; i < n; i++)
-  {
-    if (is_in_set(a, i))
     {
-      if (!first)
-      {
-        s1[len++] = ',';
-      }
-      first = FALSE;
-      num = i;
-      /* Generate digits (reverse order) */
-      l = 0;
-      do
-      {
-        temp[l++] = num % 10 + '0';
-      } while ((num /= 10) > 0);
-      /* Copy them back in correct order */
-      do
-      {
-        s1[len++] = temp[--l];
-      } while (l > 0);
-      if (len > largest_string - 15)
-      {
-        s1[len++] = '.';
-        s1[len++] = '.';
-        s1[len++] = '.';
-        break;
-      }
+      if (is_in_set(a, i))
+        {
+          if (!first)
+            {
+              s1[len++] = ',';
+            }
+          first = FALSE;
+          num = i;
+          /* Generate digits (reverse order) */
+          l = 0;
+          do
+            {
+              temp[l++] = num % 10 + '0';
+            }
+          while ((num /= 10) > 0);
+          /* Copy them back in correct order */
+          do
+            {
+              s1[len++] = temp[--l];
+            }
+          while (l > 0);
+          if (len > largest_string - 15)
+            {
+              s1[len++] = '.';
+              s1[len++] = '.';
+              s1[len++] = '.';
+              break;
+            }
+        }
     }
-  }
 
   s1[len++] = ']';
   s1[len++] = '\0';
@@ -601,9 +616,9 @@ int n;
 {
   register int i;
   for (i = 0; i < n; i++)
-  {
-    s1[i] = is_in_set(s, i) ? '1' : '0';
-  }
+    {
+      s1[i] = is_in_set(s, i) ? '1' : '0';
+    }
   s1[n] = '\0';
   return s1;
 }
@@ -616,15 +631,15 @@ register int *count, weight;
   register unsigned int val;
 
   for (i = LOOP(a); i > 0;)
-  {
-    for (val = a[i], base = --i << LOGBPI; val != 0; base++, val >>= 1)
     {
-      if (val & 1)
-      {
-        count[base] += weight;
-      }
+      for (val = a[i], base = --i << LOGBPI; val != 0; base++, val >>= 1)
+        {
+          if (val & 1)
+            {
+              count[base] += weight;
+            }
+        }
     }
-  }
 }
 
 /* sf_count -- perform a column sum over a set family */
@@ -636,22 +651,22 @@ int *sf_count(A) pset_family A;
 
   count = ALLOC(int, A->sf_size);
   for (i = A->sf_size - 1; i >= 0; i--)
-  {
-    count[i] = 0;
-  }
+    {
+      count[i] = 0;
+    }
 
   foreach_set(A, last, p)
   {
     for (i = LOOP(p); i > 0;)
-    {
-      for (val = p[i], base = --i << LOGBPI; val != 0; base++, val >>= 1)
       {
-        if (val & 1)
-        {
-          count[base]++;
-        }
+        for (val = p[i], base = --i << LOGBPI; val != 0; base++, val >>= 1)
+          {
+            if (val & 1)
+              {
+                count[base]++;
+              }
+          }
       }
-    }
   }
   return count;
 }
@@ -671,24 +686,24 @@ register pset r;
 
   count = ALLOC(int, A->sf_size);
   for (i = A->sf_size - 1; i >= 0; i--)
-  {
-    count[i] = 0;
-  }
+    {
+      count[i] = 0;
+    }
 
   /* Loop for each set */
   foreach_set(A, last, p)
   {
     weight = 1024 / (set_ord(p) - 1);
     for (i = LOOP(p); i > 0;)
-    {
-      for (val = p[i] & r[i], base = --i << LOGBPI; val != 0; base++, val >>= 1)
       {
-        if (val & 1)
-        {
-          count[base] += weight;
-        }
+        for (val = p[i] & r[i], base = --i << LOGBPI; val != 0; base++, val >>= 1)
+          {
+            if (val & 1)
+              {
+                count[base] += weight;
+              }
+          }
       }
-    }
   }
   return count;
 }
@@ -713,15 +728,15 @@ int firstcol, n;
 
   /* Check if adding columns at the end ... */
   if (firstcol == A->sf_size)
-  {
-    /* If so, check if there is already enough room */
-    maxsize = BPI * LOOPINIT(A->sf_size);
-    if ((A->sf_size + n) <= maxsize)
     {
-      A->sf_size += n;
-      return A;
+      /* If so, check if there is already enough room */
+      maxsize = BPI * LOOPINIT(A->sf_size);
+      if ((A->sf_size + n) <= maxsize)
+        {
+          A->sf_size += n;
+          return A;
+        }
     }
-  }
   return sf_delcol(A, firstcol, -n);
 }
 
@@ -748,19 +763,19 @@ register int firstcol, n;
     pdest = GETSET(B, B->count++);
     INLINEset_clear(pdest, B->sf_size);
     for (i = 0; i < firstcol; i++)
-    {
-      if (is_in_set(p, i))
       {
-        set_insert(pdest, i);
+        if (is_in_set(p, i))
+          {
+            set_insert(pdest, i);
+          }
       }
-    }
     for (i = n > 0 ? firstcol + n : firstcol; i < A->sf_size; i++)
-    {
-      if (is_in_set(p, i))
       {
-        set_insert(pdest, i - n);
+        if (is_in_set(p, i))
+          {
+            set_insert(pdest, i - n);
+          }
       }
-    }
   }
   sf_free(A);
   return B;
@@ -786,9 +801,9 @@ int dstcol, srccol;
   foreach_set(src, last, p)
   {
     if ((p[word_test] & bit_test) != 0)
-    {
-      pdest[word_set] |= bit_set;
-    }
+      {
+        pdest[word_set] |= bit_set;
+      }
     /*
      *  equivalent code for this is ...
      *	if (is_in_set(p, srccol)) set_insert(pdest, destcol);
@@ -811,20 +826,20 @@ register pset c;
   /* create a clean set family for the result */
   B = sf_new(A->count, set_ord(c));
   for (i = 0; i < A->count; i++)
-  {
-    p = GETSET(B, B->count++);
-    INLINEset_clear(p, B->sf_size);
-  }
+    {
+      p = GETSET(B, B->count++);
+      INLINEset_clear(p, B->sf_size);
+    }
 
   /* copy each column of A which has a 1 in c */
   bcol = 0;
   for (i = 0; i < A->sf_size; i++)
-  {
-    if (is_in_set(c, i))
     {
-      (void)sf_copy_col(B, bcol++, A, i);
+      if (is_in_set(c, i))
+        {
+          (void)sf_copy_col(B, bcol++, A, i);
+        }
     }
-  }
   sf_free(A);
   return B;
 }
@@ -846,12 +861,12 @@ pset_family sf_transpose(A) pset_family A;
   foreachi_set(A, i, p)
   {
     for (j = 0; j < A->sf_size; j++)
-    {
-      if (is_in_set(p, j))
       {
-        set_insert(GETSET(B, j), i);
+        if (is_in_set(p, j))
+          {
+            set_insert(GETSET(B, j), i);
+          }
       }
-    }
   }
   sf_free(A);
   return B;
@@ -878,12 +893,12 @@ register int *permute, npermute;
   foreach_set(A, last, p)
   {
     for (j = 0; j < npermute; j++)
-    {
-      if (is_in_set(p, permute[j]))
       {
-        set_insert(pdest, j);
+        if (is_in_set(p, permute[j]))
+          {
+            set_insert(pdest, j);
+          }
       }
-    }
     pdest += B->wsize;
   }
   sf_free(A);

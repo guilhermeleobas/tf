@@ -14,7 +14,7 @@
 /*                              increase the string buffer by on overflow.   */
 #define LEX_LEN_INCR 128
 
-char CH = ' ';                 /* Current input Character                    */
+char CH = ' '; /* Current input Character                    */
 char LEXEME[LEX_LEN_INCR + 1]; /* Input String                               */
 
 char *FRONT, *BACK; /* FRONT and BACK characters of Input String  */
@@ -31,12 +31,12 @@ void GETCHR(FILE *STREAM)
 
   /*  TEMP = (int) (FRONT-BACK); */
   if ((FRONT - BACK) < ((int)LEX_LEN - 3))
-  {
-    /* --------- update input string appropriately */
-    FRONT++;
-    *FRONT = CH;
-    *(FRONT + 1) = '\0';
-  }
+    {
+      /* --------- update input string appropriately */
+      FRONT++;
+      *FRONT = CH;
+      *(FRONT + 1) = '\0';
+    }
 }
 
 /* --------------------------------- GET_LINE ------------------------------ */
@@ -51,9 +51,9 @@ void GET_LINE(char **LINE, FILE *STREAM)
 
   GETCHR(STREAM);
   while ((CH != CARRIAGE_RETURN) && !feof(STREAM))
-  {
-    GETCHR(STREAM);
-  }
+    {
+      GETCHR(STREAM);
+    }
   *FRONT = '\0';
   *LINE = LEXEME;
 }

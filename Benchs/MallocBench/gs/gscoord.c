@@ -44,14 +44,14 @@ void trace_matrix(P1(gs_matrix *));
 #else
 #define print_inverse(pgs) 0
 #endif
-#define ensure_inverse_valid(pgs)                                   \
-  if (!pgs->inverse_valid)                                          \
-  {                                                                 \
-    int code = gs_matrix_invert(&ctm_only(pgs), &pgs->ctm_inverse); \
-    print_inverse(pgs);                                             \
-    if (code < 0) return code;                                      \
-    pgs->inverse_valid = 1;                                         \
-  }
+#define ensure_inverse_valid(pgs)                                     \
+  if (!pgs->inverse_valid)                                            \
+    {                                                                 \
+      int code = gs_matrix_invert(&ctm_only(pgs), &pgs->ctm_inverse); \
+      print_inverse(pgs);                                             \
+      if (code < 0) return code;                                      \
+      pgs->inverse_valid = 1;                                         \
+    }
 
 /* Macro for updating fixed version of ctm */
 #define update_ctm(pgs)                         \
@@ -101,9 +101,9 @@ int gs_translate(gs_state *pgs, floatp dx, floatp dy)
   gs_point pt;
   int code;
   if ((code = gs_distance_transform(dx, dy, &ctm_only(pgs), &pt)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   pgs->ctm.tx += pt.x;
   pgs->ctm.ty += pt.y;
   update_ctm(pgs); /* leaves char_tm valid */

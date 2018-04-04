@@ -25,9 +25,9 @@ precision phalf(u) register precision u;
 
   memlsrw(w->value, usize); /* 68000 assembly language routine */
   if (usize > 1 && w->value[usize - 1] == (digit)0)
-  { /* normalize */
-    --(w->size);
-  }
+    { /* normalize */
+      --(w->size);
+    }
   pdestroy(u);
   return presult(w);
 #else

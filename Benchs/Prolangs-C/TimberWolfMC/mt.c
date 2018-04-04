@@ -13,7 +13,11 @@ Copyright Ken Keller 1981
 #include "lists.h"
 #include "port.h"
 
-typedef enum { false, true } Bool;
+typedef enum
+{
+  false,
+  true
+} Bool;
 
 void MTIdentity(MT *t);
 void MTTranslate(MT *t, int x, int y);
@@ -31,9 +35,9 @@ MTBegin may be invoked any number of times.
   MT *t;
 
   if ((t = ALLOCNODE(MT)) == NULL)
-  {
-    return (NULL);
-  }
+    {
+      return (NULL);
+    }
   t->sp = 0;
   MTIdentity(t);
   return (t);
@@ -100,37 +104,37 @@ Only 0, 90, 180, and 270 degrees have an effect.
   register int i1;
 
   if (x == 0)
-  {
-    if (ABS(y) > 1)
     {
-      if (y < 0)
-      {
-        y = -1;
-      }
-      else
-      {
-        y = 1;
-      }
+      if (ABS(y) > 1)
+        {
+          if (y < 0)
+            {
+              y = -1;
+            }
+          else
+            {
+              y = 1;
+            }
+        }
     }
-  }
   ELIF(y == 0)
   {
     if (ABS(x) > 1)
-    {
-      if (x < 0)
       {
-        x = -1;
+        if (x < 0)
+          {
+            x = -1;
+          }
+        else
+          {
+            x = 1;
+          }
       }
-      else
-      {
-        x = 1;
-      }
-    }
   }
   if (x == 1 AND y == 0)
-  { /*Don't rotate at all.*/
-    return;
-  }
+    { /*Don't rotate at all.*/
+      return;
+    }
   ELIF(x == 0 AND y == -1) /*Rotate ccw by 270 degrees.*/
   {
     i1 = t->t[0][0];
@@ -160,12 +164,12 @@ Only 0, 90, 180, and 270 degrees have an effect.
     register int i, j;
 
     for (i = 0; i < 3; ++i)
-    {
-      for (j = 0; j < 2; ++j)
       {
-        t->t[i][j] = -t->t[i][j];
+        for (j = 0; j < 2; ++j)
+          {
+            t->t[i][j] = -t->t[i][j];
+          }
       }
-    }
   }
   MTInvert(t);
 }
@@ -227,16 +231,16 @@ Returns false if stack is full, else true.
   register int i, j;
 
   if (t->sp == TSTKSIZE)
-  {
-    return (false);
-  }
-  for (i = 0; i < 3; ++i)
-  {
-    for (j = 0; j < 2; ++j)
     {
-      t->stk[t->sp][i][j] = t->t[i][j];
+      return (false);
     }
-  }
+  for (i = 0; i < 3; ++i)
+    {
+      for (j = 0; j < 2; ++j)
+        {
+          t->stk[t->sp][i][j] = t->t[i][j];
+        }
+    }
   ++t->sp;
   return (true);
 }
@@ -251,17 +255,17 @@ Returns false if stack is empty, else true.
   register int i, j;
 
   if (t->sp == 0)
-  {
-    return (false);
-  }
+    {
+      return (false);
+    }
   --t->sp;
   for (i = 0; i < 3; ++i)
-  {
-    for (j = 0; j < 2; ++j)
     {
-      t->t[i][j] = t->stk[t->sp][i][j];
+      for (j = 0; j < 2; ++j)
+        {
+          t->t[i][j] = t->stk[t->sp][i][j];
+        }
     }
-  }
   MTInvert(t);
   return (true);
 }
@@ -276,9 +280,9 @@ Returns false if stack is empty.
   register int i1, i2, i3, i4, i5, i6, sp;
 
   if (t->sp == 0)
-  {
-    return (false);
-  }
+    {
+      return (false);
+    }
   sp = t->sp - 1;
   i1 = t->t[0][0] * t->stk[sp][0][0] + t->t[0][1] * t->stk[sp][1][0];
   i2 = t->t[0][0] * t->stk[sp][0][1] + t->t[0][1] * t->stk[sp][1][1];
@@ -309,9 +313,9 @@ Returns false if can't decode.
   static char cif[81];
 
   if (NOT MTPushP(t))
-  {
-    return (false);
-  }
+    {
+      return (false);
+    }
   /*
   Let
   a c
@@ -326,109 +330,109 @@ Returns false if can't decode.
   ty = t->t[2][1];
   MTIdentity(t);
   if (a == 0 AND b == 1 AND c == 1 AND d == 0)
-  {
-    MTMX(t);
-    MTRotate(t, 0, -1);
-    MTTranslate(t, tx, ty);
-    if (tx != 0 OR ty != 0)
     {
-      sprintf(cif, "MX R 0 -1 T %d %d", tx, ty);
+      MTMX(t);
+      MTRotate(t, 0, -1);
+      MTTranslate(t, tx, ty);
+      if (tx != 0 OR ty != 0)
+        {
+          sprintf(cif, "MX R 0 -1 T %d %d", tx, ty);
+        }
+      else
+        {
+          sprintf(cif, "MX R 0 -1");
+        }
     }
-    else
-    {
-      sprintf(cif, "MX R 0 -1");
-    }
-  }
   ELIF(a == 0 AND b == -1 AND c == -1 AND d == 0)
   {
     MTMX(t);
     MTRotate(t, 0, 1);
     MTTranslate(t, tx, ty);
     if (tx != 0 OR ty != 0)
-    {
-      sprintf(cif, "MX R 0 1 T %d %d", tx, ty);
-    }
+      {
+        sprintf(cif, "MX R 0 1 T %d %d", tx, ty);
+      }
     else
-    {
-      sprintf(cif, "MX R 0 1");
-    }
+      {
+        sprintf(cif, "MX R 0 1");
+      }
   }
   ELIF(a == 0 AND b == 1 AND c == -1 AND d == 0)
   {
     MTRotate(t, 0, -1);
     MTTranslate(t, tx, ty);
     if (tx != 0 OR ty != 0)
-    {
-      sprintf(cif, "R 0 -1 T %d %d", tx, ty);
-    }
+      {
+        sprintf(cif, "R 0 -1 T %d %d", tx, ty);
+      }
     else
-    {
-      sprintf(cif, "R 0 -1");
-    }
+      {
+        sprintf(cif, "R 0 -1");
+      }
   }
   ELIF(a == 0 AND b == -1 AND c == 1 AND d == 0)
   {
     MTRotate(t, 0, 1);
     MTTranslate(t, tx, ty);
     if (tx != 0 OR ty != 0)
-    {
-      sprintf(cif, "R 0 1 T %d %d", tx, ty);
-    }
+      {
+        sprintf(cif, "R 0 1 T %d %d", tx, ty);
+      }
     else
-    {
-      sprintf(cif, "R 0 1");
-    }
+      {
+        sprintf(cif, "R 0 1");
+      }
   }
   ELIF(a == 1 AND b == 0 AND c == 0 AND d == 1)
   {
     MTTranslate(t, tx, ty);
     if (tx != 0 OR ty != 0)
-    {
-      sprintf(cif, "T %d %d", tx, ty);
-    }
+      {
+        sprintf(cif, "T %d %d", tx, ty);
+      }
     else
-    {
-      cif[0] = EOS;
-    }
+      {
+        cif[0] = EOS;
+      }
   }
   ELIF(a == -1 AND b == 0 AND c == 0 AND d == -1)
   {
     MTRotate(t, -1, 0);
     MTTranslate(t, tx, ty);
     if (tx != 0 OR ty != 0)
-    {
-      sprintf(cif, "R -1 0 T %d %d", tx, ty);
-    }
+      {
+        sprintf(cif, "R -1 0 T %d %d", tx, ty);
+      }
     else
-    {
-      sprintf(cif, "R -1 0");
-    }
+      {
+        sprintf(cif, "R -1 0");
+      }
   }
   ELIF(a == -1 AND b == 0 AND c == 0 AND d == 1)
   {
     MTMX(t);
     MTTranslate(t, tx, ty);
     if (tx != 0 OR ty != 0)
-    {
-      sprintf(cif, "MX T %d %d", tx, ty);
-    }
+      {
+        sprintf(cif, "MX T %d %d", tx, ty);
+      }
     else
-    {
-      sprintf(cif, "MX");
-    }
+      {
+        sprintf(cif, "MX");
+      }
   }
   ELIF(a == 1 AND b == 0 AND c == 0 AND d == -1)
   {
     MTMY(t);
     MTTranslate(t, tx, ty);
     if (tx != 0 OR ty != 0)
-    {
-      sprintf(cif, "MY T %d %d", tx, ty);
-    }
+      {
+        sprintf(cif, "MY T %d %d", tx, ty);
+      }
     else
-    {
-      sprintf(cif, "MY");
-    }
+      {
+        sprintf(cif, "MY");
+      }
   }
   else
   {
@@ -437,16 +441,16 @@ Returns false if can't decode.
   }
   if (t->t[0][0] == a AND t->t[0][1] == c AND t->t[1][0] == b AND t->t[1][1] ==
       d)
-  {
-    MTPopP(t);
-    *s = cif;
-    return (true);
-  }
+    {
+      MTPopP(t);
+      *s = cif;
+      return (true);
+    }
   else
-  {
-    MTPopP(t);
-    return (false);
-  }
+    {
+      MTPopP(t);
+      return (false);
+    }
 }
 
 static void MTInvert(MT *t)
@@ -518,59 +522,59 @@ int main(void)
     scanf("%d", &selection);
     printf("\n");
     switch (selection)
-    {
-      case 1:
-        MTMX(t);
-        break;
-      case 2:
-        MTMY(t);
-        break;
-      case 3:
-        MTRotate(t, 0, 1);
-        break;
-      case 4:
-        MTRotate(t, -1, 0);
-        break;
-      case 5:
-        MTRotate(t, 0, -1);
-        break;
-      case 6:
-        MTTranslate(t, 33, 17);
-        break;
-      case 7:
-        if (MTDecodeP(t, &cif))
-          printf("Decoding is %s.\n", cif);
-        else
-          printf("Couldn't decode.\n");
-        break;
-      case 8:
-        MTPushP(t);
-        /*Multiply t->t by t->ti.*/
-        MTConcat(t, t->ti);
-        /*Is the product the identity matrix?*/
-        if (t->t[0][0] == 1 AND t->t[1][1] == 1 AND t->t[2][2] ==
-            1 AND t->t[0][1] == 0 AND t->t[0][2] == 0 AND t->t[1][0] ==
-            0 AND t->t[1][2] == 0 AND t->t[2][0] == 0 AND t->t[2][1] == 0)
-          printf("Yes.\n");
-        else
-          printf("No.\n");
-        MTPopP(t);
-        break;
-      case 9:
       {
-        int i, j;
+        case 1:
+          MTMX(t);
+          break;
+        case 2:
+          MTMY(t);
+          break;
+        case 3:
+          MTRotate(t, 0, 1);
+          break;
+        case 4:
+          MTRotate(t, -1, 0);
+          break;
+        case 5:
+          MTRotate(t, 0, -1);
+          break;
+        case 6:
+          MTTranslate(t, 33, 17);
+          break;
+        case 7:
+          if (MTDecodeP(t, &cif))
+            printf("Decoding is %s.\n", cif);
+          else
+            printf("Couldn't decode.\n");
+          break;
+        case 8:
+          MTPushP(t);
+          /*Multiply t->t by t->ti.*/
+          MTConcat(t, t->ti);
+          /*Is the product the identity matrix?*/
+          if (t->t[0][0] == 1 AND t->t[1][1] == 1 AND t->t[2][2] ==
+              1 AND t->t[0][1] == 0 AND t->t[0][2] == 0 AND t->t[1][0] ==
+              0 AND t->t[1][2] == 0 AND t->t[2][0] == 0 AND t->t[2][1] == 0)
+            printf("Yes.\n");
+          else
+            printf("No.\n");
+          MTPopP(t);
+          break;
+        case 9:
+          {
+            int i, j;
 
-        for (i = 0; i < 3; ++i)
-        {
-          for (j = 0; j < 3; ++j) printf("%d ", t->t[i][j]);
-          printf("\n");
-        }
+            for (i = 0; i < 3; ++i)
+              {
+                for (j = 0; j < 3; ++j) printf("%d ", t->t[i][j]);
+                printf("\n");
+              }
+          }
+          break;
+        default:
+          printf("What?\n");
+          break;
       }
-      break;
-      default:
-        printf("What?\n");
-        break;
-    }
   }
   return 0;
 }

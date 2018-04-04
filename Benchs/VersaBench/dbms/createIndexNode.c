@@ -22,14 +22,14 @@
  *	Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include <stdlib.h>         /* for malloc() and NULL definitions */
+#include <stdlib.h> /* for malloc() and NULL definitions */
 #include "dataManagement.h" /* for primitive type definitions    */
-#include "errorMessage.h"   /* for errorMessage() definition     */
-#include "index.h"          /* for IndexNode definition          */
+#include "errorMessage.h" /* for errorMessage() definition     */
+#include "index.h" /* for IndexNode definition          */
 
 IndexNode *createIndexNode(Int level) /*  level of new node   */
-{                                     /*  beginning of createIndexNode()  */
-  IndexNode *node;                    /* node to create */
+{ /*  beginning of createIndexNode()  */
+  IndexNode *node; /* node to create */
 
   static Char name[] = "createIndexNode";
 
@@ -39,30 +39,30 @@ IndexNode *createIndexNode(Int level) /*  level of new node   */
    *  Check for invalid node level
    */
   if (level < LEAF)
-  {
-    errorMessage("invalid level specified", REPLACE);
-    errorMessage(name, PREPEND);
-    node = NULL;
-  } /*  end of if ( level < LEAF )  */
-    /*
+    {
+      errorMessage("invalid level specified", REPLACE);
+      errorMessage(name, PREPEND);
+      node = NULL;
+    } /*  end of if ( level < LEAF )  */
+  /*
      *  Create new node with specified level
      */
   else
-  {
-    /*
+    {
+      /*
      *  Allocate memory for new node
      */
-    node = (IndexNode *)malloc(sizeof(IndexNode));
-    if (node == NULL)
-    {
-      errorMessage("allocation failure", REPLACE);
-      errorMessage(name, PREPEND);
-    } /*  end of if ( node == NULL )  */
-    else
-    {
-      node->level = level;
+      node = (IndexNode *)malloc(sizeof(IndexNode));
+      if (node == NULL)
+        {
+          errorMessage("allocation failure", REPLACE);
+          errorMessage(name, PREPEND);
+        } /*  end of if ( node == NULL )  */
+      else
+        {
+          node->level = level;
+        } /*  end of else */
     } /*  end of else */
-  }   /*  end of else */
 
   /*
    *  Set entries of new node to empty list

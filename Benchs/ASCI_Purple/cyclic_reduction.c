@@ -132,16 +132,16 @@ hypre_StructMatrix *hypre_CycRedCreateCoarseOp(hypre_StructMatrix *A,
    *-----------------------------------------------*/
 
   if (!hypre_StructMatrixSymmetric(A))
-  {
-    Ac_stencil_size = 3;
-    Ac_stencil_shape = hypre_CTAlloc(hypre_Index, Ac_stencil_size);
-    for (i = -1; i < 2; i++)
     {
-      /* Storage for 3 elements (c,w,e) */
-      hypre_SetIndex(Ac_stencil_shape[stencil_rank], i, 0, 0);
-      stencil_rank++;
+      Ac_stencil_size = 3;
+      Ac_stencil_shape = hypre_CTAlloc(hypre_Index, Ac_stencil_size);
+      for (i = -1; i < 2; i++)
+        {
+          /* Storage for 3 elements (c,w,e) */
+          hypre_SetIndex(Ac_stencil_shape[stencil_rank], i, 0, 0);
+          stencil_rank++;
+        }
     }
-  }
 
   /*-----------------------------------------------
    * symmetric case:
@@ -154,16 +154,16 @@ hypre_StructMatrix *hypre_CycRedCreateCoarseOp(hypre_StructMatrix *A,
    *-----------------------------------------------*/
 
   else
-  {
-    Ac_stencil_size = 2;
-    Ac_stencil_shape = hypre_CTAlloc(hypre_Index, Ac_stencil_size);
-    for (i = -1; i < 1; i++)
     {
-      /* Storage for 2 elements in (c,w) */
-      hypre_SetIndex(Ac_stencil_shape[stencil_rank], i, 0, 0);
-      stencil_rank++;
+      Ac_stencil_size = 2;
+      Ac_stencil_shape = hypre_CTAlloc(hypre_Index, Ac_stencil_size);
+      for (i = -1; i < 1; i++)
+        {
+          /* Storage for 2 elements in (c,w) */
+          hypre_SetIndex(Ac_stencil_shape[stencil_rank], i, 0, 0);
+          stencil_rank++;
+        }
     }
-  }
 
   Ac_stencil = hypre_StructStencilCreate(Ac_stencil_dim, Ac_stencil_size,
                                          Ac_stencil_shape);
@@ -185,9 +185,9 @@ hypre_StructMatrix *hypre_CycRedCreateCoarseOp(hypre_StructMatrix *A,
 
   Ac_num_ghost[2 * cdir] = 1;
   if (!hypre_StructMatrixSymmetric(A))
-  {
-    Ac_num_ghost[2 * cdir + 1] = 1;
-  }
+    {
+      Ac_num_ghost[2 * cdir + 1] = 1;
+    }
   hypre_StructMatrixSetNumGhost(Ac, Ac_num_ghost);
 
   hypre_StructMatrixInitializeShell(Ac);
@@ -247,9 +247,9 @@ int hypre_CycRedSetupCoarseOp(hypre_StructMatrix *A, hypre_StructMatrix *Ac,
   hypre_ForBoxI(ci, cgrid_boxes)
   {
     while (fgrid_ids[fi] != cgrid_ids[ci])
-    {
-      fi++;
-    }
+      {
+        fi++;
+      }
 
     cgrid_box = hypre_BoxArrayBox(cgrid_boxes, ci);
 
@@ -292,10 +292,10 @@ int hypre_CycRedSetupCoarseOp(hypre_StructMatrix *A, hypre_StructMatrix *Ac,
     ac_cw = hypre_StructMatrixExtractPointerByIndex(Ac, ci, index);
 
     if (!hypre_StructMatrixSymmetric(A))
-    {
-      hypre_SetIndex(index, 1, 0, 0);
-      ac_ce = hypre_StructMatrixExtractPointerByIndex(Ac, ci, index);
-    }
+      {
+        hypre_SetIndex(index, 1, 0, 0);
+        ac_ce = hypre_StructMatrixExtractPointerByIndex(Ac, ci, index);
+      }
 
     /*-----------------------------------------------
      * Define offsets for fine grid stencil and interpolation
@@ -315,52 +315,52 @@ int hypre_CycRedSetupCoarseOp(hypre_StructMatrix *A, hypre_StructMatrix *Ac,
      *-----------------------------------------------*/
 
     if (!hypre_StructMatrixSymmetric(A))
-    {
-      hypre_BoxGetSize(cgrid_box, loop_size);
+      {
+        hypre_BoxGetSize(cgrid_box, loop_size);
 
-      hypre_BoxLoop2Begin(loop_size, A_dbox, fstart, stridef, iA, Ac_dbox,
-                          cstart, stridec, iAc);
+        hypre_BoxLoop2Begin(loop_size, A_dbox, fstart, stridef, iA, Ac_dbox,
+                            cstart, stridec, iAc);
 #define HYPRE_BOX_SMP_PRIVATE loopk, loopi, loopj, iA, iAc, iAm1, iAp1
 #include "hypre_box_smp_forloop.h"
-      hypre_BoxLoop2For(loopi, loopj, loopk, iA, iAc)
-      {
-        iAm1 = iA - xOffsetA;
-        iAp1 = iA + xOffsetA;
+        hypre_BoxLoop2For(loopi, loopj, loopk, iA, iAc)
+        {
+          iAm1 = iA - xOffsetA;
+          iAp1 = iA + xOffsetA;
 
-        ac_cw[iAc] = -a_cw[iA] * a_cw[iAm1] / a_cc[iAm1];
+          ac_cw[iAc] = -a_cw[iA] * a_cw[iAm1] / a_cc[iAm1];
 
-        ac_cc[iAc] = a_cc[iA] - a_cw[iA] * a_ce[iAm1] / a_cc[iAm1] -
-                     a_ce[iA] * a_cw[iAp1] / a_cc[iAp1];
+          ac_cc[iAc] = a_cc[iA] - a_cw[iA] * a_ce[iAm1] / a_cc[iAm1] -
+                       a_ce[iA] * a_cw[iAp1] / a_cc[iAp1];
 
-        ac_ce[iAc] = -a_ce[iA] * a_ce[iAp1] / a_cc[iAp1];
+          ac_ce[iAc] = -a_ce[iA] * a_ce[iAp1] / a_cc[iAp1];
+        }
+        hypre_BoxLoop2End(iA, iAc);
       }
-      hypre_BoxLoop2End(iA, iAc);
-    }
 
     /*-----------------------------------------------
      * symmetric case
      *-----------------------------------------------*/
 
     else
-    {
-      hypre_BoxGetSize(cgrid_box, loop_size);
+      {
+        hypre_BoxGetSize(cgrid_box, loop_size);
 
-      hypre_BoxLoop2Begin(loop_size, A_dbox, fstart, stridef, iA, Ac_dbox,
-                          cstart, stridec, iAc);
+        hypre_BoxLoop2Begin(loop_size, A_dbox, fstart, stridef, iA, Ac_dbox,
+                            cstart, stridec, iAc);
 #define HYPRE_BOX_SMP_PRIVATE loopk, loopi, loopj, iA, iAc, iAm1, iAp1
 #include "hypre_box_smp_forloop.h"
-      hypre_BoxLoop2For(loopi, loopj, loopk, iA, iAc)
-      {
-        iAm1 = iA - xOffsetA;
-        iAp1 = iA + xOffsetA;
+        hypre_BoxLoop2For(loopi, loopj, loopk, iA, iAc)
+        {
+          iAm1 = iA - xOffsetA;
+          iAp1 = iA + xOffsetA;
 
-        ac_cw[iAc] = -a_cw[iA] * a_cw[iAm1] / a_cc[iAm1];
+          ac_cw[iAc] = -a_cw[iA] * a_cw[iAm1] / a_cc[iAm1];
 
-        ac_cc[iAc] = a_cc[iA] - a_cw[iA] * a_ce[iAm1] / a_cc[iAm1] -
-                     a_ce[iA] * a_cw[iAp1] / a_cc[iAp1];
+          ac_cc[iAc] = a_cc[iA] - a_cw[iA] * a_ce[iAm1] / a_cc[iAm1] -
+                       a_ce[iA] * a_cw[iAp1] / a_cc[iAp1];
+        }
+        hypre_BoxLoop2End(iA, iAc);
       }
-      hypre_BoxLoop2End(iA, iAc);
-    }
 
   } /* end ForBoxI */
 
@@ -371,16 +371,16 @@ int hypre_CycRedSetupCoarseOp(hypre_StructMatrix *A, hypre_StructMatrix *Ac,
    *-----------------------------------------------------------------------*/
 
   if (hypre_IndexX(hypre_StructGridPeriodic(cgrid)) == 1)
-  {
-    hypre_ForBoxI(ci, cgrid_boxes)
     {
-      cgrid_box = hypre_BoxArrayBox(cgrid_boxes, ci);
+      hypre_ForBoxI(ci, cgrid_boxes)
+      {
+        cgrid_box = hypre_BoxArrayBox(cgrid_boxes, ci);
 
-      cstart = hypre_BoxIMin(cgrid_box);
+        cstart = hypre_BoxIMin(cgrid_box);
 
-      Ac_dbox = hypre_BoxArrayBox(hypre_StructMatrixDataSpace(Ac), ci);
+        Ac_dbox = hypre_BoxArrayBox(hypre_StructMatrixDataSpace(Ac), ci);
 
-      /*-----------------------------------------------
+        /*-----------------------------------------------
        * Extract pointers for coarse grid operator - always 3-point:
        *
        * If A is symmetric so is Ac.  We build only the
@@ -389,59 +389,59 @@ int hypre_CycRedSetupCoarseOp(hypre_StructMatrix *A, hypre_StructMatrix *Ac,
        * ac_cc is pointer for center coefficient (etc.)
        *-----------------------------------------------*/
 
-      hypre_SetIndex(index, 0, 0, 0);
-      ac_cc = hypre_StructMatrixExtractPointerByIndex(Ac, ci, index);
+        hypre_SetIndex(index, 0, 0, 0);
+        ac_cc = hypre_StructMatrixExtractPointerByIndex(Ac, ci, index);
 
-      hypre_SetIndex(index, -1, 0, 0);
-      ac_cw = hypre_StructMatrixExtractPointerByIndex(Ac, ci, index);
+        hypre_SetIndex(index, -1, 0, 0);
+        ac_cw = hypre_StructMatrixExtractPointerByIndex(Ac, ci, index);
 
-      if (!hypre_StructMatrixSymmetric(A))
-      {
-        hypre_SetIndex(index, 1, 0, 0);
-        ac_ce = hypre_StructMatrixExtractPointerByIndex(Ac, ci, index);
-      }
+        if (!hypre_StructMatrixSymmetric(A))
+          {
+            hypre_SetIndex(index, 1, 0, 0);
+            ac_ce = hypre_StructMatrixExtractPointerByIndex(Ac, ci, index);
+          }
 
-      /*-----------------------------------------------
+        /*-----------------------------------------------
        * non-symmetric case
        *-----------------------------------------------*/
 
-      if (!hypre_StructMatrixSymmetric(A))
-      {
-        hypre_BoxGetSize(cgrid_box, loop_size);
+        if (!hypre_StructMatrixSymmetric(A))
+          {
+            hypre_BoxGetSize(cgrid_box, loop_size);
 
-        hypre_BoxLoop1Begin(loop_size, Ac_dbox, cstart, stridec, iAc);
+            hypre_BoxLoop1Begin(loop_size, Ac_dbox, cstart, stridec, iAc);
 #define HYPRE_BOX_SMP_PRIVATE loopk, loopi, loopj, iAc
 #include "hypre_box_smp_forloop.h"
-        hypre_BoxLoop1For(loopi, loopj, loopk, iAc)
-        {
-          ac_cc[iAc] += (ac_cw[iAc] + ac_ce[iAc]);
-          ac_cw[iAc] = 0.0;
-          ac_ce[iAc] = 0.0;
-        }
-        hypre_BoxLoop1End(iAc);
-      }
+            hypre_BoxLoop1For(loopi, loopj, loopk, iAc)
+            {
+              ac_cc[iAc] += (ac_cw[iAc] + ac_ce[iAc]);
+              ac_cw[iAc] = 0.0;
+              ac_ce[iAc] = 0.0;
+            }
+            hypre_BoxLoop1End(iAc);
+          }
 
-      /*-----------------------------------------------
+        /*-----------------------------------------------
        * symmetric case
        *-----------------------------------------------*/
 
-      else
-      {
-        hypre_BoxGetSize(cgrid_box, loop_size);
+        else
+          {
+            hypre_BoxGetSize(cgrid_box, loop_size);
 
-        hypre_BoxLoop1Begin(loop_size, Ac_dbox, cstart, stridec, iAc);
+            hypre_BoxLoop1Begin(loop_size, Ac_dbox, cstart, stridec, iAc);
 #define HYPRE_BOX_SMP_PRIVATE loopk, loopi, loopj, iAc
 #include "hypre_box_smp_forloop.h"
-        hypre_BoxLoop1For(loopi, loopj, loopk, iAc)
-        {
-          ac_cc[iAc] += (2.0 * ac_cw[iAc]);
-          ac_cw[iAc] = 0.0;
-        }
-        hypre_BoxLoop1End(iAc);
-      }
+            hypre_BoxLoop1For(loopi, loopj, loopk, iAc)
+            {
+              ac_cc[iAc] += (2.0 * ac_cw[iAc]);
+              ac_cw[iAc] = 0.0;
+            }
+            hypre_BoxLoop1End(iAc);
+          }
 
-    } /* end ForBoxI */
-  }
+      } /* end ForBoxI */
+    }
 
   hypre_StructMatrixAssemble(Ac);
 
@@ -508,28 +508,28 @@ int hypre_CyclicReductionSetup(void *cyc_red_vdata, hypre_StructMatrix *A,
   grid_l = hypre_TAlloc(hypre_StructGrid *, num_levels);
   hypre_StructGridRef(grid, &grid_l[0]);
   for (l = 0;; l++)
-  {
-    /* set cindex and stride */
-    hypre_CycRedSetCIndex(base_index, base_stride, l, cdir, cindex);
-    hypre_CycRedSetStride(base_index, base_stride, l, cdir, stride);
-
-    /* check to see if we should coarsen */
-    if (hypre_BoxIMinD(cbox, cdir) == hypre_BoxIMaxD(cbox, cdir))
     {
-      /* stop coarsening */
-      break;
+      /* set cindex and stride */
+      hypre_CycRedSetCIndex(base_index, base_stride, l, cdir, cindex);
+      hypre_CycRedSetStride(base_index, base_stride, l, cdir, stride);
+
+      /* check to see if we should coarsen */
+      if (hypre_BoxIMinD(cbox, cdir) == hypre_BoxIMaxD(cbox, cdir))
+        {
+          /* stop coarsening */
+          break;
+        }
+
+      /* coarsen cbox */
+      hypre_ProjectBox(cbox, cindex, stride);
+      hypre_StructMapFineToCoarse(hypre_BoxIMin(cbox), cindex, stride,
+                                  hypre_BoxIMin(cbox));
+      hypre_StructMapFineToCoarse(hypre_BoxIMax(cbox), cindex, stride,
+                                  hypre_BoxIMax(cbox));
+
+      /* coarsen the grid */
+      hypre_StructCoarsen(grid_l[l], cindex, stride, 1, &grid_l[l + 1]);
     }
-
-    /* coarsen cbox */
-    hypre_ProjectBox(cbox, cindex, stride);
-    hypre_StructMapFineToCoarse(hypre_BoxIMin(cbox), cindex, stride,
-                                hypre_BoxIMin(cbox));
-    hypre_StructMapFineToCoarse(hypre_BoxIMax(cbox), cindex, stride,
-                                hypre_BoxIMax(cbox));
-
-    /* coarsen the grid */
-    hypre_StructCoarsen(grid_l[l], cindex, stride, 1, &grid_l[l + 1]);
-  }
   num_levels = l + 1;
 
   /* free up some things */
@@ -554,21 +554,21 @@ int hypre_CyclicReductionSetup(void *cyc_red_vdata, hypre_StructMatrix *A,
   fine_points_l = hypre_TAlloc(hypre_BoxArray *, num_levels);
 
   for (l = 0; l < (num_levels - 1); l++)
-  {
-    hypre_CycRedSetCIndex(base_index, base_stride, l, cdir, cindex);
-    hypre_CycRedSetFIndex(base_index, base_stride, l, cdir, findex);
-    hypre_CycRedSetStride(base_index, base_stride, l, cdir, stride);
+    {
+      hypre_CycRedSetCIndex(base_index, base_stride, l, cdir, cindex);
+      hypre_CycRedSetFIndex(base_index, base_stride, l, cdir, findex);
+      hypre_CycRedSetStride(base_index, base_stride, l, cdir, stride);
 
-    fine_points_l[l] =
-        hypre_BoxArrayDuplicate(hypre_StructGridBoxes(grid_l[l]));
-    hypre_ProjectBoxArray(fine_points_l[l], findex, stride);
-  }
+      fine_points_l[l] =
+          hypre_BoxArrayDuplicate(hypre_StructGridBoxes(grid_l[l]));
+      hypre_ProjectBoxArray(fine_points_l[l], findex, stride);
+    }
 
   fine_points_l[l] = hypre_BoxArrayDuplicate(hypre_StructGridBoxes(grid_l[l]));
   if (num_levels == 1)
-  {
-    hypre_ProjectBoxArray(fine_points_l[l], base_index, base_stride);
-  }
+    {
+      hypre_ProjectBoxArray(fine_points_l[l], base_index, base_stride);
+    }
 
   (cyc_red_data->fine_points_l) = fine_points_l;
 
@@ -586,28 +586,28 @@ int hypre_CyclicReductionSetup(void *cyc_red_vdata, hypre_StructMatrix *A,
   x_num_ghost[2 * cdir + 1] = 1;
 
   for (l = 0; l < (num_levels - 1); l++)
-  {
-    A_l[l + 1] = hypre_CycRedCreateCoarseOp(A_l[l], grid_l[l + 1], cdir);
-    data_size += hypre_StructMatrixDataSize(A_l[l + 1]);
+    {
+      A_l[l + 1] = hypre_CycRedCreateCoarseOp(A_l[l], grid_l[l + 1], cdir);
+      data_size += hypre_StructMatrixDataSize(A_l[l + 1]);
 
-    x_l[l + 1] = hypre_StructVectorCreate(comm, grid_l[l + 1]);
-    hypre_StructVectorSetNumGhost(x_l[l + 1], x_num_ghost);
-    hypre_StructVectorInitializeShell(x_l[l + 1]);
-    data_size += hypre_StructVectorDataSize(x_l[l + 1]);
-  }
+      x_l[l + 1] = hypre_StructVectorCreate(comm, grid_l[l + 1]);
+      hypre_StructVectorSetNumGhost(x_l[l + 1], x_num_ghost);
+      hypre_StructVectorInitializeShell(x_l[l + 1]);
+      data_size += hypre_StructVectorDataSize(x_l[l + 1]);
+    }
 
   data = hypre_SharedCTAlloc(double, data_size);
 
   (cyc_red_data->data) = data;
 
   for (l = 0; l < (num_levels - 1); l++)
-  {
-    hypre_StructMatrixInitializeData(A_l[l + 1], data);
-    data += hypre_StructMatrixDataSize(A_l[l + 1]);
-    hypre_StructVectorInitializeData(x_l[l + 1], data);
-    hypre_StructVectorAssemble(x_l[l + 1]);
-    data += hypre_StructVectorDataSize(x_l[l + 1]);
-  }
+    {
+      hypre_StructMatrixInitializeData(A_l[l + 1], data);
+      data += hypre_StructMatrixDataSize(A_l[l + 1]);
+      hypre_StructVectorInitializeData(x_l[l + 1], data);
+      hypre_StructVectorAssemble(x_l[l + 1]);
+      data += hypre_StructVectorDataSize(x_l[l + 1]);
+    }
 
   (cyc_red_data->A_l) = A_l;
   (cyc_red_data->x_l) = x_l;
@@ -617,12 +617,12 @@ int hypre_CyclicReductionSetup(void *cyc_red_vdata, hypre_StructMatrix *A,
    *-----------------------------------------------------*/
 
   for (l = 0; l < (num_levels - 1); l++)
-  {
-    hypre_CycRedSetCIndex(base_index, base_stride, l, cdir, cindex);
-    hypre_CycRedSetStride(base_index, base_stride, l, cdir, stride);
+    {
+      hypre_CycRedSetCIndex(base_index, base_stride, l, cdir, cindex);
+      hypre_CycRedSetStride(base_index, base_stride, l, cdir, stride);
 
-    hypre_CycRedSetupCoarseOp(A_l[l], A_l[l + 1], cindex, stride);
-  }
+      hypre_CycRedSetupCoarseOp(A_l[l], A_l[l + 1], cindex, stride);
+    }
 
   /*----------------------------------------------------------
    * Set up compute packages
@@ -632,39 +632,39 @@ int hypre_CyclicReductionSetup(void *cyc_red_vdata, hypre_StructMatrix *A,
   up_compute_pkg_l = hypre_TAlloc(hypre_ComputePkg *, (num_levels - 1));
 
   for (l = 0; l < (num_levels - 1); l++)
-  {
-    hypre_CycRedSetCIndex(base_index, base_stride, l, cdir, cindex);
-    hypre_CycRedSetFIndex(base_index, base_stride, l, cdir, findex);
-    hypre_CycRedSetStride(base_index, base_stride, l, cdir, stride);
+    {
+      hypre_CycRedSetCIndex(base_index, base_stride, l, cdir, cindex);
+      hypre_CycRedSetFIndex(base_index, base_stride, l, cdir, findex);
+      hypre_CycRedSetStride(base_index, base_stride, l, cdir, stride);
 
-    hypre_CreateComputeInfo(grid_l[l], hypre_StructMatrixStencil(A_l[l]),
-                            &send_boxes, &recv_boxes, &send_processes,
-                            &recv_processes, &indt_boxes, &dept_boxes);
+      hypre_CreateComputeInfo(grid_l[l], hypre_StructMatrixStencil(A_l[l]),
+                              &send_boxes, &recv_boxes, &send_processes,
+                              &recv_processes, &indt_boxes, &dept_boxes);
 
-    /* down-cycle */
-    hypre_ProjectBoxArrayArray(send_boxes, findex, stride);
-    hypre_ProjectBoxArrayArray(recv_boxes, findex, stride);
-    hypre_ProjectBoxArrayArray(indt_boxes, cindex, stride);
-    hypre_ProjectBoxArrayArray(dept_boxes, cindex, stride);
-    hypre_ComputePkgCreate(
-        send_boxes, recv_boxes, stride, stride, send_processes, recv_processes,
-        indt_boxes, dept_boxes, stride, grid_l[l],
-        hypre_StructVectorDataSpace(x_l[l]), 1, &down_compute_pkg_l[l]);
+      /* down-cycle */
+      hypre_ProjectBoxArrayArray(send_boxes, findex, stride);
+      hypre_ProjectBoxArrayArray(recv_boxes, findex, stride);
+      hypre_ProjectBoxArrayArray(indt_boxes, cindex, stride);
+      hypre_ProjectBoxArrayArray(dept_boxes, cindex, stride);
+      hypre_ComputePkgCreate(
+          send_boxes, recv_boxes, stride, stride, send_processes, recv_processes,
+          indt_boxes, dept_boxes, stride, grid_l[l],
+          hypre_StructVectorDataSpace(x_l[l]), 1, &down_compute_pkg_l[l]);
 
-    hypre_CreateComputeInfo(grid_l[l], hypre_StructMatrixStencil(A_l[l]),
-                            &send_boxes, &recv_boxes, &send_processes,
-                            &recv_processes, &indt_boxes, &dept_boxes);
+      hypre_CreateComputeInfo(grid_l[l], hypre_StructMatrixStencil(A_l[l]),
+                              &send_boxes, &recv_boxes, &send_processes,
+                              &recv_processes, &indt_boxes, &dept_boxes);
 
-    /* up-cycle */
-    hypre_ProjectBoxArrayArray(send_boxes, cindex, stride);
-    hypre_ProjectBoxArrayArray(recv_boxes, cindex, stride);
-    hypre_ProjectBoxArrayArray(indt_boxes, findex, stride);
-    hypre_ProjectBoxArrayArray(dept_boxes, findex, stride);
-    hypre_ComputePkgCreate(
-        send_boxes, recv_boxes, stride, stride, send_processes, recv_processes,
-        indt_boxes, dept_boxes, stride, grid_l[l],
-        hypre_StructVectorDataSpace(x_l[l]), 1, &up_compute_pkg_l[l]);
-  }
+      /* up-cycle */
+      hypre_ProjectBoxArrayArray(send_boxes, cindex, stride);
+      hypre_ProjectBoxArrayArray(recv_boxes, cindex, stride);
+      hypre_ProjectBoxArrayArray(indt_boxes, findex, stride);
+      hypre_ProjectBoxArrayArray(dept_boxes, findex, stride);
+      hypre_ComputePkgCreate(
+          send_boxes, recv_boxes, stride, stride, send_processes, recv_processes,
+          indt_boxes, dept_boxes, stride, grid_l[l],
+          hypre_StructVectorDataSpace(x_l[l]), 1, &up_compute_pkg_l[l]);
+    }
 
   (cyc_red_data->down_compute_pkg_l) = down_compute_pkg_l;
   (cyc_red_data->up_compute_pkg_l) = up_compute_pkg_l;
@@ -680,17 +680,17 @@ int hypre_CyclicReductionSetup(void *cyc_red_vdata, hypre_StructMatrix *A,
   (cyc_red_data->solve_flops) +=
       5 * hypre_StructVectorGlobalSize(x_l[0]) / 2 / flop_divisor;
   for (l = 1; l < (num_levels - 1); l++)
-  {
-    (cyc_red_data->solve_flops) +=
-        10 * hypre_StructVectorGlobalSize(x_l[l]) / 2;
-  }
+    {
+      (cyc_red_data->solve_flops) +=
+          10 * hypre_StructVectorGlobalSize(x_l[l]) / 2;
+    }
 
   if (num_levels > 1)
-  {
-    (cyc_red_data->solve_flops) += hypre_StructVectorGlobalSize(x_l[l]) / 2;
-  }
+    {
+      (cyc_red_data->solve_flops) += hypre_StructVectorGlobalSize(x_l[l]) / 2;
+    }
 
-/*-----------------------------------------------------
+    /*-----------------------------------------------------
  * Finalize some things
  *-----------------------------------------------------*/
 
@@ -700,10 +700,10 @@ int hypre_CyclicReductionSetup(void *cyc_red_vdata, hypre_StructMatrix *A,
 
     /* debugging stuff */
     for (l = 0; l < num_levels; l++)
-    {
-      sprintf(filename, "yout_A.%02d", l);
-      hypre_StructMatrixPrint(filename, A_l[l], 0);
-    }
+      {
+        sprintf(filename, "yout_A.%02d", l);
+        hypre_StructMatrixPrint(filename, A_l[l], 0);
+      }
   }
 #endif
 
@@ -811,7 +811,10 @@ int hypre_CyclicReduction(void *cyc_red_vdata, hypre_StructMatrix *A,
                         start, base_stride, bi);
 #define HYPRE_BOX_SMP_PRIVATE loopk, loopi, loopj, xi, bi
 #include "hypre_box_smp_forloop.h"
-    hypre_BoxLoop2For(loopi, loopj, loopk, xi, bi) { xp[xi] = bp[bi]; }
+    hypre_BoxLoop2For(loopi, loopj, loopk, xi, bi)
+    {
+      xp[xi] = bp[bi];
+    }
     hypre_BoxLoop2End(xi, bi);
   }
 
@@ -837,114 +840,117 @@ int hypre_CyclicReduction(void *cyc_red_vdata, hypre_StructMatrix *A,
 
   /* The break out of this loop is just before step 2 below */
   for (l = 0;; l++)
-  {
-    /* set cindex and stride */
-    hypre_CycRedSetCIndex(base_index, base_stride, l, cdir, cindex);
-    hypre_CycRedSetStride(base_index, base_stride, l, cdir, stride);
-
-    /* Step 1 */
-    compute_box_a = fine_points_l[l];
-    hypre_ForBoxI(fi, compute_box_a)
     {
-      compute_box = hypre_BoxArrayBox(compute_box_a, fi);
+      /* set cindex and stride */
+      hypre_CycRedSetCIndex(base_index, base_stride, l, cdir, cindex);
+      hypre_CycRedSetStride(base_index, base_stride, l, cdir, stride);
 
-      A_dbox = hypre_BoxArrayBox(hypre_StructMatrixDataSpace(A_l[l]), fi);
-      x_dbox = hypre_BoxArrayBox(hypre_StructVectorDataSpace(x_l[l]), fi);
-
-      hypre_SetIndex(index, 0, 0, 0);
-      Ap = hypre_StructMatrixExtractPointerByIndex(A_l[l], fi, index);
-      xp = hypre_StructVectorBoxData(x_l[l], fi);
-
-      hypre_CopyIndex(hypre_BoxIMin(compute_box), start);
-      hypre_BoxGetStrideSize(compute_box, stride, loop_size);
-
-      hypre_BoxLoop2Begin(loop_size, A_dbox, start, stride, Ai, x_dbox, start,
-                          stride, xi);
-#define HYPRE_BOX_SMP_PRIVATE loopk, loopi, loopj, Ai, xi
-#include "hypre_box_smp_forloop.h"
-      hypre_BoxLoop2For(loopi, loopj, loopk, Ai, xi) { xp[xi] /= Ap[Ai]; }
-      hypre_BoxLoop2End(Ai, xi);
-    }
-
-    if (l == (num_levels - 1)) break;
-
-    /* Step 2 */
-    fgrid = hypre_StructVectorGrid(x_l[l]);
-    fgrid_ids = hypre_StructGridIDs(fgrid);
-    cgrid = hypre_StructVectorGrid(x_l[l + 1]);
-    cgrid_boxes = hypre_StructGridBoxes(cgrid);
-    cgrid_ids = hypre_StructGridIDs(cgrid);
-    for (compute_i = 0; compute_i < 2; compute_i++)
-    {
-      switch (compute_i)
+      /* Step 1 */
+      compute_box_a = fine_points_l[l];
+      hypre_ForBoxI(fi, compute_box_a)
       {
-        case 0:
-        {
-          xp = hypre_StructVectorData(x_l[l]);
-          hypre_InitializeIndtComputations(down_compute_pkg_l[l], xp,
-                                           &comm_handle);
-          compute_box_aa = hypre_ComputePkgIndtBoxes(down_compute_pkg_l[l]);
-        }
-        break;
-
-        case 1:
-        {
-          hypre_FinalizeIndtComputations(comm_handle);
-          compute_box_aa = hypre_ComputePkgDeptBoxes(down_compute_pkg_l[l]);
-        }
-        break;
-      }
-
-      fi = 0;
-      hypre_ForBoxArrayI(ci, cgrid_boxes)
-      {
-        while (fgrid_ids[fi] != cgrid_ids[ci])
-        {
-          fi++;
-        }
-
-        compute_box_a = hypre_BoxArrayArrayBoxArray(compute_box_aa, fi);
+        compute_box = hypre_BoxArrayBox(compute_box_a, fi);
 
         A_dbox = hypre_BoxArrayBox(hypre_StructMatrixDataSpace(A_l[l]), fi);
         x_dbox = hypre_BoxArrayBox(hypre_StructVectorDataSpace(x_l[l]), fi);
-        xc_dbox =
-            hypre_BoxArrayBox(hypre_StructVectorDataSpace(x_l[l + 1]), ci);
 
+        hypre_SetIndex(index, 0, 0, 0);
+        Ap = hypre_StructMatrixExtractPointerByIndex(A_l[l], fi, index);
         xp = hypre_StructVectorBoxData(x_l[l], fi);
-        xcp = hypre_StructVectorBoxData(x_l[l + 1], ci);
 
-        hypre_SetIndex(index, -1, 0, 0);
-        Awp = hypre_StructMatrixExtractPointerByIndex(A_l[l], fi, index);
-        xwp = hypre_StructVectorBoxData(x_l[l], fi) +
-              hypre_BoxOffsetDistance(x_dbox, index);
+        hypre_CopyIndex(hypre_BoxIMin(compute_box), start);
+        hypre_BoxGetStrideSize(compute_box, stride, loop_size);
 
-        hypre_SetIndex(index, 1, 0, 0);
-        Aep = hypre_StructMatrixExtractPointerByIndex(A_l[l], fi, index);
-        xep = hypre_StructVectorBoxData(x_l[l], fi) +
-              hypre_BoxOffsetDistance(x_dbox, index);
-
-        hypre_ForBoxI(j, compute_box_a)
+        hypre_BoxLoop2Begin(loop_size, A_dbox, start, stride, Ai, x_dbox, start,
+                            stride, xi);
+#define HYPRE_BOX_SMP_PRIVATE loopk, loopi, loopj, Ai, xi
+#include "hypre_box_smp_forloop.h"
+        hypre_BoxLoop2For(loopi, loopj, loopk, Ai, xi)
         {
-          compute_box = hypre_BoxArrayBox(compute_box_a, j);
+          xp[xi] /= Ap[Ai];
+        }
+        hypre_BoxLoop2End(Ai, xi);
+      }
 
-          hypre_CopyIndex(hypre_BoxIMin(compute_box), start);
-          hypre_StructMapFineToCoarse(start, cindex, stride, startc);
+      if (l == (num_levels - 1)) break;
 
-          hypre_BoxGetStrideSize(compute_box, stride, loop_size);
+      /* Step 2 */
+      fgrid = hypre_StructVectorGrid(x_l[l]);
+      fgrid_ids = hypre_StructGridIDs(fgrid);
+      cgrid = hypre_StructVectorGrid(x_l[l + 1]);
+      cgrid_boxes = hypre_StructGridBoxes(cgrid);
+      cgrid_ids = hypre_StructGridIDs(cgrid);
+      for (compute_i = 0; compute_i < 2; compute_i++)
+        {
+          switch (compute_i)
+            {
+              case 0:
+                {
+                  xp = hypre_StructVectorData(x_l[l]);
+                  hypre_InitializeIndtComputations(down_compute_pkg_l[l], xp,
+                                                   &comm_handle);
+                  compute_box_aa = hypre_ComputePkgIndtBoxes(down_compute_pkg_l[l]);
+                }
+                break;
 
-          hypre_BoxLoop3Begin(loop_size, A_dbox, start, stride, Ai, x_dbox,
-                              start, stride, xi, xc_dbox, startc, stridec, xci);
+              case 1:
+                {
+                  hypre_FinalizeIndtComputations(comm_handle);
+                  compute_box_aa = hypre_ComputePkgDeptBoxes(down_compute_pkg_l[l]);
+                }
+                break;
+            }
+
+          fi = 0;
+          hypre_ForBoxArrayI(ci, cgrid_boxes)
+          {
+            while (fgrid_ids[fi] != cgrid_ids[ci])
+              {
+                fi++;
+              }
+
+            compute_box_a = hypre_BoxArrayArrayBoxArray(compute_box_aa, fi);
+
+            A_dbox = hypre_BoxArrayBox(hypre_StructMatrixDataSpace(A_l[l]), fi);
+            x_dbox = hypre_BoxArrayBox(hypre_StructVectorDataSpace(x_l[l]), fi);
+            xc_dbox =
+                hypre_BoxArrayBox(hypre_StructVectorDataSpace(x_l[l + 1]), ci);
+
+            xp = hypre_StructVectorBoxData(x_l[l], fi);
+            xcp = hypre_StructVectorBoxData(x_l[l + 1], ci);
+
+            hypre_SetIndex(index, -1, 0, 0);
+            Awp = hypre_StructMatrixExtractPointerByIndex(A_l[l], fi, index);
+            xwp = hypre_StructVectorBoxData(x_l[l], fi) +
+                  hypre_BoxOffsetDistance(x_dbox, index);
+
+            hypre_SetIndex(index, 1, 0, 0);
+            Aep = hypre_StructMatrixExtractPointerByIndex(A_l[l], fi, index);
+            xep = hypre_StructVectorBoxData(x_l[l], fi) +
+                  hypre_BoxOffsetDistance(x_dbox, index);
+
+            hypre_ForBoxI(j, compute_box_a)
+            {
+              compute_box = hypre_BoxArrayBox(compute_box_a, j);
+
+              hypre_CopyIndex(hypre_BoxIMin(compute_box), start);
+              hypre_StructMapFineToCoarse(start, cindex, stride, startc);
+
+              hypre_BoxGetStrideSize(compute_box, stride, loop_size);
+
+              hypre_BoxLoop3Begin(loop_size, A_dbox, start, stride, Ai, x_dbox,
+                                  start, stride, xi, xc_dbox, startc, stridec, xci);
 #define HYPRE_BOX_SMP_PRIVATE loopk, loopi, loopj, Ai, xi, xci
 #include "hypre_box_smp_forloop.h"
-          hypre_BoxLoop3For(loopi, loopj, loopk, Ai, xi, xci)
-          {
-            xcp[xci] = xp[xi] - Awp[Ai] * xwp[xi] - Aep[Ai] * xep[xi];
+              hypre_BoxLoop3For(loopi, loopj, loopk, Ai, xi, xci)
+              {
+                xcp[xci] = xp[xi] - Awp[Ai] * xwp[xi] - Aep[Ai] * xep[xi];
+              }
+              hypre_BoxLoop3End(Ai, xi, xci);
+            }
           }
-          hypre_BoxLoop3End(Ai, xi, xci);
         }
-      }
     }
-  }
 
   /*--------------------------------------------------
    * Up cycle:
@@ -958,109 +964,112 @@ int hypre_CyclicReduction(void *cyc_red_vdata, hypre_StructMatrix *A,
    *--------------------------------------------------*/
 
   for (l = (num_levels - 2); l >= 0; l--)
-  {
-    /* set cindex and stride */
-    hypre_CycRedSetCIndex(base_index, base_stride, l, cdir, cindex);
-    hypre_CycRedSetStride(base_index, base_stride, l, cdir, stride);
-
-    /* Step 1 */
-    fgrid = hypre_StructVectorGrid(x_l[l]);
-    fgrid_ids = hypre_StructGridIDs(fgrid);
-    cgrid = hypre_StructVectorGrid(x_l[l + 1]);
-    cgrid_boxes = hypre_StructGridBoxes(cgrid);
-    cgrid_ids = hypre_StructGridIDs(cgrid);
-    fi = 0;
-    hypre_ForBoxI(ci, cgrid_boxes)
     {
-      while (fgrid_ids[fi] != cgrid_ids[ci])
+      /* set cindex and stride */
+      hypre_CycRedSetCIndex(base_index, base_stride, l, cdir, cindex);
+      hypre_CycRedSetStride(base_index, base_stride, l, cdir, stride);
+
+      /* Step 1 */
+      fgrid = hypre_StructVectorGrid(x_l[l]);
+      fgrid_ids = hypre_StructGridIDs(fgrid);
+      cgrid = hypre_StructVectorGrid(x_l[l + 1]);
+      cgrid_boxes = hypre_StructGridBoxes(cgrid);
+      cgrid_ids = hypre_StructGridIDs(cgrid);
+      fi = 0;
+      hypre_ForBoxI(ci, cgrid_boxes)
       {
-        fi++;
-      }
+        while (fgrid_ids[fi] != cgrid_ids[ci])
+          {
+            fi++;
+          }
 
-      compute_box = hypre_BoxArrayBox(cgrid_boxes, ci);
+        compute_box = hypre_BoxArrayBox(cgrid_boxes, ci);
 
-      hypre_CopyIndex(hypre_BoxIMin(compute_box), startc);
-      hypre_StructMapCoarseToFine(startc, cindex, stride, start);
+        hypre_CopyIndex(hypre_BoxIMin(compute_box), startc);
+        hypre_StructMapCoarseToFine(startc, cindex, stride, start);
 
-      x_dbox = hypre_BoxArrayBox(hypre_StructVectorDataSpace(x_l[l]), fi);
-      xc_dbox = hypre_BoxArrayBox(hypre_StructVectorDataSpace(x_l[l + 1]), ci);
+        x_dbox = hypre_BoxArrayBox(hypre_StructVectorDataSpace(x_l[l]), fi);
+        xc_dbox = hypre_BoxArrayBox(hypre_StructVectorDataSpace(x_l[l + 1]), ci);
 
-      xp = hypre_StructVectorBoxData(x_l[l], fi);
-      xcp = hypre_StructVectorBoxData(x_l[l + 1], ci);
+        xp = hypre_StructVectorBoxData(x_l[l], fi);
+        xcp = hypre_StructVectorBoxData(x_l[l + 1], ci);
 
-      hypre_BoxGetSize(compute_box, loop_size);
+        hypre_BoxGetSize(compute_box, loop_size);
 
-      hypre_BoxLoop2Begin(loop_size, x_dbox, start, stride, xi, xc_dbox, startc,
-                          stridec, xci);
+        hypre_BoxLoop2Begin(loop_size, x_dbox, start, stride, xi, xc_dbox, startc,
+                            stridec, xci);
 #define HYPRE_BOX_SMP_PRIVATE loopk, loopi, loopj, xi, xci
 #include "hypre_box_smp_forloop.h"
-      hypre_BoxLoop2For(loopi, loopj, loopk, xi, xci) { xp[xi] = xcp[xci]; }
-      hypre_BoxLoop2End(xi, xci);
-    }
-
-    /* Step 2 */
-    for (compute_i = 0; compute_i < 2; compute_i++)
-    {
-      switch (compute_i)
-      {
-        case 0:
+        hypre_BoxLoop2For(loopi, loopj, loopk, xi, xci)
         {
-          xp = hypre_StructVectorData(x_l[l]);
-          hypre_InitializeIndtComputations(up_compute_pkg_l[l], xp,
-                                           &comm_handle);
-          compute_box_aa = hypre_ComputePkgIndtBoxes(up_compute_pkg_l[l]);
+          xp[xi] = xcp[xci];
         }
-        break;
-
-        case 1:
-        {
-          hypre_FinalizeIndtComputations(comm_handle);
-          compute_box_aa = hypre_ComputePkgDeptBoxes(up_compute_pkg_l[l]);
-        }
-        break;
+        hypre_BoxLoop2End(xi, xci);
       }
 
-      hypre_ForBoxArrayI(fi, compute_box_aa)
-      {
-        compute_box_a = hypre_BoxArrayArrayBoxArray(compute_box_aa, fi);
-
-        A_dbox = hypre_BoxArrayBox(hypre_StructMatrixDataSpace(A_l[l]), fi);
-        x_dbox = hypre_BoxArrayBox(hypre_StructVectorDataSpace(x_l[l]), fi);
-
-        hypre_SetIndex(index, 0, 0, 0);
-        Ap = hypre_StructMatrixExtractPointerByIndex(A_l[l], fi, index);
-        xp = hypre_StructVectorBoxData(x_l[l], fi);
-
-        hypre_SetIndex(index, -1, 0, 0);
-        Awp = hypre_StructMatrixExtractPointerByIndex(A_l[l], fi, index);
-        xwp = hypre_StructVectorBoxData(x_l[l], fi) +
-              hypre_BoxOffsetDistance(x_dbox, index);
-
-        hypre_SetIndex(index, 1, 0, 0);
-        Aep = hypre_StructMatrixExtractPointerByIndex(A_l[l], fi, index);
-        xep = hypre_StructVectorBoxData(x_l[l], fi) +
-              hypre_BoxOffsetDistance(x_dbox, index);
-
-        hypre_ForBoxI(j, compute_box_a)
+      /* Step 2 */
+      for (compute_i = 0; compute_i < 2; compute_i++)
         {
-          compute_box = hypre_BoxArrayBox(compute_box_a, j);
+          switch (compute_i)
+            {
+              case 0:
+                {
+                  xp = hypre_StructVectorData(x_l[l]);
+                  hypre_InitializeIndtComputations(up_compute_pkg_l[l], xp,
+                                                   &comm_handle);
+                  compute_box_aa = hypre_ComputePkgIndtBoxes(up_compute_pkg_l[l]);
+                }
+                break;
 
-          hypre_CopyIndex(hypre_BoxIMin(compute_box), start);
-          hypre_BoxGetStrideSize(compute_box, stride, loop_size);
+              case 1:
+                {
+                  hypre_FinalizeIndtComputations(comm_handle);
+                  compute_box_aa = hypre_ComputePkgDeptBoxes(up_compute_pkg_l[l]);
+                }
+                break;
+            }
 
-          hypre_BoxLoop2Begin(loop_size, A_dbox, start, stride, Ai, x_dbox,
-                              start, stride, xi);
+          hypre_ForBoxArrayI(fi, compute_box_aa)
+          {
+            compute_box_a = hypre_BoxArrayArrayBoxArray(compute_box_aa, fi);
+
+            A_dbox = hypre_BoxArrayBox(hypre_StructMatrixDataSpace(A_l[l]), fi);
+            x_dbox = hypre_BoxArrayBox(hypre_StructVectorDataSpace(x_l[l]), fi);
+
+            hypre_SetIndex(index, 0, 0, 0);
+            Ap = hypre_StructMatrixExtractPointerByIndex(A_l[l], fi, index);
+            xp = hypre_StructVectorBoxData(x_l[l], fi);
+
+            hypre_SetIndex(index, -1, 0, 0);
+            Awp = hypre_StructMatrixExtractPointerByIndex(A_l[l], fi, index);
+            xwp = hypre_StructVectorBoxData(x_l[l], fi) +
+                  hypre_BoxOffsetDistance(x_dbox, index);
+
+            hypre_SetIndex(index, 1, 0, 0);
+            Aep = hypre_StructMatrixExtractPointerByIndex(A_l[l], fi, index);
+            xep = hypre_StructVectorBoxData(x_l[l], fi) +
+                  hypre_BoxOffsetDistance(x_dbox, index);
+
+            hypre_ForBoxI(j, compute_box_a)
+            {
+              compute_box = hypre_BoxArrayBox(compute_box_a, j);
+
+              hypre_CopyIndex(hypre_BoxIMin(compute_box), start);
+              hypre_BoxGetStrideSize(compute_box, stride, loop_size);
+
+              hypre_BoxLoop2Begin(loop_size, A_dbox, start, stride, Ai, x_dbox,
+                                  start, stride, xi);
 #define HYPRE_BOX_SMP_PRIVATE loopk, loopi, loopj, Ai, xi
 #include "hypre_box_smp_forloop.h"
-          hypre_BoxLoop2For(loopi, loopj, loopk, Ai, xi)
-          {
-            xp[xi] -= (Awp[Ai] * xwp[xi] + Aep[Ai] * xep[xi]) / Ap[Ai];
+              hypre_BoxLoop2For(loopi, loopj, loopk, Ai, xi)
+              {
+                xp[xi] -= (Awp[Ai] * xwp[xi] + Aep[Ai] * xep[xi]) / Ap[Ai];
+              }
+              hypre_BoxLoop2End(Ai, xi);
+            }
           }
-          hypre_BoxLoop2End(Ai, xi);
         }
-      }
     }
-  }
 
   /*-----------------------------------------------------
    * Finalize some things
@@ -1084,10 +1093,10 @@ int hypre_CyclicReductionSetBase(void *cyc_red_vdata, hypre_Index base_index,
   int ierr = 0;
 
   for (d = 0; d < 3; d++)
-  {
-    hypre_IndexD((cyc_red_data->base_index), d) = hypre_IndexD(base_index, d);
-    hypre_IndexD((cyc_red_data->base_stride), d) = hypre_IndexD(base_stride, d);
-  }
+    {
+      hypre_IndexD((cyc_red_data->base_index), d) = hypre_IndexD(base_index, d);
+      hypre_IndexD((cyc_red_data->base_stride), d) = hypre_IndexD(base_stride, d);
+    }
 
   return ierr;
 }
@@ -1104,32 +1113,32 @@ int hypre_CyclicReductionDestroy(void *cyc_red_vdata)
   int ierr = 0;
 
   if (cyc_red_data)
-  {
-    hypre_BoxArrayDestroy(cyc_red_data->base_points);
-    hypre_StructGridDestroy(cyc_red_data->grid_l[0]);
-    hypre_StructMatrixDestroy(cyc_red_data->A_l[0]);
-    hypre_StructVectorDestroy(cyc_red_data->x_l[0]);
-    for (l = 0; l < ((cyc_red_data->num_levels) - 1); l++)
     {
-      hypre_StructGridDestroy(cyc_red_data->grid_l[l + 1]);
+      hypre_BoxArrayDestroy(cyc_red_data->base_points);
+      hypre_StructGridDestroy(cyc_red_data->grid_l[0]);
+      hypre_StructMatrixDestroy(cyc_red_data->A_l[0]);
+      hypre_StructVectorDestroy(cyc_red_data->x_l[0]);
+      for (l = 0; l < ((cyc_red_data->num_levels) - 1); l++)
+        {
+          hypre_StructGridDestroy(cyc_red_data->grid_l[l + 1]);
+          hypre_BoxArrayDestroy(cyc_red_data->fine_points_l[l]);
+          hypre_StructMatrixDestroy(cyc_red_data->A_l[l + 1]);
+          hypre_StructVectorDestroy(cyc_red_data->x_l[l + 1]);
+          hypre_ComputePkgDestroy(cyc_red_data->down_compute_pkg_l[l]);
+          hypre_ComputePkgDestroy(cyc_red_data->up_compute_pkg_l[l]);
+        }
       hypre_BoxArrayDestroy(cyc_red_data->fine_points_l[l]);
-      hypre_StructMatrixDestroy(cyc_red_data->A_l[l + 1]);
-      hypre_StructVectorDestroy(cyc_red_data->x_l[l + 1]);
-      hypre_ComputePkgDestroy(cyc_red_data->down_compute_pkg_l[l]);
-      hypre_ComputePkgDestroy(cyc_red_data->up_compute_pkg_l[l]);
-    }
-    hypre_BoxArrayDestroy(cyc_red_data->fine_points_l[l]);
-    hypre_SharedTFree(cyc_red_data->data);
-    hypre_TFree(cyc_red_data->grid_l);
-    hypre_TFree(cyc_red_data->fine_points_l);
-    hypre_TFree(cyc_red_data->A_l);
-    hypre_TFree(cyc_red_data->x_l);
-    hypre_TFree(cyc_red_data->down_compute_pkg_l);
-    hypre_TFree(cyc_red_data->up_compute_pkg_l);
+      hypre_SharedTFree(cyc_red_data->data);
+      hypre_TFree(cyc_red_data->grid_l);
+      hypre_TFree(cyc_red_data->fine_points_l);
+      hypre_TFree(cyc_red_data->A_l);
+      hypre_TFree(cyc_red_data->x_l);
+      hypre_TFree(cyc_red_data->down_compute_pkg_l);
+      hypre_TFree(cyc_red_data->up_compute_pkg_l);
 
-    hypre_FinalizeTiming(cyc_red_data->time_index);
-    hypre_TFree(cyc_red_data);
-  }
+      hypre_FinalizeTiming(cyc_red_data->time_index);
+      hypre_TFree(cyc_red_data);
+    }
 
   return ierr;
 }

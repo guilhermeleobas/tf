@@ -89,9 +89,9 @@ VERTEX_PTR get_low(tree) register VERTEX_PTR tree;
 {
   register VERTEX_PTR temp;
   while ((temp = tree->left))
-  {
-    tree = temp; /* 3% load penalty */
-  }
+    {
+      tree = temp; /* 3% load penalty */
+    }
   return tree;
 }
 
@@ -110,66 +110,66 @@ EDGE_PAIR build_delaunay(VERTEX_PTR tree, VERTEX_PTR extra)
   EDGE_PAIR delleft, delright;
 
   if (tree && tree->right) /* <----------------------- 3% load penalty */
-  {
-    /* more than three elements; do recursion */
-    minx = get_low(tree);
-    maxx = extra;
-    delright = build_delaunay(tree->right, extra);
-    delleft = build_delaunay(tree->left, tree);
-    ldo = delleft.left;
-    ldi = delleft.right;
-    rdi = delright.left;
-    rdo = delright.right;
-    retval = do_merge(ldo, ldi, rdi, rdo);
-    ldo = retval.left;
-    rdo = retval.right;
-    while (orig(ldo) != minx)
     {
-      ldo = rprev(ldo);
+      /* more than three elements; do recursion */
+      minx = get_low(tree);
+      maxx = extra;
+      delright = build_delaunay(tree->right, extra);
+      delleft = build_delaunay(tree->left, tree);
+      ldo = delleft.left;
+      ldi = delleft.right;
+      rdi = delright.left;
+      rdo = delright.right;
+      retval = do_merge(ldo, ldi, rdi, rdo);
+      ldo = retval.left;
+      rdo = retval.right;
+      while (orig(ldo) != minx)
+        {
+          ldo = rprev(ldo);
+        }
+      while (orig(rdo) != maxx)
+        {
+          rdo = lprev(rdo);
+        }
+      retval.left = ldo;
+      retval.right = rdo;
     }
-    while (orig(rdo) != maxx)
-    {
-      rdo = lprev(rdo);
-    }
-    retval.left = ldo;
-    retval.right = rdo;
-  }
   else if (!tree)
-  {
-    printf("ERROR: Only 1 point!\n");
-    exit(-1);
-  }
+    {
+      printf("ERROR: Only 1 point!\n");
+      exit(-1);
+    }
   else if (!tree->left)
-  { /* two points */
-    a = makeedge(tree, extra);
-    retval.left = a;
-    retval.right = sym(a);
-  }
-  else
-  { /*  tree->left, !tree->right  */ /* three points */
-    /* 3 cases: triangles of 2 orientations, and 3 points on a line. */
-    s1 = tree->left;
-    s2 = tree;
-    s3 = extra;
-    a = makeedge(s1, s2);
-    b = makeedge(s2, s3);
-    splice(sym(a), b);
-    c = connect_left(b, a);
-    if (ccw(s1, s3, s2))
-    {
-      retval.left = sym(c);
-      retval.right = c;
-    }
-    else
-    {
+    { /* two points */
+      a = makeedge(tree, extra);
       retval.left = a;
-      retval.right = sym(b);
-      if (!ccw(s1, s2, s3))
-      {
-        deleteedge(c); /* colinear */
-      }
+      retval.right = sym(a);
     }
-  }
+  else
+    { /*  tree->left, !tree->right  */ /* three points */
+      /* 3 cases: triangles of 2 orientations, and 3 points on a line. */
+      s1 = tree->left;
+      s2 = tree;
+      s3 = extra;
+      a = makeedge(s1, s2);
+      b = makeedge(s2, s3);
+      splice(sym(a), b);
+      c = connect_left(b, a);
+      if (ccw(s1, s3, s2))
+        {
+          retval.left = sym(c);
+          retval.right = c;
+        }
+      else
+        {
+          retval.left = a;
+          retval.right = sym(b);
+          if (!ccw(s1, s2, s3))
+            {
+              deleteedge(c); /* colinear */
+            }
+        }
+    }
   return retval;
 }
 
@@ -201,10 +201,10 @@ void *myalign(int align_size, int alloc_size)
 #endif
   void *Result;
   if (base == NULL)
-  {
-    printf("myalign() failed\n");
-    exit(-1);
-  }
+    {
+      printf("myalign() failed\n");
+      exit(-1);
+    }
 #ifdef MEMALIGN_IS_NOT_AVAILABLE
   return (void *)(base + align_size - ((uptrint)base % align_size));
 #else
@@ -217,19 +217,19 @@ QUAD_EDGE alloc_edge()
   QUAD_EDGE ans;
 
   if (avail_edge == NYL)
-  {
-    ans = (QUAD_EDGE)myalign(4 * (sizeof(struct edge_rec)),
-                             4 * (sizeof(struct edge_rec)));
-    if ((uptrint)ans & ANDF)
     {
-      printf("Aborting in alloc_edge, ans = 0x%p\n", ans);
-      exit(-1);
+      ans = (QUAD_EDGE)myalign(4 * (sizeof(struct edge_rec)),
+                               4 * (sizeof(struct edge_rec)));
+      if ((uptrint)ans & ANDF)
+        {
+          printf("Aborting in alloc_edge, ans = 0x%p\n", ans);
+          exit(-1);
+        }
     }
-  }
   else
-  {
-    ans = (QUAD_EDGE)avail_edge, avail_edge = onext(avail_edge);
-  }
+    {
+      ans = (QUAD_EDGE)avail_edge, avail_edge = onext(avail_edge);
+    }
 
   ans[0].wasseen = 0;
   ans[1].wasseen = 0;
@@ -339,7 +339,7 @@ void splice(a, b) QUAD_EDGE a, b;
   alpha = rot(onext(a));
   beta = rot(
       onext(b)); /*<---------------------------------- 15% load miss penalty  */
-                 /*dump_quad(alpha); dump_quad(beta);*/
+  /*dump_quad(alpha); dump_quad(beta);*/
   t1 = onext(
       beta); /*<---------------------------------- 3%  load miss penalty  */
   temp = onext(
@@ -409,11 +409,11 @@ void dump_quad(ptr) QUAD_EDGE ptr;
   ptr = (QUAD_EDGE)((uptrint)ptr & ~ANDF);
   printf("Entered DUMP_QUAD: ptr=0x%p\n", ptr);
   for (i = 0; i < 4; i++)
-  {
-    j = onext(((QUAD_EDGE)(ptr + i)));
-    v = orig(j);
-    printf("DUMP_QUAD: ptr=0x%p onext=0x%p,v=0x%p\n", ptr + i, j, v);
-  }
+    {
+      j = onext(((QUAD_EDGE)(ptr + i)));
+      v = orig(j);
+      printf("DUMP_QUAD: ptr=0x%p onext=0x%p,v=0x%p\n", ptr + i, j, v);
+    }
 }
 
 EDGE_PAIR do_merge(QUAD_EDGE ldo, QUAD_EDGE ldi, QUAD_EDGE rdi, QUAD_EDGE rdo)
@@ -424,43 +424,43 @@ EDGE_PAIR do_merge(QUAD_EDGE ldo, QUAD_EDGE ldi, QUAD_EDGE rdi, QUAD_EDGE rdo)
 
   /*printf("merge\n");*/
   while (1)
-  {
-    VERTEX_PTR t3 = orig(rdi);
-    /*loc=rdi;*/
-    /*t3=orig(loc);*/
-
-    t1 = orig(ldi);
-    t2 = dest(ldi);
-    /*loc = ldi;*/
-    /*t1 = orig(loc);*/
-    /*t2 = dest(loc);*/
-
-    while (ccw(t1, t2, t3 /*orig(ldi), dest(ldi), orig(rdi)*/))
     {
-      ldi = lnext(ldi);
-      /*ldi = lnext(loc);*/
-      /*loc = ldi;*/
+      VERTEX_PTR t3 = orig(rdi);
+      /*loc=rdi;*/
+      /*t3=orig(loc);*/
 
       t1 = orig(ldi);
       t2 = dest(ldi);
+      /*loc = ldi;*/
       /*t1 = orig(loc);*/
       /*t2 = dest(loc);*/
-    }
-    /*loc = rdi;*/
 
-    t2 = dest(rdi);
-    /*t2 = dest(loc);*/
+      while (ccw(t1, t2, t3 /*orig(ldi), dest(ldi), orig(rdi)*/))
+        {
+          ldi = lnext(ldi);
+          /*ldi = lnext(loc);*/
+          /*loc = ldi;*/
 
-    if (ccw(t2, t3, t1 /*dest(rdi), orig(rdi), orig(ldi)*/))
-    {
-      rdi = rprev(rdi);
+          t1 = orig(ldi);
+          t2 = dest(ldi);
+          /*t1 = orig(loc);*/
+          /*t2 = dest(loc);*/
+        }
+      /*loc = rdi;*/
+
+      t2 = dest(rdi);
+      /*t2 = dest(loc);*/
+
+      if (ccw(t2, t3, t1 /*dest(rdi), orig(rdi), orig(ldi)*/))
+        {
+          rdi = rprev(rdi);
+        }
+      /*{ rdi = rprev(loc); }*/
+      else
+        {
+          break;
+        }
     }
-    /*{ rdi = rprev(loc); }*/
-    else
-    {
-      break;
-    }
-  }
 
   basel = connect_left(sym(rdi), ldi);
 
@@ -476,101 +476,102 @@ EDGE_PAIR do_merge(QUAD_EDGE ldo, QUAD_EDGE ldi, QUAD_EDGE rdi, QUAD_EDGE rdo)
   /*t2 = dest(loc);*/
 
   if (t1 /*orig(basel)*/ == orig(rdo))
-  {
-    rdo = basel;
-  }
+    {
+      rdo = basel;
+    }
   if (t2 /*dest(basel)*/ == orig(ldo))
-  {
-    ldo = sym(basel);
-  }
+    {
+      ldo = sym(basel);
+    }
 
   while (1)
-  {
-    VERTEX_PTR v1, v2, v3, v4;
-
-    /*printf("valid site 1,lcand=0x%x,basel=0x%x\n",lcand,basel);*/
-    /*dump_quad(lcand);*/
-    t = onext(lcand);
-    if (valid(t, basel))
     {
-      v4 = orig(basel);
+      VERTEX_PTR v1, v2, v3, v4;
 
-      /*loc = lcand;*/
+      /*printf("valid site 1,lcand=0x%x,basel=0x%x\n",lcand,basel);*/
+      /*dump_quad(lcand);*/
+      t = onext(lcand);
+      if (valid(t, basel))
+        {
+          v4 = orig(basel);
+
+          /*loc = lcand;*/
+          v1 = dest(lcand);
+          v3 = orig(lcand);
+          /*v1=dest(loc);*/
+          /*v3=orig(loc);*/
+
+          v2 = dest(t);
+          while (incircle(v1, v2, v3, v4
+                          /*dest(lcand), dest(t), orig(lcand), orig(basel)*/))
+            {
+              deleteedge(lcand);
+              lcand = t;
+
+              /*loc = lcand;*/
+              t = onext(lcand);
+              v1 = dest(lcand);
+              v3 = orig(lcand);
+              /*t = onext(loc);*/
+              /*v1=dest(loc);*/
+              /*v3=orig(loc);*/
+
+              v2 = dest(t); /* <---- 3% load penalty */
+            }
+        }
+
+      /*printf("valid site 2\n");*/
+      t = oprev(rcand);
+      if (valid(t, basel))
+        {
+          v4 = dest(basel);
+          v1 = dest(t);
+          v2 = dest(rcand);
+          v3 = orig(rcand);
+          while (incircle(v1, v2, v3, v4
+                          /*dest(t), dest(rcand), orig(rcand), dest(basel)*/))
+            {
+              deleteedge(rcand);
+              rcand = t;
+              t = oprev(rcand);
+              v2 = dest(rcand);
+              v3 = orig(rcand);
+              v1 = dest(t); /* <--- 4% load penalty */
+            }
+        }
+
+      /*printf("Valid sites 3,4\n");*/
+      lvalid = valid(lcand, basel);
+      /*printf("Valid sites 3,4\n");*/
+      rvalid = valid(rcand, basel);
+
+      if ((!lvalid) && (!rvalid))
+        {
+          EDGE_PAIR retval;
+          retval.left = ldo;
+          retval.right = rdo;
+          return retval;
+        }
+
       v1 = dest(lcand);
-      v3 = orig(lcand);
-      /*v1=dest(loc);*/
-      /*v3=orig(loc);*/
-
-      v2 = dest(t);
-      while (incircle(v1, v2, v3, v4
-                      /*dest(lcand), dest(t), orig(lcand), orig(basel)*/))
-      {
-        deleteedge(lcand);
-        lcand = t;
-
-        /*loc = lcand;*/
-        t = onext(lcand);
-        v1 = dest(lcand);
-        v3 = orig(lcand);
-        /*t = onext(loc);*/
-        /*v1=dest(loc);*/
-        /*v3=orig(loc);*/
-
-        v2 = dest(t); /* <---- 3% load penalty */
-      }
-    }
-
-    /*printf("valid site 2\n");*/
-    t = oprev(rcand);
-    if (valid(t, basel))
-    {
-      v4 = dest(basel);
-      v1 = dest(t);
-      v2 = dest(rcand);
+      v2 = orig(lcand);
       v3 = orig(rcand);
-      while (incircle(v1, v2, v3, v4
-                      /*dest(t), dest(rcand), orig(rcand), dest(basel)*/))
-      {
-        deleteedge(rcand);
-        rcand = t;
-        t = oprev(rcand);
-        v2 = dest(rcand);
-        v3 = orig(rcand);
-        v1 = dest(t); /* <--- 4% load penalty */
-      }
-    }
+      v4 = dest(rcand);
 
-    /*printf("Valid sites 3,4\n");*/
-    lvalid = valid(lcand, basel);
-    /*printf("Valid sites 3,4\n");*/
-    rvalid = valid(rcand, basel);
-
-    if ((!lvalid) && (!rvalid))
-    {
-      EDGE_PAIR retval;
-      retval.left = ldo;
-      retval.right = rdo;
-      return retval;
+      if (!lvalid || (rvalid && incircle(v1, v2, v3, v4
+                                         /*dest(lcand), orig(lcand),
+			    orig(rcand), dest(rcand)*/
+                                         )))
+        {
+          basel = connect_left(rcand, sym(basel));
+          rcand = lnext(sym(basel));
+        }
+      else
+        {
+          basel = sym(connect_right(lcand, basel));
+          lcand = rprev(basel);
+        }
     }
-
-    v1 = dest(lcand);
-    v2 = orig(lcand);
-    v3 = orig(rcand);
-    v4 = dest(rcand);
-
-    if (!lvalid || (rvalid && incircle(v1, v2, v3, v4
-                                       /*dest(lcand), orig(lcand),
-			    orig(rcand), dest(rcand)*/)))
-    {
-      basel = connect_left(rcand, sym(basel));
-      rcand = lnext(sym(basel));
-    }
-    else
-    {
-      basel = sym(connect_right(lcand, basel));
-      lcand = rprev(basel);
-    }
-  }
 }
 
 #define CONST_m1 10000
@@ -585,10 +586,10 @@ void in_order(tree) VERTEX_PTR tree;
   double x, y;
 
   if (!tree)
-  {
-    printf("NULL\n");
-    return;
-  }
+    {
+      printf("NULL\n");
+      return;
+    }
 
   x = X(tree);
   y = Y(tree);
@@ -614,9 +615,9 @@ int skiprand(int seed, int n)
 /* Generate the nth random # */
 {
   for (; n; n--)
-  {
-    seed = myrandom(seed);
-  }
+    {
+      seed = myrandom(seed);
+    }
   return seed;
 }
 
@@ -650,30 +651,30 @@ int main(int argc, char **argv)
 
   /*  delete_all_edges();*/
   if (1)
-  {
-    printf("getting %d points\n", n);
-    extra = get_points(1, 1.0, n, 1023, NumNodes - 1, 1);
-    point = get_points(n - 1, extra.curmax, n - 1, extra.seed, 0, NumNodes);
-    printf("Done getting points\n");
-    num_vertices = n + 1;
-    my_stack = allocate_stack(num_vertices);
-    if (flag)
     {
-      in_order(point.v);
-    }
-    if (flag)
-    {
-      print_extra(extra.v);
-    }
-    printf("Doing voronoi on %d nodes\n", n);
+      printf("getting %d points\n", n);
+      extra = get_points(1, 1.0, n, 1023, NumNodes - 1, 1);
+      point = get_points(n - 1, extra.curmax, n - 1, extra.seed, 0, NumNodes);
+      printf("Done getting points\n");
+      num_vertices = n + 1;
+      my_stack = allocate_stack(num_vertices);
+      if (flag)
+        {
+          in_order(point.v);
+        }
+      if (flag)
+        {
+          print_extra(extra.v);
+        }
+      printf("Doing voronoi on %d nodes\n", n);
 
-    edge = build_delaunay_triangulation(point.v, extra.v);
+      edge = build_delaunay_triangulation(point.v, extra.v);
 
-    if (flag)
-    {
-      output_voronoi_diagram(edge, n, my_stack);
+      if (flag)
+        {
+          output_voronoi_diagram(edge, n, my_stack);
+        }
     }
-  }
   /*  delete_all_edges();*/
   return 0;
 }
@@ -707,12 +708,12 @@ struct get_point get_points(int n, double curmax, int i, int seed,
   // numnodes);
 
   if (n < 1)
-  {
-    point.v = NULL;
-    point.curmax = curmax;
-    point.seed = seed;
-    return point;
-  }
+    {
+      point.v = NULL;
+      point.curmax = curmax;
+      point.seed = seed;
+      return point;
+    }
   /*printf("Get points: %d, %f, %d\n",n,curmax,processor);*/
   point = get_points(n / 2, curmax, i, seed, processor + numnodes / 2,
                      numnodes / 2);
@@ -756,16 +757,16 @@ void push_edge(struct EDGE_STACK *stack, QUAD_EDGE edge)
   register int a;
   /*printf("pushing edge \n");*/
   if (stack->ptr == stack->stack_size)
-  {
-    printf("cannot push onto stack: stack is too large\n");
-  }
+    {
+      printf("cannot push onto stack: stack is too large\n");
+    }
   else
-  {
-    a = stack->ptr;
-    a++;
-    stack->ptr = a;
-    stack->elts[a] = edge;
-  }
+    {
+      a = stack->ptr;
+      a++;
+      stack->ptr = a;
+      stack->elts[a] = edge;
+    }
 }
 
 void push_ring(struct EDGE_STACK *stack, QUAD_EDGE edge)
@@ -773,14 +774,14 @@ void push_ring(struct EDGE_STACK *stack, QUAD_EDGE edge)
   QUAD_EDGE nex;
   nex = onext(edge);
   while (nex != edge)
-  {
-    if (seen(nex) == 0)
     {
-      seen(nex) = 1;
-      push_edge(stack, nex);
+      if (seen(nex) == 0)
+        {
+          seen(nex) = 1;
+          push_edge(stack, nex);
+        }
+      nex = onext(nex);
     }
-    nex = onext(nex);
-  }
 }
 
 void push_nonzero_ring(stack, edge) struct EDGE_STACK *stack;
@@ -789,14 +790,14 @@ QUAD_EDGE edge;
   QUAD_EDGE nex;
   nex = onext(edge);
   while (nex != edge)
-  {
-    if (seen(nex) != 0)
     {
-      seen(nex) = 0;
-      push_edge(stack, nex);
+      if (seen(nex) != 0)
+        {
+          seen(nex) = 0;
+          push_edge(stack, nex);
+        }
+      nex = onext(nex);
     }
-    nex = onext(nex);
-  }
 }
 
 void zero_seen(my_stack, edge) QUAD_EDGE edge;
@@ -805,8 +806,8 @@ struct EDGE_STACK *my_stack;
   my_stack->ptr = 0;
   push_nonzero_ring(my_stack, edge);
   while (my_stack->ptr != 0)
-  {
-    edge = pop_edge(my_stack);
-    push_nonzero_ring(my_stack, sym(edge));
-  }
+    {
+      edge = pop_edge(my_stack);
+      push_nonzero_ring(my_stack, sym(edge));
+    }
 }

@@ -127,11 +127,11 @@
 /* #define ROPT */
 
 double nulltime, TimeArray[3]; /* Variables needed for 'dtime()'.     */
-double TLimit;                 /* Threshold to determine Number of    */
-                               /* Loops to run. Fixed at 15.0 seconds.*/
+double TLimit; /* Threshold to determine Number of    */
+/* Loops to run. Fixed at 15.0 seconds.*/
 
 double T[36]; /* Global Array used to hold timing    */
-              /* results and other information.      */
+/* results and other information.      */
 
 double sa, sb, sc, sd, one, two, three;
 double four, five, piref, piprg;
@@ -236,22 +236,22 @@ int main()
 
   n = 2 * n;
   x = one / (double)n; /*********************/
-  s = 0.0;             /*  Loop 1.          */
-  v = 0.0;             /*********************/
+  s = 0.0; /*  Loop 1.          */
+  v = 0.0; /*********************/
   w = one;
 
   for (i = 1; i <= n - 1; i++)
-  {
-    v = v + w;
-    u = v * x;
-    s = s + (D1 + u * (D2 + u * D3)) / (w + u * (D1 + u * (E2 + u * E3)));
-  }
+    {
+      v = v + w;
+      u = v * x;
+      s = s + (D1 + u * (D2 + u * D3)) / (w + u * (D1 + u * (E2 + u * E3)));
+    }
 
   sa = (D1 + D2 + D3) / (one + D1 + E2 + E3);
   sb = D1;
 
   sa = x * (sa + sb + two * s) / two; /* Module 1 Results. */
-  sb = one / sa;                      /*********************/
+  sb = one / sa; /*********************/
   n = (long)((double)(40000 * (long)sb) / scale);
   sc = sb - 25.2;
   /********************/

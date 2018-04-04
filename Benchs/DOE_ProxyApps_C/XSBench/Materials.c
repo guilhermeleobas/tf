@@ -11,13 +11,13 @@ int *load_num_nucs(long n_isotopes)
   // Material 0 is a special case (fuel). The H-M small reactor uses
   // 34 nuclides, while H-M larges uses 300.
   if (n_isotopes == 68)
-  {
-    num_nucs[0] = 34;  // HM Small is 34, H-M Large is 321
-  }
+    {
+      num_nucs[0] = 34;  // HM Small is 34, H-M Large is 321
+    }
   else
-  {
-    num_nucs[0] = 321;  // HM Small is 34, H-M Large is 321
-  }
+    {
+      num_nucs[0] = 321;  // HM Small is 34, H-M Large is 321
+    }
 
   num_nucs[1] = 5;
   num_nucs[2] = 4;
@@ -39,53 +39,53 @@ int **load_mats(int *num_nucs, long n_isotopes)
 {
   int **mats = (int **)malloc(12 * sizeof(int *));
   for (int i = 0; i < 12; i++)
-  {
-    mats[i] = (int *)malloc(num_nucs[i] * sizeof(int));
-  }
+    {
+      mats[i] = (int *)malloc(num_nucs[i] * sizeof(int));
+    }
 
   // Small H-M has 34 fuel nuclides
-  int mats0_Sml[] = {58, 59, 60, 61, 40, 42, 43, 44, 45, 46, 1,  2,
-                     3,  7,  8,  9,  10, 29, 57, 47, 48, 0,  62, 15,
+  int mats0_Sml[] = {58, 59, 60, 61, 40, 42, 43, 44, 45, 46, 1, 2,
+                     3, 7, 8, 9, 10, 29, 57, 47, 48, 0, 62, 15,
                      33, 34, 52, 53, 54, 55, 56, 18, 23, 41};  // fuel
   // Large H-M has 300 fuel nuclides
-  int mats0_Lrg[321] = {58, 59, 60, 61, 40, 42, 43, 44, 45, 46, 1,  2,
-                        3,  7,  8,  9,  10, 29, 57, 47, 48, 0,  62, 15,
+  int mats0_Lrg[321] = {58, 59, 60, 61, 40, 42, 43, 44, 45, 46, 1, 2,
+                        3, 7, 8, 9, 10, 29, 57, 47, 48, 0, 62, 15,
                         33, 34, 52, 53, 54, 55, 56, 18, 23, 41};  // fuel
   for (int i = 0; i < 321 - 34; i++)
-  {
-    mats0_Lrg[34 + i] = 68 + i;  // H-M large adds nuclides to fuel only
-  }
+    {
+      mats0_Lrg[34 + i] = 68 + i;  // H-M large adds nuclides to fuel only
+    }
 
   // These are the non-fuel materials
   int mats1[] = {63, 64, 65, 66, 67};  // cladding
-  int mats2[] = {24, 41, 4, 5};        // cold borated water
-  int mats3[] = {24, 41, 4, 5};        // hot borated water
+  int mats2[] = {24, 41, 4, 5};  // cold borated water
+  int mats3[] = {24, 41, 4, 5};  // hot borated water
   int mats4[] = {19, 20, 21, 22, 35, 36, 37, 38, 39, 25, 27, 28, 29, 30,
-                 31, 32, 26, 49, 50, 51, 11, 12, 13, 14, 6,  16, 17};  // RPV
+                 31, 32, 26, 49, 50, 51, 11, 12, 13, 14, 6, 16, 17};  // RPV
   int mats5[] = {
-      24, 41, 4,  5,  19, 20, 21, 22, 35, 36, 37,
+      24, 41, 4, 5, 19, 20, 21, 22, 35, 36, 37,
       38, 39, 25, 49, 50, 51, 11, 12, 13, 14};  // lower radial reflector
   int mats6[] = {
-      24, 41, 4,  5,  19, 20, 21, 22, 35, 36, 37,
+      24, 41, 4, 5, 19, 20, 21, 22, 35, 36, 37,
       38, 39, 25, 49, 50, 51, 11, 12, 13, 14};  // top reflector / plate
-  int mats7[] = {24, 41, 4,  5,  19, 20, 21, 22, 35, 36, 37,
+  int mats7[] = {24, 41, 4, 5, 19, 20, 21, 22, 35, 36, 37,
                  38, 39, 25, 49, 50, 51, 11, 12, 13, 14};  // bottom plate
-  int mats8[] = {24, 41, 4,  5,  19, 20, 21, 22, 35, 36, 37,
+  int mats8[] = {24, 41, 4, 5, 19, 20, 21, 22, 35, 36, 37,
                  38, 39, 25, 49, 50, 51, 11, 12, 13, 14};  // bottom nozzle
-  int mats9[] = {24, 41, 4,  5,  19, 20, 21, 22, 35, 36, 37,
+  int mats9[] = {24, 41, 4, 5, 19, 20, 21, 22, 35, 36, 37,
                  38, 39, 25, 49, 50, 51, 11, 12, 13, 14};  // top nozzle
-  int mats10[] = {24, 41, 4, 5, 63, 64, 65, 66, 67};       // top of FA's
-  int mats11[] = {24, 41, 4, 5, 63, 64, 65, 66, 67};       // bottom FA's
+  int mats10[] = {24, 41, 4, 5, 63, 64, 65, 66, 67};  // top of FA's
+  int mats11[] = {24, 41, 4, 5, 63, 64, 65, 66, 67};  // bottom FA's
 
   // H-M large v small dependency
   if (n_isotopes == 68)
-  {
-    memcpy(mats[0], mats0_Sml, num_nucs[0] * sizeof(int));
-  }
+    {
+      memcpy(mats[0], mats0_Sml, num_nucs[0] * sizeof(int));
+    }
   else
-  {
-    memcpy(mats[0], mats0_Lrg, num_nucs[0] * sizeof(int));
-  }
+    {
+      memcpy(mats[0], mats0_Lrg, num_nucs[0] * sizeof(int));
+    }
 
   // Copy other materials
   memcpy(mats[1], mats1, num_nucs[1] * sizeof(int));
@@ -117,17 +117,17 @@ double **load_concs(int *num_nucs)
   double **concs = (double **)malloc(12 * sizeof(double *));
 
   for (int i = 0; i < 12; i++)
-  {
-    concs[i] = (double *)malloc(num_nucs[i] * sizeof(double));
-  }
+    {
+      concs[i] = (double *)malloc(num_nucs[i] * sizeof(double));
+    }
 
   for (int i = 0; i < 12; i++)
-  {
-    for (int j = 0; j < num_nucs[i]; j++)
     {
-      concs[i][j] = (double)rand() / (double)RAND_MAX;
+      for (int j = 0; j < num_nucs[i]; j++)
+        {
+          concs[i][j] = (double)rand() / (double)RAND_MAX;
+        }
     }
-  }
 
   // test
   /*
@@ -145,17 +145,17 @@ double **load_concs_v(int *num_nucs)
   double **concs = (double **)malloc(12 * sizeof(double *));
 
   for (int i = 0; i < 12; i++)
-  {
-    concs[i] = (double *)malloc(num_nucs[i] * sizeof(double));
-  }
+    {
+      concs[i] = (double *)malloc(num_nucs[i] * sizeof(double));
+    }
 
   for (int i = 0; i < 12; i++)
-  {
-    for (int j = 0; j < num_nucs[i]; j++)
     {
-      concs[i][j] = rn_v();
+      for (int j = 0; j < num_nucs[i]; j++)
+        {
+          concs[i][j] = rn_v();
+        }
     }
-  }
 
   // test
   /*
@@ -179,16 +179,16 @@ int pick_mat(unsigned long *seed)
   // a better approximation, but volume does a good enough job for now.
 
   double dist[12];
-  dist[0] = 0.140;   // fuel
-  dist[1] = 0.052;   // cladding
-  dist[2] = 0.275;   // cold, borated water
-  dist[3] = 0.134;   // hot, borated water
-  dist[4] = 0.154;   // RPV
-  dist[5] = 0.064;   // Lower, radial reflector
-  dist[6] = 0.066;   // Upper reflector / top plate
-  dist[7] = 0.055;   // bottom plate
-  dist[8] = 0.008;   // bottom nozzle
-  dist[9] = 0.015;   // top nozzle
+  dist[0] = 0.140;  // fuel
+  dist[1] = 0.052;  // cladding
+  dist[2] = 0.275;  // cold, borated water
+  dist[3] = 0.134;  // hot, borated water
+  dist[4] = 0.154;  // RPV
+  dist[5] = 0.064;  // Lower, radial reflector
+  dist[6] = 0.066;  // Upper reflector / top plate
+  dist[7] = 0.055;  // bottom plate
+  dist[8] = 0.008;  // bottom nozzle
+  dist[9] = 0.015;  // top nozzle
   dist[10] = 0.025;  // top of fuel assemblies
   dist[11] = 0.013;  // bottom of fuel assemblies
 
@@ -201,17 +201,17 @@ int pick_mat(unsigned long *seed)
 
   // makes a pick based on the distro
   for (int i = 0; i < 12; i++)
-  {
-    double running = 0;
-    for (int j = i; j > 0; j--)
     {
-      running += dist[j];
+      double running = 0;
+      for (int j = i; j > 0; j--)
+        {
+          running += dist[j];
+        }
+      if (roll < running)
+        {
+          return i;
+        }
     }
-    if (roll < running)
-    {
-      return i;
-    }
-  }
 
   return 0;
 }

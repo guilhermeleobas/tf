@@ -54,8 +54,8 @@ typedef struct
                                 the (sol)ve part of the relaxation */
   hypre_StructMatrix *A_rem; /* Coefficients of A (rem)aining:
                                 A_rem = A - A_sol                  */
-  void **residual_data;      /* Array of size `num_spaces' */
-  void **solve_data;         /* Array of size `num_spaces' */
+  void **residual_data; /* Array of size `num_spaces' */
+  void **solve_data; /* Array of size `num_spaces' */
 
   /* log info (always logged) */
   int num_iterations;
@@ -135,15 +135,15 @@ int hypre_SMGRelaxDestroyARem(void *relax_vdata)
   int ierr = 0;
 
   if (relax_data->A_rem)
-  {
-    for (i = 0; i < (relax_data->num_spaces); i++)
     {
-      hypre_SMGResidualDestroy(relax_data->residual_data[i]);
+      for (i = 0; i < (relax_data->num_spaces); i++)
+        {
+          hypre_SMGResidualDestroy(relax_data->residual_data[i]);
+        }
+      hypre_TFree(relax_data->residual_data);
+      hypre_StructMatrixDestroy(relax_data->A_rem);
+      (relax_data->A_rem) = NULL;
     }
-    hypre_TFree(relax_data->residual_data);
-    hypre_StructMatrixDestroy(relax_data->A_rem);
-    (relax_data->A_rem) = NULL;
-  }
   (relax_data->setup_a_rem) = 1;
 
   return ierr;
@@ -161,19 +161,19 @@ int hypre_SMGRelaxDestroyASol(void *relax_vdata)
   int ierr = 0;
 
   if (relax_data->A_sol)
-  {
-    stencil_dim = (relax_data->stencil_dim);
-    for (i = 0; i < (relax_data->num_spaces); i++)
     {
-      if (stencil_dim > 2)
-        hypre_SMGDestroy(relax_data->solve_data[i]);
-      else
-        hypre_CyclicReductionDestroy(relax_data->solve_data[i]);
+      stencil_dim = (relax_data->stencil_dim);
+      for (i = 0; i < (relax_data->num_spaces); i++)
+        {
+          if (stencil_dim > 2)
+            hypre_SMGDestroy(relax_data->solve_data[i]);
+          else
+            hypre_CyclicReductionDestroy(relax_data->solve_data[i]);
+        }
+      hypre_TFree(relax_data->solve_data);
+      hypre_StructMatrixDestroy(relax_data->A_sol);
+      (relax_data->A_sol) = NULL;
     }
-    hypre_TFree(relax_data->solve_data);
-    hypre_StructMatrixDestroy(relax_data->A_sol);
-    (relax_data->A_sol) = NULL;
-  }
   (relax_data->setup_a_sol) = 1;
 
   return ierr;
@@ -189,24 +189,24 @@ int hypre_SMGRelaxDestroy(void *relax_vdata)
   int ierr = 0;
 
   if (relax_data)
-  {
-    hypre_TFree(relax_data->space_indices);
-    hypre_TFree(relax_data->space_strides);
-    hypre_TFree(relax_data->pre_space_ranks);
-    hypre_TFree(relax_data->reg_space_ranks);
-    hypre_BoxArrayDestroy(relax_data->base_box_array);
+    {
+      hypre_TFree(relax_data->space_indices);
+      hypre_TFree(relax_data->space_strides);
+      hypre_TFree(relax_data->pre_space_ranks);
+      hypre_TFree(relax_data->reg_space_ranks);
+      hypre_BoxArrayDestroy(relax_data->base_box_array);
 
-    hypre_StructMatrixDestroy(relax_data->A);
-    hypre_StructVectorDestroy(relax_data->b);
-    hypre_StructVectorDestroy(relax_data->x);
+      hypre_StructMatrixDestroy(relax_data->A);
+      hypre_StructVectorDestroy(relax_data->b);
+      hypre_StructVectorDestroy(relax_data->x);
 
-    hypre_SMGRelaxDestroyTempVec(relax_vdata);
-    hypre_SMGRelaxDestroyARem(relax_vdata);
-    hypre_SMGRelaxDestroyASol(relax_vdata);
+      hypre_SMGRelaxDestroyTempVec(relax_vdata);
+      hypre_SMGRelaxDestroyARem(relax_vdata);
+      hypre_SMGRelaxDestroyASol(relax_vdata);
 
-    hypre_FinalizeTiming(relax_data->time_index);
-    hypre_TFree(relax_data);
-  }
+      hypre_FinalizeTiming(relax_data->time_index);
+      hypre_TFree(relax_data);
+    }
 
   return ierr;
 }
@@ -255,9 +255,9 @@ int hypre_SMGRelax(void *relax_vdata, hypre_StructMatrix *A,
 
   /* insure that the solver memory gets fully set up */
   if ((relax_data->setup_a_sol) > 0)
-  {
-    (relax_data->setup_a_sol) = 2;
-  }
+    {
+      (relax_data->setup_a_sol) = 2;
+    }
 
   hypre_SMGRelaxSetup(relax_vdata, A, b, x);
 
@@ -274,62 +274,62 @@ int hypre_SMGRelax(void *relax_vdata, hypre_StructMatrix *A,
    *----------------------------------------------------------*/
 
   if (zero_guess)
-  {
-    base_stride = (relax_data->base_stride);
-    base_box_a = (relax_data->base_box_array);
-    ierr = hypre_SMGSetStructVectorConstantValues(x, zero, base_box_a,
-                                                  base_stride);
-  }
+    {
+      base_stride = (relax_data->base_stride);
+      base_box_a = (relax_data->base_box_array);
+      ierr = hypre_SMGSetStructVectorConstantValues(x, zero, base_box_a,
+                                                    base_stride);
+    }
 
   /*----------------------------------------------------------
    * Iterate
    *----------------------------------------------------------*/
 
   for (k = 0; k < 2; k++)
-  {
-    switch (k)
     {
-      /* Do pre-relaxation iterations */
-      case 0:
-        max_iter = 1;
-        num_spaces = (relax_data->num_pre_spaces);
-        space_ranks = (relax_data->pre_space_ranks);
-        break;
+      switch (k)
+        {
+          /* Do pre-relaxation iterations */
+          case 0:
+            max_iter = 1;
+            num_spaces = (relax_data->num_pre_spaces);
+            space_ranks = (relax_data->pre_space_ranks);
+            break;
 
-      /* Do regular relaxation iterations */
-      case 1:
-        max_iter = (relax_data->max_iter);
-        num_spaces = (relax_data->num_reg_spaces);
-        space_ranks = (relax_data->reg_space_ranks);
-        break;
+          /* Do regular relaxation iterations */
+          case 1:
+            max_iter = (relax_data->max_iter);
+            num_spaces = (relax_data->num_reg_spaces);
+            space_ranks = (relax_data->reg_space_ranks);
+            break;
+        }
+
+      for (i = 0; i < max_iter; i++)
+        {
+          for (j = 0; j < num_spaces; j++)
+            {
+              is = space_ranks[j];
+
+              hypre_SMGResidual(residual_data[is], A_rem, x, b, temp_vec);
+
+              if (stencil_dim > 2)
+                hypre_SMGSolve(solve_data[is], A_sol, temp_vec, x);
+              else
+                hypre_CyclicReduction(solve_data[is], A_sol, temp_vec, x);
+            }
+
+          (relax_data->num_iterations) = (i + 1);
+        }
     }
-
-    for (i = 0; i < max_iter; i++)
-    {
-      for (j = 0; j < num_spaces; j++)
-      {
-        is = space_ranks[j];
-
-        hypre_SMGResidual(residual_data[is], A_rem, x, b, temp_vec);
-
-        if (stencil_dim > 2)
-          hypre_SMGSolve(solve_data[is], A_sol, temp_vec, x);
-        else
-          hypre_CyclicReduction(solve_data[is], A_sol, temp_vec, x);
-      }
-
-      (relax_data->num_iterations) = (i + 1);
-    }
-  }
 
   /*----------------------------------------------------------
    * Free up memory according to memory_use parameter
    *----------------------------------------------------------*/
 
   if ((stencil_dim - 1) <= (relax_data->memory_use))
-  {
-    hypre_SMGRelaxDestroyASol(relax_vdata);
-  }
+    {
+      hypre_SMGRelaxDestroyASol(relax_vdata);
+    }
 
   hypre_EndTiming(relax_data->time_index);
 
@@ -366,37 +366,37 @@ int hypre_SMGRelaxSetup(void *relax_vdata, hypre_StructMatrix *A,
    *----------------------------------------------------------*/
 
   if ((stencil_dim - 1) <= (relax_data->memory_use))
-  {
-    a_sol_test = 1;
-  }
+    {
+      a_sol_test = 1;
+    }
   else
-  {
-    a_sol_test = 0;
-  }
+    {
+      a_sol_test = 0;
+    }
 
   /*----------------------------------------------------------
    * Set up the solver
    *----------------------------------------------------------*/
 
   if ((relax_data->setup_temp_vec) > 0)
-  {
-    ierr = hypre_SMGRelaxSetupTempVec(relax_vdata, A, b, x);
-  }
+    {
+      ierr = hypre_SMGRelaxSetupTempVec(relax_vdata, A, b, x);
+    }
 
   if ((relax_data->setup_a_rem) > 0)
-  {
-    ierr = hypre_SMGRelaxSetupARem(relax_vdata, A, b, x);
-  }
+    {
+      ierr = hypre_SMGRelaxSetupARem(relax_vdata, A, b, x);
+    }
 
   if ((relax_data->setup_a_sol) > a_sol_test)
-  {
-    ierr = hypre_SMGRelaxSetupASol(relax_vdata, A, b, x);
-  }
+    {
+      ierr = hypre_SMGRelaxSetupASol(relax_vdata, A, b, x);
+    }
 
   if ((relax_data->base_box_array) == NULL)
-  {
-    ierr = hypre_SMGRelaxSetupBaseBoxArray(relax_vdata, A, b, x);
-  }
+    {
+      ierr = hypre_SMGRelaxSetupBaseBoxArray(relax_vdata, A, b, x);
+    }
 
   return ierr;
 }
@@ -417,14 +417,14 @@ int hypre_SMGRelaxSetupTempVec(void *relax_vdata, hypre_StructMatrix *A,
    *----------------------------------------------------------*/
 
   if ((relax_data->temp_vec) == NULL)
-  {
-    temp_vec = hypre_StructVectorCreate(hypre_StructVectorComm(b),
-                                        hypre_StructVectorGrid(b));
-    hypre_StructVectorSetNumGhost(temp_vec, hypre_StructVectorNumGhost(b));
-    hypre_StructVectorInitialize(temp_vec);
-    hypre_StructVectorAssemble(temp_vec);
-    (relax_data->temp_vec) = temp_vec;
-  }
+    {
+      temp_vec = hypre_StructVectorCreate(hypre_StructVectorComm(b),
+                                          hypre_StructVectorGrid(b));
+      hypre_StructVectorSetNumGhost(temp_vec, hypre_StructVectorNumGhost(b));
+      hypre_StructVectorInitialize(temp_vec);
+      hypre_StructVectorAssemble(temp_vec);
+      (relax_data->temp_vec) = temp_vec;
+    }
   (relax_data->setup_temp_vec) = 0;
 
   return ierr;
@@ -478,13 +478,13 @@ int hypre_SMGRelaxSetupARem(void *relax_vdata, hypre_StructMatrix *A,
   stencil_indices = hypre_TAlloc(int, stencil_size);
   num_stencil_indices = 0;
   for (i = 0; i < stencil_size; i++)
-  {
-    if (hypre_IndexD(stencil_shape[i], (stencil_dim - 1)) != 0)
     {
-      stencil_indices[num_stencil_indices] = i;
-      num_stencil_indices++;
+      if (hypre_IndexD(stencil_shape[i], (stencil_dim - 1)) != 0)
+        {
+          stencil_indices[num_stencil_indices] = i;
+          num_stencil_indices++;
+        }
     }
-  }
   A_rem = hypre_StructMatrixCreateMask(A, num_stencil_indices, stencil_indices);
   hypre_TFree(stencil_indices);
 
@@ -492,14 +492,14 @@ int hypre_SMGRelaxSetupARem(void *relax_vdata, hypre_StructMatrix *A,
   residual_data = hypre_TAlloc(void *, num_spaces);
 
   for (i = 0; i < num_spaces; i++)
-  {
-    hypre_IndexD(base_index, (stencil_dim - 1)) = space_indices[i];
-    hypre_IndexD(base_stride, (stencil_dim - 1)) = space_strides[i];
+    {
+      hypre_IndexD(base_index, (stencil_dim - 1)) = space_indices[i];
+      hypre_IndexD(base_stride, (stencil_dim - 1)) = space_strides[i];
 
-    residual_data[i] = hypre_SMGResidualCreate();
-    hypre_SMGResidualSetBase(residual_data[i], base_index, base_stride);
-    hypre_SMGResidualSetup(residual_data[i], A_rem, x, b, temp_vec);
-  }
+      residual_data[i] = hypre_SMGResidualCreate();
+      hypre_SMGResidualSetBase(residual_data[i], base_index, base_stride);
+      hypre_SMGResidualSetup(residual_data[i], A_rem, x, b, temp_vec);
+    }
 
   (relax_data->A_rem) = A_rem;
   (relax_data->residual_data) = residual_data;
@@ -560,13 +560,13 @@ int hypre_SMGRelaxSetupASol(void *relax_vdata, hypre_StructMatrix *A,
   stencil_indices = hypre_TAlloc(int, stencil_size);
   num_stencil_indices = 0;
   for (i = 0; i < stencil_size; i++)
-  {
-    if (hypre_IndexD(stencil_shape[i], (stencil_dim - 1)) == 0)
     {
-      stencil_indices[num_stencil_indices] = i;
-      num_stencil_indices++;
+      if (hypre_IndexD(stencil_shape[i], (stencil_dim - 1)) == 0)
+        {
+          stencil_indices[num_stencil_indices] = i;
+          num_stencil_indices++;
+        }
     }
-  }
   A_sol = hypre_StructMatrixCreateMask(A, num_stencil_indices, stencil_indices);
   hypre_StructStencilDim(hypre_StructMatrixStencil(A_sol)) = stencil_dim - 1;
   hypre_TFree(stencil_indices);
@@ -575,28 +575,28 @@ int hypre_SMGRelaxSetupASol(void *relax_vdata, hypre_StructMatrix *A,
   solve_data = hypre_TAlloc(void *, num_spaces);
 
   for (i = 0; i < num_spaces; i++)
-  {
-    hypre_IndexD(base_index, (stencil_dim - 1)) = space_indices[i];
-    hypre_IndexD(base_stride, (stencil_dim - 1)) = space_strides[i];
+    {
+      hypre_IndexD(base_index, (stencil_dim - 1)) = space_indices[i];
+      hypre_IndexD(base_stride, (stencil_dim - 1)) = space_strides[i];
 
-    if (stencil_dim > 2)
-    {
-      solve_data[i] = hypre_SMGCreate(relax_data->comm);
-      hypre_SMGSetNumPreRelax(solve_data[i], num_pre_relax);
-      hypre_SMGSetNumPostRelax(solve_data[i], num_post_relax);
-      hypre_SMGSetBase(solve_data[i], base_index, base_stride);
-      hypre_SMGSetMemoryUse(solve_data[i], (relax_data->memory_use));
-      hypre_SMGSetTol(solve_data[i], 0.0);
-      hypre_SMGSetMaxIter(solve_data[i], 1);
-      hypre_SMGSetup(solve_data[i], A_sol, temp_vec, x);
+      if (stencil_dim > 2)
+        {
+          solve_data[i] = hypre_SMGCreate(relax_data->comm);
+          hypre_SMGSetNumPreRelax(solve_data[i], num_pre_relax);
+          hypre_SMGSetNumPostRelax(solve_data[i], num_post_relax);
+          hypre_SMGSetBase(solve_data[i], base_index, base_stride);
+          hypre_SMGSetMemoryUse(solve_data[i], (relax_data->memory_use));
+          hypre_SMGSetTol(solve_data[i], 0.0);
+          hypre_SMGSetMaxIter(solve_data[i], 1);
+          hypre_SMGSetup(solve_data[i], A_sol, temp_vec, x);
+        }
+      else
+        {
+          solve_data[i] = hypre_CyclicReductionCreate(relax_data->comm);
+          hypre_CyclicReductionSetBase(solve_data[i], base_index, base_stride);
+          hypre_CyclicReductionSetup(solve_data[i], A_sol, temp_vec, x);
+        }
     }
-    else
-    {
-      solve_data[i] = hypre_CyclicReductionCreate(relax_data->comm);
-      hypre_CyclicReductionSetBase(solve_data[i], base_index, base_stride);
-      hypre_CyclicReductionSetup(solve_data[i], A_sol, temp_vec, x);
-    }
-  }
 
   (relax_data->A_sol) = A_sol;
   (relax_data->solve_data) = solve_data;
@@ -705,11 +705,11 @@ int hypre_SMGRelaxSetNumSpaces(void *relax_vdata, int num_spaces)
   (relax_data->reg_space_ranks) = hypre_TAlloc(int, num_spaces);
 
   for (i = 0; i < num_spaces; i++)
-  {
-    (relax_data->space_indices[i]) = 0;
-    (relax_data->space_strides[i]) = 1;
-    (relax_data->reg_space_ranks[i]) = i;
-  }
+    {
+      (relax_data->space_indices[i]) = 0;
+      (relax_data->space_strides[i]) = 1;
+      (relax_data->reg_space_ranks[i]) = i;
+    }
 
   (relax_data->setup_temp_vec) = 1;
   (relax_data->setup_a_rem) = 1;
@@ -818,16 +818,16 @@ int hypre_SMGRelaxSetBase(void *relax_vdata, hypre_Index base_index,
   int ierr = 0;
 
   for (d = 0; d < 3; d++)
-  {
-    hypre_IndexD((relax_data->base_index), d) = hypre_IndexD(base_index, d);
-    hypre_IndexD((relax_data->base_stride), d) = hypre_IndexD(base_stride, d);
-  }
+    {
+      hypre_IndexD((relax_data->base_index), d) = hypre_IndexD(base_index, d);
+      hypre_IndexD((relax_data->base_stride), d) = hypre_IndexD(base_stride, d);
+    }
 
   if ((relax_data->base_box_array) != NULL)
-  {
-    hypre_BoxArrayDestroy((relax_data->base_box_array));
-    (relax_data->base_box_array) = NULL;
-  }
+    {
+      hypre_BoxArrayDestroy((relax_data->base_box_array));
+      (relax_data->base_box_array) = NULL;
+    }
 
   (relax_data->setup_temp_vec) = 1;
   (relax_data->setup_a_rem) = 1;
@@ -883,16 +883,16 @@ int hypre_SMGRelaxSetNewMatrixStencil(void *relax_vdata,
   int ierr = 0;
 
   for (i = 0; i < stencil_size; i++)
-  {
-    if (hypre_IndexD(stencil_shape[i], (stencil_dim - 1)) != 0)
     {
-      (relax_data->setup_a_rem) = 1;
+      if (hypre_IndexD(stencil_shape[i], (stencil_dim - 1)) != 0)
+        {
+          (relax_data->setup_a_rem) = 1;
+        }
+      else
+        {
+          (relax_data->setup_a_sol) = 1;
+        }
     }
-    else
-    {
-      (relax_data->setup_a_sol) = 1;
-    }
-  }
 
   return ierr;
 }

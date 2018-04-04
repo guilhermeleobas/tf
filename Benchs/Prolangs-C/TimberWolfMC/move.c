@@ -14,9 +14,9 @@ void point(int *x, int *y)
   int xx, yy;
 
   if (mt == (MT *)NULL)
-  {
-    return;
-  }
+    {
+      return;
+    }
 
   xx = *x;
   yy = *y;
@@ -37,18 +37,18 @@ void rect(int *l, int *b, int *r, int *t)
   point(r, t);
 
   if (*l > *r)
-  {
-    temp = *l;
-    *l = *r;
-    *r = temp;
-  }
+    {
+      temp = *l;
+      *l = *r;
+      *r = temp;
+    }
 
   if (*b > *t)
-  {
-    temp = *b;
-    *b = *t;
-    *t = temp;
-  }
+    {
+      temp = *b;
+      *b = *t;
+      *t = temp;
+    }
 
   return;
 }
@@ -56,53 +56,53 @@ void rect(int *l, int *b, int *r, int *t)
 void move(int moveType)
 {
   if (mt == (MT *)NULL)
-  {
-    mt = MTBegin();
-  }
+    {
+      mt = MTBegin();
+    }
 
   MTIdentity(mt);
 
   switch (moveType)
-  {
-    case 0:
+    {
+      case 0:
 
-      return;
+        return;
 
-    case 1:
+      case 1:
 
-      MTMY(mt);
-      return;
+        MTMY(mt);
+        return;
 
-    case 2:
+      case 2:
 
-      MTMX(mt);
-      return;
+        MTMX(mt);
+        return;
 
-    case 3:
+      case 3:
 
-      MTRotate(mt, -1, 0);
-      return;
+        MTRotate(mt, -1, 0);
+        return;
 
-    case 4:
+      case 4:
 
-      MTMX(mt);
-      MTRotate(mt, 0, 1);
-      return;
+        MTMX(mt);
+        MTRotate(mt, 0, 1);
+        return;
 
-    case 5:
+      case 5:
 
-      MTMX(mt);
-      MTRotate(mt, 0, -1);
-      return;
+        MTMX(mt);
+        MTRotate(mt, 0, -1);
+        return;
 
-    case 6:
+      case 6:
 
-      MTRotate(mt, 0, 1);
-      return;
+        MTRotate(mt, 0, 1);
+        return;
 
-    case 7:
+      case 7:
 
-      MTRotate(mt, 0, -1);
-      return;
-  }
+        MTRotate(mt, 0, -1);
+        return;
+    }
 }

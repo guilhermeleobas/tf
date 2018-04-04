@@ -12,12 +12,12 @@
  *              Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include <assert.h>         /* for assert()                   */
-#include <stdlib.h>         /* for NULL definition            */
+#include <assert.h> /* for assert()                   */
+#include <stdlib.h> /* for NULL definition            */
 #include "dataManagement.h" /* for primitive type definitions */
-#include "dataObject.h"     /* for DataAttribute definition   */
-#include "errorMessage.h"   /* for errorMessage() definition  */
-#include "indexKey.h"       /* for IndexKey definition        */
+#include "dataObject.h" /* for DataAttribute definition   */
+#include "errorMessage.h" /* for errorMessage() definition  */
+#include "indexKey.h" /* for IndexKey definition        */
 
 /*
  *
@@ -36,7 +36,7 @@
  */
 
 Boolean validIndexKey(IndexKey *key) /*  key to validate */
-{                                    /*  beginning of validIndexKey() */
+{ /*  beginning of validIndexKey() */
   Boolean flag = TRUE;
   static Char name[] = "validIndexKey";
 
@@ -46,29 +46,29 @@ Boolean validIndexKey(IndexKey *key) /*  key to validate */
    *  Check that lower point is less than upper point
    */
   if (key->lower.T >= key->upper.T)
-  {
-    errorMessage("Lower T > Upper T", REPLACE);
-    errorMessage(name, PREPEND);
-    flag = FALSE;
-  }
+    {
+      errorMessage("Lower T > Upper T", REPLACE);
+      errorMessage(name, PREPEND);
+      flag = FALSE;
+    }
   else if (key->lower.X >= key->upper.X)
-  {
-    errorMessage("Lower X > Upper X", REPLACE);
-    errorMessage(name, PREPEND);
-    flag = FALSE;
-  }
+    {
+      errorMessage("Lower X > Upper X", REPLACE);
+      errorMessage(name, PREPEND);
+      flag = FALSE;
+    }
   else if (key->lower.Y >= key->upper.Y)
-  {
-    errorMessage("Lower Y > Upper Y", REPLACE);
-    errorMessage(name, PREPEND);
-    flag = FALSE;
-  }
+    {
+      errorMessage("Lower Y > Upper Y", REPLACE);
+      errorMessage(name, PREPEND);
+      flag = FALSE;
+    }
   else if (key->lower.Z >= key->upper.Z)
-  {
-    errorMessage("Lower Z > Upper Z", REPLACE);
-    errorMessage(name, PREPEND);
-    flag = FALSE;
-  }
+    {
+      errorMessage("Lower Z > Upper Z", REPLACE);
+      errorMessage(name, PREPEND);
+      flag = FALSE;
+    }
 
   return (flag);
 } /*  end of validIndexKey()   */
@@ -91,7 +91,7 @@ Boolean validIndexKey(IndexKey *key) /*  key to validate */
  */
 
 Boolean validAttributes(DataAttribute *attributes) /* attribute to validate */
-{                      /*  beginning of validAttributes() */
+{ /*  beginning of validAttributes() */
   DataAttribute *temp; /* looping variable for checking list of attributes */
 
   static Char name[] = "validAttributes";
@@ -110,46 +110,46 @@ Boolean validAttributes(DataAttribute *attributes) /* attribute to validate */
    *  non-NULL.
    */
   for (temp = attributes; temp != NULL; temp = temp->next)
-  {
-    /*
+    {
+      /*
      *  check for bad attribute code
      */
-    if (temp->code < MIN_ATTRIBUTE_CODE || temp->code > MAX_ATTRIBUTE_CODE)
-    {
-      errorMessage("invalid attribute code", REPLACE);
-      errorMessage(name, PREPEND);
-      return (FALSE);
-    }
-    else
-    {
-      if (temp->code >= MIN_ATTRIBUTE_CODE &&
-          temp->code < NUM_OF_KEY_ATTRIBUTES)
-      {
-        /*
+      if (temp->code < MIN_ATTRIBUTE_CODE || temp->code > MAX_ATTRIBUTE_CODE)
+        {
+          errorMessage("invalid attribute code", REPLACE);
+          errorMessage(name, PREPEND);
+          return (FALSE);
+        }
+      else
+        {
+          if (temp->code >= MIN_ATTRIBUTE_CODE &&
+              temp->code < NUM_OF_KEY_ATTRIBUTES)
+            {
+              /*
          *  Check key value for range
          */
-        if (temp->attribute.value.key < MINIMUM_VALUE_OF_FLOAT ||
-            temp->attribute.value.key > MAXIMUM_VALUE_OF_FLOAT)
-        {
-          errorMessage("key value out-of-range", REPLACE);
-          errorMessage(name, PREPEND);
-          return (FALSE);
-        }
-      }
-      else
-      {
-        /*
+              if (temp->attribute.value.key < MINIMUM_VALUE_OF_FLOAT ||
+                  temp->attribute.value.key > MAXIMUM_VALUE_OF_FLOAT)
+                {
+                  errorMessage("key value out-of-range", REPLACE);
+                  errorMessage(name, PREPEND);
+                  return (FALSE);
+                }
+            }
+          else
+            {
+              /*
          *  Check non-key value for non-NULL
          */
-        if (temp->attribute.value.nonKey == NULL)
-        {
-          errorMessage("non-key value set to NULL", REPLACE);
-          errorMessage(name, PREPEND);
-          return (FALSE);
+              if (temp->attribute.value.nonKey == NULL)
+                {
+                  errorMessage("non-key value set to NULL", REPLACE);
+                  errorMessage(name, PREPEND);
+                  return (FALSE);
+                }
+            }
         }
-      }
     }
-  }
 
   return (TRUE);
 } /*  end of validAttributes()  */

@@ -13,23 +13,107 @@ struct parameter param = {1, 1, 0, 0};
 
 int tabsel_123[2][3][16] = {
     {{
-         0, 32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352, 384, 416, 448,
+         0,
+         32,
+         64,
+         96,
+         128,
+         160,
+         192,
+         224,
+         256,
+         288,
+         320,
+         352,
+         384,
+         416,
+         448,
      },
      {
-         0, 32, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320, 384,
+         0,
+         32,
+         48,
+         56,
+         64,
+         80,
+         96,
+         112,
+         128,
+         160,
+         192,
+         224,
+         256,
+         320,
+         384,
      },
      {
-         0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320,
+         0,
+         32,
+         40,
+         48,
+         56,
+         64,
+         80,
+         96,
+         112,
+         128,
+         160,
+         192,
+         224,
+         256,
+         320,
      }},
 
     {{
-         0, 32, 48, 56, 64, 80, 96, 112, 128, 144, 160, 176, 192, 224, 256,
+         0,
+         32,
+         48,
+         56,
+         64,
+         80,
+         96,
+         112,
+         128,
+         144,
+         160,
+         176,
+         192,
+         224,
+         256,
      },
      {
-         0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160,
+         0,
+         8,
+         16,
+         24,
+         32,
+         40,
+         48,
+         56,
+         64,
+         80,
+         96,
+         112,
+         128,
+         144,
+         160,
      },
      {
-         0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160,
+         0,
+         8,
+         16,
+         24,
+         32,
+         40,
+         48,
+         56,
+         64,
+         80,
+         96,
+         112,
+         128,
+         144,
+         160,
      }}};
 
 long freqs[9] = {44100, 48000, 32000, 22050, 24000, 16000, 11025, 12000, 8000};
@@ -90,26 +174,26 @@ int head_check(unsigned long head)
 int decode_header(struct frame *fr, unsigned long newhead)
 {
   if (newhead & (1 << 20))
-  {
-    fr->lsf = (newhead & (1 << 19)) ? 0x0 : 0x1;
-    fr->mpeg25 = 0;
-  }
+    {
+      fr->lsf = (newhead & (1 << 19)) ? 0x0 : 0x1;
+      fr->mpeg25 = 0;
+    }
   else
-  {
-    fr->lsf = 1;
-    fr->mpeg25 = 1;
-  }
+    {
+      fr->lsf = 1;
+      fr->mpeg25 = 1;
+    }
 
   fr->lay = 4 - ((newhead >> 17) & 3);
   if (((newhead >> 10) & 0x3) == 0x3)
-  {
-    fprintf(stderr, "Stream error\n");
-    exit(1);
-  }
+    {
+      fprintf(stderr, "Stream error\n");
+      exit(1);
+    }
   if (fr->mpeg25)
-  {
-    fr->sampling_frequency = 6 + ((newhead >> 10) & 0x3);
-  }
+    {
+      fr->sampling_frequency = 6 + ((newhead >> 10) & 0x3);
+    }
   else
     fr->sampling_frequency = ((newhead >> 10) & 0x3) + (fr->lsf * 3);
   fr->error_protection = ((newhead >> 16) & 0x1) ^ 0x1;
@@ -129,14 +213,14 @@ int decode_header(struct frame *fr, unsigned long newhead)
   fr->stereo = (fr->mode == MPG_MD_MONO) ? 1 : 2;
 
   if (!fr->bitrate_index)
-  {
-    fprintf(stderr, "Free format not supported.\n");
-    return (0);
-  }
+    {
+      fprintf(stderr, "Free format not supported.\n");
+      return (0);
+    }
 
   switch (fr->lay)
-  {
-    case 1:
+    {
+      case 1:
 #if 0
 		fr->do_layer = do_layer1;
         fr->jsbound = (fr->mode == MPG_MD_JOINT_STEREO) ? 
@@ -145,10 +229,10 @@ int decode_header(struct frame *fr, unsigned long newhead)
         fr->framesize /= freqs[fr->sampling_frequency];
         fr->framesize  = ((fr->framesize+fr->padding)<<2)-4;
 #else
-      fprintf(stderr, "layer=1 Not supported!\n");
+        fprintf(stderr, "layer=1 Not supported!\n");
 #endif
-      break;
-    case 2:
+        break;
+      case 2:
 #if 0
 		fr->do_layer = do_layer2;
         get_II_stuff(fr);
@@ -158,10 +242,10 @@ int decode_header(struct frame *fr, unsigned long newhead)
         fr->framesize /= freqs[fr->sampling_frequency];
         fr->framesize += fr->padding - 4;
 #else
-      fprintf(stderr, "layer=2 Not supported!\n");
+        fprintf(stderr, "layer=2 Not supported!\n");
 #endif
-      break;
-    case 3:
+        break;
+      case 3:
 #if 0
         fr->do_layer = do_layer3;
         if(fr->lsf)
@@ -174,14 +258,14 @@ int decode_header(struct frame *fr, unsigned long newhead)
         if(fr->error_protection)
           ssize += 2;
 #endif
-      fr->framesize = (long)tabsel_123[fr->lsf][2][fr->bitrate_index] * 144000;
-      fr->framesize /= freqs[fr->sampling_frequency] << (fr->lsf);
-      fr->framesize = fr->framesize + fr->padding - 4;
-      break;
-    default:
-      fprintf(stderr, "Sorry, unknown layer type.\n");
-      return (0);
-  }
+        fr->framesize = (long)tabsel_123[fr->lsf][2][fr->bitrate_index] * 144000;
+        fr->framesize /= freqs[fr->sampling_frequency] << (fr->lsf);
+        fr->framesize = fr->framesize + fr->padding - 4;
+        break;
+      default:
+        fprintf(stderr, "Sorry, unknown layer type.\n");
+        return (0);
+    }
 
   /*    print_header(fr); */
 

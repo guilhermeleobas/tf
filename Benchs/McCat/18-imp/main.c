@@ -120,43 +120,43 @@ void ParseInputFile(char *file)
   parms[0].var = strrchr(IMAGE, '/') + 1;
 
   if ((fp = fopen(file, "r")) == NULL)
-  {
-    printf("%s not found. Exiting.\n", file);
-    exit(1);
-  }
+    {
+      printf("%s not found. Exiting.\n", file);
+      exit(1);
+    }
 
   while ((fgets(s, 80, fp) != NULL) && (s[0] != '\n'))
-  {
-    p = 0;
-    strcpy(read_parm, strtok(s, " \t"));
-    strcpy(read_val, strtok(NULL, " \t"));
-
-    while ((parms[p].var != NULL) && strcmp(read_parm, parms[p].parm))
     {
-      p++;
+      p = 0;
+      strcpy(read_parm, strtok(s, " \t"));
+      strcpy(read_val, strtok(NULL, " \t"));
+
+      while ((parms[p].var != NULL) && strcmp(read_parm, parms[p].parm))
+        {
+          p++;
+        }
+
+      if (parms[p].var == NULL)
+        {
+          continue;
+        }
+
+      switch (parms[p].type)
+        {
+          case INT:
+            *(int *)(parms[p].var) = atoi(read_val);
+            break;
+
+          case DBL:
+            *(double *)(parms[p].var) = strtod(read_val, NULL);
+            break;
+
+          case STR:
+            strcpy((char *)parms[p].var, read_val);
+            ((char *)(parms[p].var))[strlen((char *)(parms[p].var)) - 1] = '\0';
+            break;
+        }
     }
-
-    if (parms[p].var == NULL)
-    {
-      continue;
-    }
-
-    switch (parms[p].type)
-    {
-      case INT:
-        *(int *)(parms[p].var) = atoi(read_val);
-        break;
-
-      case DBL:
-        *(double *)(parms[p].var) = strtod(read_val, NULL);
-        break;
-
-      case STR:
-        strcpy((char *)parms[p].var, read_val);
-        ((char *)(parms[p].var))[strlen((char *)(parms[p].var)) - 1] = '\0';
-        break;
-    }
-  }
   fclose(fp);
 }
 
@@ -178,10 +178,10 @@ int main(int argc, char *argv[])
 #ifdef BOGUS
   /* 4 arguments needed: prog name, input file, sigma, variance threshold. */
   if (argc != 4)
-  {
-    DisplayUsage(argv[0]);
-    return (-1);
-  }
+    {
+      DisplayUsage(argv[0]);
+      return (-1);
+    }
 
   sigma = strtod(argv[2], NULL);
   var_threshold = atoi(argv[3]);
@@ -201,25 +201,25 @@ int main(int argc, char *argv[])
 
   /* Load image data. */
   if ((rc = PGM_LoadImage(&image)) != PGM_OK)
-  {
-    switch (rc)
     {
-      case PGM_NOT_FOUND:
-        printf("Error: %s not found. Exiting.\n", image.filename);
-        break;
+      switch (rc)
+        {
+          case PGM_NOT_FOUND:
+            printf("Error: %s not found. Exiting.\n", image.filename);
+            break;
 
-      case PGM_NOT_PGM:
-        printf("Error: %s is not a PGM file. Exiting.\n", image.filename);
-        break;
+          case PGM_NOT_PGM:
+            printf("Error: %s is not a PGM file. Exiting.\n", image.filename);
+            break;
 
-      case PGM_NO_DATA:
-        printf("Error: %s has 0 length. Exiting.\n", image.filename);
-        break;
+          case PGM_NO_DATA:
+            printf("Error: %s has 0 length. Exiting.\n", image.filename);
+            break;
+        }
+      free(image.filename);
+      free(image.imgname);
+      return (-2);
     }
-    free(image.filename);
-    free(image.imgname);
-    return (-2);
-  }
 
   /* Print image info. */
   PGM_PrintInfo(&image);
@@ -227,8 +227,8 @@ int main(int argc, char *argv[])
   /* Compute horizontal intensity variance bitmap. */
   HorzVariance(&image, var_threshold);
 
-/* Convert image data to floating point. (L_canny requires this.) */
-/* ConvertToFloat(&image); */
+  /* Convert image data to floating point. (L_canny requires this.) */
+  /* ConvertToFloat(&image); */
 
 #ifdef INTERMEDIATE_OUTPUT
   /* Write horizontal variance bitmap to PGM file. */
@@ -237,10 +237,10 @@ int main(int argc, char *argv[])
 
   /* Perform Canny edge detection on the variance bitmap. */
   if (L_canny(sigma, image.var, image.width, image.height, &(image.cedge), err))
-  {
-    printf("Error: '%s' in L_canny(). Exiting.\n", err);
-    return (-3);
-  }
+    {
+      printf("Error: '%s' in L_canny(). Exiting.\n", err);
+      return (-3);
+    }
 
 #ifdef INTERMEDIATE_OUTPUT
   /* Write horizontal variance Canny edge data to PGM file. */

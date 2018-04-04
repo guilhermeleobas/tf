@@ -78,25 +78,25 @@ static char *make_arg_str(arg_list *args, int len, int commas)
 
   /* Recursive call. */
   if (args != NULL)
-  {
-    temp = make_arg_str(args->next, len + 11, commas);
-  }
+    {
+      temp = make_arg_str(args->next, len + 11, commas);
+    }
   else
-  {
-    temp = (char *)malloc(len);
-    *temp = 0;
-    return temp;
-  }
+    {
+      temp = (char *)malloc(len);
+      *temp = 0;
+      return temp;
+    }
 
   /* Add the current number to the end of the string. */
   if (len != 1 && commas)
-  {
-    sprintf(sval, "%d,", args->av_name);
-  }
+    {
+      sprintf(sval, "%d,", args->av_name);
+    }
   else
-  {
-    sprintf(sval, "%d", args->av_name);
-  }
+    {
+      sprintf(sval, "%d", args->av_name);
+    }
   /* XXX temp = */ strcat(temp, sval);
   return (temp);
 }
@@ -104,9 +104,9 @@ static char *make_arg_str(arg_list *args, int len, int commas)
 char *arg_str(arg_list *args, int commas)
 {
   if (arglist2 != NULL)
-  {
-    free(arglist2);
-  }
+    {
+      free(arglist2);
+    }
   arglist2 = arglist1;
   arglist1 = make_arg_str(args, 1, commas);
   return (arglist1);
@@ -120,11 +120,11 @@ void free_args(arg_list *args)
 
   temp = args;
   while (temp != NULL)
-  {
-    args = args->next;
-    free(temp);
-    temp = args;
-  }
+    {
+      args = args->next;
+      free(temp);
+      temp = args;
+    }
 }
 
 /* Check for valid parameter (PARAMS) and auto (AUTOS) lists.
@@ -138,64 +138,64 @@ void check_params(arg_list *params, arg_list *autos)
 
   /* Check for duplicate parameters. */
   if (params != NULL)
-  {
-    tmp1 = params;
-    while (tmp1 != NULL)
     {
-      tmp2 = tmp1->next;
-      while (tmp2 != NULL)
-      {
-        if (tmp2->av_name == tmp1->av_name)
+      tmp1 = params;
+      while (tmp1 != NULL)
         {
-          yyerror("duplicate parameter names");
+          tmp2 = tmp1->next;
+          while (tmp2 != NULL)
+            {
+              if (tmp2->av_name == tmp1->av_name)
+                {
+                  yyerror("duplicate parameter names");
+                }
+              tmp2 = tmp2->next;
+            }
+          if (tmp1->av_name < 0)
+            {
+              warn("Array parameter");
+            }
+          tmp1 = tmp1->next;
         }
-        tmp2 = tmp2->next;
-      }
-      if (tmp1->av_name < 0)
-      {
-        warn("Array parameter");
-      }
-      tmp1 = tmp1->next;
     }
-  }
 
   /* Check for duplicate autos. */
   if (autos != NULL)
-  {
-    tmp1 = autos;
-    while (tmp1 != NULL)
     {
-      tmp2 = tmp1->next;
-      while (tmp2 != NULL)
-      {
-        if (tmp2->av_name == tmp1->av_name)
+      tmp1 = autos;
+      while (tmp1 != NULL)
         {
-          yyerror("duplicate auto variable names");
+          tmp2 = tmp1->next;
+          while (tmp2 != NULL)
+            {
+              if (tmp2->av_name == tmp1->av_name)
+                {
+                  yyerror("duplicate auto variable names");
+                }
+              tmp2 = tmp2->next;
+            }
+          tmp1 = tmp1->next;
         }
-        tmp2 = tmp2->next;
-      }
-      tmp1 = tmp1->next;
     }
-  }
 
   /* Check for duplicate between parameters and autos. */
   if ((params != NULL) && (autos != NULL))
-  {
-    tmp1 = params;
-    while (tmp1 != NULL)
     {
-      tmp2 = autos;
-      while (tmp2 != NULL)
-      {
-        if (tmp2->av_name == tmp1->av_name)
+      tmp1 = params;
+      while (tmp1 != NULL)
         {
-          yyerror("variable in both parameter and auto lists");
+          tmp2 = autos;
+          while (tmp2 != NULL)
+            {
+              if (tmp2->av_name == tmp1->av_name)
+                {
+                  yyerror("variable in both parameter and auto lists");
+                }
+              tmp2 = tmp2->next;
+            }
+          tmp1 = tmp1->next;
         }
-        tmp2 = tmp2->next;
-      }
-      tmp1 = tmp1->next;
     }
-  }
 }
 
 /* Initialize the code generator the parser. */
@@ -208,13 +208,13 @@ void init_gen(void)
   next_label = 1;
   out_count = 2;
   if (compile_only)
-  {
-    printf("@i");
-  }
+    {
+      printf("@i");
+    }
   else
-  {
-    init_load();
-  }
+    {
+      init_load();
+    }
   had_error = FALSE;
   did_gen = FALSE;
 }
@@ -225,19 +225,19 @@ void generate(char *str)
 {
   did_gen = TRUE;
   if (compile_only)
-  {
-    printf("%s", str);
-    out_count += strlen(str);
-    if (out_count > 60)
     {
-      printf("\n");
-      out_count = 0;
+      printf("%s", str);
+      out_count += strlen(str);
+      if (out_count > 60)
+        {
+          printf("\n");
+          out_count = 0;
+        }
     }
-  }
   else
-  {
-    load_code(str);
-  }
+    {
+      load_code(str);
+    }
 }
 
 /* Execute the current code as loaded. */
@@ -246,27 +246,27 @@ void run_code(void)
 {
   /* If no compile errors run the current code. */
   if (!had_error && did_gen)
-  {
-    if (compile_only)
     {
-      printf("@r\n");
-      out_count = 0;
+      if (compile_only)
+        {
+          printf("@r\n");
+          out_count = 0;
+        }
+      else
+        {
+          execute();
+        }
     }
-    else
-    {
-      execute();
-    }
-  }
 
   /* Reinitialize the code generation and machine. */
   if (did_gen)
-  {
-    init_gen();
-  }
+    {
+      init_gen();
+    }
   else
-  {
-    had_error = FALSE;
-  }
+    {
+      had_error = FALSE;
+    }
 }
 
 /* Output routines: Write a character CH to the standard output.
@@ -276,21 +276,21 @@ void run_code(void)
 void out_char(char ch)
 {
   if (ch == '\n')
-  {
-    out_col = 0;
-    putchar('\n');
-  }
-  else
-  {
-    out_col++;
-    if (out_col == 70)
     {
-      putchar('\\');
+      out_col = 0;
       putchar('\n');
-      out_col = 1;
     }
-    putchar(ch);
-  }
+  else
+    {
+      out_col++;
+      if (out_col == 70)
+        {
+          putchar('\\');
+          putchar('\n');
+          out_col = 1;
+        }
+      putchar(ch);
+    }
 }
 
 /* The following are "Symbol Table" routines for the parser. */
@@ -304,24 +304,24 @@ id_rec *find_id(id_rec *tree, char *id)
 
   /* Check for an empty tree. */
   if (tree == NULL)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
 
   /* Recursively search the tree. */
   cmp_result = strcmp(id, tree->id);
   if (cmp_result == 0)
-  {
-    return tree; /* This is the item. */
-  }
+    {
+      return tree; /* This is the item. */
+    }
   else if (cmp_result < 0)
-  {
-    return find_id(tree->left, id);
-  }
+    {
+      return find_id(tree->left, id);
+    }
   else
-  {
-    return find_id(tree->right, id);
-  }
+    {
+      return find_id(tree->right, id);
+    }
 }
 
 /* insert_id_rec inserts a NEW_ID rec into the tree whose ROOT is
@@ -336,122 +336,122 @@ int insert_id_rec(id_rec **root, id_rec *new_id)
 
   /* If root is NULL, this where it is to be inserted. */
   if (*root == NULL)
-  {
-    *root = new_id;
-    new_id->left = NULL;
-    new_id->right = NULL;
-    new_id->balance = 0;
-    return (TRUE);
-  }
+    {
+      *root = new_id;
+      new_id->left = NULL;
+      new_id->right = NULL;
+      new_id->balance = 0;
+      return (TRUE);
+    }
 
   /* We need to search for a leaf. */
   if (strcmp(new_id->id, (*root)->id) < 0)
-  {
-    /* Insert it on the left. */
-    if (insert_id_rec(&(*root)->left, new_id))
     {
-      /* The height increased. */
-      (*root)->balance--;
+      /* Insert it on the left. */
+      if (insert_id_rec(&(*root)->left, new_id))
+        {
+          /* The height increased. */
+          (*root)->balance--;
 
-      switch ((*root)->balance)
-      {
-        case 0: /* no height increase. */
-          return (FALSE);
-        case -1: /* height increase. */
-          return (FALSE);
-        case -2: /* we need to do a rebalancing act. */
-          A = *root;
-          B = (*root)->left;
-          if (B->balance <= 0)
-          {
-            /* Single Rotate. */
-            A->left = B->right;
-            B->right = A;
-            *root = B;
-            A->balance = 0;
-            B->balance = 0;
-          }
-          else
-          {
-            /* Double Rotate. */
-            *root = B->right;
-            B->right = (*root)->left;
-            A->left = (*root)->right;
-            (*root)->left = B;
-            (*root)->right = A;
-            switch ((*root)->balance)
+          switch ((*root)->balance)
             {
-              case -1:
-                A->balance = 1;
-                B->balance = 0;
-                break;
-              case 0:
-                A->balance = 0;
-                B->balance = 0;
-                break;
-              case 1:
-                A->balance = 0;
-                B->balance = -1;
-                break;
+              case 0: /* no height increase. */
+                return (FALSE);
+              case -1: /* height increase. */
+                return (FALSE);
+              case -2: /* we need to do a rebalancing act. */
+                A = *root;
+                B = (*root)->left;
+                if (B->balance <= 0)
+                  {
+                    /* Single Rotate. */
+                    A->left = B->right;
+                    B->right = A;
+                    *root = B;
+                    A->balance = 0;
+                    B->balance = 0;
+                  }
+                else
+                  {
+                    /* Double Rotate. */
+                    *root = B->right;
+                    B->right = (*root)->left;
+                    A->left = (*root)->right;
+                    (*root)->left = B;
+                    (*root)->right = A;
+                    switch ((*root)->balance)
+                      {
+                        case -1:
+                          A->balance = 1;
+                          B->balance = 0;
+                          break;
+                        case 0:
+                          A->balance = 0;
+                          B->balance = 0;
+                          break;
+                        case 1:
+                          A->balance = 0;
+                          B->balance = -1;
+                          break;
+                      }
+                    (*root)->balance = 0;
+                  }
             }
-            (*root)->balance = 0;
-          }
-      }
+        }
     }
-  }
   else
-  {
-    /* Insert it on the right. */
-    if (insert_id_rec(&(*root)->right, new_id))
     {
-      /* The height increased. */
-      (*root)->balance++;
-      switch ((*root)->balance)
-      {
-        case 0: /* no height increase. */
-          return (FALSE);
-        case 1: /* height increase. */
-          return (FALSE);
-        case 2: /* we need to do a rebalancing act. */
-          A = *root;
-          B = (*root)->right;
-          if (B->balance >= 0)
-          {
-            /* Single Rotate. */
-            A->right = B->left;
-            B->left = A;
-            *root = B;
-            A->balance = 0;
-            B->balance = 0;
-          }
-          else
-          {
-            /* Double Rotate. */
-            *root = B->left;
-            B->left = (*root)->right;
-            A->right = (*root)->left;
-            (*root)->left = A;
-            (*root)->right = B;
-            switch ((*root)->balance)
+      /* Insert it on the right. */
+      if (insert_id_rec(&(*root)->right, new_id))
+        {
+          /* The height increased. */
+          (*root)->balance++;
+          switch ((*root)->balance)
             {
-              case -1:
-                A->balance = 0;
-                B->balance = 1;
-                break;
-              case 0:
-                A->balance = 0;
-                B->balance = 0;
-                break;
-              case 1:
-                A->balance = -1;
-                B->balance = 0;
-                break;
+              case 0: /* no height increase. */
+                return (FALSE);
+              case 1: /* height increase. */
+                return (FALSE);
+              case 2: /* we need to do a rebalancing act. */
+                A = *root;
+                B = (*root)->right;
+                if (B->balance >= 0)
+                  {
+                    /* Single Rotate. */
+                    A->right = B->left;
+                    B->left = A;
+                    *root = B;
+                    A->balance = 0;
+                    B->balance = 0;
+                  }
+                else
+                  {
+                    /* Double Rotate. */
+                    *root = B->left;
+                    B->left = (*root)->right;
+                    A->right = (*root)->left;
+                    (*root)->left = A;
+                    (*root)->right = B;
+                    switch ((*root)->balance)
+                      {
+                        case -1:
+                          A->balance = 0;
+                          B->balance = 1;
+                          break;
+                        case 0:
+                          A->balance = 0;
+                          B->balance = 0;
+                          break;
+                        case 1:
+                          A->balance = -1;
+                          B->balance = 0;
+                          break;
+                      }
+                    (*root)->balance = 0;
+                  }
             }
-            (*root)->balance = 0;
-          }
-      }
+        }
     }
-  }
 
   /* If we fall through to here, the tree did not grow in height. */
   return (FALSE);
@@ -475,84 +475,84 @@ int lookup(char *name, int namekind)
 
   /* Warn about non-standard name. */
   if (strlen(name) != 1)
-  {
-    warn("multiple letter name - %s", name);
-  }
+    {
+      warn("multiple letter name - %s", name);
+    }
 
   /* Look for the id. */
   id = find_id(name_tree, name);
   if (id == NULL)
-  {
-    /* We need to make a new item. */
-    id = (id_rec *)malloc(sizeof(id_rec));
-    id->id = strcopyof(name);
-    id->a_name = 0;
-    id->f_name = 0;
-    id->v_name = 0;
-    insert_id_rec(&(name_tree), id);
-  }
+    {
+      /* We need to make a new item. */
+      id = (id_rec *)malloc(sizeof(id_rec));
+      id->id = strcopyof(name);
+      id->a_name = 0;
+      id->f_name = 0;
+      id->v_name = 0;
+      insert_id_rec(&(name_tree), id);
+    }
 
   /* Return the correct value. */
   switch (namekind)
-  {
-    case ARRAY:
-      /* ARRAY variable numbers are returned as negative numbers. */
-      if (id->a_name != 0)
-      {
-        free(name);
-        return (-id->a_name);
-      }
-      id->a_name = next_array++;
-      a_names[id->a_name] = name;
-      if (id->a_name < MAX_STORE)
-      {
-        if (id->a_name >= a_count)
-        {
-          more_arrays();
-        }
-        return (-id->a_name);
-      }
-      yyerror("Too many array variables");
-      exit(1);
+    {
+      case ARRAY:
+        /* ARRAY variable numbers are returned as negative numbers. */
+        if (id->a_name != 0)
+          {
+            free(name);
+            return (-id->a_name);
+          }
+        id->a_name = next_array++;
+        a_names[id->a_name] = name;
+        if (id->a_name < MAX_STORE)
+          {
+            if (id->a_name >= a_count)
+              {
+                more_arrays();
+              }
+            return (-id->a_name);
+          }
+        yyerror("Too many array variables");
+        exit(1);
 
-    case FUNCT:
-      if (id->f_name != 0)
-      {
-        free(name);
-        return (id->f_name);
-      }
-      id->f_name = next_func++;
-      f_names[id->f_name] = name;
-      if (id->f_name < MAX_STORE)
-      {
-        if (id->f_name >= f_count)
-        {
-          more_functions();
-        }
-        return (id->f_name);
-      }
-      yyerror("Too many functions");
-      exit(1);
+      case FUNCT:
+        if (id->f_name != 0)
+          {
+            free(name);
+            return (id->f_name);
+          }
+        id->f_name = next_func++;
+        f_names[id->f_name] = name;
+        if (id->f_name < MAX_STORE)
+          {
+            if (id->f_name >= f_count)
+              {
+                more_functions();
+              }
+            return (id->f_name);
+          }
+        yyerror("Too many functions");
+        exit(1);
 
-    case SIMPLE:
-      if (id->v_name != 0)
-      {
-        free(name);
-        return (id->v_name);
-      }
-      id->v_name = next_var++;
-      v_names[id->v_name - 1] = name;
-      if (id->v_name <= MAX_STORE)
-      {
-        if (id->v_name >= v_count)
-        {
-          more_variables();
-        }
-        return (id->v_name);
-      }
-      yyerror("Too many variables");
-      exit(1);
-  }
+      case SIMPLE:
+        if (id->v_name != 0)
+          {
+            free(name);
+            return (id->v_name);
+          }
+        id->v_name = next_var++;
+        v_names[id->v_name - 1] = name;
+        if (id->v_name <= MAX_STORE)
+          {
+            if (id->v_name >= v_count)
+              {
+                more_variables();
+              }
+            return (id->v_name);
+          }
+        yyerror("Too many variables");
+        exit(1);
+    }
 }
 
 /* Print the welcome banner. */
@@ -640,13 +640,13 @@ void yyerror(char *str, ...)
   va_start(args, str);
 
   if (is_std_in)
-  {
-    name = "(standard_in)";
-  }
+    {
+      name = "(standard_in)";
+    }
   else
-  {
-    name = g_argv[optind - 1];
-  }
+    {
+      name = g_argv[optind - 1];
+    }
   fprintf(stderr, "%s %d: ", name, line_no);
   vfprintf(stderr, str, args);
   fprintf(stderr, "\n");
@@ -665,34 +665,34 @@ void warn(char *mesg, ...)
   va_start(args, mesg);
 
   if (std_only)
-  {
-    if (is_std_in)
     {
-      name = "(standard_in)";
+      if (is_std_in)
+        {
+          name = "(standard_in)";
+        }
+      else
+        {
+          name = g_argv[optind - 1];
+        }
+      fprintf(stderr, "%s %d: ", name, line_no);
+      vfprintf(stderr, mesg, args);
+      fprintf(stderr, "\n");
+      had_error = TRUE;
     }
-    else
-    {
-      name = g_argv[optind - 1];
-    }
-    fprintf(stderr, "%s %d: ", name, line_no);
-    vfprintf(stderr, mesg, args);
-    fprintf(stderr, "\n");
-    had_error = TRUE;
-  }
   else if (warn_not_std)
-  {
-    if (is_std_in)
     {
-      name = "(standard_in)";
+      if (is_std_in)
+        {
+          name = "(standard_in)";
+        }
+      else
+        {
+          name = g_argv[optind - 1];
+        }
+      fprintf(stderr, "%s %d: (Warning) ", name, line_no);
+      vfprintf(stderr, mesg, args);
+      fprintf(stderr, "\n");
     }
-    else
-    {
-      name = g_argv[optind - 1];
-    }
-    fprintf(stderr, "%s %d: (Warning) ", name, line_no);
-    vfprintf(stderr, mesg, args);
-    fprintf(stderr, "\n");
-  }
   va_end(args);
 }
 

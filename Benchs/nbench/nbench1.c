@@ -88,11 +88,11 @@ static int stringsort_status = 0;
 void DoNumSort(void)
 {
   SortStruct *numsortstruct; /* Local pointer to global struct */
-  farlong *arraybase;        /* Base pointers of array */
-  long accumtime;            /* Accumulated time */
-  double iterations;         /* Iteration counter */
-  char *errorcontext;        /* Error context string pointer */
-  int systemerror;           /* For holding error codes */
+  farlong *arraybase; /* Base pointers of array */
+  long accumtime; /* Accumulated time */
+  double iterations; /* Iteration counter */
+  char *errorcontext; /* Error context string pointer */
+  int systemerror; /* For holding error codes */
 
   /*
   ** Link to global structure
@@ -108,61 +108,61 @@ void DoNumSort(void)
   ** See if we need to do self adjustment code.
   */
   if (numsortstruct->adjust == 0)
-  {
-    /*
+    {
+      /*
     ** Self-adjustment code.  The system begins by sorting 1
     ** array.  If it does that in no time, then two arrays
     ** are built and sorted.  This process continues until
     ** enough arrays are built to handle the tolerance.
     */
-    numsortstruct->numarrays = 1;
-    while (1)
-    {
-      /*
+      numsortstruct->numarrays = 1;
+      while (1)
+        {
+          /*
       ** Allocate space for arrays
       */
-      arraybase = (farlong *)AllocateMemory(
-          sizeof(long) * numsortstruct->numarrays * numsortstruct->arraysize,
-          &systemerror);
-      if (systemerror)
-      {
-        ReportError(errorcontext, systemerror);
-        FreeMemory((farvoid *)arraybase, &systemerror);
-        ErrorExit();
-      }
+          arraybase = (farlong *)AllocateMemory(
+              sizeof(long) * numsortstruct->numarrays * numsortstruct->arraysize,
+              &systemerror);
+          if (systemerror)
+            {
+              ReportError(errorcontext, systemerror);
+              FreeMemory((farvoid *)arraybase, &systemerror);
+              ErrorExit();
+            }
 
-      /*
+          /*
       ** Do an iteration of the numeric sort.  If the
       ** elapsed time is less than or equal to the permitted
       ** minimum, then allocate for more arrays and
       ** try again.
       */
-      if (DoNumSortIteration(arraybase, numsortstruct->arraysize,
-                             numsortstruct->numarrays) > global_min_ticks)
-        break; /* We're ok...exit */
+          if (DoNumSortIteration(arraybase, numsortstruct->arraysize,
+                                 numsortstruct->numarrays) > global_min_ticks)
+            break; /* We're ok...exit */
 
-      FreeMemory((farvoid *)arraybase, &systemerror);
-      if (numsortstruct->numarrays++ > NUMNUMARRAYS)
-      {
-        printf("CPU:NSORT -- NUMNUMARRAYS hit.\n");
-        ErrorExit();
-      }
+          FreeMemory((farvoid *)arraybase, &systemerror);
+          if (numsortstruct->numarrays++ > NUMNUMARRAYS)
+            {
+              printf("CPU:NSORT -- NUMNUMARRAYS hit.\n");
+              ErrorExit();
+            }
+        }
     }
-  }
   else
-  { /*
+    { /*
     ** Allocate space for arrays
     */
-    arraybase = (farlong *)AllocateMemory(
-        sizeof(long) * numsortstruct->numarrays * numsortstruct->arraysize,
-        &systemerror);
-    if (systemerror)
-    {
-      ReportError(errorcontext, systemerror);
-      FreeMemory((farvoid *)arraybase, &systemerror);
-      ErrorExit();
+      arraybase = (farlong *)AllocateMemory(
+          sizeof(long) * numsortstruct->numarrays * numsortstruct->arraysize,
+          &systemerror);
+      if (systemerror)
+        {
+          ReportError(errorcontext, systemerror);
+          FreeMemory((farvoid *)arraybase, &systemerror);
+          ErrorExit();
+        }
     }
-  }
   /*
   ** All's well if we get here.  Repeatedly perform sorts until the
   ** accumulated elapsed time is greater than # of seconds requested.
@@ -171,11 +171,12 @@ void DoNumSort(void)
   iterations = (double)0.0;
 
   do
-  {
-    accumtime += DoNumSortIteration(arraybase, numsortstruct->arraysize,
-                                    numsortstruct->numarrays);
-    iterations += (double)1.0;
-  } while (iterations < BASE_ITERATIONS * 15);
+    {
+      accumtime += DoNumSortIteration(arraybase, numsortstruct->arraysize,
+                                      numsortstruct->numarrays);
+      iterations += (double)1.0;
+    }
+  while (iterations < BASE_ITERATIONS * 15);
 
   /*
   ** Clean up, calculate results, and go home.  Be sure to
@@ -230,17 +231,17 @@ static ulong DoNumSortIteration(farlong *arraybase, ulong arraysize,
 #ifdef DEBUG
   {
     for (i = 0; i < arraysize - 1; i++)
-    { /*
+      { /*
       ** Compare to check for proper
       ** sort.
       */
-      if (arraybase[i + 1] < arraybase[i])
-      {
-        printf("Sort Error\n");
-        numsort_status = 1;
-        break;
+        if (arraybase[i + 1] < arraybase[i])
+          {
+            printf("Sort Error\n");
+            numsort_status = 1;
+            break;
+          }
       }
-    }
   }
 #endif
 
@@ -256,9 +257,9 @@ static void LoadNumArrayWithRand(farlong *array, /* Pointer to arrays */
                                  ulong arraysize,
                                  uint numarrays) /* # of elements in array */
 {
-  long i;          /* Used for index */
+  long i; /* Used for index */
   farlong *darray; /* Destination array pointer */
-                   /*
+  /*
                    ** Initialize the random number generator
                    */
   /* randnum(13L); */
@@ -276,10 +277,10 @@ static void LoadNumArrayWithRand(farlong *array, /* Pointer to arrays */
   */
   darray = array;
   while (--numarrays)
-  {
-    darray += arraysize;
-    for (i = 0L; i < arraysize; i++) darray[i] = array[i];
-  }
+    {
+      darray += arraysize;
+      for (i = 0L; i < arraysize; i++) darray[i] = array[i];
+    }
 
   return;
 }
@@ -292,10 +293,10 @@ static void LoadNumArrayWithRand(farlong *array, /* Pointer to arrays */
 ** This routine performs a heap sort on that array.
 */
 static void NumHeapSort(farlong *array, ulong bottom, /* Lower bound */
-                        ulong top)                    /* Upper bound */
+                        ulong top) /* Upper bound */
 {
   ulong temp; /* Used to exchange elements */
-  ulong i;    /* Loop index */
+  ulong i; /* Loop index */
 
   /*
   ** First, build a heap in the array
@@ -308,12 +309,12 @@ static void NumHeapSort(farlong *array, ulong bottom, /* Lower bound */
   ** array.
   */
   for (i = top; i > 0; --i)
-  {
-    NumSift(array, bottom, i);
-    temp = *array; /* Perform exchange */
-    *array = *(array + i);
-    *(array + i) = temp;
-  }
+    {
+      NumSift(array, bottom, i);
+      temp = *array; /* Perform exchange */
+      *array = *(array + i);
+      *(array + i) = temp;
+    }
   return;
 }
 
@@ -324,27 +325,27 @@ static void NumHeapSort(farlong *array, ulong bottom, /* Lower bound */
 ** constructing a heap in the array.
 */
 static void NumSift(farlong *array, /* Array of numbers */
-                    ulong i,        /* Minimum of array */
-                    ulong j)        /* Maximum of array */
+                    ulong i, /* Minimum of array */
+                    ulong j) /* Maximum of array */
 {
   unsigned long k;
   long temp; /* Used for exchange */
 
   while ((i + i) <= j)
-  {
-    k = i + i;
-    if (k < j)
-      if (array[k] < array[k + 1L]) ++k;
-    if (array[i] < array[k])
     {
-      temp = array[k];
-      array[k] = array[i];
-      array[i] = temp;
-      i = k;
+      k = i + i;
+      if (k < j)
+        if (array[k] < array[k + 1L]) ++k;
+      if (array[i] < array[k])
+        {
+          temp = array[k];
+          array[k] = array[i];
+          array[i] = temp;
+          i = k;
+        }
+      else
+        i = j + 1;
     }
-    else
-      i = j + 1;
-  }
   return;
 }
 
@@ -363,11 +364,11 @@ static void NumSift(farlong *array, /* Array of numbers */
 void DoStringSort(void)
 {
   SortStruct *strsortstruct; /* Local for sort structure */
-  faruchar *arraybase;       /* Base pointer of char array */
-  long accumtime;            /* Accumulated time */
-  double iterations;         /* # of iterations */
-  char *errorcontext;        /* Error context string pointer */
-  int systemerror;           /* For holding error code */
+  faruchar *arraybase; /* Base pointer of char array */
+  long accumtime; /* Accumulated time */
+  double iterations; /* # of iterations */
+  char *errorcontext; /* Error context string pointer */
+  int systemerror; /* For holding error code */
 
   /*
   ** Link to global structure
@@ -383,56 +384,56 @@ void DoStringSort(void)
   ** See if we have to perform self-adjustment code
   */
   if (strsortstruct->adjust == 0)
-  {
-    /*
-    ** Initialize the number of arrays.
-    */
-    strsortstruct->numarrays = 1;
-    while (1)
     {
       /*
+    ** Initialize the number of arrays.
+    */
+      strsortstruct->numarrays = 1;
+      while (1)
+        {
+          /*
       ** Allocate space for array.  We'll add an extra 100
       ** bytes to protect memory as strings move around
       ** (this can happen during string adjustment)
       */
-      arraybase = (faruchar *)AllocateMemory(
-          (strsortstruct->arraysize + 100L) * (long)strsortstruct->numarrays,
-          &systemerror);
-      if (systemerror)
-      {
-        ReportError(errorcontext, systemerror);
-        ErrorExit();
-      }
+          arraybase = (faruchar *)AllocateMemory(
+              (strsortstruct->arraysize + 100L) * (long)strsortstruct->numarrays,
+              &systemerror);
+          if (systemerror)
+            {
+              ReportError(errorcontext, systemerror);
+              ErrorExit();
+            }
 
-      /*
+          /*
       ** Do an iteration of the string sort.  If the
       ** elapsed time is less than or equal to the permitted
       ** minimum, then de-allocate the array, reallocate a
       ** an additional array, and try again.
       */
-      if (DoStringSortIteration(arraybase, strsortstruct->numarrays,
-                                strsortstruct->arraysize) > global_min_ticks)
-        break; /* We're ok...exit */
+          if (DoStringSortIteration(arraybase, strsortstruct->numarrays,
+                                    strsortstruct->arraysize) > global_min_ticks)
+            break; /* We're ok...exit */
 
-      FreeMemory((farvoid *)arraybase, &systemerror);
-      strsortstruct->numarrays += 1;
+          FreeMemory((farvoid *)arraybase, &systemerror);
+          strsortstruct->numarrays += 1;
+        }
     }
-  }
   else
-  {
-    /*
+    {
+      /*
     ** We don't have to perform self adjustment code.
     ** Simply allocate the space for the array.
     */
-    arraybase = (faruchar *)AllocateMemory(
-        (strsortstruct->arraysize + 100L) * (long)strsortstruct->numarrays,
-        &systemerror);
-    if (systemerror)
-    {
-      ReportError(errorcontext, systemerror);
-      ErrorExit();
+      arraybase = (faruchar *)AllocateMemory(
+          (strsortstruct->arraysize + 100L) * (long)strsortstruct->numarrays,
+          &systemerror);
+      if (systemerror)
+        {
+          ReportError(errorcontext, systemerror);
+          ErrorExit();
+        }
     }
-  }
   /*
   ** All's well if we get here.  Repeatedly perform sorts until the
   ** accumulated elapsed time is greater than # of seconds requested.
@@ -441,11 +442,12 @@ void DoStringSort(void)
   iterations = (double)0.0;
 
   do
-  {
-    accumtime += DoStringSortIteration(arraybase, strsortstruct->numarrays,
-                                       strsortstruct->arraysize);
-    iterations += (double)strsortstruct->numarrays;
-  } while (iterations < BASE_ITERATIONS * 5);
+    {
+      accumtime += DoStringSortIteration(arraybase, strsortstruct->numarrays,
+                                         strsortstruct->arraysize);
+      iterations += (double)strsortstruct->numarrays;
+    }
+  while (iterations < BASE_ITERATIONS * 5);
 
   /*
   ** Clean up, calculate results, and go home.
@@ -472,13 +474,13 @@ void DoStringSort(void)
 static ulong DoStringSortIteration(faruchar *arraybase, uint numarrays,
                                    ulong arraysize)
 {
-  farulong *optrarray;    /* Offset pointer array */
-  unsigned long elapsed;  /* Elapsed ticks */
+  farulong *optrarray; /* Offset pointer array */
+  unsigned long elapsed; /* Elapsed ticks */
   unsigned long nstrings; /* # of strings in array */
-  int syserror;           /* System error code */
-  unsigned int i;         /* Index */
-  farulong *tempobase;    /* Temporary offset pointer base */
-  faruchar *tempsbase;    /* Temporary string base pointer */
+  int syserror; /* System error code */
+  unsigned int i; /* Index */
+  farulong *tempobase; /* Temporary offset pointer base */
+  faruchar *tempsbase; /* Temporary string base pointer */
 
   /*
   ** Load up the array(s) with random numbers
@@ -501,11 +503,11 @@ static ulong DoStringSortIteration(faruchar *arraybase, uint numarrays,
   ** Execute heapsorts
   */
   for (i = 0; i < numarrays; i++)
-  {
-    StrHeapSort(tempobase, tempsbase, nstrings, 0L, nstrings - 1);
-    tempobase += nstrings; /* Advance base pointers */
-    tempsbase += arraysize + 100;
-  }
+    {
+      StrHeapSort(tempobase, tempsbase, nstrings, 0L, nstrings - 1);
+      tempobase += nstrings; /* Advance base pointers */
+      tempsbase += arraysize + 100;
+    }
 
   /*
   ** Record elapsed time
@@ -516,17 +518,17 @@ static ulong DoStringSortIteration(faruchar *arraybase, uint numarrays,
   {
     unsigned long i;
     for (i = 0; i < nstrings - 1; i++)
-    { /*
+      { /*
       ** Compare strings to check for proper
       ** sort.
       */
-      if (str_is_less(optrarray, arraybase, nstrings, i + 1, i))
-      {
-        printf("Sort Error\n");
-        stringsort_status = 1;
-        break;
+        if (str_is_less(optrarray, arraybase, nstrings, i + 1, i))
+          {
+            printf("Sort Error\n");
+            stringsort_status = 1;
+            break;
+          }
       }
-    }
   }
 #endif
 
@@ -552,21 +554,21 @@ static ulong DoStringSortIteration(faruchar *arraybase, uint numarrays,
 ** routine builds one array, then copies it into the others.
 */
 static farulong *LoadStringArray(faruchar *strarray, /* String array */
-                                 uint numarrays,     /* # of arrays */
-                                 ulong *nstrings,    /* # of strings */
-                                 ulong arraysize)    /* Size of array */
+                                 uint numarrays, /* # of arrays */
+                                 ulong *nstrings, /* # of strings */
+                                 ulong arraysize) /* Size of array */
 {
-  faruchar *tempsbase;        /* Temporary string base pointer */
-  farulong *optrarray;        /* Local for pointer */
-  farulong *tempobase;        /* Temporary offset pointer base pointer */
-  unsigned long curroffset;   /* Current offset */
-  int fullflag;               /* Indicates full array */
+  faruchar *tempsbase; /* Temporary string base pointer */
+  farulong *optrarray; /* Local for pointer */
+  farulong *tempobase; /* Temporary offset pointer base pointer */
+  unsigned long curroffset; /* Current offset */
+  int fullflag; /* Indicates full array */
   unsigned char stringlength; /* Length of string */
-  unsigned char i;            /* Index */
-  unsigned long j;            /* Another index */
-  unsigned int k;             /* Yet another index */
-  unsigned int l;             /* Ans still one more index */
-  int systemerror;            /* For holding error code */
+  unsigned char i; /* Index */
+  unsigned long j; /* Another index */
+  unsigned int k; /* Yet another index */
+  unsigned int l; /* Ans still one more index */
+  int systemerror; /* For holding error code */
 
   /*
   ** Initialize random number generator.
@@ -583,44 +585,44 @@ static farulong *LoadStringArray(faruchar *strarray, /* String array */
   fullflag = 0;
 
   do
-  {
-    /*
+    {
+      /*
     ** Allocate a string with a random length no
     ** shorter than 4 bytes and no longer than
     ** 80 bytes.  Note we have to also make sure
     ** there's room in the array.
     */
-    /* stringlength=(unsigned char)((1+abs_randwc(76L)) & 0xFFL);*/
-    stringlength = (unsigned char)((1 + abs_randwc((int32)76)) & 0xFFL);
-    if ((unsigned long)stringlength + curroffset + 1L >= arraysize)
-    {
-      stringlength = (unsigned char)((arraysize - curroffset - 1L) & 0xFF);
-      fullflag = 1; /* Indicates a full */
-    }
+      /* stringlength=(unsigned char)((1+abs_randwc(76L)) & 0xFFL);*/
+      stringlength = (unsigned char)((1 + abs_randwc((int32)76)) & 0xFFL);
+      if ((unsigned long)stringlength + curroffset + 1L >= arraysize)
+        {
+          stringlength = (unsigned char)((arraysize - curroffset - 1L) & 0xFF);
+          fullflag = 1; /* Indicates a full */
+        }
 
-    /*
+      /*
     ** Store length at curroffset and advance current offset.
     */
-    *(strarray + curroffset) = stringlength;
-    curroffset++;
+      *(strarray + curroffset) = stringlength;
+      curroffset++;
 
-    /*
+      /*
     ** Fill up the rest of the string with random bytes.
     */
-    for (i = 0; i < stringlength; i++)
-    {
-      *(strarray + curroffset) =
-          /* (unsigned char)(abs_randwc((long)0xFE)); */
-          (unsigned char)(abs_randwc((int32)0xFE));
-      curroffset++;
-    }
+      for (i = 0; i < stringlength; i++)
+        {
+          *(strarray + curroffset) =
+              /* (unsigned char)(abs_randwc((long)0xFE)); */
+              (unsigned char)(abs_randwc((int32)0xFE));
+          curroffset++;
+        }
 
-    /*
+      /*
     ** Increment the # of strings counter.
     */
-    *nstrings += 1L;
-
-  } while (fullflag == 0);
+      *nstrings += 1L;
+    }
+  while (fullflag == 0);
 
   /*
   ** We now have initialized a single full array.  If there
@@ -630,11 +632,11 @@ static farulong *LoadStringArray(faruchar *strarray, /* String array */
   k = 1;
   tempsbase = strarray;
   while (k < numarrays)
-  {
-    tempsbase += arraysize + 100; /* Set base */
-    for (l = 0; l < arraysize; l++) tempsbase[l] = strarray[l];
-    k++;
-  }
+    {
+      tempsbase += arraysize + 100; /* Set base */
+      for (l = 0; l < arraysize; l++) tempsbase[l] = strarray[l];
+      k++;
+    }
 
   /*
   ** Now the array is full, allocate enough space for an
@@ -643,11 +645,11 @@ static farulong *LoadStringArray(faruchar *strarray, /* String array */
   optrarray = (farulong *)AllocateMemory(
       *nstrings * sizeof(unsigned long) * numarrays, &systemerror);
   if (systemerror)
-  {
-    ReportError("CPU:Stringsort", systemerror);
-    FreeMemory((void *)strarray, &systemerror);
-    ErrorExit();
-  }
+    {
+      ReportError("CPU:Stringsort", systemerror);
+      FreeMemory((void *)strarray, &systemerror);
+      ErrorExit();
+    }
 
   /*
   ** Go through the newly-built string array, building
@@ -656,10 +658,10 @@ static farulong *LoadStringArray(faruchar *strarray, /* String array */
   */
   curroffset = 0;
   for (j = 0; j < *nstrings; j++)
-  {
-    *(optrarray + j) = curroffset;
-    curroffset += (unsigned long)(*(strarray + curroffset)) + 1L;
-  }
+    {
+      *(optrarray + j) = curroffset;
+      curroffset += (unsigned long)(*(strarray + curroffset)) + 1L;
+    }
 
   /*
   ** As above, we've made one copy of the offset pointers,
@@ -668,11 +670,11 @@ static farulong *LoadStringArray(faruchar *strarray, /* String array */
   k = 1;
   tempobase = optrarray;
   while (k < numarrays)
-  {
-    tempobase += *nstrings;
-    for (l = 0; l < *nstrings; l++) tempobase[l] = optrarray[l];
-    k++;
-  }
+    {
+      tempobase += *nstrings;
+      for (l = 0; l < *nstrings; l++) tempobase[l] = optrarray[l];
+      k++;
+    }
 
   /*
   ** All done...go home.  Pass local pointer back.
@@ -689,14 +691,14 @@ static farulong *LoadStringArray(faruchar *strarray, /* String array */
 ** is set to l.
 */
 static void stradjust(farulong *optrarray, /* Offset pointer array */
-                      faruchar *strarray,  /* String array */
-                      ulong nstrings,      /* # of strings */
-                      ulong i,             /* Offset to adjust */
-                      uchar l)             /* New length */
+                      faruchar *strarray, /* String array */
+                      ulong nstrings, /* # of strings */
+                      ulong i, /* Offset to adjust */
+                      uchar l) /* New length */
 {
-  unsigned long nbytes;    /* # of bytes to move */
-  unsigned long j;         /* Index */
-  int direction;           /* Direction indicator */
+  unsigned long nbytes; /* # of bytes to move */
+  unsigned long j; /* Index */
+  int direction; /* Direction indicator */
   unsigned char adjamount; /* Adjustment amount */
 
   /*
@@ -713,10 +715,10 @@ static void stradjust(farulong *optrarray, /* Offset pointer array */
   ** do anything more than adjust the length field.
   */
   if (i == (nstrings - 1L))
-  {
-    *(strarray + *(optrarray + i)) = l;
-    return;
-  }
+    {
+      *(strarray + *(optrarray + i)) = l;
+      return;
+    }
 
   /*
   ** Calculate the total # of bytes in string array from
@@ -767,14 +769,14 @@ static void stradjust(farulong *optrarray, /* Offset pointer array */
 ** in the array.
 */
 static void StrHeapSort(farulong *optrarray, /* Offset pointers */
-                        faruchar *strarray,  /* Strings array */
-                        ulong numstrings,    /* # of strings in array */
-                        ulong bottom,        /* Region to sort...bottom */
-                        ulong top)           /* Region to sort...top */
+                        faruchar *strarray, /* Strings array */
+                        ulong numstrings, /* # of strings in array */
+                        ulong bottom, /* Region to sort...bottom */
+                        ulong top) /* Region to sort...top */
 {
   unsigned char temp[80]; /* Used to exchange elements */
-  unsigned char tlen;     /* Temp to hold length */
-  unsigned long i;        /* Loop index */
+  unsigned char tlen; /* Temp to hold length */
+  unsigned long i; /* Loop index */
 
   /*
   ** Build a heap in the array
@@ -788,26 +790,26 @@ static void StrHeapSort(farulong *optrarray, /* Offset pointers */
   ** array.
   */
   for (i = top; i > 0; --i)
-  {
-    strsift(optrarray, strarray, numstrings, 0, i);
+    {
+      strsift(optrarray, strarray, numstrings, 0, i);
 
-    /* temp = string[0] */
-    tlen = *strarray;
-    MoveMemory((farvoid *)&temp[0], /* Perform exchange */
-               (farvoid *)strarray, (unsigned long)(tlen + 1));
+      /* temp = string[0] */
+      tlen = *strarray;
+      MoveMemory((farvoid *)&temp[0], /* Perform exchange */
+                 (farvoid *)strarray, (unsigned long)(tlen + 1));
 
-    /* string[0]=string[i] */
-    tlen = *(strarray + *(optrarray + i));
-    stradjust(optrarray, strarray, numstrings, 0, tlen);
-    MoveMemory((farvoid *)strarray, (farvoid *)(strarray + *(optrarray + i)),
-               (unsigned long)(tlen + 1));
+      /* string[0]=string[i] */
+      tlen = *(strarray + *(optrarray + i));
+      stradjust(optrarray, strarray, numstrings, 0, tlen);
+      MoveMemory((farvoid *)strarray, (farvoid *)(strarray + *(optrarray + i)),
+                 (unsigned long)(tlen + 1));
 
-    /* string[i]=temp */
-    tlen = temp[0];
-    stradjust(optrarray, strarray, numstrings, i, tlen);
-    MoveMemory((farvoid *)(strarray + *(optrarray + i)), (farvoid *)&temp[0],
-               (unsigned long)(tlen + 1));
-  }
+      /* string[i]=temp */
+      tlen = temp[0];
+      stradjust(optrarray, strarray, numstrings, i, tlen);
+      MoveMemory((farvoid *)(strarray + *(optrarray + i)), (farvoid *)&temp[0],
+                 (unsigned long)(tlen + 1));
+    }
   return;
 }
 
@@ -822,9 +824,9 @@ static void StrHeapSort(farulong *optrarray, /* Offset pointers */
 ** This function returns TRUE if string a is < string b.
 */
 static int str_is_less(farulong *optrarray, /* Offset pointers */
-                       faruchar *strarray,  /* String array */
-                       ulong numstrings,    /* # of strings */
-                       ulong a, ulong b)    /* Offsets */
+                       faruchar *strarray, /* String array */
+                       ulong numstrings, /* # of strings */
+                       ulong a, ulong b) /* Offsets */
 {
   int slen; /* String length */
 
@@ -841,15 +843,15 @@ static int str_is_less(farulong *optrarray, /* Offset pointers */
                  (char *)(strarray + *(optrarray + b)), slen);
 
   if (slen == 0)
-  {
-    /*
+    {
+      /*
     ** They match.  Return true if the length of a
     ** is greater than the length of b.
     */
-    if (*(strarray + *(optrarray + a)) > *(strarray + *(optrarray + b)))
-      return (TRUE);
-    return (FALSE);
-  }
+      if (*(strarray + *(optrarray + a)) > *(strarray + *(optrarray + b)))
+        return (TRUE);
+      return (FALSE);
+    }
 
   if (slen < 0) return (TRUE); /* a is strictly less than b */
 
@@ -868,43 +870,43 @@ static int str_is_less(farulong *optrarray, /* Offset pointers */
 ** building a heap).
 */
 static void strsift(farulong *optrarray, /* Offset pointers */
-                    faruchar *strarray,  /* String array */
-                    ulong numstrings,    /* # of strings */
-                    ulong i, ulong j)    /* Offsets */
+                    faruchar *strarray, /* String array */
+                    ulong numstrings, /* # of strings */
+                    ulong i, ulong j) /* Offsets */
 {
   unsigned long k; /* Temporaries */
   unsigned char temp[80];
   unsigned char tlen; /* For string lengths */
 
   while ((i + i) <= j)
-  {
-    k = i + i;
-    if (k < j)
-      if (str_is_less(optrarray, strarray, numstrings, k, k + 1L)) ++k;
-    if (str_is_less(optrarray, strarray, numstrings, i, k))
     {
-      /* temp=string[k] */
-      tlen = *(strarray + *(optrarray + k));
-      MoveMemory((farvoid *)&temp[0], (farvoid *)(strarray + *(optrarray + k)),
-                 (unsigned long)(tlen + 1));
+      k = i + i;
+      if (k < j)
+        if (str_is_less(optrarray, strarray, numstrings, k, k + 1L)) ++k;
+      if (str_is_less(optrarray, strarray, numstrings, i, k))
+        {
+          /* temp=string[k] */
+          tlen = *(strarray + *(optrarray + k));
+          MoveMemory((farvoid *)&temp[0], (farvoid *)(strarray + *(optrarray + k)),
+                     (unsigned long)(tlen + 1));
 
-      /* string[k]=string[i] */
-      tlen = *(strarray + *(optrarray + i));
-      stradjust(optrarray, strarray, numstrings, k, tlen);
-      MoveMemory((farvoid *)(strarray + *(optrarray + k)),
-                 (farvoid *)(strarray + *(optrarray + i)),
-                 (unsigned long)(tlen + 1));
+          /* string[k]=string[i] */
+          tlen = *(strarray + *(optrarray + i));
+          stradjust(optrarray, strarray, numstrings, k, tlen);
+          MoveMemory((farvoid *)(strarray + *(optrarray + k)),
+                     (farvoid *)(strarray + *(optrarray + i)),
+                     (unsigned long)(tlen + 1));
 
-      /* string[i]=temp */
-      tlen = temp[0];
-      stradjust(optrarray, strarray, numstrings, i, tlen);
-      MoveMemory((farvoid *)(strarray + *(optrarray + i)), (farvoid *)&temp[0],
-                 (unsigned long)(tlen + 1));
-      i = k;
+          /* string[i]=temp */
+          tlen = temp[0];
+          stradjust(optrarray, strarray, numstrings, i, tlen);
+          MoveMemory((farvoid *)(strarray + *(optrarray + i)), (farvoid *)&temp[0],
+                     (unsigned long)(tlen + 1));
+          i = k;
+        }
+      else
+        i = j + 1;
     }
-    else
-      i = j + 1;
-  }
   return;
 }
 
@@ -921,13 +923,13 @@ static void strsift(farulong *optrarray, /* Offset pointers */
 void DoBitops(void)
 {
   BitOpStruct *locbitopstruct; /* Local bitop structure */
-  farulong *bitarraybase;      /* Base of bitmap array */
-  farulong *bitoparraybase;    /* Base of bitmap operations array */
-  ulong nbitops;               /* # of bitfield operations */
-  ulong accumtime;             /* Accumulated time in ticks */
-  double iterations;           /* # of iterations */
-  char *errorcontext;          /* Error context string */
-  int systemerror;             /* For holding error codes */
+  farulong *bitarraybase; /* Base of bitmap array */
+  farulong *bitoparraybase; /* Base of bitmap operations array */
+  ulong nbitops; /* # of bitfield operations */
+  ulong accumtime; /* Accumulated time in ticks */
+  double iterations; /* # of iterations */
+  char *errorcontext; /* Error context string */
+  int systemerror; /* For holding error codes */
   int ticks;
 
   /*
@@ -944,104 +946,104 @@ void DoBitops(void)
   ** See if we need to run adjustment code.
   */
   if (locbitopstruct->adjust == 0)
-  {
-    bitarraybase = (farulong *)AllocateMemory(
-        locbitopstruct->bitfieldarraysize * sizeof(ulong), &systemerror);
-    if (systemerror)
     {
-      ReportError(errorcontext, systemerror);
-      ErrorExit();
-    }
+      bitarraybase = (farulong *)AllocateMemory(
+          locbitopstruct->bitfieldarraysize * sizeof(ulong), &systemerror);
+      if (systemerror)
+        {
+          ReportError(errorcontext, systemerror);
+          ErrorExit();
+        }
 
-    /*
+      /*
     ** Initialize bitfield operations array to [2,30] elements
     */
-    locbitopstruct->bitoparraysize = 30L;
+      locbitopstruct->bitoparraysize = 30L;
 
-    while (1)
-    {
-      /*
+      while (1)
+        {
+          /*
       ** Allocate space for operations array
       */
-      bitoparraybase = (farulong *)AllocateMemory(
-          locbitopstruct->bitoparraysize * 2L * sizeof(ulong), &systemerror);
-      if (systemerror)
-      {
-        ReportError(errorcontext, systemerror);
-        FreeMemory((farvoid *)bitarraybase, &systemerror);
-        ErrorExit();
-      }
-      /*
+          bitoparraybase = (farulong *)AllocateMemory(
+              locbitopstruct->bitoparraysize * 2L * sizeof(ulong), &systemerror);
+          if (systemerror)
+            {
+              ReportError(errorcontext, systemerror);
+              FreeMemory((farvoid *)bitarraybase, &systemerror);
+              ErrorExit();
+            }
+          /*
       ** Do an iteration of the bitmap test.  If the
       ** elapsed time is less than or equal to the permitted
       ** minimum, then de-allocate the array, reallocate a
       ** larger version, and try again.
       */
-      ticks = DoBitfieldIteration(bitarraybase, bitoparraybase,
-                                  locbitopstruct->bitoparraysize, &nbitops);
+          ticks = DoBitfieldIteration(bitarraybase, bitoparraybase,
+                                      locbitopstruct->bitoparraysize, &nbitops);
 #ifdef DEBUG
 #ifdef LINUX
-      if (locbitopstruct->bitoparraysize == 30L)
-      {
-        /* this is the first loop, write a debug file */
-        FILE *file;
-        unsigned long *running_base; /* same as farulong */
-        long counter;
-        file = fopen("debugbit.dat", "w");
-        running_base = bitarraybase;
-        for (counter = 0; counter < (long)(locbitopstruct->bitfieldarraysize);
-             counter++)
-        {
-          if (sizeof(long) == 8)
-          {
-            fprintf(file, "%08X", (unsigned int)(*running_base & 0xFFFFFFFFL));
-            fprintf(file, "%08X",
-                    (unsigned int)((*running_base >> 32) & 0xFFFFFFFFL));
-            if ((counter + 1) % 4 == 0) fprintf(file, "\n");
-          }
-          else
-          {
-            fprintf(file, "%08lX", *running_base);
-            if ((counter + 1) % 8 == 0) fprintf(file, "\n");
-          }
-          running_base = running_base + 1;
+          if (locbitopstruct->bitoparraysize == 30L)
+            {
+              /* this is the first loop, write a debug file */
+              FILE *file;
+              unsigned long *running_base; /* same as farulong */
+              long counter;
+              file = fopen("debugbit.dat", "w");
+              running_base = bitarraybase;
+              for (counter = 0; counter < (long)(locbitopstruct->bitfieldarraysize);
+                   counter++)
+                {
+                  if (sizeof(long) == 8)
+                    {
+                      fprintf(file, "%08X", (unsigned int)(*running_base & 0xFFFFFFFFL));
+                      fprintf(file, "%08X",
+                              (unsigned int)((*running_base >> 32) & 0xFFFFFFFFL));
+                      if ((counter + 1) % 4 == 0) fprintf(file, "\n");
+                    }
+                  else
+                    {
+                      fprintf(file, "%08lX", *running_base);
+                      if ((counter + 1) % 8 == 0) fprintf(file, "\n");
+                    }
+                  running_base = running_base + 1;
+                }
+              fclose(file);
+              printf(
+                  "\nWrote the file debugbit.dat, you may want to compare it to "
+                  "debugbit.good\n");
+            }
+#endif
+#endif
+
+          if (ticks > global_min_ticks) break; /* We're ok...exit */
+
+          FreeMemory((farvoid *)bitoparraybase, &systemerror);
+          locbitopstruct->bitoparraysize += 100L;
         }
-        fclose(file);
-        printf(
-            "\nWrote the file debugbit.dat, you may want to compare it to "
-            "debugbit.good\n");
-      }
-#endif
-#endif
-
-      if (ticks > global_min_ticks) break; /* We're ok...exit */
-
-      FreeMemory((farvoid *)bitoparraybase, &systemerror);
-      locbitopstruct->bitoparraysize += 100L;
     }
-  }
   else
-  {
-    /*
+    {
+      /*
     ** Don't need to do self adjustment, just allocate
     ** the array space.
     */
-    bitarraybase = (farulong *)AllocateMemory(
-        locbitopstruct->bitfieldarraysize * sizeof(ulong), &systemerror);
-    if (systemerror)
-    {
-      ReportError(errorcontext, systemerror);
-      ErrorExit();
+      bitarraybase = (farulong *)AllocateMemory(
+          locbitopstruct->bitfieldarraysize * sizeof(ulong), &systemerror);
+      if (systemerror)
+        {
+          ReportError(errorcontext, systemerror);
+          ErrorExit();
+        }
+      bitoparraybase = (farulong *)AllocateMemory(
+          locbitopstruct->bitoparraysize * 2L * sizeof(ulong), &systemerror);
+      if (systemerror)
+        {
+          ReportError(errorcontext, systemerror);
+          FreeMemory((farvoid *)bitarraybase, &systemerror);
+          ErrorExit();
+        }
     }
-    bitoparraybase = (farulong *)AllocateMemory(
-        locbitopstruct->bitoparraysize * 2L * sizeof(ulong), &systemerror);
-    if (systemerror)
-    {
-      ReportError(errorcontext, systemerror);
-      FreeMemory((farvoid *)bitarraybase, &systemerror);
-      ErrorExit();
-    }
-  }
 
   /*
   ** All's well if we get here.  Repeatedly perform bitops until the
@@ -1050,11 +1052,12 @@ void DoBitops(void)
   accumtime = 0L;
   iterations = (double)0.0;
   do
-  {
-    accumtime += DoBitfieldIteration(bitarraybase, bitoparraybase,
-                                     locbitopstruct->bitoparraysize, &nbitops);
-    iterations += (double)nbitops;
-  } while (iterations < BASE_ITERATIONS * 50000);
+    {
+      accumtime += DoBitfieldIteration(bitarraybase, bitoparraybase,
+                                       locbitopstruct->bitoparraysize, &nbitops);
+      iterations += (double)nbitops;
+    }
+  while (iterations < BASE_ITERATIONS * 50000);
 
   /*
   ** Clean up, calculate results, and go home.
@@ -1079,10 +1082,10 @@ static ulong DoBitfieldIteration(farulong *bitarraybase,
                                  farulong *bitoparraybase, long bitoparraysize,
                                  ulong *nbitops)
 {
-  long i;          /* Index */
+  long i; /* Index */
   ulong bitoffset; /* Offset into bitmap */
-  ulong elapsed;   /* Time to execute */
-                   /*
+  ulong elapsed; /* Time to execute */
+  /*
                    ** Clear # bitops counter
                    */
   *nbitops = 0L;
@@ -1103,26 +1106,26 @@ static ulong DoBitfieldIteration(farulong *bitarraybase,
   */
   randnum((int32)13);
   for (i = 0; i < global_bitopstruct.bitfieldarraysize; i++)
-  {
-    if (sizeof(long) == 8)
-      *(bitarraybase + i) = (ulong)0x5555555555555555;
-    else
-      *(bitarraybase + i) = (ulong)0x55555555;
-  }
+    {
+      if (sizeof(long) == 8)
+        *(bitarraybase + i) = (ulong)0x5555555555555555;
+      else
+        *(bitarraybase + i) = (ulong)0x55555555;
+    }
   randnum((int32)13);
   /* end of addition of code */
 
   for (i = 0; i < bitoparraysize; i++)
-  {
-    /* First item is offset */
-    /* *(bitoparraybase+i+i)=bitoffset=abs_randwc(262140L); */
-    *(bitoparraybase + i + i) = bitoffset = abs_randwc((int32)262140);
+    {
+      /* First item is offset */
+      /* *(bitoparraybase+i+i)=bitoffset=abs_randwc(262140L); */
+      *(bitoparraybase + i + i) = bitoffset = abs_randwc((int32)262140);
 
-    /* Next item is run length */
-    /* *nbitops+=*(bitoparraybase+i+i+1L)=abs_randwc(262140L-bitoffset);*/
-    *nbitops += *(bitoparraybase + i + i + 1L) =
-        abs_randwc((int32)262140 - bitoffset);
-  }
+      /* Next item is run length */
+      /* *nbitops+=*(bitoparraybase+i+i+1L)=abs_randwc(262140L-bitoffset);*/
+      *nbitops += *(bitoparraybase + i + i + 1L) =
+          abs_randwc((int32)262140 - bitoffset);
+    }
 
   /*
   ** Array of offset and lengths built...do an iteration of
@@ -1136,25 +1139,25 @@ static ulong DoBitfieldIteration(farulong *bitarraybase,
   ** Execute operation based on modulus of index.
   */
   for (i = 0; i < bitoparraysize; i++)
-  {
-    switch (i % 3)
     {
-      case 0: /* Set run of bits */
-        ToggleBitRun(bitarraybase, *(bitoparraybase + i + i),
-                     *(bitoparraybase + i + i + 1), 1);
-        break;
+      switch (i % 3)
+        {
+          case 0: /* Set run of bits */
+            ToggleBitRun(bitarraybase, *(bitoparraybase + i + i),
+                         *(bitoparraybase + i + i + 1), 1);
+            break;
 
-      case 1: /* Clear run of bits */
-        ToggleBitRun(bitarraybase, *(bitoparraybase + i + i),
-                     *(bitoparraybase + i + i + 1), 0);
-        break;
+          case 1: /* Clear run of bits */
+            ToggleBitRun(bitarraybase, *(bitoparraybase + i + i),
+                         *(bitoparraybase + i + i + 1), 0);
+            break;
 
-      case 2: /* Complement run of bits */
-        FlipBitRun(bitarraybase, *(bitoparraybase + i + i),
-                   *(bitoparraybase + i + i + 1));
-        break;
+          case 2: /* Complement run of bits */
+            FlipBitRun(bitarraybase, *(bitoparraybase + i + i),
+                       *(bitoparraybase + i + i + 1));
+            break;
+        }
     }
-  }
 
   /*
   ** Return elapsed time
@@ -1169,31 +1172,31 @@ static ulong DoBitfieldIteration(farulong *bitarraybase,
 ** bit_addr in bitmap.
 */
 static void ToggleBitRun(farulong *bitmap, /* Bitmap */
-                         ulong bit_addr,   /* Address of bits to set */
-                         ulong nbits,      /* # of bits to set/clr */
-                         uint val)         /* 1 or 0 */
+                         ulong bit_addr, /* Address of bits to set */
+                         ulong nbits, /* # of bits to set/clr */
+                         uint val) /* 1 or 0 */
 {
-  unsigned long bindex;  /* Index into array */
+  unsigned long bindex; /* Index into array */
   unsigned long bitnumb; /* Bit number */
 
   while (nbits--)
-  {
-    if (sizeof(long) == 8)
     {
-      bindex = bit_addr >> 6;  /* Index is number /64 */
-      bitnumb = bit_addr % 64; /* Bit number in word */
+      if (sizeof(long) == 8)
+        {
+          bindex = bit_addr >> 6; /* Index is number /64 */
+          bitnumb = bit_addr % 64; /* Bit number in word */
+        }
+      else
+        {
+          bindex = bit_addr >> 5; /* Index is number /32 */
+          bitnumb = bit_addr % 32; /* bit number in word */
+        }
+      if (val)
+        bitmap[bindex] |= (1L << bitnumb);
+      else
+        bitmap[bindex] &= ~(1L << bitnumb);
+      bit_addr++;
     }
-    else
-    {
-      bindex = bit_addr >> 5;  /* Index is number /32 */
-      bitnumb = bit_addr % 32; /* bit number in word */
-    }
-    if (val)
-      bitmap[bindex] |= (1L << bitnumb);
-    else
-      bitmap[bindex] &= ~(1L << bitnumb);
-    bit_addr++;
-  }
   return;
 }
 
@@ -1203,27 +1206,27 @@ static void ToggleBitRun(farulong *bitmap, /* Bitmap */
 ** Complements a run of bits.
 */
 static void FlipBitRun(farulong *bitmap, /* Bit map */
-                       ulong bit_addr,   /* Bit address */
-                       ulong nbits)      /* # of bits to flip */
+                       ulong bit_addr, /* Bit address */
+                       ulong nbits) /* # of bits to flip */
 {
-  unsigned long bindex;  /* Index into array */
+  unsigned long bindex; /* Index into array */
   unsigned long bitnumb; /* Bit number */
 
   while (nbits--)
-  {
-    if (sizeof(long) == 8)
     {
-      bindex = bit_addr >> 6;  /* Index is number /64 */
-      bitnumb = bit_addr % 64; /* Bit number in longword */
+      if (sizeof(long) == 8)
+        {
+          bindex = bit_addr >> 6; /* Index is number /64 */
+          bitnumb = bit_addr % 64; /* Bit number in longword */
+        }
+      else
+        {
+          bindex = bit_addr >> 5; /* Index is number /32 */
+          bitnumb = bit_addr % 32; /* Bit number in longword */
+        }
+      bitmap[bindex] ^= (1L << bitnumb);
+      bit_addr++;
     }
-    else
-    {
-      bindex = bit_addr >> 5;  /* Index is number /32 */
-      bitnumb = bit_addr % 32; /* Bit number in longword */
-    }
-    bitmap[bindex] ^= (1L << bitnumb);
-    bit_addr++;
-  }
 
   return;
 }
@@ -1241,15 +1244,15 @@ static void FlipBitRun(farulong *bitmap, /* Bit map */
 void DoEmFloat(void)
 {
   EmFloatStruct *locemfloatstruct; /* Local structure */
-  InternalFPF *abase;              /* Base of A array */
-  InternalFPF *bbase;              /* Base of B array */
-  InternalFPF *cbase;              /* Base of C array */
-  ulong accumtime;                 /* Accumulated time in ticks */
-  double iterations;               /* # of iterations */
-  ulong tickcount;                 /* # of ticks */
-  char *errorcontext;              /* Error context string pointer */
-  int systemerror;                 /* For holding error code */
-  ulong loops;                     /* # of loops */
+  InternalFPF *abase; /* Base of A array */
+  InternalFPF *bbase; /* Base of B array */
+  InternalFPF *cbase; /* Base of C array */
+  ulong accumtime; /* Accumulated time in ticks */
+  double iterations; /* # of iterations */
+  ulong tickcount; /* # of ticks */
+  char *errorcontext; /* Error context string pointer */
+  int systemerror; /* For holding error code */
+  ulong loops; /* # of loops */
 
   /*
   ** Link to global structure
@@ -1270,29 +1273,29 @@ void DoEmFloat(void)
   abase = (InternalFPF *)AllocateMemory(
       locemfloatstruct->arraysize * sizeof(InternalFPF), &systemerror);
   if (systemerror)
-  {
-    ReportError(errorcontext, systemerror);
-    ErrorExit();
-  }
+    {
+      ReportError(errorcontext, systemerror);
+      ErrorExit();
+    }
 
   bbase = (InternalFPF *)AllocateMemory(
       locemfloatstruct->arraysize * sizeof(InternalFPF), &systemerror);
   if (systemerror)
-  {
-    ReportError(errorcontext, systemerror);
-    FreeMemory((farvoid *)abase, &systemerror);
-    ErrorExit();
-  }
+    {
+      ReportError(errorcontext, systemerror);
+      FreeMemory((farvoid *)abase, &systemerror);
+      ErrorExit();
+    }
 
   cbase = (InternalFPF *)AllocateMemory(
       locemfloatstruct->arraysize * sizeof(InternalFPF), &systemerror);
   if (systemerror)
-  {
-    ReportError(errorcontext, systemerror);
-    FreeMemory((farvoid *)abase, &systemerror);
-    FreeMemory((farvoid *)bbase, &systemerror);
-    ErrorExit();
-  }
+    {
+      ReportError(errorcontext, systemerror);
+      FreeMemory((farvoid *)abase, &systemerror);
+      FreeMemory((farvoid *)bbase, &systemerror);
+      ErrorExit();
+    }
 
   /*
   ** Set up the arrays
@@ -1303,37 +1306,37 @@ void DoEmFloat(void)
   ** See if we need to do self-adjusting code.
   */
   if (locemfloatstruct->adjust == 0)
-  {
-    locemfloatstruct->loops = 0;
+    {
+      locemfloatstruct->loops = 0;
 
-    /*
+      /*
     ** Do an iteration of the tests.  If the elapsed time is
     ** less than minimum, increase the loop count and try
     ** again.
     */
-    for (loops = 1; loops < CPUEMFLOATLOOPMAX; loops += loops)
-    {
-      tickcount = DoEmFloatIteration(abase, bbase, cbase,
-                                     locemfloatstruct->arraysize, loops);
-      if (tickcount > global_min_ticks)
-      {
-        locemfloatstruct->loops = loops;
-        break;
-      }
+      for (loops = 1; loops < CPUEMFLOATLOOPMAX; loops += loops)
+        {
+          tickcount = DoEmFloatIteration(abase, bbase, cbase,
+                                         locemfloatstruct->arraysize, loops);
+          if (tickcount > global_min_ticks)
+            {
+              locemfloatstruct->loops = loops;
+              break;
+            }
+        }
     }
-  }
 
   /*
   ** Verify that selft adjustment code worked.
   */
   if (locemfloatstruct->loops == 0)
-  {
-    printf("CPU:EMFPU -- CMPUEMFLOATLOOPMAX limit hit\n");
-    FreeMemory((farvoid *)abase, &systemerror);
-    FreeMemory((farvoid *)bbase, &systemerror);
-    FreeMemory((farvoid *)cbase, &systemerror);
-    ErrorExit();
-  }
+    {
+      printf("CPU:EMFPU -- CMPUEMFLOATLOOPMAX limit hit\n");
+      FreeMemory((farvoid *)abase, &systemerror);
+      FreeMemory((farvoid *)bbase, &systemerror);
+      FreeMemory((farvoid *)cbase, &systemerror);
+      ErrorExit();
+    }
 
   /*
   ** All's well if we get here.  Repeatedly perform floating
@@ -1344,12 +1347,13 @@ void DoEmFloat(void)
   accumtime = 0L;
   iterations = (double)0.0;
   do
-  {
-    accumtime +=
-        DoEmFloatIteration(abase, bbase, cbase, locemfloatstruct->arraysize,
-                           locemfloatstruct->loops);
-    iterations += (double)1.0;
-  } while (iterations < BASE_ITERATIONS * 3);
+    {
+      accumtime +=
+          DoEmFloatIteration(abase, bbase, cbase, locemfloatstruct->arraysize,
+                             locemfloatstruct->loops);
+      iterations += (double)1.0;
+    }
+  while (iterations < BASE_ITERATIONS * 3);
 
   /*
   ** Clean up, calculate results, and go home.
@@ -1386,12 +1390,12 @@ void DoEmFloat(void)
 void DoFourier(void)
 {
   FourierStruct *locfourierstruct; /* Local fourier struct */
-  fardouble *abase;                /* Base of A[] coefficients array */
-  fardouble *bbase;                /* Base of B[] coefficients array */
-  unsigned long accumtime;         /* Accumulated time in ticks */
-  double iterations;               /* # of iterations */
-  char *errorcontext;              /* Error context string pointer */
-  int systemerror;                 /* For error code */
+  fardouble *abase; /* Base of A[] coefficients array */
+  fardouble *bbase; /* Base of B[] coefficients array */
+  unsigned long accumtime; /* Accumulated time in ticks */
+  double iterations; /* # of iterations */
+  char *errorcontext; /* Error context string pointer */
+  int systemerror; /* For error code */
 
   /*
   ** Link to global structure
@@ -1407,65 +1411,65 @@ void DoFourier(void)
   ** See if we need to do self-adjustment code.
   */
   if (locfourierstruct->adjust == 0)
-  {
-    locfourierstruct->arraysize = 100L; /* Start at 100 elements */
-    while (1)
     {
-      abase = (fardouble *)AllocateMemory(
-          locfourierstruct->arraysize * sizeof(double), &systemerror);
-      if (systemerror)
-      {
-        ReportError(errorcontext, systemerror);
-        ErrorExit();
-      }
+      locfourierstruct->arraysize = 100L; /* Start at 100 elements */
+      while (1)
+        {
+          abase = (fardouble *)AllocateMemory(
+              locfourierstruct->arraysize * sizeof(double), &systemerror);
+          if (systemerror)
+            {
+              ReportError(errorcontext, systemerror);
+              ErrorExit();
+            }
 
-      bbase = (fardouble *)AllocateMemory(
-          locfourierstruct->arraysize * sizeof(double), &systemerror);
-      if (systemerror)
-      {
-        ReportError(errorcontext, systemerror);
-        FreeMemory((void *)abase, &systemerror);
-        ErrorExit();
-      }
-      /*
+          bbase = (fardouble *)AllocateMemory(
+              locfourierstruct->arraysize * sizeof(double), &systemerror);
+          if (systemerror)
+            {
+              ReportError(errorcontext, systemerror);
+              FreeMemory((void *)abase, &systemerror);
+              ErrorExit();
+            }
+          /*
       ** Do an iteration of the tests.  If the elapsed time is
       ** less than or equal to the permitted minimum, re-allocate
       ** larger arrays and try again.
       */
-      if (DoFPUTransIteration(abase, bbase, locfourierstruct->arraysize) >
-          global_min_ticks)
-        break; /* We're ok...exit */
+          if (DoFPUTransIteration(abase, bbase, locfourierstruct->arraysize) >
+              global_min_ticks)
+            break; /* We're ok...exit */
 
-      /*
+          /*
       ** Make bigger arrays and try again.
       */
-      FreeMemory((farvoid *)abase, &systemerror);
-      FreeMemory((farvoid *)bbase, &systemerror);
-      locfourierstruct->arraysize += 50L;
+          FreeMemory((farvoid *)abase, &systemerror);
+          FreeMemory((farvoid *)bbase, &systemerror);
+          locfourierstruct->arraysize += 50L;
+        }
     }
-  }
   else
-  { /*
+    { /*
     ** Don't need self-adjustment.  Just allocate the
     ** arrays, and go.
     */
-    abase = (fardouble *)AllocateMemory(
-        locfourierstruct->arraysize * sizeof(double), &systemerror);
-    if (systemerror)
-    {
-      ReportError(errorcontext, systemerror);
-      ErrorExit();
-    }
+      abase = (fardouble *)AllocateMemory(
+          locfourierstruct->arraysize * sizeof(double), &systemerror);
+      if (systemerror)
+        {
+          ReportError(errorcontext, systemerror);
+          ErrorExit();
+        }
 
-    bbase = (fardouble *)AllocateMemory(
-        locfourierstruct->arraysize * sizeof(double), &systemerror);
-    if (systemerror)
-    {
-      ReportError(errorcontext, systemerror);
-      FreeMemory((void *)abase, &systemerror);
-      ErrorExit();
+      bbase = (fardouble *)AllocateMemory(
+          locfourierstruct->arraysize * sizeof(double), &systemerror);
+      if (systemerror)
+        {
+          ReportError(errorcontext, systemerror);
+          FreeMemory((void *)abase, &systemerror);
+          ErrorExit();
+        }
     }
-  }
   /*
   ** All's well if we get here.  Repeatedly perform integration
   ** tests until the accumulated time is greater than the
@@ -1474,11 +1478,12 @@ void DoFourier(void)
   accumtime = 0L;
   iterations = (double)0.0;
   do
-  {
-    accumtime += DoFPUTransIteration(abase, bbase, locfourierstruct->arraysize);
-    iterations +=
-        (double)locfourierstruct->arraysize * (double)2.0 - (double)1.0;
-  } while (iterations < BASE_ITERATIONS * 400);
+    {
+      accumtime += DoFPUTransIteration(abase, bbase, locfourierstruct->arraysize);
+      iterations +=
+          (double)locfourierstruct->arraysize * (double)2.0 - (double)1.0;
+    }
+  while (iterations < BASE_ITERATIONS * 400);
 
   /*
   ** Clean up, calculate results, and go home.
@@ -1506,10 +1511,10 @@ void DoFourier(void)
 */
 static ulong DoFPUTransIteration(fardouble *abase, /* A coeffs. */
                                  fardouble *bbase, /* B coeffs. */
-                                 ulong arraysize)  /* # of coeffs */
+                                 ulong arraysize) /* # of coeffs */
 {
-  double omega;          /* Fundamental frequency */
-  unsigned long i;       /* Index */
+  double omega; /* Fundamental frequency */
+  unsigned long i; /* Index */
   unsigned long elapsed; /* Elapsed time */
 
   /*
@@ -1535,22 +1540,22 @@ static ulong DoFPUTransIteration(fardouble *abase, /* A coeffs. */
   omega = (double)3.1415926535897932;
 
   for (i = 1; i < arraysize; i++)
-  {
-    /*
+    {
+      /*
     ** Calculate A[i] terms.  Note, once again, that we
     ** can ignore the 2/period term outside the integral
     ** since the period is 2 and the term cancels itself
     ** out.
     */
-    *(abase + i) =
-        TrapezoidIntegrate((double)0.0, (double)2.0, 200, omega * (double)i, 1);
+      *(abase + i) =
+          TrapezoidIntegrate((double)0.0, (double)2.0, 200, omega * (double)i, 1);
 
-    /*
+      /*
     ** Calculate the B[i] terms.
     */
-    *(bbase + i) =
-        TrapezoidIntegrate((double)0.0, (double)2.0, 200, omega * (double)i, 2);
-  }
+      *(bbase + i) =
+          TrapezoidIntegrate((double)0.0, (double)2.0, 200, omega * (double)i, 2);
+    }
 #ifdef DEBUG
   {
     int i;
@@ -1580,14 +1585,14 @@ static ulong DoFPUTransIteration(fardouble *abase, /* A coeffs. */
 **   2 for sine terms.
 ** Returns the value.
 */
-static double TrapezoidIntegrate(double x0,     /* Lower bound */
-                                 double x1,     /* Upper bound */
-                                 int nsteps,    /* # of steps */
+static double TrapezoidIntegrate(double x0, /* Lower bound */
+                                 double x1, /* Upper bound */
+                                 int nsteps, /* # of steps */
                                  double omegan, /* omega * n */
                                  int select)
 {
-  double x;      /* Independent variable */
-  double dx;     /* Stepsize */
+  double x; /* Independent variable */
+  double dx; /* Stepsize */
   double rvalue; /* Return value */
 
   /*
@@ -1609,14 +1614,14 @@ static double TrapezoidIntegrate(double x0,     /* Lower bound */
   ** Compute the other terms of the integral.
   */
   if (nsteps != 1)
-  {
-    --nsteps; /* Already done 1 step */
-    while (--nsteps)
     {
-      x += dx;
-      rvalue += thefunction(x, omegan, select);
+      --nsteps; /* Already done 1 step */
+      while (--nsteps)
+        {
+          x += dx;
+          rvalue += thefunction(x, omegan, select);
+        }
     }
-  }
   /*
   ** Finish computation
   */
@@ -1635,24 +1640,24 @@ static double TrapezoidIntegrate(double x0,     /* Lower bound */
 ** select chooses which of the sine/cosine functions
 **  are used.  note the special case for select=0.
 */
-static double thefunction(double x,      /* Independent variable */
+static double thefunction(double x, /* Independent variable */
                           double omegan, /* Omega * term */
-                          int select)    /* Choose term */
+                          int select) /* Choose term */
 {
   /*
   ** Use select to pick which function we call.
   */
   switch (select)
-  {
-    case 0:
-      return (pow(x + (double)1.0, x));
+    {
+      case 0:
+        return (pow(x + (double)1.0, x));
 
-    case 1:
-      return (pow(x + (double)1.0, x) * cos(omegan * x));
+      case 1:
+        return (pow(x + (double)1.0, x) * cos(omegan * x));
 
-    case 2:
-      return (pow(x + (double)1.0, x) * sin(omegan * x));
-  }
+      case 2:
+        return (pow(x + (double)1.0, x) * sin(omegan * x));
+    }
 
   /*
   ** We should never reach this point, but the following
@@ -1706,57 +1711,57 @@ void DoAssign(void)
   ** See if we need to do self adjustment code.
   */
   if (locassignstruct->adjust == 0)
-  {
-    /*
+    {
+      /*
     ** Self-adjustment code.  The system begins by working on 1
     ** array.  If it does that in no time, then two arrays
     ** are built.  This process continues until
     ** enough arrays are built to handle the tolerance.
     */
-    locassignstruct->numarrays = 1;
-    while (1)
-    {
-      /*
+      locassignstruct->numarrays = 1;
+      while (1)
+        {
+          /*
       ** Allocate space for arrays
       */
-      arraybase = (farlong *)AllocateMemory(
-          sizeof(long) * ASSIGNROWS * ASSIGNCOLS * locassignstruct->numarrays,
-          &systemerror);
-      if (systemerror)
-      {
-        ReportError(errorcontext, systemerror);
-        FreeMemory((farvoid *)arraybase, &systemerror);
-        ErrorExit();
-      }
+          arraybase = (farlong *)AllocateMemory(
+              sizeof(long) * ASSIGNROWS * ASSIGNCOLS * locassignstruct->numarrays,
+              &systemerror);
+          if (systemerror)
+            {
+              ReportError(errorcontext, systemerror);
+              FreeMemory((farvoid *)arraybase, &systemerror);
+              ErrorExit();
+            }
 
-      /*
+          /*
       ** Do an iteration of the assignment alg.  If the
       ** elapsed time is less than or equal to the permitted
       ** minimum, then allocate for more arrays and
       ** try again.
       */
-      if (DoAssignIteration(arraybase, locassignstruct->numarrays) >
-          global_min_ticks)
-        break; /* We're ok...exit */
+          if (DoAssignIteration(arraybase, locassignstruct->numarrays) >
+              global_min_ticks)
+            break; /* We're ok...exit */
 
-      FreeMemory((farvoid *)arraybase, &systemerror);
-      locassignstruct->numarrays++;
+          FreeMemory((farvoid *)arraybase, &systemerror);
+          locassignstruct->numarrays++;
+        }
     }
-  }
   else
-  { /*
+    { /*
     ** Allocate space for arrays
     */
-    arraybase = (farlong *)AllocateMemory(
-        sizeof(long) * ASSIGNROWS * ASSIGNCOLS * locassignstruct->numarrays,
-        &systemerror);
-    if (systemerror)
-    {
-      ReportError(errorcontext, systemerror);
-      FreeMemory((farvoid *)arraybase, &systemerror);
-      ErrorExit();
+      arraybase = (farlong *)AllocateMemory(
+          sizeof(long) * ASSIGNROWS * ASSIGNCOLS * locassignstruct->numarrays,
+          &systemerror);
+      if (systemerror)
+        {
+          ReportError(errorcontext, systemerror);
+          FreeMemory((farvoid *)arraybase, &systemerror);
+          ErrorExit();
+        }
     }
-  }
 
   /*
   ** All's well if we get here.  Do the tests.
@@ -1765,10 +1770,11 @@ void DoAssign(void)
   iterations = (double)0.0;
 
   do
-  {
-    accumtime += DoAssignIteration(arraybase, locassignstruct->numarrays);
-    iterations += (double)1.0;
-  } while (iterations < BASE_ITERATIONS / 3);
+    {
+      accumtime += DoAssignIteration(arraybase, locassignstruct->numarrays);
+      iterations += (double)1.0;
+    }
+  while (iterations < BASE_ITERATIONS / 3);
 
   /*
   ** Clean up, calculate results, and go home.  Be sure to
@@ -1816,11 +1822,11 @@ static ulong DoAssignIteration(farlong *arraybase, ulong numarrays)
   ** Execute assignment algorithms
   */
   for (i = 0; i < numarrays; i++)
-  { /* abase.ptrs.p+=i*ASSIGNROWS*ASSIGNCOLS; */
-    /* Fixed  by Eike Dierks */
-    Assignment(*abase.ptrs.ap);
-    abase.ptrs.p += ASSIGNROWS * ASSIGNCOLS;
-  }
+    { /* abase.ptrs.p+=i*ASSIGNROWS*ASSIGNCOLS; */
+      /* Fixed  by Eike Dierks */
+      Assignment(*abase.ptrs.ap);
+      abase.ptrs.p += ASSIGNROWS * ASSIGNCOLS;
+    }
 
   /*
   ** Get elapsed time
@@ -1852,11 +1858,11 @@ static void LoadAssignArrayWithRand(farlong *arraybase, ulong numarrays)
   LoadAssign(*(abase.ptrs.ap));
   if (numarrays > 1)
     for (i = 1; i < numarrays; i++)
-    { /* abase1.ptrs.p+=i*ASSIGNROWS*ASSIGNCOLS; */
-      /* Fixed  by Eike Dierks */
-      abase1.ptrs.p += ASSIGNROWS * ASSIGNCOLS;
-      CopyToAssign(*(abase.ptrs.ap), *(abase1.ptrs.ap));
-    }
+      { /* abase1.ptrs.p+=i*ASSIGNROWS*ASSIGNCOLS; */
+        /* Fixed  by Eike Dierks */
+        abase1.ptrs.p += ASSIGNROWS * ASSIGNCOLS;
+        CopyToAssign(*(abase.ptrs.ap), *(abase1.ptrs.ap));
+      }
 
   return;
 }
@@ -1879,10 +1885,10 @@ static void LoadAssign(farlong arraybase[][ASSIGNCOLS])
 
   for (i = 0; i < ASSIGNROWS; i++)
     for (j = 0; j < ASSIGNROWS; j++)
-    {
-      /* arraybase[i][j]=abs_randwc(5000000L);*/
-      arraybase[i][j] = abs_randwc((int32)5000000);
-    }
+      {
+        /* arraybase[i][j]=abs_randwc(5000000L);*/
+        arraybase[i][j] = abs_randwc((int32)5000000);
+      }
 
   return;
 }
@@ -1922,20 +1928,20 @@ static void Assignment(farlong arraybase[][ASSIGNCOLS])
   ** equals the number of rows in the tableau.
   */
   while (first_assignments(arraybase, assignedtableau) != ASSIGNROWS)
-  {
-    second_assignments(arraybase, assignedtableau);
-  }
+    {
+      second_assignments(arraybase, assignedtableau);
+    }
 
 #ifdef DEBUG
   {
     int i, j;
     printf("\nColumn choices for each row\n");
     for (i = 0; i < ASSIGNROWS; i++)
-    {
-      printf("R%03d: ", i);
-      for (j = 0; j < ASSIGNCOLS; j++)
-        if (assignedtableau[i][j] == 1) printf("%03d ", j);
-    }
+      {
+        printf("R%03d: ", i);
+        for (j = 0; j < ASSIGNCOLS; j++)
+          if (assignedtableau[i][j] == 1) printf("%03d ", j);
+      }
   }
 #endif
 
@@ -1951,21 +1957,21 @@ static void Assignment(farlong arraybase[][ASSIGNCOLS])
 */
 static void calc_minimum_costs(long tableau[][ASSIGNCOLS])
 {
-  ushort i, j;     /* Index variables */
+  ushort i, j; /* Index variables */
   long currentmin; /* Current minimum */
-                   /*
+  /*
                    ** Determine minimum costs on row basis.  This is done by
                    ** subtracting -- on a row-per-row basis -- the minum value
                    ** for that row.
                    */
   for (i = 0; i < ASSIGNROWS; i++)
-  {
-    currentmin = MAXPOSLONG; /* Initialize minimum */
-    for (j = 0; j < ASSIGNCOLS; j++)
-      if (tableau[i][j] < currentmin) currentmin = tableau[i][j];
+    {
+      currentmin = MAXPOSLONG; /* Initialize minimum */
+      for (j = 0; j < ASSIGNCOLS; j++)
+        if (tableau[i][j] < currentmin) currentmin = tableau[i][j];
 
-    for (j = 0; j < ASSIGNCOLS; j++) tableau[i][j] -= currentmin;
-  }
+      for (j = 0; j < ASSIGNCOLS; j++) tableau[i][j] -= currentmin;
+    }
 
   /*
   ** Determine minimum cost on a column basis.  This works
@@ -1973,20 +1979,20 @@ static void calc_minimum_costs(long tableau[][ASSIGNCOLS])
   ** column-wise
   */
   for (j = 0; j < ASSIGNCOLS; j++)
-  {
-    currentmin = MAXPOSLONG; /* Initialize minimum */
-    for (i = 0; i < ASSIGNROWS; i++)
-      if (tableau[i][j] < currentmin) currentmin = tableau[i][j];
+    {
+      currentmin = MAXPOSLONG; /* Initialize minimum */
+      for (i = 0; i < ASSIGNROWS; i++)
+        if (tableau[i][j] < currentmin) currentmin = tableau[i][j];
 
-    /*
+      /*
     ** Here, we'll take the trouble to see if the current
     ** minimum is zero.  This is likely worth it, since the
     ** preceding loop will have created at least one zero in
     ** each row.  We can save ourselves a few iterations.
     */
-    if (currentmin != 0)
-      for (i = 0; i < ASSIGNROWS; i++) tableau[i][j] -= currentmin;
-  }
+      if (currentmin != 0)
+        for (i = 0; i < ASSIGNROWS; i++) tableau[i][j] -= currentmin;
+    }
 
   return;
 }
@@ -2007,11 +2013,11 @@ static void calc_minimum_costs(long tableau[][ASSIGNCOLS])
 static int first_assignments(long tableau[][ASSIGNCOLS],
                              short assignedtableau[][ASSIGNCOLS])
 {
-  ushort i, j, k;       /* Index variables */
-  ushort numassigns;    /* # of assignments */
+  ushort i, j, k; /* Index variables */
+  ushort numassigns; /* # of assignments */
   ushort totnumassigns; /* Total # of assignments */
-  ushort numzeros;      /* # of zeros in row */
-  int selected = 0;     /* Flag used to indicate selection */
+  ushort numzeros; /* # of zeros in row */
+  int selected = 0; /* Flag used to indicate selection */
 
   /*
   ** Clear the assignedtableau, setting all members to show that
@@ -2022,62 +2028,63 @@ static int first_assignments(long tableau[][ASSIGNCOLS],
 
   totnumassigns = 0;
   do
-  {
-    numassigns = 0;
-    /*
+    {
+      numassigns = 0;
+      /*
     ** Step through rows.  For each one that is not currently
     ** assigned, see if the row has only one zero in it.  If so,
     ** mark that as an assigned row/col.  Eliminate other zeros
     ** in the same column.
     */
-    for (i = 0; i < ASSIGNROWS; i++)
-    {
-      numzeros = 0;
-      for (j = 0; j < ASSIGNCOLS; j++)
-        if (tableau[i][j] == 0L)
-          if (assignedtableau[i][j] == 0)
-          {
-            numzeros++;
-            selected = j;
-          }
-      if (numzeros == 1)
-      {
-        numassigns++;
-        totnumassigns++;
-        assignedtableau[i][selected] = 1;
-        for (k = 0; k < ASSIGNROWS; k++)
-          if ((k != i) && (tableau[k][selected] == 0))
-            assignedtableau[k][selected] = 2;
-      }
-    }
-    /*
+      for (i = 0; i < ASSIGNROWS; i++)
+        {
+          numzeros = 0;
+          for (j = 0; j < ASSIGNCOLS; j++)
+            if (tableau[i][j] == 0L)
+              if (assignedtableau[i][j] == 0)
+                {
+                  numzeros++;
+                  selected = j;
+                }
+          if (numzeros == 1)
+            {
+              numassigns++;
+              totnumassigns++;
+              assignedtableau[i][selected] = 1;
+              for (k = 0; k < ASSIGNROWS; k++)
+                if ((k != i) && (tableau[k][selected] == 0))
+                  assignedtableau[k][selected] = 2;
+            }
+        }
+      /*
     ** Step through columns, doing same as above.  Now, be careful
     ** of items in the other rows of a selected column.
     */
-    for (j = 0; j < ASSIGNCOLS; j++)
-    {
-      numzeros = 0;
-      for (i = 0; i < ASSIGNROWS; i++)
-        if (tableau[i][j] == 0L)
-          if (assignedtableau[i][j] == 0)
-          {
-            numzeros++;
-            selected = i;
-          }
-      if (numzeros == 1)
-      {
-        numassigns++;
-        totnumassigns++;
-        assignedtableau[selected][j] = 1;
-        for (k = 0; k < ASSIGNCOLS; k++)
-          if ((k != j) && (tableau[selected][k] == 0))
-            assignedtableau[selected][k] = 2;
-      }
-    }
-    /*
+      for (j = 0; j < ASSIGNCOLS; j++)
+        {
+          numzeros = 0;
+          for (i = 0; i < ASSIGNROWS; i++)
+            if (tableau[i][j] == 0L)
+              if (assignedtableau[i][j] == 0)
+                {
+                  numzeros++;
+                  selected = i;
+                }
+          if (numzeros == 1)
+            {
+              numassigns++;
+              totnumassigns++;
+              assignedtableau[selected][j] = 1;
+              for (k = 0; k < ASSIGNCOLS; k++)
+                if ((k != j) && (tableau[selected][k] == 0))
+                  assignedtableau[selected][k] = 2;
+            }
+        }
+      /*
     ** Repeat until no more assignments to be made.
     */
-  } while (numassigns != 0);
+    }
+  while (numassigns != 0);
 
   /*
   ** See if we can leave at this point.
@@ -2091,25 +2098,25 @@ static int first_assignments(long tableau[][ASSIGNCOLS],
   ** possibly.
   */
   for (i = 0; i < ASSIGNROWS; i++)
-  {
-    selected = -1;
-    for (j = 0; j < ASSIGNCOLS; j++)
-      if ((tableau[i][j] == 0L) && (assignedtableau[i][j] == 0))
-      {
-        selected = j;
-        break;
-      }
-    if (selected != -1)
     {
-      assignedtableau[i][selected] = 1;
-      totnumassigns++;
-      for (k = 0; k < ASSIGNCOLS; k++)
-        if ((k != selected) && (tableau[i][k] == 0L)) assignedtableau[i][k] = 2;
-      for (k = 0; k < ASSIGNROWS; k++)
-        if ((k != i) && (tableau[k][selected] == 0L))
-          assignedtableau[k][selected] = 2;
+      selected = -1;
+      for (j = 0; j < ASSIGNCOLS; j++)
+        if ((tableau[i][j] == 0L) && (assignedtableau[i][j] == 0))
+          {
+            selected = j;
+            break;
+          }
+      if (selected != -1)
+        {
+          assignedtableau[i][selected] = 1;
+          totnumassigns++;
+          for (k = 0; k < ASSIGNCOLS; k++)
+            if ((k != selected) && (tableau[i][k] == 0L)) assignedtableau[i][k] = 2;
+          for (k = 0; k < ASSIGNROWS; k++)
+            if ((k != i) && (tableau[k][selected] == 0L))
+              assignedtableau[k][selected] = 2;
+        }
     }
-  }
 
   return (totnumassigns);
 }
@@ -2128,10 +2135,10 @@ static void second_assignments(long tableau[][ASSIGNCOLS],
   int i, j; /* Indexes */
   short linesrow[ASSIGNROWS];
   short linescol[ASSIGNCOLS];
-  long smallest;     /* Holds smallest value */
+  long smallest; /* Holds smallest value */
   ushort numassigns; /* Number of assignments */
-  ushort newrows;    /* New rows to be considered */
-                     /*
+  ushort newrows; /* New rows to be considered */
+  /*
                      ** Clear the linesrow and linescol arrays.
                      */
   for (i = 0; i < ASSIGNROWS; i++) linesrow[i] = 0;
@@ -2141,44 +2148,45 @@ static void second_assignments(long tableau[][ASSIGNCOLS],
   ** Scan rows, flag each row that has no assignment in it.
   */
   for (i = 0; i < ASSIGNROWS; i++)
-  {
-    numassigns = 0;
-    for (j = 0; j < ASSIGNCOLS; j++)
-      if (assignedtableau[i][j] == 1)
-      {
-        numassigns++;
-        break;
-      }
-    if (numassigns == 0) linesrow[i] = 1;
-  }
+    {
+      numassigns = 0;
+      for (j = 0; j < ASSIGNCOLS; j++)
+        if (assignedtableau[i][j] == 1)
+          {
+            numassigns++;
+            break;
+          }
+      if (numassigns == 0) linesrow[i] = 1;
+    }
 
   do
-  {
-    newrows = 0;
-    /*
+    {
+      newrows = 0;
+      /*
     ** For each row checked above, scan for any zeros.  If found,
     ** check the associated column.
     */
-    for (i = 0; i < ASSIGNROWS; i++)
-    {
-      if (linesrow[i] == 1)
-        for (j = 0; j < ASSIGNCOLS; j++)
-          if (tableau[i][j] == 0) linescol[j] = 1;
-    }
+      for (i = 0; i < ASSIGNROWS; i++)
+        {
+          if (linesrow[i] == 1)
+            for (j = 0; j < ASSIGNCOLS; j++)
+              if (tableau[i][j] == 0) linescol[j] = 1;
+        }
 
-    /*
+      /*
     ** Now scan checked columns.  If any contain assigned zeros, check
     ** the associated row.
     */
-    for (j = 0; j < ASSIGNCOLS; j++)
-      if (linescol[j] == 1)
-        for (i = 0; i < ASSIGNROWS; i++)
-          if ((assignedtableau[i][j] == 1) && (linesrow[i] != 1))
-          {
-            linesrow[i] = 1;
-            newrows++;
-          }
-  } while (newrows != 0);
+      for (j = 0; j < ASSIGNCOLS; j++)
+        if (linescol[j] == 1)
+          for (i = 0; i < ASSIGNROWS; i++)
+            if ((assignedtableau[i][j] == 1) && (linesrow[i] != 1))
+              {
+                linesrow[i] = 1;
+                newrows++;
+              }
+    }
+  while (newrows != 0);
 
   /*
   ** linesrow[n]==0 indicate rows covered by imaginary line
@@ -2280,27 +2288,27 @@ void DoIDEA(void)
   */
   plain1 = (faruchar *)AllocateMemory(locideastruct->arraysize, &systemerror);
   if (systemerror)
-  {
-    ReportError(errorcontext, systemerror);
-    ErrorExit();
-  }
+    {
+      ReportError(errorcontext, systemerror);
+      ErrorExit();
+    }
 
   crypt1 = (faruchar *)AllocateMemory(locideastruct->arraysize, &systemerror);
   if (systemerror)
-  {
-    ReportError(errorcontext, systemerror);
-    FreeMemory((farvoid *)plain1, &systemerror);
-    ErrorExit();
-  }
+    {
+      ReportError(errorcontext, systemerror);
+      FreeMemory((farvoid *)plain1, &systemerror);
+      ErrorExit();
+    }
 
   plain2 = (faruchar *)AllocateMemory(locideastruct->arraysize, &systemerror);
   if (systemerror)
-  {
-    ReportError(errorcontext, systemerror);
-    FreeMemory((farvoid *)plain1, &systemerror);
-    FreeMemory((farvoid *)crypt1, &systemerror);
-    ErrorExit();
-  }
+    {
+      ReportError(errorcontext, systemerror);
+      FreeMemory((farvoid *)plain1, &systemerror);
+      FreeMemory((farvoid *)crypt1, &systemerror);
+      ErrorExit();
+    }
   /*
   ** Note that we build the "plaintext" by simply loading
   ** the array up with random numbers.
@@ -2312,18 +2320,18 @@ void DoIDEA(void)
   ** See if we need to perform self adjustment loop.
   */
   if (locideastruct->adjust == 0)
-  {
-    /*
+    {
+      /*
     ** Do self-adjustment.  This involves initializing the
     ** # of loops and increasing the loop count until we
     ** get a number of loops that we can use.
     */
-    for (locideastruct->loops = 100L; locideastruct->loops < MAXIDEALOOPS;
-         locideastruct->loops += 10L)
-      if (DoIDEAIteration(plain1, crypt1, plain2, locideastruct->arraysize,
-                          locideastruct->loops, Z, DK) > global_min_ticks)
-        break;
-  }
+      for (locideastruct->loops = 100L; locideastruct->loops < MAXIDEALOOPS;
+           locideastruct->loops += 10L)
+        if (DoIDEAIteration(plain1, crypt1, plain2, locideastruct->arraysize,
+                            locideastruct->loops, Z, DK) > global_min_ticks)
+          break;
+    }
 
   /*
   ** All's well if we get here.  Do the test.
@@ -2332,12 +2340,13 @@ void DoIDEA(void)
   iterations = (double)0.0;
 
   do
-  {
-    accumtime +=
-        DoIDEAIteration(plain1, crypt1, plain2, locideastruct->arraysize,
-                        locideastruct->loops, Z, DK);
-    iterations += (double)locideastruct->loops;
-  } while (iterations < BASE_ITERATIONS * 75);
+    {
+      accumtime +=
+          DoIDEAIteration(plain1, crypt1, plain2, locideastruct->arraysize,
+                          locideastruct->loops, Z, DK);
+      iterations += (double)locideastruct->loops;
+    }
+  while (iterations < BASE_ITERATIONS * 75);
 
   /*
   ** Clean up, calculate results, and go home.  Be sure to
@@ -2380,21 +2389,21 @@ static ulong DoIDEAIteration(faruchar *plain1, faruchar *crypt1,
   ** Do everything for nloops.
   */
   for (i = 0; i < nloops; i++)
-  {
-    for (j = 0; j < arraysize; j += (sizeof(u16) * 4))
-      cipher_idea((u16 *)(plain1 + j), (u16 *)(crypt1 + j), Z); /* Encrypt */
+    {
+      for (j = 0; j < arraysize; j += (sizeof(u16) * 4))
+        cipher_idea((u16 *)(plain1 + j), (u16 *)(crypt1 + j), Z); /* Encrypt */
 
-    for (j = 0; j < arraysize; j += (sizeof(u16) * 4))
-      cipher_idea((u16 *)(crypt1 + j), (u16 *)(plain2 + j), DK); /* Decrypt */
-  }
+      for (j = 0; j < arraysize; j += (sizeof(u16) * 4))
+        cipher_idea((u16 *)(crypt1 + j), (u16 *)(plain2 + j), DK); /* Decrypt */
+    }
 
 #ifdef DEBUG
   for (j = 0; j < arraysize; j++)
     if (*(plain1 + j) != *(plain2 + j))
-    {
-      printf("IDEA Error! \n");
-      status = 1;
-    }
+      {
+        printf("IDEA Error! \n");
+        status = 1;
+      }
   if (status == 0) printf("IDEA: OK\n");
 #endif
 
@@ -2415,17 +2424,17 @@ static u16 mul(register u16 a, register u16 b)
 {
   register u32 p;
   if (a)
-  {
-    if (b)
     {
-      p = (u32)(a * b);
-      b = low16(p);
-      a = (u16)(p >> 16);
-      return (b - a + (b < a));
+      if (b)
+        {
+          p = (u32)(a * b);
+          b = low16(p);
+          a = (u16)(p >> 16);
+          return (b - a + (b < a));
+        }
+      else
+        return (1 - a);
     }
-    else
-      return (1 - a);
-  }
   else
     return (1 - b);
 }
@@ -2449,15 +2458,16 @@ static u16 inv(u16 x)
   if (y == 1) return (low16(1 - t1));
   t0 = 1;
   do
-  {
-    q = x / y;
-    x = x % y;
-    t0 += q * t1;
-    if (x == 1) return (t0);
-    q = y / x;
-    y = y % x;
-    t1 += q * t0;
-  } while (y != 1);
+    {
+      q = x / y;
+      x = x % y;
+      t0 += q * t1;
+      if (x == 1) return (t0);
+      q = y / x;
+      y = y % x;
+      t1 += q * t0;
+    }
+  while (y != 1);
   return (low16(1 - t1));
 }
 
@@ -2475,12 +2485,12 @@ static void en_key_idea(u16 *userkey, u16 *Z)
   */
   for (j = 0; j < 8; j++) Z[j] = *userkey++;
   for (i = 0; j < KEYLEN; j++)
-  {
-    i++;
-    Z[i + 7] = (Z[i & 7] << 9) | (Z[(i + 1) & 7] >> 7);
-    Z += i & 8;
-    i &= 7;
-  }
+    {
+      i++;
+      Z[i + 7] = (Z[i & 7] << 9) | (Z[(i + 1) & 7] >> 7);
+      Z += i & 8;
+      i &= 7;
+    }
   return;
 }
 
@@ -2507,18 +2517,18 @@ static void de_key_idea(IDEAkey Z, IDEAkey DK)
   *--p = t1;
 
   for (j = 1; j < ROUNDS; j++)
-  {
-    t1 = *Z++;
-    *--p = *Z++;
-    *--p = t1;
-    t1 = inv(*Z++);
-    t2 = -*Z++;
-    t3 = -*Z++;
-    *--p = inv(*Z++);
-    *--p = t2;
-    *--p = t3;
-    *--p = t1;
-  }
+    {
+      t1 = *Z++;
+      *--p = *Z++;
+      *--p = t1;
+      t1 = inv(*Z++);
+      t2 = -*Z++;
+      t3 = -*Z++;
+      *--p = inv(*Z++);
+      *--p = t2;
+      *--p = t3;
+      *--p = t1;
+    }
   t1 = *Z++;
   *--p = *Z++;
   *--p = t1;
@@ -2533,10 +2543,10 @@ static void de_key_idea(IDEAkey Z, IDEAkey DK)
   ** Copy and destroy temp copy
   */
   for (j = 0, p = TT; j < KEYLEN; j++)
-  {
-    *DK++ = *p;
-    *p++ = 0;
-  }
+    {
+      *DK++ = *p;
+      *p++ = 0;
+    }
 
   return;
 }
@@ -2568,25 +2578,26 @@ static void cipher_idea(u16 in[4], u16 out[4], register IDEAkey Z)
   x4 = *in;
 
   do
-  {
-    MUL(x1, *Z++);
-    x2 += *Z++;
-    x3 += *Z++;
-    MUL(x4, *Z++);
+    {
+      MUL(x1, *Z++);
+      x2 += *Z++;
+      x3 += *Z++;
+      MUL(x4, *Z++);
 
-    t2 = x1 ^ x3;
-    MUL(t2, *Z++);
-    t1 = t2 + (x2 ^ x4);
-    MUL(t1, *Z++);
-    t2 = t1 + t2;
+      t2 = x1 ^ x3;
+      MUL(t2, *Z++);
+      t1 = t2 + (x2 ^ x4);
+      MUL(t1, *Z++);
+      t2 = t1 + t2;
 
-    x1 ^= t1;
-    x4 ^= t2;
+      x1 ^= t1;
+      x4 ^= t2;
 
-    t2 ^= x2;
-    x2 = x3 ^ t1;
-    x3 = t2;
-  } while (--r);
+      t2 ^= x2;
+      x2 = x3 ^ t1;
+      x3 = t2;
+    }
+  while (--r);
   MUL(x1, *Z++);
   *out++ = x1;
   *out++ = x3 + *Z++;
@@ -2643,36 +2654,36 @@ void DoHuffman(void)
   */
   plaintext = (farchar *)AllocateMemory(lochuffstruct->arraysize, &systemerror);
   if (systemerror)
-  {
-    ReportError(errorcontext, systemerror);
-    ErrorExit();
-  }
+    {
+      ReportError(errorcontext, systemerror);
+      ErrorExit();
+    }
   comparray = (farchar *)AllocateMemory(lochuffstruct->arraysize, &systemerror);
   if (systemerror)
-  {
-    ReportError(errorcontext, systemerror);
-    FreeMemory(plaintext, &systemerror);
-    ErrorExit();
-  }
+    {
+      ReportError(errorcontext, systemerror);
+      FreeMemory(plaintext, &systemerror);
+      ErrorExit();
+    }
   decomparray =
       (farchar *)AllocateMemory(lochuffstruct->arraysize, &systemerror);
   if (systemerror)
-  {
-    ReportError(errorcontext, systemerror);
-    FreeMemory(plaintext, &systemerror);
-    FreeMemory(comparray, &systemerror);
-    ErrorExit();
-  }
+    {
+      ReportError(errorcontext, systemerror);
+      FreeMemory(plaintext, &systemerror);
+      FreeMemory(comparray, &systemerror);
+      ErrorExit();
+    }
 
   hufftree = (huff_node *)AllocateMemory(sizeof(huff_node) * 512, &systemerror);
   if (systemerror)
-  {
-    ReportError(errorcontext, systemerror);
-    FreeMemory(plaintext, &systemerror);
-    FreeMemory(comparray, &systemerror);
-    FreeMemory(decomparray, &systemerror);
-    ErrorExit();
-  }
+    {
+      ReportError(errorcontext, systemerror);
+      FreeMemory(plaintext, &systemerror);
+      FreeMemory(comparray, &systemerror);
+      FreeMemory(decomparray, &systemerror);
+      ErrorExit();
+    }
 
   /*
   ** Build the plaintext buffer.  Since we want this to
@@ -2692,19 +2703,19 @@ void DoHuffman(void)
   ** See if we need to perform self adjustment loop.
   */
   if (lochuffstruct->adjust == 0)
-  {
-    /*
+    {
+      /*
     ** Do self-adjustment.  This involves initializing the
     ** # of loops and increasing the loop count until we
     ** get a number of loops that we can use.
     */
-    for (lochuffstruct->loops = 100L; lochuffstruct->loops < MAXHUFFLOOPS;
-         lochuffstruct->loops += 10L)
-      if (DoHuffIteration(plaintext, comparray, decomparray,
-                          lochuffstruct->arraysize, lochuffstruct->loops,
-                          hufftree) > global_min_ticks)
-        break;
-  }
+      for (lochuffstruct->loops = 100L; lochuffstruct->loops < MAXHUFFLOOPS;
+           lochuffstruct->loops += 10L)
+        if (DoHuffIteration(plaintext, comparray, decomparray,
+                            lochuffstruct->arraysize, lochuffstruct->loops,
+                            hufftree) > global_min_ticks)
+          break;
+    }
 
   /*
   ** All's well if we get here.  Do the test.
@@ -2713,12 +2724,13 @@ void DoHuffman(void)
   iterations = (double)0.0;
 
   do
-  {
-    accumtime += DoHuffIteration(plaintext, comparray, decomparray,
-                                 lochuffstruct->arraysize, lochuffstruct->loops,
-                                 hufftree);
-    iterations += (double)lochuffstruct->loops;
-  } while (iterations < BASE_ITERATIONS * 20);
+    {
+      accumtime += DoHuffIteration(plaintext, comparray, decomparray,
+                                   lochuffstruct->arraysize, lochuffstruct->loops,
+                                   hufftree);
+      iterations += (double)lochuffstruct->loops;
+    }
+  while (iterations < BASE_ITERATIONS * 20);
 
   /*
   ** Clean up, calculate results, and go home.  Be sure to
@@ -2741,45 +2753,46 @@ void DoHuffman(void)
 */
 static void create_text_line(farchar *dt, long nchars)
 {
-  long charssofar;  /* # of characters so far */
-  long tomove;      /* # of characters to move */
-  char myword[40];  /* Local buffer for words */
+  long charssofar; /* # of characters so far */
+  long tomove; /* # of characters to move */
+  char myword[40]; /* Local buffer for words */
   farchar *wordptr; /* Pointer to word from catalog */
 
   charssofar = 0;
 
   do
-  {
-    /*
+    {
+      /*
     ** Grab a random word from the wordcatalog
     */
-    /* wordptr=wordcatarray[abs_randwc((long)WORDCATSIZE)];*/
-    wordptr = wordcatarray[abs_randwc((int32)WORDCATSIZE)];
-    MoveMemory((farvoid *)myword, (farvoid *)wordptr,
-               (unsigned long)strlen(wordptr) + 1);
+      /* wordptr=wordcatarray[abs_randwc((long)WORDCATSIZE)];*/
+      wordptr = wordcatarray[abs_randwc((int32)WORDCATSIZE)];
+      MoveMemory((farvoid *)myword, (farvoid *)wordptr,
+                 (unsigned long)strlen(wordptr) + 1);
 
-    /*
+      /*
     ** Append a blank.
     */
-    tomove = strlen(myword) + 1;
-    myword[tomove - 1] = ' ';
+      tomove = strlen(myword) + 1;
+      myword[tomove - 1] = ' ';
 
-    /*
+      /*
     ** See how long it is.  If its length+charssofar > nchars, we have
     ** to trim it.
     */
-    if ((tomove + charssofar) > nchars) tomove = nchars - charssofar;
-    /*
+      if ((tomove + charssofar) > nchars) tomove = nchars - charssofar;
+      /*
     ** Attach the word to the current line.  Increment counter.
     */
-    MoveMemory((farvoid *)dt, (farvoid *)myword, (unsigned long)tomove);
-    charssofar += tomove;
-    dt += tomove;
+      MoveMemory((farvoid *)dt, (farvoid *)myword, (unsigned long)tomove);
+      charssofar += tomove;
+      dt += tomove;
 
-    /*
+      /*
     ** If we're done, bail out.  Otherwise, go get another word.
     */
-  } while (charssofar < nchars);
+    }
+  while (charssofar < nchars);
 
   return;
 }
@@ -2798,29 +2811,29 @@ static void create_text_line(farchar *dt, long nchars)
 static void create_text_block(farchar *tb, ulong tblen, ushort maxlinlen)
 {
   ulong bytessofar; /* # of bytes so far */
-  ulong linelen;    /* Line length */
+  ulong linelen; /* Line length */
 
   bytessofar = 0L;
   do
-  {
-    /*
+    {
+      /*
     ** Pick a random length for a line and fill the line.
     ** Make sure the line can fit (haven't exceeded tablen) and also
     ** make sure you leave room to append a carriage return.
     */
-    linelen = abs_randwc(maxlinlen - 6) + 6;
-    if ((linelen + bytessofar) > tblen) linelen = tblen - bytessofar;
+      linelen = abs_randwc(maxlinlen - 6) + 6;
+      if ((linelen + bytessofar) > tblen) linelen = tblen - bytessofar;
 
-    if (linelen > 1)
-    {
-      create_text_line(tb, linelen);
+      if (linelen > 1)
+        {
+          create_text_line(tb, linelen);
+        }
+      tb += linelen - 1; /* Add the carriage return */
+      *tb++ = '\n';
+
+      bytessofar += linelen;
     }
-    tb += linelen - 1; /* Add the carriage return */
-    *tb++ = '\n';
-
-    bytessofar += linelen;
-
-  } while (bytessofar < tblen);
+  while (bytessofar < tblen);
 }
 
 /********************
@@ -2835,18 +2848,18 @@ static ulong DoHuffIteration(farchar *plaintext, farchar *comparray,
                              farchar *decomparray, ulong arraysize,
                              ulong nloops, huff_node *hufftree)
 {
-  int i;                    /* Index */
-  long j;                   /* Bigger index */
-  int root;                 /* Pointer to huffman tree root */
+  int i; /* Index */
+  long j; /* Bigger index */
+  int root; /* Pointer to huffman tree root */
   float lowfreq1, lowfreq2; /* Low frequency counters */
-  int lowidx1, lowidx2;     /* Indexes of low freq. elements */
-  long bitoffset;           /* Bit offset into text */
-  long textoffset;          /* Char offset into text */
-  long maxbitoffset;        /* Holds limit of bit offset */
-  long bitstringlen;        /* Length of bitstring */
-  int c;                    /* Character from plaintext */
-  char bitstring[30];       /* Holds bitstring */
-  ulong elapsed;            /* For stopwatch */
+  int lowidx1, lowidx2; /* Indexes of low freq. elements */
+  long bitoffset; /* Bit offset into text */
+  long textoffset; /* Char offset into text */
+  long maxbitoffset; /* Holds limit of bit offset */
+  long bitstringlen; /* Length of bitstring */
+  int c; /* Character from plaintext */
+  char bitstring[30]; /* Holds bitstring */
+  ulong elapsed; /* For stopwatch */
 #ifdef DEBUG
   int status = 0;
 #endif
@@ -2860,26 +2873,26 @@ static ulong DoHuffIteration(farchar *plaintext, farchar *comparray,
   ** Do everything for nloops
   */
   while (nloops--)
-  {
-    /*
+    {
+      /*
     ** Calculate the frequency of each byte value. Store the
     ** results in what will become the "leaves" of the
     ** Huffman tree.  Interior nodes will be built in those
     ** nodes greater than node #255.
     */
-    for (i = 0; i < 256; i++)
-    {
-      hufftree[i].freq = (float)0.0;
-      hufftree[i].c = (unsigned char)i;
-    }
+      for (i = 0; i < 256; i++)
+        {
+          hufftree[i].freq = (float)0.0;
+          hufftree[i].c = (unsigned char)i;
+        }
 
-    for (j = 0; j < arraysize; j++)
-      hufftree[(int)plaintext[j]].freq += (float)1.0;
+      for (j = 0; j < arraysize; j++)
+        hufftree[(int)plaintext[j]].freq += (float)1.0;
 
-    for (i = 0; i < 256; i++)
-      if (hufftree[i].freq != (float)0.0) hufftree[i].freq /= (float)arraysize;
+      for (i = 0; i < 256; i++)
+        if (hufftree[i].freq != (float)0.0) hufftree[i].freq /= (float)arraysize;
 
-    /* Reset the second half of the tree. Otherwise the loop below that
+      /* Reset the second half of the tree. Otherwise the loop below that
     ** compares the frequencies up to index 512 makes no sense. Some
     ** systems automatically zero out memory upon allocation, others (like
     ** for example DEC Unix) do not. Depending on this the loop below gets
@@ -2887,141 +2900,142 @@ static ulong DoHuffIteration(farchar *plaintext, farchar *comparray,
     ** was arbitrarily assigned led to an underflow error at runtime. We
     ** use that zeroed-out bits are in fact 0 as a float.
     ** Uwe F. Mayer */
-    bzero((char *)&(hufftree[256]), sizeof(huff_node) * 256);
-    /*
+      bzero((char *)&(hufftree[256]), sizeof(huff_node) * 256);
+      /*
     ** Build the huffman tree.  First clear all the parent
     ** pointers and left/right pointers.  Also, discard all
     ** nodes that have a frequency of true 0.  */
-    for (i = 0; i < 512; i++)
-    {
-      if (hufftree[i].freq == (float)0.0)
-        hufftree[i].parent = EXCLUDED;
-      else
-        hufftree[i].parent = hufftree[i].left = hufftree[i].right = -1;
-    }
+      for (i = 0; i < 512; i++)
+        {
+          if (hufftree[i].freq == (float)0.0)
+            hufftree[i].parent = EXCLUDED;
+          else
+            hufftree[i].parent = hufftree[i].left = hufftree[i].right = -1;
+        }
 
-    /*
+      /*
     ** Go through the tree. Finding nodes of really low
     ** frequency.
     */
-    root = 255; /* Starting root node-1 */
-    while (1)
-    {
-      lowfreq1 = (float)2.0;
-      lowfreq2 = (float)2.0;
-      lowidx1 = -1;
-      lowidx2 = -1;
-      /*
+      root = 255; /* Starting root node-1 */
+      while (1)
+        {
+          lowfreq1 = (float)2.0;
+          lowfreq2 = (float)2.0;
+          lowidx1 = -1;
+          lowidx2 = -1;
+          /*
       ** Find first lowest frequency.
       */
-      for (i = 0; i <= root; i++)
-        if (hufftree[i].parent < 0)
-          if (hufftree[i].freq < lowfreq1)
-          {
-            lowfreq1 = hufftree[i].freq;
-            lowidx1 = i;
-          }
+          for (i = 0; i <= root; i++)
+            if (hufftree[i].parent < 0)
+              if (hufftree[i].freq < lowfreq1)
+                {
+                  lowfreq1 = hufftree[i].freq;
+                  lowidx1 = i;
+                }
 
-      /*
+          /*
       ** Did we find a lowest value?  If not, the
       ** tree is done.
       */
-      if (lowidx1 == -1) break;
+          if (lowidx1 == -1) break;
 
-      /*
+          /*
       ** Find next lowest frequency
       */
-      for (i = 0; i <= root; i++)
-        if ((hufftree[i].parent < 0) && (i != lowidx1))
-          if (hufftree[i].freq < lowfreq2)
-          {
-            lowfreq2 = hufftree[i].freq;
-            lowidx2 = i;
-          }
+          for (i = 0; i <= root; i++)
+            if ((hufftree[i].parent < 0) && (i != lowidx1))
+              if (hufftree[i].freq < lowfreq2)
+                {
+                  lowfreq2 = hufftree[i].freq;
+                  lowidx2 = i;
+                }
 
-      /*
+          /*
       ** If we could only find one item, then that
       ** item is surely the root, and (as above) the
       ** tree is done.
       */
-      if (lowidx2 == -1) break;
+          if (lowidx2 == -1) break;
 
-      /*
+          /*
       ** Attach the two new nodes to the current root, and
       ** advance the current root.
       */
-      root++; /* New root */
-      hufftree[lowidx1].parent = root;
-      hufftree[lowidx2].parent = root;
-      hufftree[root].freq = lowfreq1 + lowfreq2;
-      hufftree[root].left = lowidx1;
-      hufftree[root].right = lowidx2;
-      hufftree[root].parent = -2; /* Show root */
-    }
-
-    /*
-    ** Huffman tree built...compress the plaintext
-    */
-    bitoffset = 0L; /* Initialize bit offset */
-    for (i = 0; i < arraysize; i++)
-    {
-      c = (int)plaintext[i]; /* Fetch character */
-                             /*
-                             ** Build a bit string for byte c
-                             */
-      bitstringlen = 0;
-      while (hufftree[c].parent != -2)
-      {
-        if (hufftree[hufftree[c].parent].left == c)
-          bitstring[bitstringlen] = '0';
-        else
-          bitstring[bitstringlen] = '1';
-        c = hufftree[c].parent;
-        bitstringlen++;
-      }
+          root++; /* New root */
+          hufftree[lowidx1].parent = root;
+          hufftree[lowidx2].parent = root;
+          hufftree[root].freq = lowfreq1 + lowfreq2;
+          hufftree[root].left = lowidx1;
+          hufftree[root].right = lowidx2;
+          hufftree[root].parent = -2; /* Show root */
+        }
 
       /*
+    ** Huffman tree built...compress the plaintext
+    */
+      bitoffset = 0L; /* Initialize bit offset */
+      for (i = 0; i < arraysize; i++)
+        {
+          c = (int)plaintext[i]; /* Fetch character */
+          /*
+                             ** Build a bit string for byte c
+                             */
+          bitstringlen = 0;
+          while (hufftree[c].parent != -2)
+            {
+              if (hufftree[hufftree[c].parent].left == c)
+                bitstring[bitstringlen] = '0';
+              else
+                bitstring[bitstringlen] = '1';
+              c = hufftree[c].parent;
+              bitstringlen++;
+            }
+
+          /*
       ** Step backwards through the bit string, setting
       ** bits in the compressed array as you go.
       */
-      while (bitstringlen--)
-      {
-        SetCompBit((u8 *)comparray, (u32)bitoffset, bitstring[bitstringlen]);
-        bitoffset++;
-      }
-    }
+          while (bitstringlen--)
+            {
+              SetCompBit((u8 *)comparray, (u32)bitoffset, bitstring[bitstringlen]);
+              bitoffset++;
+            }
+        }
 
-    /*
+      /*
     ** Compression done.  Perform de-compression.
     */
-    maxbitoffset = bitoffset;
-    bitoffset = 0;
-    textoffset = 0;
-    do
-    {
-      i = root;
-      while (hufftree[i].left != -1)
-      {
-        if (GetCompBit((u8 *)comparray, (u32)bitoffset) == 0)
-          i = hufftree[i].left;
-        else
-          i = hufftree[i].right;
-        bitoffset++;
-      }
-      decomparray[textoffset] = hufftree[i].c;
+      maxbitoffset = bitoffset;
+      bitoffset = 0;
+      textoffset = 0;
+      do
+        {
+          i = root;
+          while (hufftree[i].left != -1)
+            {
+              if (GetCompBit((u8 *)comparray, (u32)bitoffset) == 0)
+                i = hufftree[i].left;
+              else
+                i = hufftree[i].right;
+              bitoffset++;
+            }
+          decomparray[textoffset] = hufftree[i].c;
 
 #ifdef DEBUG
-      if (hufftree[i].c != plaintext[textoffset])
-      {
-        /* Show error */
-        printf("Error at textoffset %ld\n", textoffset);
-        status = 1;
-      }
+          if (hufftree[i].c != plaintext[textoffset])
+            {
+              /* Show error */
+              printf("Error at textoffset %ld\n", textoffset);
+              status = 1;
+            }
 #endif
-      textoffset++;
-    } while (bitoffset < maxbitoffset);
+          textoffset++;
+        }
+      while (bitoffset < maxbitoffset);
 
-  } /* End the big while(nloops--) from above */
+    } /* End the big while(nloops--) from above */
 
 /*
 ** All done
@@ -3157,19 +3171,19 @@ void DoNNET(void)
   ** See if we need to perform self adjustment loop.
   */
   if (locnnetstruct->adjust == 0)
-  {
-    /*
+    {
+      /*
     ** Do self-adjustment.  This involves initializing the
     ** # of loops and increasing the loop count until we
     ** get a number of loops that we can use.
     */
-    for (locnnetstruct->loops = 1L; locnnetstruct->loops < MAXNNETLOOPS;
-         locnnetstruct->loops++)
-    { /*randnum(3L); */
-      randnum((int32)3);
-      if (DoNNetIteration(locnnetstruct->loops) > global_min_ticks) break;
+      for (locnnetstruct->loops = 1L; locnnetstruct->loops < MAXNNETLOOPS;
+           locnnetstruct->loops++)
+        { /*randnum(3L); */
+          randnum((int32)3);
+          if (DoNNetIteration(locnnetstruct->loops) > global_min_ticks) break;
+        }
     }
-  }
 
   /*
   ** All's well if we get here.  Do the test.
@@ -3178,12 +3192,13 @@ void DoNNET(void)
   iterations = (double)0.0;
 
   do
-  {
-    /* randnum(3L); */ /* Gotta do this for Neural Net */
-    randnum((int32)3); /* Gotta do this for Neural Net */
-    accumtime += DoNNetIteration(locnnetstruct->loops);
-    iterations += (double)locnnetstruct->loops;
-  } while (iterations < BASE_ITERATIONS / 2);
+    {
+      /* randnum(3L); */ /* Gotta do this for Neural Net */
+      randnum((int32)3); /* Gotta do this for Neural Net */
+      accumtime += DoNNetIteration(locnnetstruct->loops);
+      iterations += (double)locnnetstruct->loops;
+    }
+  while (iterations < BASE_ITERATIONS / 2);
 
   /*
   ** Clean up, calculate results, and go home.  Be sure to
@@ -3216,29 +3231,29 @@ static ulong DoNNetIteration(ulong nloops)
   */
   elapsed = StartStopwatch();
   while (nloops--)
-  {
-    randomize_wts();
-    zero_changes();
-    iteration_count = 1;
-    learned = F;
-    numpasses = 0;
-    while (learned == F)
     {
-      for (patt = 0; patt < numpats; patt++)
-      {
-        worst_error = 0.0; /* reset this every pass through data */
-        move_wt_changes(); /* move last pass's wt changes to momentum array */
-        do_forward_pass(patt);
-        do_back_pass(patt);
-        iteration_count++;
-      }
-      numpasses++;
-      learned = check_out_error();
-    }
+      randomize_wts();
+      zero_changes();
+      iteration_count = 1;
+      learned = F;
+      numpasses = 0;
+      while (learned == F)
+        {
+          for (patt = 0; patt < numpats; patt++)
+            {
+              worst_error = 0.0; /* reset this every pass through data */
+              move_wt_changes(); /* move last pass's wt changes to momentum array */
+              do_forward_pass(patt);
+              do_back_pass(patt);
+              iteration_count++;
+            }
+          numpasses++;
+          learned = check_out_error();
+        }
 #ifdef DEBUG
-    printf("Learned in %d passes\n", numpasses);
+      printf("Learned in %d passes\n", numpasses);
 #endif
-  }
+    }
   return (StopStopwatch(elapsed));
 }
 
@@ -3256,18 +3271,18 @@ static void do_mid_forward(int patt)
   int neurode, i;
 
   for (neurode = 0; neurode < MID_SIZE; neurode++)
-  {
-    sum = 0.0;
-    for (i = 0; i < IN_SIZE; i++)
-    { /* compute weighted sum of input signals */
-      sum += mid_wts[neurode][i] * in_pats[patt][i];
-    }
-    /*
+    {
+      sum = 0.0;
+      for (i = 0; i < IN_SIZE; i++)
+        { /* compute weighted sum of input signals */
+          sum += mid_wts[neurode][i] * in_pats[patt][i];
+        }
+      /*
     ** apply sigmoid function f(x) = 1/(1+exp(-x)) to weighted sum
     */
-    sum = 1.0 / (1.0 + exp(-sum));
-    mid_out[neurode] = sum;
-  }
+      sum = 1.0 / (1.0 + exp(-sum));
+      mid_out[neurode] = sum;
+    }
   return;
 }
 
@@ -3285,21 +3300,21 @@ static void do_out_forward()
   int neurode, i;
 
   for (neurode = 0; neurode < OUT_SIZE; neurode++)
-  {
-    sum = 0.0;
-    for (i = 0; i < MID_SIZE; i++)
-    { /*
+    {
+      sum = 0.0;
+      for (i = 0; i < MID_SIZE; i++)
+        { /*
       ** compute weighted sum of input signals
       ** from middle layer
       */
-      sum += out_wts[neurode][i] * mid_out[i];
-    }
-    /*
+          sum += out_wts[neurode][i] * mid_out[i];
+        }
+      /*
     ** Apply f(x) = 1/(1+exp(-x)) to weighted input
     */
-    sum = 1.0 / (1.0 + exp(-sum));
-    out_out[neurode] = sum;
-  }
+      sum = 1.0 / (1.0 + exp(-sum));
+      out_out[neurode] = sum;
+    }
   return;
 }
 
@@ -3348,7 +3363,7 @@ int             i;
 static void do_forward_pass(int patt)
 {
   do_mid_forward(patt); /* process forward pass, middle layer */
-  do_out_forward();     /* process forward pass, output layer */
+  do_out_forward(); /* process forward pass, output layer */
   /* display_output(patt);        ** display results of forward pass */
   return;
 }
@@ -3367,25 +3382,25 @@ static void do_out_error(int patt)
   tot_error = 0.0;
   sum = 0.0;
   for (neurode = 0; neurode < OUT_SIZE; neurode++)
-  {
-    out_error[neurode] = out_pats[patt][neurode] - out_out[neurode];
-    /*
+    {
+      out_error[neurode] = out_pats[patt][neurode] - out_out[neurode];
+      /*
     ** while we're here, also compute magnitude
     ** of total error and worst error in this pass.
     ** We use these to decide if we are done yet.
     */
-    error = out_error[neurode];
-    if (error < 0.0)
-    {
-      sum += -error;
-      if (-error > tot_error) tot_error = -error; /* worst error this pattern */
+      error = out_error[neurode];
+      if (error < 0.0)
+        {
+          sum += -error;
+          if (-error > tot_error) tot_error = -error; /* worst error this pattern */
+        }
+      else
+        {
+          sum += error;
+          if (error > tot_error) tot_error = error; /* worst error this pattern */
+        }
     }
-    else
-    {
-      sum += error;
-      if (error > tot_error) tot_error = error; /* worst error this pattern */
-    }
-  }
   avg_out_error[patt] = sum / OUT_SIZE;
   tot_out_error[patt] = tot_error;
   return;
@@ -3405,10 +3420,10 @@ static void worst_pass_error()
   error = 0.0;
   sum = 0.0;
   for (i = 0; i < numpats; i++)
-  {
-    if (tot_out_error[i] > error) error = tot_out_error[i];
-    sum += avg_out_error[i];
-  }
+    {
+      if (tot_out_error[i] > error) error = tot_out_error[i];
+      sum += avg_out_error[i];
+    }
   worst_error = error;
   average_error = sum / numpats;
   return;
@@ -3430,17 +3445,17 @@ static void do_mid_error()
   int neurode, i;
 
   for (neurode = 0; neurode < MID_SIZE; neurode++)
-  {
-    sum = 0.0;
-    for (i = 0; i < OUT_SIZE; i++) sum += out_wts[i][neurode] * out_error[i];
+    {
+      sum = 0.0;
+      for (i = 0; i < OUT_SIZE; i++) sum += out_wts[i][neurode] * out_error[i];
 
-    /*
+      /*
     ** apply the derivative of the sigmoid here
     ** Because of the choice of sigmoid f(I), the derivative
     ** of the sigmoid is f'(I) = f(I)(1 - f(I))
     */
-    mid_error[neurode] = mid_out[neurode] * (1 - mid_out[neurode]) * sum;
-  }
+      mid_error[neurode] = mid_out[neurode] * (1 - mid_out[neurode]) * sum;
+    }
   return;
 }
 
@@ -3460,20 +3475,20 @@ static void adjust_out_wts()
   learn = BETA;
   alph = ALPHA;
   for (neurode = 0; neurode < OUT_SIZE; neurode++)
-  {
-    for (weight = 0; weight < MID_SIZE; weight++)
     {
-      /* standard delta rule */
-      delta = learn * out_error[neurode] * mid_out[weight];
+      for (weight = 0; weight < MID_SIZE; weight++)
+        {
+          /* standard delta rule */
+          delta = learn * out_error[neurode] * mid_out[weight];
 
-      /* now the momentum term */
-      delta += alph * out_wt_change[neurode][weight];
-      out_wts[neurode][weight] += delta;
+          /* now the momentum term */
+          delta += alph * out_wt_change[neurode][weight];
+          out_wts[neurode][weight] += delta;
 
-      /* keep track of this pass's cum wt changes for next pass's momentum */
-      out_wt_cum_change[neurode][weight] += delta;
+          /* keep track of this pass's cum wt changes for next pass's momentum */
+          out_wt_cum_change[neurode][weight] += delta;
+        }
     }
-  }
   return;
 }
 
@@ -3492,20 +3507,20 @@ static void adjust_mid_wts(int patt)
   learn = BETA;
   alph = ALPHA;
   for (neurode = 0; neurode < MID_SIZE; neurode++)
-  {
-    for (weight = 0; weight < IN_SIZE; weight++)
     {
-      /* first the basic delta rule */
-      delta = learn * mid_error[neurode] * in_pats[patt][weight];
+      for (weight = 0; weight < IN_SIZE; weight++)
+        {
+          /* first the basic delta rule */
+          delta = learn * mid_error[neurode] * in_pats[patt][weight];
 
-      /* with the momentum term */
-      delta += alph * mid_wt_change[neurode][weight];
-      mid_wts[neurode][weight] += delta;
+          /* with the momentum term */
+          delta += alph * mid_wt_change[neurode][weight];
+          mid_wts[neurode][weight] += delta;
 
-      /* keep track of this pass's cum wt changes for next pass's momentum */
-      mid_wt_cum_change[neurode][weight] += delta;
+          /* keep track of this pass's cum wt changes for next pass's momentum */
+          mid_wt_cum_change[neurode][weight] += delta;
+        }
     }
-  }
   return;
 }
 
@@ -3537,20 +3552,20 @@ static void move_wt_changes()
 
   for (i = 0; i < MID_SIZE; i++)
     for (j = 0; j < IN_SIZE; j++)
-    {
-      mid_wt_change[i][j] = mid_wt_cum_change[i][j];
-      /*
+      {
+        mid_wt_change[i][j] = mid_wt_cum_change[i][j];
+        /*
       ** Zero it out for next pass accumulation.
       */
-      mid_wt_cum_change[i][j] = 0.0;
-    }
+        mid_wt_cum_change[i][j] = 0.0;
+      }
 
   for (i = 0; i < OUT_SIZE; i++)
     for (j = 0; j < MID_SIZE; j++)
-    {
-      out_wt_change[i][j] = out_wt_cum_change[i][j];
-      out_wt_cum_change[i][j] = 0.0;
-    }
+      {
+        out_wt_change[i][j] = out_wt_cum_change[i][j];
+        out_wt_cum_change[i][j] = 0.0;
+      }
 
   return;
 }
@@ -3578,17 +3593,17 @@ static int check_out_error()
   #endif
   */
   for (i = 0; i < numpats; i++)
-  {
-    /*      printf("\n Error pattern %d:   Worst: %8.3f; Average: %8.3f",
+    {
+      /*      printf("\n Error pattern %d:   Worst: %8.3f; Average: %8.3f",
               i+1,tot_out_error[i], avg_out_error[i]);
             fprintf(outfile,
              "\n Error pattern %d:   Worst: %8.3f; Average: %8.3f",
              i+1,tot_out_error[i]);
     */
 
-    if (worst_error >= STOP) result = F;
-    if (tot_out_error[i] >= 16.0) error = T;
-  }
+      if (worst_error >= STOP) result = F;
+      if (tot_out_error[i] >= 16.0) error = T;
+    }
 
   if (error == T) result = ERR;
 
@@ -3614,22 +3629,22 @@ static void zero_changes()
   int i, j;
 
   for (i = 0; i < MID_SIZE; i++)
-  {
-    for (j = 0; j < IN_SIZE; j++)
     {
-      mid_wt_change[i][j] = 0.0;
-      mid_wt_cum_change[i][j] = 0.0;
+      for (j = 0; j < IN_SIZE; j++)
+        {
+          mid_wt_change[i][j] = 0.0;
+          mid_wt_cum_change[i][j] = 0.0;
+        }
     }
-  }
 
   for (i = 0; i < OUT_SIZE; i++)
-  {
-    for (j = 0; j < MID_SIZE; j++)
     {
-      out_wt_change[i][j] = 0.0;
-      out_wt_cum_change[i][j] = 0.0;
+      for (j = 0; j < MID_SIZE; j++)
+        {
+          out_wt_change[i][j] = 0.0;
+          out_wt_cum_change[i][j] = 0.0;
+        }
     }
-  }
   return;
 }
 
@@ -3657,25 +3672,25 @@ static void randomize_wts()
   */
 
   for (neurode = 0; neurode < MID_SIZE; neurode++)
-  {
-    for (i = 0; i < IN_SIZE; i++)
     {
-      /* value=(double)abs_randwc(100000L); */
-      value = (double)abs_randwc((int32)100000);
-      value = value / (double)100000.0 - (double)0.5;
-      mid_wts[neurode][i] = value / 2;
+      for (i = 0; i < IN_SIZE; i++)
+        {
+          /* value=(double)abs_randwc(100000L); */
+          value = (double)abs_randwc((int32)100000);
+          value = value / (double)100000.0 - (double)0.5;
+          mid_wts[neurode][i] = value / 2;
+        }
     }
-  }
   for (neurode = 0; neurode < OUT_SIZE; neurode++)
-  {
-    for (i = 0; i < MID_SIZE; i++)
     {
-      /* value=(double)abs_randwc(100000L); */
-      value = (double)abs_randwc((int32)100000);
-      value = value / (double)10000.0 - (double)0.5;
-      out_wts[neurode][i] = value / 2;
+      for (i = 0; i < MID_SIZE; i++)
+        {
+          /* value=(double)abs_randwc(100000L); */
+          value = (double)abs_randwc((int32)100000);
+          value = value / (double)10000.0 - (double)0.5;
+          out_wts[neurode][i] = value / 2;
+        }
     }
-  }
 
   return;
 }
@@ -3734,77 +3749,77 @@ static int read_data_file()
 
   infile = fopen(inpath, "r");
   if (infile == NULL)
-  {
-    printf("\n CPU:NNET--error in opening file!");
-    return -1;
-  }
+    {
+      printf("\n CPU:NNET--error in opening file!");
+      return -1;
+    }
   vals_read = fscanf(infile, "%d  %d  %d", &xinsize, &yinsize, &youtsize);
   if (vals_read != 3)
-  {
-    printf("\n CPU:NNET -- Should read 3 items in line one; did read %d",
-           vals_read);
-    return -1;
-  }
+    {
+      printf("\n CPU:NNET -- Should read 3 items in line one; did read %d",
+             vals_read);
+      return -1;
+    }
   vals_read = fscanf(infile, "%d", &numpats);
   if (vals_read != 1)
-  {
-    printf("\n CPU:NNET -- Should read 1 item in line 2; did read %d",
-           vals_read);
-    return -1;
-  }
+    {
+      printf("\n CPU:NNET -- Should read 1 item in line 2; did read %d",
+             vals_read);
+      return -1;
+    }
   if (numpats > MAXPATS) numpats = MAXPATS;
 
   for (patt = 0; patt < numpats; patt++)
-  {
-    element = 0;
-    for (row = 0; row < yinsize; row++)
     {
-      vals_read = fscanf(infile, "%d  %d  %d  %d  %d", &val1, &val2, &val3,
-                         &val4, &val5);
-      if (vals_read != 5)
-      {
-        printf("\n CPU:NNET -- failure in reading input!");
-        return -1;
-      }
-      element = row * xinsize;
+      element = 0;
+      for (row = 0; row < yinsize; row++)
+        {
+          vals_read = fscanf(infile, "%d  %d  %d  %d  %d", &val1, &val2, &val3,
+                             &val4, &val5);
+          if (vals_read != 5)
+            {
+              printf("\n CPU:NNET -- failure in reading input!");
+              return -1;
+            }
+          element = row * xinsize;
 
-      in_pats[patt][element] = (double)val1;
+          in_pats[patt][element] = (double)val1;
+          element++;
+          in_pats[patt][element] = (double)val2;
+          element++;
+          in_pats[patt][element] = (double)val3;
+          element++;
+          in_pats[patt][element] = (double)val4;
+          element++;
+          in_pats[patt][element] = (double)val5;
+          element++;
+        }
+      for (i = 0; i < IN_SIZE; i++)
+        {
+          if (in_pats[patt][i] >= 0.9) in_pats[patt][i] = 0.9;
+          if (in_pats[patt][i] <= 0.1) in_pats[patt][i] = 0.1;
+        }
+      element = 0;
+      vals_read = fscanf(infile, "%d  %d  %d  %d  %d  %d  %d  %d", &val1, &val2,
+                         &val3, &val4, &val5, &val6, &val7, &val8);
+
+      out_pats[patt][element] = (double)val1;
       element++;
-      in_pats[patt][element] = (double)val2;
+      out_pats[patt][element] = (double)val2;
       element++;
-      in_pats[patt][element] = (double)val3;
+      out_pats[patt][element] = (double)val3;
       element++;
-      in_pats[patt][element] = (double)val4;
+      out_pats[patt][element] = (double)val4;
       element++;
-      in_pats[patt][element] = (double)val5;
+      out_pats[patt][element] = (double)val5;
+      element++;
+      out_pats[patt][element] = (double)val6;
+      element++;
+      out_pats[patt][element] = (double)val7;
+      element++;
+      out_pats[patt][element] = (double)val8;
       element++;
     }
-    for (i = 0; i < IN_SIZE; i++)
-    {
-      if (in_pats[patt][i] >= 0.9) in_pats[patt][i] = 0.9;
-      if (in_pats[patt][i] <= 0.1) in_pats[patt][i] = 0.1;
-    }
-    element = 0;
-    vals_read = fscanf(infile, "%d  %d  %d  %d  %d  %d  %d  %d", &val1, &val2,
-                       &val3, &val4, &val5, &val6, &val7, &val8);
-
-    out_pats[patt][element] = (double)val1;
-    element++;
-    out_pats[patt][element] = (double)val2;
-    element++;
-    out_pats[patt][element] = (double)val3;
-    element++;
-    out_pats[patt][element] = (double)val4;
-    element++;
-    out_pats[patt][element] = (double)val5;
-    element++;
-    out_pats[patt][element] = (double)val6;
-    element++;
-    out_pats[patt][element] = (double)val7;
-    element++;
-    out_pats[patt][element] = (double)val8;
-    element++;
-  }
 
   /* printf("\n Closing the input file now. "); */
 
@@ -3956,70 +3971,70 @@ void DoLU(void)
   ** increasing the number of solutions per iteration as you go.
   */
   if (loclustruct->adjust == 0)
-  {
-    loclustruct->numarrays = 0;
-    for (i = 1; i <= MAXLUARRAYS; i++)
     {
-      abase = (fardouble *)AllocateMemory(
-          sizeof(double) * LUARRAYCOLS * LUARRAYROWS * (i + 1), &systemerror);
-      if (systemerror)
-      {
-        ReportError(errorcontext, systemerror);
-        LUFreeMem(a, b, (fardouble *)NULL, (fardouble *)NULL);
-        ErrorExit();
-      }
-      bbase = (fardouble *)AllocateMemory(
-          sizeof(double) * LUARRAYROWS * (i + 1), &systemerror);
-      if (systemerror)
-      {
-        ReportError(errorcontext, systemerror);
-        LUFreeMem(a, b, abase, (fardouble *)NULL);
-        ErrorExit();
-      }
-      if (DoLUIteration(a, b, abase, bbase, i) > global_min_ticks)
-      {
-        loclustruct->numarrays = i;
-        break;
-      }
-      /*
+      loclustruct->numarrays = 0;
+      for (i = 1; i <= MAXLUARRAYS; i++)
+        {
+          abase = (fardouble *)AllocateMemory(
+              sizeof(double) * LUARRAYCOLS * LUARRAYROWS * (i + 1), &systemerror);
+          if (systemerror)
+            {
+              ReportError(errorcontext, systemerror);
+              LUFreeMem(a, b, (fardouble *)NULL, (fardouble *)NULL);
+              ErrorExit();
+            }
+          bbase = (fardouble *)AllocateMemory(
+              sizeof(double) * LUARRAYROWS * (i + 1), &systemerror);
+          if (systemerror)
+            {
+              ReportError(errorcontext, systemerror);
+              LUFreeMem(a, b, abase, (fardouble *)NULL);
+              ErrorExit();
+            }
+          if (DoLUIteration(a, b, abase, bbase, i) > global_min_ticks)
+            {
+              loclustruct->numarrays = i;
+              break;
+            }
+          /*
       ** Not enough arrays...free them all and try again
       */
-      FreeMemory((farvoid *)abase, &systemerror);
-      FreeMemory((farvoid *)bbase, &systemerror);
-    }
-    /*
+          FreeMemory((farvoid *)abase, &systemerror);
+          FreeMemory((farvoid *)bbase, &systemerror);
+        }
+      /*
     ** Were we able to do it?
     */
-    if (loclustruct->numarrays == 0)
-    {
-      printf("FPU:LU -- Array limit reached\n");
-      LUFreeMem(a, b, abase, bbase);
-      ErrorExit();
+      if (loclustruct->numarrays == 0)
+        {
+          printf("FPU:LU -- Array limit reached\n");
+          LUFreeMem(a, b, abase, bbase);
+          ErrorExit();
+        }
     }
-  }
   else
-  { /*
+    { /*
     ** Don't need to adjust -- just allocate the proper
     ** number of arrays and proceed.
     */
-    abase = (fardouble *)AllocateMemory(
-        sizeof(double) * LUARRAYCOLS * LUARRAYROWS * loclustruct->numarrays,
-        &systemerror);
-    if (systemerror)
-    {
-      ReportError(errorcontext, systemerror);
-      LUFreeMem(a, b, (fardouble *)NULL, (fardouble *)NULL);
-      ErrorExit();
+      abase = (fardouble *)AllocateMemory(
+          sizeof(double) * LUARRAYCOLS * LUARRAYROWS * loclustruct->numarrays,
+          &systemerror);
+      if (systemerror)
+        {
+          ReportError(errorcontext, systemerror);
+          LUFreeMem(a, b, (fardouble *)NULL, (fardouble *)NULL);
+          ErrorExit();
+        }
+      bbase = (fardouble *)AllocateMemory(
+          sizeof(double) * LUARRAYROWS * loclustruct->numarrays, &systemerror);
+      if (systemerror)
+        {
+          ReportError(errorcontext, systemerror);
+          LUFreeMem(a, b, abase, (fardouble *)NULL);
+          ErrorExit();
+        }
     }
-    bbase = (fardouble *)AllocateMemory(
-        sizeof(double) * LUARRAYROWS * loclustruct->numarrays, &systemerror);
-    if (systemerror)
-    {
-      ReportError(errorcontext, systemerror);
-      LUFreeMem(a, b, abase, (fardouble *)NULL);
-      ErrorExit();
-    }
-  }
   /*
   ** All's well if we get here.  Do the test.
   */
@@ -4027,10 +4042,11 @@ void DoLU(void)
   iterations = (double)0.0;
 
   do
-  {
-    accumtime += DoLUIteration(a, b, abase, bbase, loclustruct->numarrays);
-    iterations += (double)loclustruct->numarrays;
-  } while (iterations < BASE_ITERATIONS * 20);
+    {
+      accumtime += DoLUIteration(a, b, abase, bbase, loclustruct->numarrays);
+      iterations += (double)loclustruct->numarrays;
+    }
+  while (iterations < BASE_ITERATIONS * 20);
 
   /*
   ** Clean up, calculate results, and go home.  Be sure to
@@ -4084,24 +4100,24 @@ static ulong DoLUIteration(fardouble *a, fardouble *b, fardouble *abase,
   ** arrays;
   */
   for (j = 0; j < numarrays; j++)
-  {
-    locabase = abase + j * LUARRAYROWS * LUARRAYCOLS;
-    locbbase = bbase + j * LUARRAYROWS;
-    for (i = 0; i < LUARRAYROWS * LUARRAYCOLS; i++) *(locabase + i) = *(a + i);
-    for (i = 0; i < LUARRAYROWS; i++) *(locbbase + i) = *(b + i);
-  }
+    {
+      locabase = abase + j * LUARRAYROWS * LUARRAYCOLS;
+      locbbase = bbase + j * LUARRAYROWS;
+      for (i = 0; i < LUARRAYROWS * LUARRAYCOLS; i++) *(locabase + i) = *(a + i);
+      for (i = 0; i < LUARRAYROWS; i++) *(locbbase + i) = *(b + i);
+    }
 
   /*
   ** Do test...begin timing.
   */
   elapsed = StartStopwatch();
   for (i = 0; i < numarrays; i++)
-  {
-    locabase = abase + i * LUARRAYROWS * LUARRAYCOLS;
-    locbbase = bbase + i * LUARRAYROWS;
-    ptra.ptrs.p = locabase;
-    lusolve(*ptra.ptrs.ap, LUARRAYROWS, locbbase);
-  }
+    {
+      locabase = abase + i * LUARRAYROWS * LUARRAYCOLS;
+      locbbase = bbase + i * LUARRAYROWS;
+      ptra.ptrs.p = locabase;
+      lusolve(*ptra.ptrs.ap, LUARRAYROWS, locbbase);
+    }
 
   return (StopStopwatch(elapsed));
 }
@@ -4120,7 +4136,7 @@ static ulong DoLUIteration(fardouble *a, fardouble *b, fardouble *abase,
 static void build_problem(double a[][LUARRAYCOLS], int n, double b[LUARRAYROWS])
 {
   long i, j, k, k1; /* Indexes */
-  double rcon;      /* Random constant */
+  double rcon; /* Random constant */
 
   /*
   ** Reset random number generator
@@ -4134,28 +4150,28 @@ static void build_problem(double a[][LUARRAYCOLS], int n, double b[LUARRAYROWS])
   ** vector.
   */
   for (i = 0; i < n; i++)
-  { /* b[i]=(double)(abs_randwc(100L)+1L); */
-    b[i] = (double)(abs_randwc((int32)100) + (int32)1);
-    for (j = 0; j < n; j++)
-      if (i == j) /* a[i][j]=(double)(abs_randwc(1000L)+1L); */
-        a[i][j] = (double)(abs_randwc((int32)1000) + (int32)1);
-      else
-        a[i][j] = (double)0.0;
-  }
+    { /* b[i]=(double)(abs_randwc(100L)+1L); */
+      b[i] = (double)(abs_randwc((int32)100) + (int32)1);
+      for (j = 0; j < n; j++)
+        if (i == j) /* a[i][j]=(double)(abs_randwc(1000L)+1L); */
+          a[i][j] = (double)(abs_randwc((int32)1000) + (int32)1);
+        else
+          a[i][j] = (double)0.0;
+    }
 
 #ifdef DEBUG
   printf("Problem:\n");
   for (i = 0; i < n; i++)
-  {
-    /*
+    {
+      /*
             for(j=0;j<n;j++)
                     printf("%6.2f ",a[i][j]);
     */
-    printf("%.0f/%.0f=%.2f\t", b[i], a[i][i], b[i] / a[i][i]);
-    /*
+      printf("%.0f/%.0f=%.2f\t", b[i], a[i][i], b[i] / a[i][i]);
+      /*
             printf("\n");
     */
-  }
+    }
 #endif
 
   /*
@@ -4164,37 +4180,37 @@ static void build_problem(double a[][LUARRAYCOLS], int n, double b[LUARRAYROWS])
   */
 
   for (i = 0; i < 8 * n; i++)
-  {
-    /*
+    {
+      /*
     ** Pick a row and a random constant.  Multiply
     ** all elements in the row by the constant.
     */
-    /*       k=abs_randwc((long)n);
+      /*       k=abs_randwc((long)n);
            rcon=(double)(abs_randwc(20L)+1L);
            for(j=0;j<n;j++)
                    a[k][j]=a[k][j]*rcon;
            b[k]=b[k]*rcon;
    */
-    /*
+      /*
     ** Pick two random rows and add second to
     ** first.  Note that we also occasionally multiply
     ** by minus 1 so that we get a subtraction operation.
     */
-    /* k=abs_randwc((long)n); */
-    /* k1=abs_randwc((long)n); */
-    k = abs_randwc((int32)n);
-    k1 = abs_randwc((int32)n);
-    if (k != k1)
-    {
-      if (k < k1)
-        rcon = (double)1.0;
-      else
-        rcon = (double)-1.0;
-      for (j = 0; j < n; j++) a[k][j] += a[k1][j] * rcon;
-      ;
-      b[k] += b[k1] * rcon;
+      /* k=abs_randwc((long)n); */
+      /* k1=abs_randwc((long)n); */
+      k = abs_randwc((int32)n);
+      k1 = abs_randwc((int32)n);
+      if (k != k1)
+        {
+          if (k < k1)
+            rcon = (double)1.0;
+          else
+            rcon = (double)-1.0;
+          for (j = 0; j < n; j++) a[k][j] += a[k1][j] * rcon;
+          ;
+          b[k] += b[k1] * rcon;
+        }
     }
-  }
 
   return;
 }
@@ -4231,80 +4247,80 @@ static int ludcmp(double a[][LUARRAYCOLS], int n, int indx[], int *d)
 {
   double big; /* Holds largest element value */
   double sum;
-  double dum;   /* Holds dummy value */
-  int i, j, k;  /* Indexes */
+  double dum; /* Holds dummy value */
+  int i, j, k; /* Indexes */
   int imax = 0; /* Holds max index value */
-  double tiny;  /* A really small number */
+  double tiny; /* A really small number */
 
   tiny = (double)1.0e-20;
 
   *d = 1; /* No interchanges yet */
 
   for (i = 0; i < n; i++)
-  {
-    big = (double)0.0;
-    for (j = 0; j < n; j++)
-      if ((double)fabs(a[i][j]) > big) big = fabs(a[i][j]);
-    /* Bail out on singular matrix */
-    if (big == (double)0.0) return (0);
-    LUtempvv[i] = 1.0 / big;
-  }
+    {
+      big = (double)0.0;
+      for (j = 0; j < n; j++)
+        if ((double)fabs(a[i][j]) > big) big = fabs(a[i][j]);
+      /* Bail out on singular matrix */
+      if (big == (double)0.0) return (0);
+      LUtempvv[i] = 1.0 / big;
+    }
 
   /*
   ** Crout's algorithm...loop over columns.
   */
   for (j = 0; j < n; j++)
-  {
-    if (j != 0)
-      for (i = 0; i < j; i++)
-      {
-        sum = a[i][j];
-        if (i != 0)
-          for (k = 0; k < i; k++) sum -= (a[i][k] * a[k][j]);
-        a[i][j] = sum;
-      }
-    big = (double)0.0;
-    for (i = j; i < n; i++)
     {
-      sum = a[i][j];
       if (j != 0)
-        for (k = 0; k < j; k++) sum -= a[i][k] * a[k][j];
-      a[i][j] = sum;
-      dum = LUtempvv[i] * fabs(sum);
-      if (dum >= big)
-      {
-        big = dum;
-        imax = i;
-      }
-    }
-    if (j != imax) /* Interchange rows if necessary */
-    {
-      for (k = 0; k < n; k++)
-      {
-        dum = a[imax][k];
-        a[imax][k] = a[j][k];
-        a[j][k] = dum;
-      }
-      *d = -*d; /* Change parity of d */
-      dum = LUtempvv[imax];
-      LUtempvv[imax] = LUtempvv[j]; /* Don't forget scale factor */
-      LUtempvv[j] = dum;
-    }
-    indx[j] = imax;
-    /*
+        for (i = 0; i < j; i++)
+          {
+            sum = a[i][j];
+            if (i != 0)
+              for (k = 0; k < i; k++) sum -= (a[i][k] * a[k][j]);
+            a[i][j] = sum;
+          }
+      big = (double)0.0;
+      for (i = j; i < n; i++)
+        {
+          sum = a[i][j];
+          if (j != 0)
+            for (k = 0; k < j; k++) sum -= a[i][k] * a[k][j];
+          a[i][j] = sum;
+          dum = LUtempvv[i] * fabs(sum);
+          if (dum >= big)
+            {
+              big = dum;
+              imax = i;
+            }
+        }
+      if (j != imax) /* Interchange rows if necessary */
+        {
+          for (k = 0; k < n; k++)
+            {
+              dum = a[imax][k];
+              a[imax][k] = a[j][k];
+              a[j][k] = dum;
+            }
+          *d = -*d; /* Change parity of d */
+          dum = LUtempvv[imax];
+          LUtempvv[imax] = LUtempvv[j]; /* Don't forget scale factor */
+          LUtempvv[j] = dum;
+        }
+      indx[j] = imax;
+      /*
     ** If the pivot element is zero, the matrix is singular
     ** (at least as far as the precision of the machine
     ** is concerned.)  We'll take the original author's
     ** recommendation and replace 0.0 with "tiny".
     */
-    if (a[j][j] == (double)0.0) a[j][j] = tiny;
+      if (a[j][j] == (double)0.0) a[j][j] = tiny;
 
-    if (j != (n - 1))
-    {
-      dum = 1.0 / a[j][j];
-      for (i = j + 1; i < n; i++) a[i][j] = a[i][j] * dum;
+      if (j != (n - 1))
+        {
+          dum = 1.0 / a[j][j];
+          for (i = j + 1; i < n; i++) a[i][j] = a[i][j] * dum;
+        }
     }
-  }
 
   return (1);
 }
@@ -4329,7 +4345,7 @@ static void lubksb(double a[][LUARRAYCOLS], int n, int indx[LUARRAYROWS],
                    double b[LUARRAYROWS])
 {
   int i, j; /* Indexes */
-  int ip;   /* "pointer" into indx */
+  int ip; /* "pointer" into indx */
   int ii;
   double sum;
 
@@ -4341,31 +4357,31 @@ static void lubksb(double a[][LUARRAYCOLS], int n, int indx[LUARRAYROWS],
   */
   ii = -1;
   for (i = 0; i < n; i++)
-  {
-    ip = indx[i];
-    sum = b[ip];
-    b[ip] = b[i];
-    if (ii != -1)
-      for (j = ii; j < i; j++) sum = sum - a[i][j] * b[j];
-    else
-        /*
+    {
+      ip = indx[i];
+      sum = b[ip];
+      b[ip] = b[i];
+      if (ii != -1)
+        for (j = ii; j < i; j++) sum = sum - a[i][j] * b[j];
+      else
+          /*
         ** If a nonzero element is encountered, we have
         ** to do the sums in the loop above.
         */
-        if (sum != (double)0.0)
-      ii = i;
-    b[i] = sum;
-  }
+          if (sum != (double)0.0)
+        ii = i;
+      b[i] = sum;
+    }
   /*
   ** Do backsubstitution
   */
   for (i = (n - 1); i >= 0; i--)
-  {
-    sum = b[i];
-    if (i != (n - 1))
-      for (j = (i + 1); j < n; j++) sum = sum - a[i][j] * b[j];
-    b[i] = sum / a[i][i];
-  }
+    {
+      sum = b[i];
+      if (i != (n - 1))
+        for (j = (i + 1); j < n; j++) sum = sum - a[i][j] * b[j];
+      b[i] = sum / a[i][i];
+    }
   return;
 }
 
@@ -4392,18 +4408,18 @@ static int lusolve(double a[][LUARRAYCOLS], int n, double b[LUARRAYROWS])
 #ifdef DEBUG
   printf("Solution:\n");
   for (i = 0; i < n; i++)
-  {
-    for (j = 0; j < n; j++)
     {
-      /*
+      for (j = 0; j < n; j++)
+        {
+          /*
         printf("%6.2f ",a[i][j]);
       */
-    }
-    printf("%6.2f\t", b[i]);
-    /*
+        }
+      printf("%6.2f\t", b[i]);
+      /*
       printf("\n");
     */
-  }
+    }
   printf("\n");
 #endif
 

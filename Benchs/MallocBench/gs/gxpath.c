@@ -19,8 +19,8 @@ copies.  */
 
 /* gxpath.c */
 /* Private path routines for GhostScript library */
-#include "gx.h"
 #include "gserrors.h"
+#include "gx.h"
 #include "gxfixed.h"
 #include "gzpath.h"
 
@@ -57,43 +57,43 @@ void gx_path_release(gx_path *ppath)
 {
   segment *pseg;
   if (ppath->first_subpath == 0)
-  {
-    return; /* empty path */
-  }
+    {
+      return; /* empty path */
+    }
   if (ppath->shares_segments)
-  {
-    return; /* segments are shared */
-  }
+    {
+      return; /* segments are shared */
+    }
   pseg = (segment *)ppath->current_subpath->last;
   while (pseg)
-  {
-    segment *prev = pseg->prev;
-    unsigned size;
-#ifdef DEBUG
-    if (gs_debug['p']) printf("[p]release"), gx_print_segment(stdout, pseg);
-#endif
-    switch (pseg->type)
     {
-      case s_start:
-        size = sizeof(subpath);
-        break;
-      case s_line:
-      case s_line_close:
-        size = sizeof(line_segment);
-        break;
-      case s_curve:
-        size = sizeof(curve_segment);
-        break;
-      default:
-        dprintf1("bad type in gx_path_release: %x!\n", pseg->type);
-        exit(1);
-    }
+      segment *prev = pseg->prev;
+      unsigned size;
 #ifdef DEBUG
-    if (gs_debug['A']) printf("[p]free %lx<%u>\n", (ulong)pseg, size);
+      if (gs_debug['p']) printf("[p]release"), gx_print_segment(stdout, pseg);
 #endif
-    (*ppath->memory_procs.free)((char *)pseg, 1, size, "gx_path_release");
-    pseg = prev;
-  }
+      switch (pseg->type)
+        {
+          case s_start:
+            size = sizeof(subpath);
+            break;
+          case s_line:
+          case s_line_close:
+            size = sizeof(line_segment);
+            break;
+          case s_curve:
+            size = sizeof(curve_segment);
+            break;
+          default:
+            dprintf1("bad type in gx_path_release: %x!\n", pseg->type);
+            exit(1);
+        }
+#ifdef DEBUG
+      if (gs_debug['A']) printf("[p]free %lx<%u>\n", (ulong)pseg, size);
+#endif
+      (*ppath->memory_procs.free)((char *)pseg, 1, size, "gx_path_release");
+      pseg = prev;
+    }
   ppath->first_subpath = 0; /* prevent re-release */
 }
 
@@ -101,24 +101,24 @@ void gx_path_release(gx_path *ppath)
 void gx_path_share(gx_path *ppath)
 {
   if (ppath->first_subpath)
-  {
-    ppath->shares_segments = 1;
-  }
+    {
+      ppath->shares_segments = 1;
+    }
 }
 
 /* ------ Incremental path building ------ */
 
 /* Macro for opening the current subpath. */
 /* ppath points to the path; psub has been set to ppath->current_subpath. */
-#define path_open()                                                    \
-  if (!ppath->subpath_open)                                            \
-  {                                                                    \
-    int code;                                                          \
-    if (!ppath->position_valid) return_error(gs_error_nocurrentpoint); \
-    code = gx_path_new_subpath(ppath);                                 \
-    if (code < 0) return code;                                         \
-    psub = ppath->current_subpath;                                     \
-  }
+#define path_open()                                                      \
+  if (!ppath->subpath_open)                                              \
+    {                                                                    \
+      int code;                                                          \
+      if (!ppath->position_valid) return_error(gs_error_nocurrentpoint); \
+      code = gx_path_new_subpath(ppath);                                 \
+      if (code < 0) return code;                                         \
+      psub = ppath->current_subpath;                                     \
+    }
 
 /* Macros for allocating path segments. */
 /* Note that they assume that ppath points to the path, */
@@ -161,16 +161,16 @@ int gx_path_new_subpath(gx_path *ppath)
   spp->pt = ppath->position;
   ppath->subpath_open = 1;
   if (!psub) /* first subpath */
-  {
-    ppath->first_subpath = spp;
-    spp->prev = 0;
-  }
+    {
+      ppath->first_subpath = spp;
+      spp->prev = 0;
+    }
   else
-  {
-    segment *prev = psub->last;
-    prev->next = (segment *)spp;
-    spp->prev = prev;
-  }
+    {
+      segment *prev = psub->last;
+      prev->next = (segment *)spp;
+      spp->prev = prev;
+    }
   ppath->current_subpath = spp;
   ppath->subpath_count++;
 #ifdef DEBUG
@@ -193,9 +193,9 @@ int gx_path_add_point(register gx_path *ppath, fixed x, fixed y)
 int gx_path_add_relative_point(register gx_path *ppath, fixed dx, fixed dy)
 {
   if (!ppath->position_valid)
-  {
-    return_error(gs_error_nocurrentpoint);
-  }
+    {
+      return_error(gs_error_nocurrentpoint);
+    }
   ppath->subpath_open = 0;
   ppath->position.x += dx;
   ppath->position.y += dy;
@@ -245,9 +245,9 @@ int gx_path_add_pgram(gx_path *ppath, fixed x0, fixed y0, fixed x1, fixed y1,
       (code = gx_path_add_line(ppath, x2, y2)) < 0 ||
       (code = gx_path_add_line(ppath, x0 + x2 - x1, y0 + y2 - y1)) < 0 ||
       (code = gx_path_close_subpath(ppath)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   return 0;
 }
 
@@ -301,28 +301,28 @@ int gx_path_close_subpath(gx_path *ppath)
   subpath *psub = ppath->current_subpath;
   register line_segment *lp;
   if (!ppath->subpath_open)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
   /* If the current point is the same as the initial point, */
   /* and the last segment was a s_line, change it to a s_line_close; */
   /* otherwise add a s_line_close segment.  This is just a minor */
   /* efficiency hack, nothing depends on it. */
   if (ppath->position.x == psub->pt.x && ppath->position.y == psub->pt.y &&
       psub->last->type == s_line)
-  {
-    path_unshare(0 !=); /* don't set psub */
-    psub->last->type = s_line_close;
-    lp = 0; /* (actually only needed for debugging) */
-  }
+    {
+      path_unshare(0 !=); /* don't set psub */
+      psub->last->type = s_line_close;
+      lp = 0; /* (actually only needed for debugging) */
+    }
   else
-  {
-    path_alloc_segment(lp, line_segment, s_line_close, "gx_path_close_subpath");
-    path_alloc_link(lp);
-    path_set_point(lp, psub->pt.x, psub->pt.y);
-    psub->line_count++;
-    ppath->segment_count++;
-  }
+    {
+      path_alloc_segment(lp, line_segment, s_line_close, "gx_path_close_subpath");
+      path_alloc_link(lp);
+      path_set_point(lp, psub->pt.x, psub->pt.y);
+      psub->line_count++;
+      ppath->segment_count++;
+    }
   psub->closed = 1;
   ppath->subpath_open = 0;
 #ifdef DEBUG
@@ -343,9 +343,9 @@ subpath *path_alloc_copy(gx_path *ppath)
   int code;
   code = gx_path_copy(ppath, &path_new);
   if (code < 0)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
   *ppath = path_new;
   ppath->shares_segments = 0;
   return ppath->current_subpath;
@@ -377,10 +377,10 @@ void gx_path_print(FILE *file, gx_path *ppath)
           fixed2float(ppath->cbox.p.y), fixed2float(ppath->cbox.q.x),
           fixed2float(ppath->cbox.q.y));
   while (pseg)
-  {
-    gx_print_segment(file, pseg);
-    pseg = pseg->next;
-  }
+    {
+      gx_print_segment(file, pseg);
+      pseg = pseg->next;
+    }
 }
 void gx_print_segment(FILE *file, segment *pseg)
 {
@@ -389,35 +389,35 @@ void gx_print_segment(FILE *file, segment *pseg)
           (ulong)pseg->prev, (ulong)pseg->next, fixed2float(pseg->pt.x),
           fixed2float(pseg->pt.y));
   switch (pseg->type)
-  {
-    case s_start:
-#define psub ((subpath *)pseg)
-      fprintf(file, out, "start");
-      fprintf(file, "#lines=%d #curves=%d last=%lx", psub->line_count,
-              psub->curve_count, (ulong)psub->last);
-#undef psub
-      break;
-    case s_curve:
-      fprintf(file, out, "curve");
-#define pcur ((curve_segment *)pseg)
-      fprintf(file, "\n\tp1=(%f,%f) p2=(%f,%f)", fixed2float(pcur->p1.x),
-              fixed2float(pcur->p1.y), fixed2float(pcur->p2.x),
-              fixed2float(pcur->p2.y));
-#undef pcur
-      break;
-    case s_line:
-      fprintf(file, out, "line");
-      break;
-    case s_line_close:
-      fprintf(file, out, "close");
-      break;
-    default:
     {
-      char t[20];
-      sprintf(t, "type 0x%x", pseg->type);
-      fprintf(file, out, t);
+      case s_start:
+#define psub ((subpath *)pseg)
+        fprintf(file, out, "start");
+        fprintf(file, "#lines=%d #curves=%d last=%lx", psub->line_count,
+                psub->curve_count, (ulong)psub->last);
+#undef psub
+        break;
+      case s_curve:
+        fprintf(file, out, "curve");
+#define pcur ((curve_segment *)pseg)
+        fprintf(file, "\n\tp1=(%f,%f) p2=(%f,%f)", fixed2float(pcur->p1.x),
+                fixed2float(pcur->p1.y), fixed2float(pcur->p2.x),
+                fixed2float(pcur->p2.y));
+#undef pcur
+        break;
+      case s_line:
+        fprintf(file, out, "line");
+        break;
+      case s_line_close:
+        fprintf(file, out, "close");
+        break;
+      default:
+        {
+          char t[20];
+          sprintf(t, "type 0x%x", pseg->type);
+          fprintf(file, out, t);
+        }
     }
-  }
   fprintf(file, "\n");
 }
 

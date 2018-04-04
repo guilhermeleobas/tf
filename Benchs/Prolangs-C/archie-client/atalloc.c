@@ -30,16 +30,16 @@ PATTRIB atalloc(void)
 {
   PATTRIB at;
   if (lfree)
-  {
-    at = lfree;
-    lfree = lfree->next;
-  }
+    {
+      at = lfree;
+      lfree = lfree->next;
+    }
   else
-  {
-    at = (PATTRIB)malloc(sizeof(PATTRIB_ST));
-    if (!at) return (NULL);
-    pattrib_max++;
-  }
+    {
+      at = (PATTRIB)malloc(sizeof(PATTRIB_ST));
+      if (!at) return (NULL);
+      pattrib_max++;
+    }
 
   pattrib_count++;
 
@@ -88,9 +88,9 @@ void atlfree(PATTRIB at)
   PATTRIB nxt;
 
   while (at != NULL)
-  {
-    nxt = at->next;
-    atfree(at);
-    at = nxt;
-  }
+    {
+      nxt = at->next;
+      atfree(at);
+      at = nxt;
+    }
 }

@@ -78,7 +78,7 @@ typedef struct gx_device_sun
 /* The instance is public. */
 gx_device_sun gs_sunview_device = {
     sizeof(gx_device_sun), &sun_procs, "sunview", (int)(8.5 * DEFAULT_DPI),
-    (int)(11 * DEFAULT_DPI),  /* x and y extent */
+    (int)(11 * DEFAULT_DPI), /* x and y extent */
     DEFAULT_DPI, DEFAULT_DPI, /* x and y density */
     /* Following parameters are initialized for monochrome */
     0, /* has color */
@@ -108,10 +108,10 @@ int sun_open(register gx_device *dev)
 {
 #ifdef gs_DEBUG
   if (gs_debug['X'])
-  {
-    extern int _Xdebug;
-    _Xdebug = 1;
-  }
+    {
+      extern int _Xdebug;
+      _Xdebug = 1;
+    }
 #endif
   if (xdev->frame == (Frame)0)
     xdev->frame = window_create(NULL, FRAME, FRAME_LABEL, "ghostscript", 0);
@@ -184,25 +184,25 @@ int sun_copy_mono(register gx_device *dev, byte *base, int sourcex, int raster,
   xdev->pr.pr_depth = 1;
   xdev->pr.pr_data = (caddr_t) & (xdev->mpr);
   if ((raster & 1) == 0)
-  {
-    xdev->mpr.md_linebytes = raster;
-    xdev->mpr.md_image = (short *)((int)base & ~1);
-    pw_write(xdev->pw, x, y, w, h, op, &(xdev->pr),
-             ((int)base & 1) ? sourcex + 8 : sourcex, 0);
-  }
-  else
-  {
-    xdev->pr.pr_height = 1;
-    for (i = 0; i < h; i++)
     {
       xdev->mpr.md_linebytes = raster;
       xdev->mpr.md_image = (short *)((int)base & ~1);
-      pw_write(xdev->pw, x, y, w, 1, op, &(xdev->pr),
+      pw_write(xdev->pw, x, y, w, h, op, &(xdev->pr),
                ((int)base & 1) ? sourcex + 8 : sourcex, 0);
-      base += raster;
-      y++;
     }
-  }
+  else
+    {
+      xdev->pr.pr_height = 1;
+      for (i = 0; i < h; i++)
+        {
+          xdev->mpr.md_linebytes = raster;
+          xdev->mpr.md_image = (short *)((int)base & ~1);
+          pw_write(xdev->pw, x, y, w, 1, op, &(xdev->pr),
+                   ((int)base & 1) ? sourcex + 8 : sourcex, 0);
+          base += raster;
+          y++;
+        }
+    }
   (void)notify_dispatch();
   return 0;
 }

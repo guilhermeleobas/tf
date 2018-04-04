@@ -34,9 +34,9 @@ int zdict(register ref *op)
 {
   check_type(*op, t_integer);
   if (op->value.intval < 0 || op->value.intval > dict_max_size)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   return dict_create((uint)op->value.intval, op);
 }
 
@@ -59,19 +59,19 @@ int zsetmaxlength(register ref *op)
   check_dict_write(*op1);
   check_type(*op, t_integer);
   if (op->value.intval < 0 || op->value.intval > dict_max_size)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   new_size = (uint)op->value.intval;
   if (dict_length(op - 1) > new_size)
-  {
-    return e_dictfull;
-  }
+    {
+      return e_dictfull;
+    }
   code = dict_resize(op - 1, new_size);
   if (code >= 0)
-  {
-    pop(2);
-  }
+    {
+      pop(2);
+    }
   return code;
 }
 
@@ -81,9 +81,9 @@ int zbegin(register ref *op)
   check_type(*op, t_dictionary);
   check_dict_read(*op);
   if (dsp == dstop)
-  {
-    return e_dictstackoverflow;
-  }
+    {
+      return e_dictstackoverflow;
+    }
   *++dsp = *op;
   pop(1);
   return 0;
@@ -93,9 +93,9 @@ int zbegin(register ref *op)
 int zend(register ref *op)
 {
   if (dsp == dstack + 1)
-  {
-    return e_dictstackunderflow;
-  }
+    {
+      return e_dictstackunderflow;
+    }
   dsp--;
   return 0;
 }
@@ -106,15 +106,15 @@ int zdef(register ref *op)
   int code;
   check_op(2);
   if (r_type(op - 1) == t_null)
-  {
-    return e_typecheck;
-  }
+    {
+      return e_typecheck;
+    }
   check_dict_write(*dsp);
   code = dict_put(dsp, op - 1, op);
   if (!code)
-  {
-    pop(2);
-  }
+    {
+      pop(2);
+    }
   return code;
 }
 
@@ -124,13 +124,13 @@ int zload(register ref *op)
   ref *pvalue;
   check_op(1);
   if (r_type(op) == t_null)
-  {
-    return e_typecheck;
-  }
+    {
+      return e_typecheck;
+    }
   if (dict_lookup(dstack, dsp, op, &pvalue) <= 0)
-  {
-    return e_undefined;
-  }
+    {
+      return e_undefined;
+    }
   *op = *pvalue;
   return 0;
 }
@@ -142,21 +142,21 @@ int zstore(register ref *op)
   int code;
   check_op(2);
   if (r_type(op - 1) == t_null)
-  {
-    return e_typecheck;
-  }
-  if (dict_lookup(dstack, dsp, op - 1, &pvalue) <= 0)
-  {
-    code = dict_put(dsp, op - 1, op);
-    if (code)
     {
-      return code;
+      return e_typecheck;
     }
-  }
+  if (dict_lookup(dstack, dsp, op - 1, &pvalue) <= 0)
+    {
+      code = dict_put(dsp, op - 1, op);
+      if (code)
+        {
+          return code;
+        }
+    }
   else
-  {
-    store_i(pvalue, op);
-  }
+    {
+      store_i(pvalue, op);
+    }
   pop(2);
   return 0;
 }
@@ -186,23 +186,23 @@ int zwhere(register ref *op)
   ref *pvalue;
   check_op(1);
   if (r_type(op) == t_null)
-  {
-    make_bool(op, 0);
-    return 0;
-  }
-  while (1)
-  {
-    check_dict_read(*pdref);
-    if (dict_find(pdref, op, &pvalue) > 0)
-    {
-      break;
-    }
-    if (--pdref < dstack)
     {
       make_bool(op, 0);
       return 0;
     }
-  }
+  while (1)
+    {
+      check_dict_read(*pdref);
+      if (dict_find(pdref, op, &pvalue) > 0)
+        {
+          break;
+        }
+      if (--pdref < dstack)
+        {
+          make_bool(op, 0);
+          return 0;
+        }
+    }
   *op = *pdref;
   push(1);
   make_bool(op, 1);
@@ -218,9 +218,9 @@ int zcopy_dict(register ref *op)
   check_dict_read(*op1);
   check_dict_write(*op);
   if (dict_length(op) != 0 || dict_maxlength(op) < dict_maxlength(op1))
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   dict_copy(op1, op);
   op[-1] = *op;
   pop(1);
@@ -249,9 +249,9 @@ int zdictstack(register ref *op)
   int depth = dsp - dstack + 1;
   check_write_type(*op, t_array);
   if (depth > op->size)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   op->size = depth;
   r_set_attrs(op, a_subrange);
   refcpy(op->value.refs, dstack, depth);

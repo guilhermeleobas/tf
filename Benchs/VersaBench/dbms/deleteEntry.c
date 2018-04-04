@@ -40,13 +40,13 @@
  *	Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include <assert.h>         /* for assert()                             */
-#include <stdlib.h>         /* for free() and NULL definitions          */
+#include <assert.h> /* for assert()                             */
+#include <stdlib.h> /* for free() and NULL definitions          */
 #include "dataManagement.h" /* for primitive type definitions           */
-#include "dataObject.h"     /* for DataAttribute definition             */
-#include "errorMessage.h"   /* for errorMessage() definition            */
-#include "index.h"          /* for IndexNode and IndexEntry definitions */
-#include "indexKey.h"       /* for IndexKey definition                  */
+#include "dataObject.h" /* for DataAttribute definition             */
+#include "errorMessage.h" /* for errorMessage() definition            */
+#include "index.h" /* for IndexNode and IndexEntry definitions */
+#include "indexKey.h" /* for IndexKey definition                  */
 
 /*
  *  Function prototypes
@@ -55,11 +55,11 @@ extern Boolean consistentKey(IndexKey *A, IndexKey *B);
 extern Boolean consistentNonKey(Char *A, Char *B);
 extern void keysUnion(IndexEntry *I, IndexKey *U);
 
-void deleteEntry(IndexNode *node,             /*  current node of index   */
-                 IndexKey *searchKey,         /*  index key search values */
+void deleteEntry(IndexNode *node, /*  current node of index   */
+                 IndexKey *searchKey, /*  index key search values */
                  DataAttribute *searchNonKey, /*  non-key search values   */
-                 Boolean *adjustmentFlag)     /*  flag to adjust keys     */
-{                                             /* beginning of deleteEntry() */
+                 Boolean *adjustmentFlag) /*  flag to adjust keys     */
+{ /* beginning of deleteEntry() */
 
   assert(node);
   assert(searchKey);
@@ -80,29 +80,29 @@ void deleteEntry(IndexNode *node,             /*  current node of index   */
    *  consistent entry.
    */
   if (node->level > LEAF)
-  {
-    IndexEntry *entry;     /* temp entry for looping through list        */
-    IndexEntry *prevEntry; /* previous entry for re-linking after delete */
+    {
+      IndexEntry *entry; /* temp entry for looping through list        */
+      IndexEntry *prevEntry; /* previous entry for re-linking after delete */
 
-    /*
+      /*
      *  Loop through each entry on current node and call deleteEntry() for
      *  each consistent child node.  Note that only the key values are
      *  available for consistency checks at any level greater than the LEAF
      *  level.
      */
-    prevEntry = NULL;      /* no previous entry for head of list */
-    entry = node->entries; /* set current entry to head of list  */
-    while (entry != NULL)
-    { /* loop through entries               */
-      if (consistentKey(&entry->key, searchKey) == TRUE)
-      {
-        Boolean tempAdjustFlag; /* flag to indicate adjustment in */
-                                /* child node                     */
+      prevEntry = NULL; /* no previous entry for head of list */
+      entry = node->entries; /* set current entry to head of list  */
+      while (entry != NULL)
+        { /* loop through entries               */
+          if (consistentKey(&entry->key, searchKey) == TRUE)
+            {
+              Boolean tempAdjustFlag; /* flag to indicate adjustment in */
+              /* child node                     */
 
-        deleteEntry(entry->child.node, searchKey, searchNonKey,
-                    &tempAdjustFlag);
+              deleteEntry(entry->child.node, searchKey, searchNonKey,
+                          &tempAdjustFlag);
 
-        /*
+              /*
          *  After a return from the recursive deleteEntry call, the
          *  index beneath this node is in one of three states: (1) No
          *  entries were removed, thus no key adjustment is required,
@@ -114,18 +114,18 @@ void deleteEntry(IndexNode *node,             /*  current node of index   */
          *  no check. The second(2) and third(3) conditions do require
          *  actions, so they are checked and appropriate actions taken.
          */
-        if ((entry->child.node)->entries == NULL)
-        {                        /* (3) */
-          IndexEntry *nextEntry; /* temp storage for delete   */
+              if ((entry->child.node)->entries == NULL)
+                { /* (3) */
+                  IndexEntry *nextEntry; /* temp storage for delete   */
 
-          nextEntry = entry->next; /* save entry for re-linking */
-          deleteIndexEntry(entry,  /* delete current entry      */
-                           node->level);
-          entry = nextEntry; /* reset current entry       */
+                  nextEntry = entry->next; /* save entry for re-linking */
+                  deleteIndexEntry(entry, /* delete current entry      */
+                                   node->level);
+                  entry = nextEntry; /* reset current entry       */
 
-          *adjustmentFlag = TRUE; /* set adjustment flag       */
+                  *adjustmentFlag = TRUE; /* set adjustment flag       */
 
-          /*
+                  /*
            *  If the deleted entry was not the head of the list, need
            *  to re-link the list, so set the prevEntry's next pointer
            *  to current entry.  If the deleted entry was the head of
@@ -133,51 +133,51 @@ void deleteEntry(IndexNode *node,             /*  current node of index   */
            *  entry.  This allows the list to show as EMPTY if
            *  necessary on return.
            */
-          if (prevEntry != NULL)
-          {
-            prevEntry->next = entry;
-          } /* end of if prevEntry != NULL */
-          else
-          {
-            node->entries = entry;
-          } /*  end of if prevEntry == NULL */
-        }   /*  end of if entry->child.node.entries == NULL */
-        else if (tempAdjustFlag == TRUE)
-        { /* (2) */
-          keysUnion((entry->child.node)->entries, &(entry->key));
-          *adjustmentFlag = TRUE; /* set adjustment flag */
+                  if (prevEntry != NULL)
+                    {
+                      prevEntry->next = entry;
+                    } /* end of if prevEntry != NULL */
+                  else
+                    {
+                      node->entries = entry;
+                    } /*  end of if prevEntry == NULL */
+                } /*  end of if entry->child.node.entries == NULL */
+              else if (tempAdjustFlag == TRUE)
+                { /* (2) */
+                  keysUnion((entry->child.node)->entries, &(entry->key));
+                  *adjustmentFlag = TRUE; /* set adjustment flag */
 
-          /*
+                  /*
            *  Loop to next entry and set previous entry.
            */
-          prevEntry = entry;
-          entry = entry->next;
-        } /*  end of tempAdjustFlag == TRUE   */
-        else
-        {
-          /*
+                  prevEntry = entry;
+                  entry = entry->next;
+                } /*  end of tempAdjustFlag == TRUE   */
+              else
+                {
+                  /*
            *  Loop to next entry and set previous entry.
            */
-          prevEntry = entry;
-          entry = entry->next;
-        } /*  end of tempAdjustFlag == TRUE   */
-      }   /*  end of branch which is consistent   */
-      else
-      {
-        /*
+                  prevEntry = entry;
+                  entry = entry->next;
+                } /*  end of tempAdjustFlag == TRUE   */
+            } /*  end of branch which is consistent   */
+          else
+            {
+              /*
          *  Loop to next entry and set previous entry.
          */
-        prevEntry = entry;
-        entry = entry->next;
-      } /*  end of branch which is not consistent   */
-    }   /*  end of loop for entry   */
-  }     /*  end of if ( node->level > LEAF ) */
+              prevEntry = entry;
+              entry = entry->next;
+            } /*  end of branch which is not consistent   */
+        } /*  end of loop for entry   */
+    } /*  end of if ( node->level > LEAF ) */
   else
-  {
-    IndexEntry *entry;     /* temp entry for looping through list        */
-    IndexEntry *prevEntry; /* previous entry for re-linking after delete */
+    {
+      IndexEntry *entry; /* temp entry for looping through list        */
+      IndexEntry *prevEntry; /* previous entry for re-linking after delete */
 
-    /*
+      /*
      *  Loop through each entry on current LEAF node and delete each data
      *  object/entry which is consistent with the input search values.  The
      *  first consistency check is made on the key value.  If the key values
@@ -185,34 +185,34 @@ void deleteEntry(IndexNode *node,             /*  current node of index   */
      *  values.  A temporary upperBound value is set to prevent out-of-range
      *  checks on the three types of data objects.
      */
-    prevEntry = NULL;      /* no previous entry for head of list */
-    entry = node->entries; /* set current entry to head of list  */
-    while (entry != NULL)
-    { /* loop through entries               */
-      if (consistentKey(&entry->key, searchKey) == TRUE)
-      {
-        DataAttribute *temp;    /*  attribute for list loop */
-        DataObject *object;     /*  allows easier reading   */
-        Int upperBound;         /*  prevents out-of-range   */
-        Boolean acceptanceFlag; /*  flag to output object   */
+      prevEntry = NULL; /* no previous entry for head of list */
+      entry = node->entries; /* set current entry to head of list  */
+      while (entry != NULL)
+        { /* loop through entries               */
+          if (consistentKey(&entry->key, searchKey) == TRUE)
+            {
+              DataAttribute *temp; /*  attribute for list loop */
+              DataObject *object; /*  allows easier reading   */
+              Int upperBound; /*  prevents out-of-range   */
+              Boolean acceptanceFlag; /*  flag to output object   */
 
-        object = entry->child.dataObject; /* convenience */
+              object = entry->child.dataObject; /* convenience */
 
-        upperBound = 0; /* set upperBound */
-        if (object->type == SMALL)
-        {                                       /* to prevent     */
-          upperBound = NUM_OF_SMALL_ATTRIBUTES; /* out-of-range   */
-        } /*  end of type == SMALL    */        /* errors when    */
-        else if (object->type == MEDIUM)
-        {                                        /* checking non-  */
-          upperBound = NUM_OF_MEDIUM_ATTRIBUTES; /* key attributes */
-        }                                        /*  end of type == MEDIUM   */
-        else if (object->type == LARGE)
-        {
-          upperBound = NUM_OF_LARGE_ATTRIBUTES;
-        } /*  end of type == LARGE    */
+              upperBound = 0; /* set upperBound */
+              if (object->type == SMALL)
+                { /* to prevent     */
+                  upperBound = NUM_OF_SMALL_ATTRIBUTES; /* out-of-range   */
+                } /*  end of type == SMALL    */ /* errors when    */
+              else if (object->type == MEDIUM)
+                { /* checking non-  */
+                  upperBound = NUM_OF_MEDIUM_ATTRIBUTES; /* key attributes */
+                } /*  end of type == MEDIUM   */
+              else if (object->type == LARGE)
+                {
+                  upperBound = NUM_OF_LARGE_ATTRIBUTES;
+                } /*  end of type == LARGE    */
 
-        /*
+              /*
          *  The loop checks each value of the non-key search list and
          *  compares that value for that specific attribute code to the
          *  value stored in the data object.  If all of the attributes
@@ -221,20 +221,20 @@ void deleteEntry(IndexNode *node,             /*  current node of index   */
          *  is set to FALSE and the loop exits and the next entry is
          *  checked.
          */
-        acceptanceFlag = TRUE;
-        temp = searchNonKey;
-        while (temp != NULL && acceptanceFlag == TRUE)
-        {
-          if (temp->code < upperBound)
-          {
-            acceptanceFlag =
-                consistentNonKey(object->attributes[temp->code].value.nonKey,
-                                 temp->attribute.value.nonKey);
-          } /*  end of code < upperBound    */
-          temp = temp->next;
-        } /*  end of loop through non-key search value list   */
+              acceptanceFlag = TRUE;
+              temp = searchNonKey;
+              while (temp != NULL && acceptanceFlag == TRUE)
+                {
+                  if (temp->code < upperBound)
+                    {
+                      acceptanceFlag =
+                          consistentNonKey(object->attributes[temp->code].value.nonKey,
+                                           temp->attribute.value.nonKey);
+                    } /*  end of code < upperBound    */
+                  temp = temp->next;
+                } /*  end of loop through non-key search value list   */
 
-        /*
+              /*
          *  If the acceptance flag is set, the data object should be
          *  removed. If a data object is removed, the adjustment flag is
          *  set which notifies the routine calling deleteEntry() for
@@ -242,25 +242,25 @@ void deleteEntry(IndexNode *node,             /*  current node of index   */
          *  a node removal or key adjustment.  Care must be taken to
          *  properly re-link the node.entries list.
          */
-        if (acceptanceFlag == FALSE)
-        {
-          /*
+              if (acceptanceFlag == FALSE)
+                {
+                  /*
            *  Loop to next entry and set previous entry.
            */
-          prevEntry = entry;
-          entry = entry->next;
-        } /*  end of acceptanceFlag == TRUE   */
-        else
-        {
-          IndexEntry *nextEntry; /* next entry in list        */
+                  prevEntry = entry;
+                  entry = entry->next;
+                } /*  end of acceptanceFlag == TRUE   */
+              else
+                {
+                  IndexEntry *nextEntry; /* next entry in list        */
 
-          nextEntry = entry->next; /* save entry for re-linking */
-          deleteIndexEntry(entry,  /* delete current entry      */
-                           LEAF);
-          entry = nextEntry;      /* reset current entry       */
-          *adjustmentFlag = TRUE; /* set adjustment flag       */
+                  nextEntry = entry->next; /* save entry for re-linking */
+                  deleteIndexEntry(entry, /* delete current entry      */
+                                   LEAF);
+                  entry = nextEntry; /* reset current entry       */
+                  *adjustmentFlag = TRUE; /* set adjustment flag       */
 
-          /*
+                  /*
            *  If the deleted entry was not the head of the list, need
            *  to re-link the list, so set the prevEntry's next pointer
            *  to current entry.  If the deleted entry was the head of
@@ -268,26 +268,26 @@ void deleteEntry(IndexNode *node,             /*  current node of index   */
            *  entry.  This allows the list to show as EMPTY if
            *  necessary on return.
            */
-          if (prevEntry != NULL)
-          {
-            prevEntry->next = entry;
-          } /* end of if prevEntry != NULL */
+                  if (prevEntry != NULL)
+                    {
+                      prevEntry->next = entry;
+                    } /* end of if prevEntry != NULL */
+                  else
+                    {
+                      node->entries = entry;
+                    } /*  end of if prevEntry == NULL */
+                } /*  end of acceptanceFlag == FALSE  */
+            } /*  end of if consistentKey == TRUE */
           else
-          {
-            node->entries = entry;
-          } /*  end of if prevEntry == NULL */
-        }   /*  end of acceptanceFlag == FALSE  */
-      }     /*  end of if consistentKey == TRUE */
-      else
-      {
-        /*
+            {
+              /*
          *  Loop to next entry and set previous entry.
          */
-        prevEntry = entry;
-        entry = entry->next;
-      } /*  end of if consistentKey == FALSE */
-    }   /*  end of loop for entry   */
-  }     /*  end of if ( node->level == LEAF )   */
+              prevEntry = entry;
+              entry = entry->next;
+            } /*  end of if consistentKey == FALSE */
+        } /*  end of loop for entry   */
+    } /*  end of if ( node->level == LEAF )   */
 
   return;
 } /*  end deleteEntry() */

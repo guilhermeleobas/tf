@@ -42,20 +42,20 @@ Matrix MakeMatrix(int i)
   M = newMatrix();
 
   for (j = 0; j < n; j++)
-  {
-    for (k = j; k < n; k++)
     {
-      if (abs(k - j) > i)
-      {
-        M[j][k] = M[k][j] = 0.0;
-      }
-      else
-      {
-        M[j][k] = M[k][j] = 4.0 / (5.0 * sqrt(2.0 * M_PI)) *
-                            exp(-(8.0 / 25.0) * (j - k) * (j - k));
-      }
+      for (k = j; k < n; k++)
+        {
+          if (abs(k - j) > i)
+            {
+              M[j][k] = M[k][j] = 0.0;
+            }
+          else
+            {
+              M[j][k] = M[k][j] = 4.0 / (5.0 * sqrt(2.0 * M_PI)) *
+                                  exp(-(8.0 / 25.0) * (j - k) * (j - k));
+            }
+        }
     }
-  }
   return M;
 }
 
@@ -66,9 +66,9 @@ Matrix newMatrix(void)
 
   M = (Matrix)malloc(sizeof(double *) * n);
   for (i = 0; i < n; i++)
-  {
-    M[i] = (double *)malloc(sizeof(double) * n);
-  }
+    {
+      M[i] = (double *)malloc(sizeof(double) * n);
+    }
 
   return M;
 }
@@ -87,16 +87,16 @@ void matrixMult(Matrix C, Matrix A, Matrix B)
   int i, j, k;
 
   for (i = 0; i < n; i++)
-  {
-    for (j = 0; j < n; j++)
     {
-      C[i][j] = 0.0;
-      for (k = 0; k < n; k++)
-      {
-        C[i][j] += A[i][k] * B[k][j];
-      }
+      for (j = 0; j < n; j++)
+        {
+          C[i][j] = 0.0;
+          for (k = 0; k < n; k++)
+            {
+              C[i][j] += A[i][k] * B[k][j];
+            }
+        }
     }
-  }
 }
 
 void matrixTranspose(Matrix A)
@@ -105,14 +105,14 @@ void matrixTranspose(Matrix A)
   double a;
 
   for (i = 0; i < n; i++)
-  {
-    for (j = i + 1; j < n; j++)
     {
-      a = A[i][j];
-      A[i][j] = A[j][i];
-      A[j][i] = a;
+      for (j = i + 1; j < n; j++)
+        {
+          a = A[i][j];
+          A[i][j] = A[j][i];
+          A[j][i] = a;
+        }
     }
-  }
 }
 
 Matrix newIdMatrix(void)
@@ -131,19 +131,19 @@ void MakeID(Matrix A)
   int l, j;
 
   for (j = 0; j < n; j++)
-  {
-    for (l = j; l < n; l++)
     {
-      if (j == l)
-      {
-        A[j][l] = 1;
-      }
-      else
-      {
-        A[j][l] = A[l][j] = 0.0;
-      }
+      for (l = j; l < n; l++)
+        {
+          if (j == l)
+            {
+              A[j][l] = 1;
+            }
+          else
+            {
+              A[j][l] = A[l][j] = 0.0;
+            }
+        }
     }
-  }
 }
 
 void freeMatrix(Matrix A)
@@ -151,9 +151,9 @@ void freeMatrix(Matrix A)
   int i;
 
   for (i = 0; i < n; i++)
-  {
-    free(A[i]);
-  }
+    {
+      free(A[i]);
+    }
 
   free(A);
 }
@@ -165,17 +165,17 @@ double NormInf(Matrix A)
 
   a = 0.0;
   for (i = 0; i < n; i++)
-  {
-    b = 0.0;
-    for (j = 0; j < n; j++)
     {
-      b += fabs(A[i][j]);
+      b = 0.0;
+      for (j = 0; j < n; j++)
+        {
+          b += fabs(A[i][j]);
+        }
+      if (b > a)
+        {
+          a = b;
+        }
     }
-    if (b > a)
-    {
-      a = b;
-    }
-  }
 
   return a;
 }
@@ -187,17 +187,17 @@ double NormOne(Matrix A)
 
   a = 0.0;
   for (j = 0; j < n; j++)
-  {
-    b = 0.0;
-    for (i = 0; i < n; i++)
     {
-      b += fabs(A[i][j]);
+      b = 0.0;
+      for (i = 0; i < n; i++)
+        {
+          b += fabs(A[i][j]);
+        }
+      if (b > a)
+        {
+          a = b;
+        }
     }
-    if (b > a)
-    {
-      a = b;
-    }
-  }
 
   return a;
 }

@@ -50,17 +50,17 @@ void usqrt(unsigned int x, struct int_sqrt *q)
   int i;
 
   for (i = 0; i < BITSPERLONG; i++) /* NOTE 1 */
-  {
-    r = (r << 2) + TOP2BITS(x);
-    x <<= 2; /* NOTE 2 */
-    a <<= 1;
-    e = (a << 1) + 1;
-    if (r >= e)
     {
-      r -= e;
-      a++;
+      r = (r << 2) + TOP2BITS(x);
+      x <<= 2; /* NOTE 2 */
+      a <<= 1;
+      e = (a << 1) + 1;
+      if (r >= e)
+        {
+          r -= e;
+          a++;
+        }
     }
-  }
   memcpy(q, &a, sizeof(int));
 }
 
@@ -76,10 +76,10 @@ main(void)
   struct int_sqrt q;
 
   for (i = 0; i < 101; ++i)
-  {
-    usqrt(i, &q);
-    printf("sqrt(%3d) = %2d, remainder = %2d\n", i, q.sqrt, q.frac);
-  }
+    {
+      usqrt(i, &q);
+      printf("sqrt(%3d) = %2d, remainder = %2d\n", i, q.sqrt, q.frac);
+    }
   usqrt(l, &q);
   printf("\nsqrt(%lX) = %X, remainder = %X\n", l, q.sqrt, q.frac);
   return 0;

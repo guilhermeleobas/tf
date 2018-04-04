@@ -41,9 +41,9 @@ int create_box(box_type *box, int numGrids, int low_i, int low_j, int low_k,
   // int MaxUnrolling = 32; // 8-way SIMD x unroll by 4 = 32/thread
   int paddingToAvoidStencilCleanup = 0;
   if (box->pencil + 1 < (MaxUnrolling - 1))
-  {
-    paddingToAvoidStencilCleanup = (MaxUnrolling - 1) - (box->pencil + 1);
-  }
+    {
+      paddingToAvoidStencilCleanup = (MaxUnrolling - 1) - (box->pencil + 1);
+    }
 
   // round each plane up to ensure SIMD alignment within each plane (not
   // pencil).  Thus if ijk is aligned, ijkk+/-plane is aligned
@@ -53,7 +53,7 @@ int create_box(box_type *box, int numGrids, int low_i, int low_j, int low_k,
   box->plane = (((dim_j + 2 * ghosts) * box->pencil) +
                 paddingToAvoidStencilCleanup + 0x7) &
                ~0x7;  // multiple of  64 bytes (required for MIC)
-                      // box->plane  =(
+  // box->plane  =(
   // ((dim_j+2*ghosts)*box->pencil)+paddingToAvoidStencilCleanup+0x3) & ~0x3; //
   // multiple of  32 bytes (required for AVX/QPX)
   // box->plane  =(
@@ -67,12 +67,12 @@ int create_box(box_type *box, int numGrids, int low_i, int low_j, int low_k,
   // if(dim_i>=32){while( ((box->volume %  512) !=  72) )box->volume+=8;} //
   // 32KB / 8way / 8bytes / 7 arrays
   if (dim_i >= 32)
-  {
-    while (((box->volume % 512) != 64))
     {
-      box->volume += 8;
-    }
-  }  // 32KB / 8way / 8bytes / 8 arrays
+      while (((box->volume % 512) != 64))
+        {
+          box->volume += 8;
+        }
+    }  // 32KB / 8way / 8bytes / 8 arrays
   // if(dim_i>=32){while( ((box->volume %  512) !=  40) )box->volume+=8;} //
   // 32KB / 8way / 8bytes / 13 arrays
   // if(dim_i>=32){while( ((box->volume %  256) !=  40) )box->volume+=8;} //
@@ -100,11 +100,11 @@ int create_box(box_type *box, int numGrids, int low_i, int low_j, int low_k,
   memory_allocated += box->volume * box->numGrids * sizeof(double);
   int g;
   for (g = 0; g < box->numGrids; g++)
-  {
-    box->grids[g] = tmpbuf + g * box->volume;
-    // printf("box->grids[%2d] = 0x%016llx\n",g,(uint64_t)box->grids[g] &
-    // (0x3<<3));
-  }
+    {
+      box->grids[g] = tmpbuf + g * box->volume;
+      // printf("box->grids[%2d] = 0x%016llx\n",g,(uint64_t)box->grids[g] &
+      // (0x3<<3));
+    }
 #endif
 
   // allocate RedBlackMask array for a plane...
@@ -124,36 +124,36 @@ int create_box(box_type *box, int numGrids, int low_i, int low_j, int low_k,
   // initialize red/black... could do ij loop with ((i%pencil)^(j/pencil)&0x1)
   int i, j;
   for (j = 0 - ghosts; j < box->dim.j + ghosts; j++)
-  {
-    for (i = 0 - ghosts; i < box->dim.i + ghosts; i++)
     {
-      int ij = (i + ghosts) + (j + ghosts) * box->pencil;
-      if ((i ^ j) & 0x1)
-      {
-        box->RedBlack_64bMask[ij] = ~0;
-      }
-      else
-      {
-        box->RedBlack_64bMask[ij] = 0;
-      }
-      if ((i ^ j) & 0x1)
-      {
-        box->RedBlack_FP[0][ij] = 1.0;
-      }
-      else
-      {
-        box->RedBlack_FP[0][ij] = 0.0;
-      }
-      if ((i ^ j) & 0x1)
-      {
-        box->RedBlack_FP[1][ij] = 0.0;
-      }
-      else
-      {
-        box->RedBlack_FP[1][ij] = 1.0;
-      }
+      for (i = 0 - ghosts; i < box->dim.i + ghosts; i++)
+        {
+          int ij = (i + ghosts) + (j + ghosts) * box->pencil;
+          if ((i ^ j) & 0x1)
+            {
+              box->RedBlack_64bMask[ij] = ~0;
+            }
+          else
+            {
+              box->RedBlack_64bMask[ij] = 0;
+            }
+          if ((i ^ j) & 0x1)
+            {
+              box->RedBlack_FP[0][ij] = 1.0;
+            }
+          else
+            {
+              box->RedBlack_FP[0][ij] = 0.0;
+            }
+          if ((i ^ j) & 0x1)
+            {
+              box->RedBlack_FP[1][ij] = 0.0;
+            }
+          else
+            {
+              box->RedBlack_FP[1][ij] = 1.0;
+            }
+        }
     }
-  }
   // done...
   return (memory_allocated);
 }

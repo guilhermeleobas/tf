@@ -88,21 +88,21 @@ void gen_crc_table()
   register unsigned long crc_accum;
 
   for (i = 0; i < 256; i++)
-  {
-    crc_accum = ((unsigned long)i << 24);
-    for (j = 0; j < 8; j++)
     {
-      if (crc_accum & 0x80000000L)
-      {
-        crc_accum = (crc_accum << 1) ^ POLYNOMIAL;
-      }
-      else
-      {
-        crc_accum = (crc_accum << 1);
-      }
+      crc_accum = ((unsigned long)i << 24);
+      for (j = 0; j < 8; j++)
+        {
+          if (crc_accum & 0x80000000L)
+            {
+              crc_accum = (crc_accum << 1) ^ POLYNOMIAL;
+            }
+          else
+            {
+              crc_accum = (crc_accum << 1);
+            }
+        }
+      crc_table[i] = crc_accum;
     }
-    crc_table[i] = crc_accum;
-  }
   return;
 }
 
@@ -112,10 +112,10 @@ unsigned long update_crc(unsigned long crc_accum, char *data_blk_ptr,
 {
   register int i, j;
   for (j = 0; j < data_blk_size; j++)
-  {
-    i = ((int)(crc_accum >> 24) ^ *data_blk_ptr++) & 0xff;
-    crc_accum = (crc_accum << 8) ^ crc_table[i];
-  }
+    {
+      i = ((int)(crc_accum >> 24) ^ *data_blk_ptr++) & 0xff;
+      crc_accum = (crc_accum << 8) ^ crc_table[i];
+    }
   return crc_accum;
 }
 
@@ -126,23 +126,23 @@ int main(int argc, char **argv)
   char *packet;
 
   if (argc != 2)
-  {
-    fprintf(stderr, "Usage: crc #numpackets");
-    exit(0);
-  }
+    {
+      fprintf(stderr, "Usage: crc #numpackets");
+      exit(0);
+    }
   else
-  {
-    numpackets = atoi(argv[1]);
-  }
+    {
+      numpackets = atoi(argv[1]);
+    }
 
   gen_crc_table();
 
   while (i < numpackets)
-  {
-    packet = get_next_packet(i);
-    crc_accum = update_crc(0, packet, packet_size(i));
-    i++;
-  }
+    {
+      packet = get_next_packet(i);
+      crc_accum = update_crc(0, packet, packet_size(i));
+      i++;
+    }
 
   fprintf(stdout, "CRC completed for %d packets \n", numpackets);
   fprintf(stdout, "crc_accum is %u\n", (unsigned)crc_accum);

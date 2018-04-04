@@ -60,7 +60,7 @@
 **  it is not used for the 16-bit DOS and MAC versions.
 */
 farvoid *AllocateMemory(unsigned long nbytes, /* # of bytes to alloc */
-                        int *errorcode)       /* Returned error code */
+                        int *errorcode) /* Returned error code */
 {
 #ifdef DOS16MEM
   union REGS registers;
@@ -75,7 +75,7 @@ farvoid *AllocateMemory(unsigned long nbytes, /* # of bytes to alloc */
   /*
   ** Set incoming registers.
   */
-  registers.h.ah = 0x48;   /* Allocate memory */
+  registers.h.ah = 0x48; /* Allocate memory */
   registers.x.bx = nparas; /* # of paragraphs */
 
   intdos(&registers, &registers); /* Call DOS */
@@ -84,11 +84,11 @@ farvoid *AllocateMemory(unsigned long nbytes, /* # of bytes to alloc */
   ** See if things succeeded.
   */
   if (registers.x.cflag)
-  {
-    printf("error: %d Lgst: %d\n", registers.x.ax, registers.x.bx);
-    *errorcode = ERROR_MEMORY;
-    return ((farvoid *)NULL);
-  }
+    {
+      printf("error: %d Lgst: %d\n", registers.x.ax, registers.x.bx);
+      *errorcode = ERROR_MEMORY;
+      return ((farvoid *)NULL);
+    }
 
   /*
   ** Create a farvoid pointer to return.
@@ -118,55 +118,55 @@ farvoid *AllocateMemory(unsigned long nbytes, /* # of bytes to alloc */
   ** a 4-byte entity.
   */
   farvoid *returnval; /* Return value */
-  ulong true_addr;    /* True address */
-  ulong adj_addr;     /* Adjusted address */
+  ulong true_addr; /* True address */
+  ulong adj_addr; /* Adjusted address */
 
   returnval = (farvoid *)malloc((size_t)(nbytes + 2L * (long)global_align));
   if (returnval == (farvoid *)NULL)
-  {
-    *errorcode = ERROR_MEMORY;
-  }
+    {
+      *errorcode = ERROR_MEMORY;
+    }
   else
-  {
-    *errorcode = 0;
-  }
+    {
+      *errorcode = 0;
+    }
 
   /*
   ** Check for alignment
   */
   adj_addr = true_addr = (ulong)returnval;
   if (global_align == 0)
-  {
-    if (AddMemArray(true_addr, adj_addr))
+    {
+      if (AddMemArray(true_addr, adj_addr))
+        {
+          *errorcode = ERROR_MEMARRAY_FULL;
+        }
+      return (returnval);
+    }
+
+  if (global_align == 1)
+    {
+      if (true_addr % 2 == 0)
+        {
+          adj_addr++;
+        }
+    }
+  else
+    {
+      while (adj_addr % global_align != 0)
+        {
+          ++adj_addr;
+        }
+      if (adj_addr % (global_align * 2) == 0)
+        {
+          adj_addr += global_align;
+        }
+    }
+  returnval = (void *)adj_addr;
+  if (AddMemArray(true_addr, adj_addr))
     {
       *errorcode = ERROR_MEMARRAY_FULL;
     }
-    return (returnval);
-  }
-
-  if (global_align == 1)
-  {
-    if (true_addr % 2 == 0)
-    {
-      adj_addr++;
-    }
-  }
-  else
-  {
-    while (adj_addr % global_align != 0)
-    {
-      ++adj_addr;
-    }
-    if (adj_addr % (global_align * 2) == 0)
-    {
-      adj_addr += global_align;
-    }
-  }
-  returnval = (void *)adj_addr;
-  if (AddMemArray(true_addr, adj_addr))
-  {
-    *errorcode = ERROR_MEMARRAY_FULL;
-  }
   return (returnval);
 #endif
 }
@@ -200,10 +200,10 @@ void FreeMemory(farvoid *mempointer, /* Pointer to memory block */
   ** subtract 16 from offset and add 1 to segment.
   */
   while (offset >= 16)
-  {
-    offset -= 16;
-    segment++;
-  }
+    {
+      offset -= 16;
+      segment++;
+    }
 
   /*
   ** Build the call to DOS
@@ -217,10 +217,10 @@ void FreeMemory(farvoid *mempointer, /* Pointer to memory block */
   ** Check for error
   */
   if (registers.x.cflag)
-  {
-    *errorcode = ERROR_MEMORY;
-    return;
-  }
+    {
+      *errorcode = ERROR_MEMORY;
+      return;
+    }
 
   *errorcode = 0;
   return;
@@ -238,10 +238,10 @@ void FreeMemory(farvoid *mempointer, /* Pointer to memory block */
   /* Locate item in memory array */
   adj_addr = (ulong)mempointer;
   if (RemoveMemArray(adj_addr, &true_addr))
-  {
-    *errorcode = ERROR_MEMARRAY_NFOUND;
-    return;
-  }
+    {
+      *errorcode = ERROR_MEMARRAY_NFOUND;
+      return;
+    }
   mempointer = (void *)true_addr;
   free(mempointer);
   *errorcode = 0;
@@ -256,7 +256,7 @@ void FreeMemory(farvoid *mempointer, /* Pointer to memory block */
 ** But, not in DOS....noooo....
 */
 void MoveMemory(farvoid *destination, /* Destination address */
-                farvoid *source,      /* Source address */
+                farvoid *source, /* Source address */
                 unsigned long nbytes)
 {
 /* +++16-bit DOS VERSION+++ */
@@ -279,13 +279,13 @@ void MoveMemory(farvoid *destination, /* Destination address */
 ** the arrays are defined with far pointers.
 */
 void FarDOSmemmove(farvoid *destination, /* Destination pointer */
-                   farvoid *source,      /* Source pointer */
+                   farvoid *source, /* Source pointer */
                    unsigned long nbytes) /* # of bytes to move */
 {
   unsigned char huge *uchsource; /* Temp source */
-  unsigned char huge *uchdest;   /* Temp destination */
-  unsigned long saddr;           /* Source "true" address */
-  unsigned long daddr;           /* Destination "true" address */
+  unsigned char huge *uchdest; /* Temp destination */
+  unsigned long saddr; /* Source "true" address */
+  unsigned long daddr; /* Destination "true" address */
 
   /*
   ** Get unsigned char pointer equivalents
@@ -301,61 +301,61 @@ void FarDOSmemmove(farvoid *destination, /* Destination pointer */
   daddr = (unsigned long)(FP_SEG(destination) * 16 + FP_OFF(destination));
 
   if (saddr > daddr)
-  {
-    /*
+    {
+      /*
     ** Source is greater than destination.
     ** Use a series of standard move operations.
     ** We'll move 65535 bytes at a time.
     */
-    while (nbytes >= 65535L)
-    {
-      _fmemmove((farvoid *)uchdest, (farvoid *)uchsource, (size_t)65535);
-      uchsource += 65535; /* Advance pointers */
-      uchdest += 65535;
-      nbytes -= 65535;
-    }
+      while (nbytes >= 65535L)
+        {
+          _fmemmove((farvoid *)uchdest, (farvoid *)uchsource, (size_t)65535);
+          uchsource += 65535; /* Advance pointers */
+          uchdest += 65535;
+          nbytes -= 65535;
+        }
 
-    /*
+      /*
     ** Move remaining bytes
     */
-    if (nbytes != 0L)
-      _fmemmove((farvoid *)uchdest, (farvoid *)uchsource,
-                (size_t)(nbytes & 0xFFFF));
-  }
+      if (nbytes != 0L)
+        _fmemmove((farvoid *)uchdest, (farvoid *)uchsource,
+                  (size_t)(nbytes & 0xFFFF));
+    }
   else
-  {
-    /*
+    {
+      /*
     ** Destination is greater than source.
     ** Advance pointers to the end of their
     ** respective blocks.
     */
-    uchsource += nbytes;
-    uchdest += nbytes;
+      uchsource += nbytes;
+      uchdest += nbytes;
 
-    /*
+      /*
     ** Again, move 65535 bytes at a time.  However,
     ** "back" the pointers up before doing the
     ** move.
     */
-    while (nbytes >= 65535L)
-    {
-      uchsource -= 65535;
-      uchdest -= 65535;
-      _fmemmove((farvoid *)uchdest, (farvoid *)uchsource, (size_t)65535);
-      nbytes -= 65535;
-    }
+      while (nbytes >= 65535L)
+        {
+          uchsource -= 65535;
+          uchdest -= 65535;
+          _fmemmove((farvoid *)uchdest, (farvoid *)uchsource, (size_t)65535);
+          nbytes -= 65535;
+        }
 
-    /*
+      /*
     ** Move remaining bytes.
     */
-    if (nbytes != 0L)
-    {
-      uchsource -= nbytes;
-      uchdest -= nbytes;
-      _fmemmove((farvoid *)uchdest, (farvoid *)uchsource,
-                (size_t)(nbytes & 0xFFFF));
+      if (nbytes != 0L)
+        {
+          uchsource -= nbytes;
+          uchdest -= nbytes;
+          _fmemmove((farvoid *)uchdest, (farvoid *)uchsource,
+                    (size_t)(nbytes & 0xFFFF));
+        }
     }
-  }
   return;
 }
 #endif
@@ -386,9 +386,9 @@ void InitMemArray(void)
 int AddMemArray(ulong true_addr, ulong adj_addr)
 {
   if (mem_array_ents >= MEM_ARRAY_SIZE)
-  {
-    return (-1);
-  }
+    {
+      return (-1);
+    }
 
   mem_array[0][mem_array_ents] = true_addr;
   mem_array[1][mem_array_ents] = adj_addr;
@@ -410,21 +410,21 @@ int RemoveMemArray(ulong adj_addr, ulong *true_addr)
 
   /* Locate the item in the array. */
   for (i = 0; i < mem_array_ents; i++)
-  {
-    if (mem_array[1][i] == adj_addr)
-    { /* Found it..bubble stuff down */
-      *true_addr = mem_array[0][i];
-      j = i;
-      while (j + 1 < mem_array_ents)
-      {
-        mem_array[0][j] = mem_array[0][j + 1];
-        mem_array[1][j] = mem_array[1][j + 1];
-        j++;
-      }
-      mem_array_ents--;
-      return (0); /* Return if found */
+    {
+      if (mem_array[1][i] == adj_addr)
+        { /* Found it..bubble stuff down */
+          *true_addr = mem_array[0][i];
+          j = i;
+          while (j + 1 < mem_array_ents)
+            {
+              mem_array[0][j] = mem_array[0][j + 1];
+              mem_array[1][j] = mem_array[1][j + 1];
+              j++;
+            }
+          mem_array_ents--;
+          return (0); /* Return if found */
+        }
     }
-  }
 
   /* If we made it here...something's wrong...show error */
   return (-1);
@@ -497,7 +497,7 @@ void CreateFile(char *filename, int *errorcode)
 ** DOS VERSION!!
 */
 
-int bmOpenFile(char *fname,    /* File name */
+int bmOpenFile(char *fname, /* File name */
                int *errorcode) /* Error code returned */
 {
   int fhandle; /* Returned file handle */
@@ -515,7 +515,7 @@ int bmOpenFile(char *fname,    /* File name */
 
 #ifdef LINUX
 
-FILE *bmOpenFile(char *fname,    /* File name */
+FILE *bmOpenFile(char *fname, /* File name */
                  int *errorcode) /* Error code returned */
 {
   FILE *fhandle; /* Returned file handle */
@@ -540,7 +540,7 @@ FILE *bmOpenFile(char *fname,    /* File name */
 /*
 ** DOS VERSION!!!
 */
-void CloseFile(int fhandle,    /* File handle */
+void CloseFile(int fhandle, /* File handle */
                int *errorcode) /* Returned error code */
 {
   close(fhandle);
@@ -549,7 +549,7 @@ void CloseFile(int fhandle,    /* File handle */
 }
 #endif
 #ifdef LINUX
-void CloseFile(FILE *fhandle,  /* File handle */
+void CloseFile(FILE *fhandle, /* File handle */
                int *errorcode) /* Returned error code */
 {
   fclose(fhandle);
@@ -570,14 +570,14 @@ void CloseFile(FILE *fhandle,  /* File handle */
 ** DOS VERSION!!
 */
 
-void readfile(int fhandle,          /* File handle */
+void readfile(int fhandle, /* File handle */
               unsigned long offset, /* Offset into file */
               unsigned long nbytes, /* # of bytes to read */
-              void *buffer,         /* Buffer to read into */
-              int *errorcode)       /* Returned error code */
+              void *buffer, /* Buffer to read into */
+              int *errorcode) /* Returned error code */
 {
   long newoffset; /* New offset by lseek */
-  int readcode;   /* Return code from read */
+  int readcode; /* Return code from read */
 
   /*
   ** Presume success.
@@ -589,10 +589,10 @@ void readfile(int fhandle,          /* File handle */
   */
   newoffset = lseek(fhandle, (long)offset, SEEK_SET);
   if (newoffset == -1L)
-  {
-    *errorcode = ERROR_FILESEEK;
-    return;
-  }
+    {
+      *errorcode = ERROR_FILESEEK;
+      return;
+    }
 
   /*
   ** Do the read.
@@ -604,14 +604,14 @@ void readfile(int fhandle,          /* File handle */
 }
 #endif
 #ifdef LINUX
-void readfile(FILE *fhandle,        /* File handle */
+void readfile(FILE *fhandle, /* File handle */
               unsigned long offset, /* Offset into file */
               unsigned long nbytes, /* # of bytes to read */
-              void *buffer,         /* Buffer to read into */
-              int *errorcode)       /* Returned error code */
+              void *buffer, /* Buffer to read into */
+              int *errorcode) /* Returned error code */
 {
-  long newoffset;  /* New offset by fseek */
-  size_t nelems;   /* Expected return code from read */
+  long newoffset; /* New offset by fseek */
+  size_t nelems; /* Expected return code from read */
   size_t readcode; /* Actual return code from read */
 
   /*
@@ -624,10 +624,10 @@ void readfile(FILE *fhandle,        /* File handle */
   */
   newoffset = fseek(fhandle, (long)offset, SEEK_SET);
   if (newoffset == -1L)
-  {
-    *errorcode = ERROR_FILESEEK;
-    return;
-  }
+    {
+      *errorcode = ERROR_FILESEEK;
+      return;
+    }
 
   /*
   ** Do the read.
@@ -652,14 +652,14 @@ void readfile(FILE *fhandle,        /* File handle */
 ** DOS VERSION!!
 */
 
-void writefile(int fhandle,          /* File handle */
+void writefile(int fhandle, /* File handle */
                unsigned long offset, /* Offset into file */
                unsigned long nbytes, /* # of bytes to read */
-               void *buffer,         /* Buffer to read into */
-               int *errorcode)       /* Returned error code */
+               void *buffer, /* Buffer to read into */
+               int *errorcode) /* Returned error code */
 {
   long newoffset; /* New offset by lseek */
-  int writecode;  /* Return code from write */
+  int writecode; /* Return code from write */
 
   /*
   ** Presume success.
@@ -671,10 +671,10 @@ void writefile(int fhandle,          /* File handle */
   */
   newoffset = lseek(fhandle, (long)offset, SEEK_SET);
   if (newoffset == -1L)
-  {
-    *errorcode = ERROR_FILESEEK;
-    return;
-  }
+    {
+      *errorcode = ERROR_FILESEEK;
+      return;
+    }
 
   /*
   ** Do the write.
@@ -688,14 +688,14 @@ void writefile(int fhandle,          /* File handle */
 
 #ifdef LINUX
 
-void writefile(FILE *fhandle,        /* File handle */
+void writefile(FILE *fhandle, /* File handle */
                unsigned long offset, /* Offset into file */
                unsigned long nbytes, /* # of bytes to read */
-               void *buffer,         /* Buffer to read into */
-               int *errorcode)       /* Returned error code */
+               void *buffer, /* Buffer to read into */
+               int *errorcode) /* Returned error code */
 {
-  long newoffset;   /* New offset by lseek */
-  size_t nelems;    /* Expected return code from write */
+  long newoffset; /* New offset by lseek */
+  size_t nelems; /* Expected return code from write */
   size_t writecode; /* Actual return code from write */
 
   /*
@@ -708,10 +708,10 @@ void writefile(FILE *fhandle,        /* File handle */
   */
   newoffset = fseek(fhandle, (long)offset, SEEK_SET);
   if (newoffset == -1L)
-  {
-    *errorcode = ERROR_FILESEEK;
-    return;
-  }
+    {
+      *errorcode = ERROR_FILESEEK;
+      return;
+    }
 
   /*
   ** Do the write.
@@ -733,7 +733,7 @@ void writefile(FILE *fhandle,        /* File handle */
 ** Report error message condition.
 */
 void ReportError(char *errorcontext, /* Error context string */
-                 int errorcode)      /* Error code number */
+                 int errorcode) /* Error code number */
 {
   /*
   ** Display error context

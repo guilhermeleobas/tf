@@ -15,27 +15,27 @@ int strncmpic(char *s1, char *s2, int n)
   register char *p = s2;
 
   while ((n > 0) && (*p != '\0'))
-  {
-    /* chars match or only case different */
-    if (lower(*u) == lower(*p))
     {
-      p++; /* examine next char */
-      u++;
+      /* chars match or only case different */
+      if (lower(*u) == lower(*p))
+        {
+          p++; /* examine next char */
+          u++;
+        }
+      else
+        {
+          break; /* no match - stop comparison */
+        }
+      n--;
     }
-    else
-    {
-      break; /* no match - stop comparison */
-    }
-    n--;
-  }
   if (n > 0)
-  {
-    return (lower(*u) - lower(*p)); /* return "difference" */
-  }
+    {
+      return (lower(*u) - lower(*p)); /* return "difference" */
+    }
   else
-  {
-    return (0);
-  }
+    {
+      return (0);
+    }
 }
 
 /*
@@ -48,18 +48,18 @@ int strcmpic(char *s1, char *s2)
   register char *p = s2;
 
   while (*p != '\0')
-  {
-    /* chars match or only case different */
-    if (lower(*u) == lower(*p))
     {
-      p++; /* examine next char */
-      u++;
+      /* chars match or only case different */
+      if (lower(*u) == lower(*p))
+        {
+          p++; /* examine next char */
+          u++;
+        }
+      else
+        {
+          break; /* no match - stop comparison */
+        }
     }
-    else
-    {
-      break; /* no match - stop comparison */
-    }
-  }
 
   return (lower(*u) - lower(*p)); /* return "difference" */
 }

@@ -12,7 +12,7 @@
  */
 
 #define JPEG_CJPEG_DJPEG /* to get the command-line config symbols */
-#include "jinclude.h"    /* get auto-config symbols, <stdio.h> */
+#include "jinclude.h" /* get auto-config symbols, <stdio.h> */
 
 #ifndef HAVE_STDLIB_H /* <stdlib.h> should declare malloc() */
 extern void *malloc();
@@ -26,7 +26,7 @@ extern void *malloc();
 
 #ifdef USE_CCOMMAND /* command-line reader for Macintosh */
 #ifdef __MWERKS__
-#include <SIOUX.h>   /* Metrowerks needs this */
+#include <SIOUX.h> /* Metrowerks needs this */
 #include <console.h> /* ... and this */
 #endif
 #ifdef THINK_C
@@ -86,9 +86,9 @@ static int read_1_byte(void)
 
   c = NEXTBYTE();
   if (c == EOF)
-  {
-    ERREXIT("Premature EOF in JPEG file");
-  }
+    {
+      ERREXIT("Premature EOF in JPEG file");
+    }
   return c;
 }
 
@@ -100,14 +100,14 @@ static unsigned int read_2_bytes(void)
 
   c1 = NEXTBYTE();
   if (c1 == EOF)
-  {
-    ERREXIT("Premature EOF in JPEG file");
-  }
+    {
+      ERREXIT("Premature EOF in JPEG file");
+    }
   c2 = NEXTBYTE();
   if (c2 == EOF)
-  {
-    ERREXIT("Premature EOF in JPEG file");
-  }
+    {
+      ERREXIT("Premature EOF in JPEG file");
+    }
   return (((unsigned int)c1) << 8) + ((unsigned int)c2);
 }
 
@@ -131,9 +131,9 @@ static void copy_rest_of_file(void)
   int c;
 
   while ((c = NEXTBYTE()) != EOF)
-  {
-    PUTBYTE(c);
-  }
+    {
+      PUTBYTE(c);
+    }
 }
 
 /*
@@ -178,22 +178,23 @@ static int next_marker(void)
   /* Find 0xFF byte; count and skip any non-FFs. */
   c = read_1_byte();
   while (c != 0xFF)
-  {
-    discarded_bytes++;
-    c = read_1_byte();
-  }
+    {
+      discarded_bytes++;
+      c = read_1_byte();
+    }
   /* Get marker code byte, swallowing any duplicate FF bytes.  Extra FFs
    * are legal as pad bytes, so don't count them in discarded_bytes.
    */
   do
-  {
-    c = read_1_byte();
-  } while (c == 0xFF);
+    {
+      c = read_1_byte();
+    }
+  while (c == 0xFF);
 
   if (discarded_bytes != 0)
-  {
-    fprintf(stderr, "Warning: garbage data found in JPEG file\n");
-  }
+    {
+      fprintf(stderr, "Warning: garbage data found in JPEG file\n");
+    }
 
   return c;
 }
@@ -213,9 +214,9 @@ static int first_marker(void)
   c1 = NEXTBYTE();
   c2 = NEXTBYTE();
   if (c1 != 0xFF || c2 != M_SOI)
-  {
-    ERREXIT("Not a JPEG file");
-  }
+    {
+      ERREXIT("Not a JPEG file");
+    }
   return c2;
 }
 
@@ -238,16 +239,16 @@ static void copy_variable(void)
   write_2_bytes(length);
   /* Length includes itself, so must be at least 2 */
   if (length < 2)
-  {
-    ERREXIT("Erroneous JPEG marker length");
-  }
+    {
+      ERREXIT("Erroneous JPEG marker length");
+    }
   length -= 2;
   /* Skip over the remaining bytes */
   while (length > 0)
-  {
-    write_1_byte(read_1_byte());
-    length--;
-  }
+    {
+      write_1_byte(read_1_byte());
+      length--;
+    }
 }
 
 static void skip_variable(void)
@@ -259,16 +260,16 @@ static void skip_variable(void)
   length = read_2_bytes();
   /* Length includes itself, so must be at least 2 */
   if (length < 2)
-  {
-    ERREXIT("Erroneous JPEG marker length");
-  }
+    {
+      ERREXIT("Erroneous JPEG marker length");
+    }
   length -= 2;
   /* Skip over the remaining bytes */
   while (length > 0)
-  {
-    (void)read_1_byte();
-    length--;
-  }
+    {
+      (void)read_1_byte();
+      length--;
+    }
 }
 
 /*
@@ -282,57 +283,57 @@ static int scan_JPEG_header(int keep_COM)
 
   /* Expect SOI at start of file */
   if (first_marker() != M_SOI)
-  {
-    ERREXIT("Expected SOI marker first");
-  }
+    {
+      ERREXIT("Expected SOI marker first");
+    }
   write_marker(M_SOI);
 
   /* Scan miscellaneous markers until we reach SOFn. */
   for (;;)
-  {
-    marker = next_marker();
-    switch (marker)
     {
-      case M_SOF0:  /* Baseline */
-      case M_SOF1:  /* Extended sequential, Huffman */
-      case M_SOF2:  /* Progressive, Huffman */
-      case M_SOF3:  /* Lossless, Huffman */
-      case M_SOF5:  /* Differential sequential, Huffman */
-      case M_SOF6:  /* Differential progressive, Huffman */
-      case M_SOF7:  /* Differential lossless, Huffman */
-      case M_SOF9:  /* Extended sequential, arithmetic */
-      case M_SOF10: /* Progressive, arithmetic */
-      case M_SOF11: /* Lossless, arithmetic */
-      case M_SOF13: /* Differential sequential, arithmetic */
-      case M_SOF14: /* Differential progressive, arithmetic */
-      case M_SOF15: /* Differential lossless, arithmetic */
-        return marker;
-
-      case M_SOS: /* should not see compressed data before SOF */
-        ERREXIT("SOS without prior SOFn");
-        break;
-
-      case M_EOI: /* in case it's a tables-only JPEG stream */
-        return marker;
-
-      case M_COM: /* Existing COM: conditionally discard */
-        if (keep_COM)
+      marker = next_marker();
+      switch (marker)
         {
-          write_marker(marker);
-          copy_variable();
-        }
-        else
-        {
-          skip_variable();
-        }
-        break;
+          case M_SOF0: /* Baseline */
+          case M_SOF1: /* Extended sequential, Huffman */
+          case M_SOF2: /* Progressive, Huffman */
+          case M_SOF3: /* Lossless, Huffman */
+          case M_SOF5: /* Differential sequential, Huffman */
+          case M_SOF6: /* Differential progressive, Huffman */
+          case M_SOF7: /* Differential lossless, Huffman */
+          case M_SOF9: /* Extended sequential, arithmetic */
+          case M_SOF10: /* Progressive, arithmetic */
+          case M_SOF11: /* Lossless, arithmetic */
+          case M_SOF13: /* Differential sequential, arithmetic */
+          case M_SOF14: /* Differential progressive, arithmetic */
+          case M_SOF15: /* Differential lossless, arithmetic */
+            return marker;
 
-      default: /* Anything else just gets copied */
-        write_marker(marker);
-        copy_variable(); /* we assume it has a parameter count... */
-        break;
-    }
-  } /* end loop */
+          case M_SOS: /* should not see compressed data before SOF */
+            ERREXIT("SOS without prior SOFn");
+            break;
+
+          case M_EOI: /* in case it's a tables-only JPEG stream */
+            return marker;
+
+          case M_COM: /* Existing COM: conditionally discard */
+            if (keep_COM)
+              {
+                write_marker(marker);
+                copy_variable();
+              }
+            else
+              {
+                skip_variable();
+              }
+            break;
+
+          default: /* Anything else just gets copied */
+            write_marker(marker);
+            copy_variable(); /* we assume it has a parameter count... */
+            break;
+        }
+    } /* end loop */
 }
 
 /* Command line parsing code */
@@ -381,26 +382,26 @@ static int keymatch(char *arg, const char *keyword, int minchars)
   register int nmatched = 0;
 
   while ((ca = *arg++) != '\0')
-  {
-    if ((ck = *keyword++) == '\0')
     {
-      return 0; /* arg longer than keyword, no good */
+      if ((ck = *keyword++) == '\0')
+        {
+          return 0; /* arg longer than keyword, no good */
+        }
+      if (isupper(ca))
+        { /* force arg to lcase (assume ck is already) */
+          ca = tolower(ca);
+        }
+      if (ca != ck)
+        {
+          return 0; /* no good */
+        }
+      nmatched++; /* count matched characters */
     }
-    if (isupper(ca))
-    { /* force arg to lcase (assume ck is already) */
-      ca = tolower(ca);
-    }
-    if (ca != ck)
-    {
-      return 0; /* no good */
-    }
-    nmatched++; /* count matched characters */
-  }
   /* reached end of argument; fail if it's too short for unique abbrev */
   if (nmatched < minchars)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
   return 1; /* A-OK */
 }
 
@@ -425,146 +426,146 @@ int main(int argc, char **argv)
 
   progname = argv[0];
   if (progname == NULL || progname[0] == 0)
-  {
-    progname = "wrjpgcom"; /* in case C library doesn't provide it */
+    {
+      progname = "wrjpgcom"; /* in case C library doesn't provide it */
 
-    /* Parse switches, if any */
-  }
+      /* Parse switches, if any */
+    }
   for (argn = 1; argn < argc; argn++)
-  {
-    arg = argv[argn];
-    if (arg[0] != '-')
     {
-      break; /* not switch, must be file name */
-    }
-    arg++; /* advance over '-' */
-    if (keymatch(arg, "replace", 1))
-    {
-      keep_COM = 0;
-    }
-    else if (keymatch(arg, "cfile", 2))
-    {
-      if (++argn >= argc)
-      {
-        usage();
-      }
-      if ((comment_file = fopen(argv[argn], "r")) == NULL)
-      {
-        fprintf(stderr, "%s: can't open %s\n", progname, argv[argn]);
-        exit(EXIT_FAILURE);
-      }
-    }
-    else if (keymatch(arg, "comment", 1))
-    {
-      if (++argn >= argc)
-      {
-        usage();
-      }
-      comment_arg = argv[argn];
-      /* If the comment text starts with '"', then we are probably running
+      arg = argv[argn];
+      if (arg[0] != '-')
+        {
+          break; /* not switch, must be file name */
+        }
+      arg++; /* advance over '-' */
+      if (keymatch(arg, "replace", 1))
+        {
+          keep_COM = 0;
+        }
+      else if (keymatch(arg, "cfile", 2))
+        {
+          if (++argn >= argc)
+            {
+              usage();
+            }
+          if ((comment_file = fopen(argv[argn], "r")) == NULL)
+            {
+              fprintf(stderr, "%s: can't open %s\n", progname, argv[argn]);
+              exit(EXIT_FAILURE);
+            }
+        }
+      else if (keymatch(arg, "comment", 1))
+        {
+          if (++argn >= argc)
+            {
+              usage();
+            }
+          comment_arg = argv[argn];
+          /* If the comment text starts with '"', then we are probably running
        * under MS-DOG and must parse out the quoted string ourselves.  Sigh.
        */
-      if (comment_arg[0] == '"')
-      {
-        comment_arg = (char *)malloc((size_t)MAX_COM_LENGTH);
-        if (comment_arg == NULL)
-        {
-          ERREXIT("Insufficient memory");
-        }
-        strcpy(comment_arg, argv[argn] + 1);
-        for (;;)
-        {
+          if (comment_arg[0] == '"')
+            {
+              comment_arg = (char *)malloc((size_t)MAX_COM_LENGTH);
+              if (comment_arg == NULL)
+                {
+                  ERREXIT("Insufficient memory");
+                }
+              strcpy(comment_arg, argv[argn] + 1);
+              for (;;)
+                {
+                  comment_length = strlen(comment_arg);
+                  if (comment_length > 0 && comment_arg[comment_length - 1] == '"')
+                    {
+                      comment_arg[comment_length - 1] = '\0'; /* zap terminating quote */
+                      break;
+                    }
+                  if (++argn >= argc)
+                    {
+                      ERREXIT("Missing ending quote mark");
+                    }
+                  strcat(comment_arg, " ");
+                  strcat(comment_arg, argv[argn]);
+                }
+            }
           comment_length = strlen(comment_arg);
-          if (comment_length > 0 && comment_arg[comment_length - 1] == '"')
-          {
-            comment_arg[comment_length - 1] = '\0'; /* zap terminating quote */
-            break;
-          }
-          if (++argn >= argc)
-          {
-            ERREXIT("Missing ending quote mark");
-          }
-          strcat(comment_arg, " ");
-          strcat(comment_arg, argv[argn]);
         }
-      }
-      comment_length = strlen(comment_arg);
+      else
+        {
+          usage();
+        }
     }
-    else
-    {
-      usage();
-    }
-  }
 
   /* Cannot use both -comment and -cfile. */
   if (comment_arg != NULL && comment_file != NULL)
-  {
-    usage();
-  }
+    {
+      usage();
+    }
   /* If there is neither -comment nor -cfile, we will read the comment text
    * from stdin; in this case there MUST be an input JPEG file name.
    */
   if (comment_arg == NULL && comment_file == NULL && argn >= argc)
-  {
-    usage();
-  }
+    {
+      usage();
+    }
 
   /* Open the input file. */
   if (argn < argc)
-  {
-    if ((infile = fopen(argv[argn], READ_BINARY)) == NULL)
     {
-      fprintf(stderr, "%s: can't open %s\n", progname, argv[argn]);
-      exit(EXIT_FAILURE);
+      if ((infile = fopen(argv[argn], READ_BINARY)) == NULL)
+        {
+          fprintf(stderr, "%s: can't open %s\n", progname, argv[argn]);
+          exit(EXIT_FAILURE);
+        }
     }
-  }
   else
-  {
+    {
 /* default input file is stdin */
 #ifdef USE_SETMODE /* need to hack file mode? */
-    setmode(fileno(stdin), O_BINARY);
+      setmode(fileno(stdin), O_BINARY);
 #endif
 #ifdef USE_FDOPEN /* need to re-open in binary mode? */
-    if ((infile = fdopen(fileno(stdin), READ_BINARY)) == NULL)
-    {
-      fprintf(stderr, "%s: can't open stdin\n", progname);
-      exit(EXIT_FAILURE);
-    }
+      if ((infile = fdopen(fileno(stdin), READ_BINARY)) == NULL)
+        {
+          fprintf(stderr, "%s: can't open stdin\n", progname);
+          exit(EXIT_FAILURE);
+        }
 #else
-    infile = stdin;
+      infile = stdin;
 #endif
-  }
+    }
 
 /* Open the output file. */
 #ifdef TWO_FILE_COMMANDLINE
   /* Must have explicit output file name */
   if (argn != argc - 2)
-  {
-    fprintf(stderr, "%s: must name one input and one output file\n", progname);
-    usage();
-  }
+    {
+      fprintf(stderr, "%s: must name one input and one output file\n", progname);
+      usage();
+    }
   if ((outfile = fopen(argv[argn + 1], WRITE_BINARY)) == NULL)
-  {
-    fprintf(stderr, "%s: can't open %s\n", progname, argv[argn + 1]);
-    exit(EXIT_FAILURE);
-  }
+    {
+      fprintf(stderr, "%s: can't open %s\n", progname, argv[argn + 1]);
+      exit(EXIT_FAILURE);
+    }
 #else
   /* Unix style: expect zero or one file name */
   if (argn < argc - 1)
-  {
-    fprintf(stderr, "%s: only one input file\n", progname);
-    usage();
-  }
+    {
+      fprintf(stderr, "%s: only one input file\n", progname);
+      usage();
+    }
 /* default output file is stdout */
 #ifdef USE_SETMODE /* need to hack file mode? */
   setmode(fileno(stdout), O_BINARY);
 #endif
 #ifdef USE_FDOPEN /* need to re-open in binary mode? */
   if ((outfile = fdopen(fileno(stdout), WRITE_BINARY)) == NULL)
-  {
-    fprintf(stderr, "%s: can't open stdout\n", progname);
-    exit(EXIT_FAILURE);
-  }
+    {
+      fprintf(stderr, "%s: can't open stdout\n", progname);
+      exit(EXIT_FAILURE);
+    }
 #else
   outfile = stdout;
 #endif
@@ -572,32 +573,32 @@ int main(int argc, char **argv)
 
   /* Collect comment text from comment_file or stdin, if necessary */
   if (comment_arg == NULL)
-  {
-    FILE *src_file;
-    int c;
+    {
+      FILE *src_file;
+      int c;
 
-    comment_arg = (char *)malloc((size_t)MAX_COM_LENGTH);
-    if (comment_arg == NULL)
-    {
-      ERREXIT("Insufficient memory");
+      comment_arg = (char *)malloc((size_t)MAX_COM_LENGTH);
+      if (comment_arg == NULL)
+        {
+          ERREXIT("Insufficient memory");
+        }
+      comment_length = 0;
+      src_file = (comment_file != NULL ? comment_file : stdin);
+      while ((c = getc(src_file)) != EOF)
+        {
+          if (comment_length >= (unsigned int)MAX_COM_LENGTH)
+            {
+              fprintf(stderr, "Comment text may not exceed %u bytes\n",
+                      (unsigned int)MAX_COM_LENGTH);
+              exit(EXIT_FAILURE);
+            }
+          comment_arg[comment_length++] = (char)c;
+        }
+      if (comment_file != NULL)
+        {
+          fclose(comment_file);
+        }
     }
-    comment_length = 0;
-    src_file = (comment_file != NULL ? comment_file : stdin);
-    while ((c = getc(src_file)) != EOF)
-    {
-      if (comment_length >= (unsigned int)MAX_COM_LENGTH)
-      {
-        fprintf(stderr, "Comment text may not exceed %u bytes\n",
-                (unsigned int)MAX_COM_LENGTH);
-        exit(EXIT_FAILURE);
-      }
-      comment_arg[comment_length++] = (char)c;
-    }
-    if (comment_file != NULL)
-    {
-      fclose(comment_file);
-    }
-  }
 
   /* Copy JPEG headers until SOFn marker;
    * we will insert the new comment marker just before SOFn.
@@ -608,15 +609,15 @@ int main(int argc, char **argv)
   marker = scan_JPEG_header(keep_COM);
   /* Insert the new COM marker, but only if nonempty text has been supplied */
   if (comment_length > 0)
-  {
-    write_marker(M_COM);
-    write_2_bytes(comment_length + 2);
-    while (comment_length > 0)
     {
-      write_1_byte(*comment_arg++);
-      comment_length--;
+      write_marker(M_COM);
+      write_2_bytes(comment_length + 2);
+      while (comment_length > 0)
+        {
+          write_1_byte(*comment_arg++);
+          comment_length--;
+        }
     }
-  }
   /* Duplicate the remainder of the source file.
    * Note that any COM markers occuring after SOF will not be touched.
    */

@@ -55,13 +55,13 @@ int tbl(int argc, char *argv[])
   tabout = stdout;
   setinp(argc, argv);
   while (gets1(line))
-  {
-    fprintf(tabout, "%s\n", line);
-    if (prefix(".TS", line))
     {
-      tableput();
+      fprintf(tabout, "%s\n", line);
+      if (prefix(".TS", line))
+        {
+          tableput();
+        }
     }
-  }
   fclose(tabin);
   return (0);
 }
@@ -75,46 +75,46 @@ void setinp(int argc, char **argv)
   sargc--;
   sargv++;
   if (sargc > 0)
-  {
-    swapin();
-  }
+    {
+      swapin();
+    }
 }
 
 int swapin(void)
 {
   while (sargc > 0 && **sargv == '-') /* Mem fault if no test on sargc */
-  {
-    if (sargc <= 0)
+    {
+      if (sargc <= 0)
+        {
+          return (0);
+        }
+      if (match("-ms", *sargv))
+        {
+          *sargv = MACROS;
+          break;
+        }
+      if (match("-mm", *sargv))
+        {
+          *sargv = PYMACS;
+          break;
+        }
+      if (match("-TX", *sargv))
+        {
+          pr1403 = 1;
+        }
+      sargc--;
+      sargv++;
+    }
+  if (sargc <= 0)
     {
       return (0);
     }
-    if (match("-ms", *sargv))
-    {
-      *sargv = MACROS;
-      break;
-    }
-    if (match("-mm", *sargv))
-    {
-      *sargv = PYMACS;
-      break;
-    }
-    if (match("-TX", *sargv))
-    {
-      pr1403 = 1;
-    }
-    sargc--;
-    sargv++;
-  }
-  if (sargc <= 0)
-  {
-    return (0);
-  }
 #ifdef unix
   /* file closing is done by GCOS troff preprocessor */
   if (tabin != stdin)
-  {
-    fclose(tabin);
-  }
+    {
+      fclose(tabin);
+    }
 #endif
   tabin = fopen(ifile = *sargv, "r");
   iline = 1;
@@ -123,9 +123,9 @@ int swapin(void)
   fprintf(tabout, ".ds f. %s\n", ifile);
 #endif
   if (tabin == NULL)
-  {
-    error("Can't open file");
-  }
+    {
+      error("Can't open file");
+    }
   sargc--;
   sargv++;
   return (1);

@@ -35,9 +35,9 @@ void center_print(const char *s, int width)
   int length = strlen(s);
   int i;
   for (i = 0; i <= (width - length) / 2; i++)
-  {
-    fputs(" ", stdout);
-  }
+    {
+      fputs(" ", stdout);
+    }
   fputs(s, stdout);
   fputs("\n", stdout);
 }
@@ -58,43 +58,43 @@ void print_results(Inputs in, int mype, double runtime, int nprocs,
 
   // Print output
   if (mype == 0)
-  {
-    border_print();
-    center_print("RESULTS", 79);
-    border_print();
+    {
+      border_print();
+      center_print("RESULTS", 79);
+      border_print();
 
-    // Print the results
-    printf("Threads:     %d\n", in.nthreads);
+      // Print the results
+      printf("Threads:     %d\n", in.nthreads);
 #ifdef MPI
-    printf("MPI ranks:   %d\n", nprocs);
+      printf("MPI ranks:   %d\n", nprocs);
 #endif
 #ifdef TIMING
 #ifdef MPI
-    printf("Total Lookups/s:            ");
-    fancy_int(total_lookups);
-    printf("Avg Lookups/s per MPI rank: ");
-    fancy_int(total_lookups / nprocs);
+      printf("Total Lookups/s:            ");
+      fancy_int(total_lookups);
+      printf("Avg Lookups/s per MPI rank: ");
+      fancy_int(total_lookups / nprocs);
 #else
-    printf("Runtime:     %.3lf seconds\n", runtime);
-    printf("Lookups:     ");
-    fancy_int(in.lookups);
-    printf("Lookups/s:   ");
-    fancy_int(lookups_per_sec);
+      printf("Runtime:     %.3lf seconds\n", runtime);
+      printf("Lookups:     ");
+      fancy_int(in.lookups);
+      printf("Lookups/s:   ");
+      fancy_int(lookups_per_sec);
 #endif
 #endif
 #ifdef VERIFICATION
-    printf("Verification checksum: %llu\n", vhash);
+      printf("Verification checksum: %llu\n", vhash);
 #endif
-    border_print();
+      border_print();
 
-    // For bechmarking, output lookup/s data to file
-    if (SAVE)
-    {
-      FILE *out = fopen("results.txt", "a");
-      fprintf(out, "%d\t%d\n", in.nthreads, lookups_per_sec);
-      fclose(out);
+      // For bechmarking, output lookup/s data to file
+      if (SAVE)
+        {
+          FILE *out = fopen("results.txt", "a");
+          fprintf(out, "%d\t%d\n", in.nthreads, lookups_per_sec);
+          fclose(out);
+        }
     }
-  }
 }
 
 void print_inputs(Inputs in, int nprocs, int version)
@@ -142,26 +142,26 @@ void border_print(void)
 void fancy_int(long a)
 {
   if (a < 1000)
-  {
-    printf("%ld\n", a);
-  }
+    {
+      printf("%ld\n", a);
+    }
   else if (a >= 1000 && a < 1000000)
-  {
-    printf("%ld,%03ld\n", a / 1000, a % 1000);
-  }
+    {
+      printf("%ld,%03ld\n", a / 1000, a % 1000);
+    }
   else if (a >= 1000000 && a < 1000000000)
-  {
-    printf("%ld,%03ld,%03ld\n", a / 1000000, (a % 1000000) / 1000, a % 1000);
-  }
+    {
+      printf("%ld,%03ld,%03ld\n", a / 1000000, (a % 1000000) / 1000, a % 1000);
+    }
   else if (a >= 1000000000)
-  {
-    printf("%ld,%03ld,%03ld,%03ld\n", a / 1000000000,
-           (a % 1000000000) / 1000000, (a % 1000000) / 1000, a % 1000);
-  }
+    {
+      printf("%ld,%03ld,%03ld,%03ld\n", a / 1000000000,
+             (a % 1000000000) / 1000000, (a % 1000000) / 1000, a % 1000);
+    }
   else
-  {
-    printf("%ld\n", a);
-  }
+    {
+      printf("%ld\n", a);
+    }
 }
 
 void print_CLI_error(void)
@@ -215,112 +215,112 @@ Inputs read_CLI(int argc, char *argv[])
 
   // Collect Raw Input
   for (int i = 1; i < argc; i++)
-  {
-    char *arg = argv[i];
+    {
+      char *arg = argv[i];
 
-    // nthreads (-t)
-    if (strcmp(arg, "-t") == 0)
-    {
-      if (++i < argc)
-      {
-        input.nthreads = atoi(argv[i]);
-      }
+      // nthreads (-t)
+      if (strcmp(arg, "-t") == 0)
+        {
+          if (++i < argc)
+            {
+              input.nthreads = atoi(argv[i]);
+            }
+          else
+            {
+              print_CLI_error();
+            }
+        }
+      // n_gridpoints (-g)
+      else if (strcmp(arg, "-g") == 0)
+        {
+          if (++i < argc)
+            {
+              user_g = 1;
+              input.n_gridpoints = atol(argv[i]);
+            }
+          else
+            {
+              print_CLI_error();
+            }
+        }
+      // lookups (-l)
+      else if (strcmp(arg, "-l") == 0)
+        {
+          if (++i < argc)
+            {
+              input.lookups = atoi(argv[i]);
+            }
+          else
+            {
+              print_CLI_error();
+            }
+        }
+      // HM (-s)
+      else if (strcmp(arg, "-s") == 0)
+        {
+          if (++i < argc)
+            {
+              input.HM = argv[i];
+            }
+          else
+            {
+              print_CLI_error();
+            }
+        }
       else
-      {
-        print_CLI_error();
-      }
+        {
+          print_CLI_error();
+        }
     }
-    // n_gridpoints (-g)
-    else if (strcmp(arg, "-g") == 0)
-    {
-      if (++i < argc)
-      {
-        user_g = 1;
-        input.n_gridpoints = atol(argv[i]);
-      }
-      else
-      {
-        print_CLI_error();
-      }
-    }
-    // lookups (-l)
-    else if (strcmp(arg, "-l") == 0)
-    {
-      if (++i < argc)
-      {
-        input.lookups = atoi(argv[i]);
-      }
-      else
-      {
-        print_CLI_error();
-      }
-    }
-    // HM (-s)
-    else if (strcmp(arg, "-s") == 0)
-    {
-      if (++i < argc)
-      {
-        input.HM = argv[i];
-      }
-      else
-      {
-        print_CLI_error();
-      }
-    }
-    else
-    {
-      print_CLI_error();
-    }
-  }
 
   // Validate Input
 
   // Validate nthreads
   if (input.nthreads < 1)
-  {
-    print_CLI_error();
-  }
+    {
+      print_CLI_error();
+    }
 
   // Validate n_isotopes
   if (input.n_isotopes < 1)
-  {
-    print_CLI_error();
-  }
+    {
+      print_CLI_error();
+    }
 
   // Validate n_gridpoints
   if (input.n_gridpoints < 1)
-  {
-    print_CLI_error();
-  }
+    {
+      print_CLI_error();
+    }
 
   // Validate lookups
   if (input.lookups < 1)
-  {
-    print_CLI_error();
-  }
+    {
+      print_CLI_error();
+    }
 
   // Validate HM size
   if (strcasecmp(input.HM, "small") != 0 &&
       strcasecmp(input.HM, "large") != 0 && strcasecmp(input.HM, "XL") != 0 &&
       strcasecmp(input.HM, "XXL") != 0)
-  {
-    print_CLI_error();
-  }
+    {
+      print_CLI_error();
+    }
 
   // Set HM size specific parameters
   // (defaults to large)
   if (strcasecmp(input.HM, "small") == 0)
-  {
-    input.n_isotopes = 68;
-  }
+    {
+      input.n_isotopes = 68;
+    }
   else if (strcasecmp(input.HM, "XL") == 0 && user_g == 0)
-  {
-    input.n_gridpoints = 238847;  // sized to make 120 GB XS data
-  }
+    {
+      input.n_gridpoints = 238847;  // sized to make 120 GB XS data
+    }
   else if (strcasecmp(input.HM, "XXL") == 0 && user_g == 0)
-  {
-    input.n_gridpoints = 238847 * 2.1;  // 252 GB XS data
-  }
+    {
+      input.n_gridpoints = 238847 * 2.1;  // 252 GB XS data
+    }
 
   // Return input struct
   return input;

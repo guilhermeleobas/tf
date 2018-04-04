@@ -12,35 +12,35 @@ void c_print_results(char *name, char class, int n1, int n2, int n3, int niter,
   printf(" Class           =                        %c\n", class);
 
   if (n3 == 0)
-  {
-    long nn = n1;
-    if (n2 != 0)
     {
-      nn *= n2;
+      long nn = n1;
+      if (n2 != 0)
+        {
+          nn *= n2;
+        }
+      printf(" Size            =             %12ld\n", nn); /* as in IS */
     }
-    printf(" Size            =             %12ld\n", nn); /* as in IS */
-  }
   else
-  {
-    printf(" Size            =             %4dx%4dx%4d\n", n1, n2, n3);
-  }
+    {
+      printf(" Size            =             %4dx%4dx%4d\n", n1, n2, n3);
+    }
 
   printf(" Iterations      =             %12d\n", niter);
 
   printf(" Operation type  = %24s\n", optype);
 
   if (passed_verification < 0)
-  {
-    printf(" Verification    =            NOT PERFORMED\n");
-  }
+    {
+      printf(" Verification    =            NOT PERFORMED\n");
+    }
   else if (passed_verification)
-  {
-    printf(" Verification    =               SUCCESSFUL\n");
-  }
+    {
+      printf(" Verification    =               SUCCESSFUL\n");
+    }
   else
-  {
-    printf(" Verification    =             UNSUCCESSFUL\n");
-  }
+    {
+      printf(" Verification    =             UNSUCCESSFUL\n");
+    }
 
   printf(" Version         =             %12s\n", npbversion);
 

@@ -50,17 +50,17 @@ SearchDiagram *SearchDiagram_findNode(SearchDiagram *diagram, Node *node)
 
   /* Do some basic error checking */
   if (!diagram)
-  {
-    return (NULL);
-  }
+    {
+      return (NULL);
+    }
 
   for (idx = 0; diagram[idx].node != NULL; ++idx)
-  {
-    if (diagram[idx].node == node)
-    { /* We found it! */
-      return (&diagram[idx]);
+    {
+      if (diagram[idx].node == node)
+        { /* We found it! */
+          return (&diagram[idx]);
+        }
     }
-  }
 
   /* If we made it here, we couldn't find it. */
   return (NULL);
@@ -91,7 +91,7 @@ SearchDiagram *SearchDiagram_build(NodeList *nodeTree, int nodeCount)
    * 120 minute run.)
   int index = 0;
    */
-  int outerIdx = 0;             /* index from the bottom up for outer nodes */
+  int outerIdx = 0; /* index from the bottom up for outer nodes */
   int innerIdx = nodeCount - 1; /* and from the top down for interior nodes */
 
   int edgeCount;
@@ -100,16 +100,16 @@ SearchDiagram *SearchDiagram_build(NodeList *nodeTree, int nodeCount)
 
   /* Do some basic error checking */
   if (!nodeTree || nodeCount == 0)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
 
   /* Allocate an array of SearchDiagram Elements (+1 for a terminus element) */
   diagram = malloc((nodeCount + 1) * sizeof(SearchDiagram));
   if (!diagram)
-  { /* malloc failed */
-    return (NULL);
-  }
+    { /* malloc failed */
+      return (NULL);
+    }
 
   diagram[nodeCount].node = NULL;
   diagram[nodeCount].edgeReferenceArray = NULL;
@@ -118,56 +118,56 @@ SearchDiagram *SearchDiagram_build(NodeList *nodeTree, int nodeCount)
    * edges */
   for (outerNodes = nodeTree; outerNodes != NULL;
        outerNodes = outerNodes->nextNode)
-  {
-    node = outerNodes->node;
-    /* This diagram entry needs a key */
-    diagram[outerIdx].node = node;
-    /* How many edges do we need? */
-    edgeCount = node->edgeCount + node->entranceCount;
-    if (edgeCount >
-        0) /* allocate space for edgeIdArray (+1 for a terminus element) */
     {
-      diagram[outerIdx].edgeReferenceArray =
-          malloc((edgeCount + 1) * sizeof(EdgeReferences));
-      diagram[outerIdx].edgeReferenceArray[edgeCount].edgeTarget = NULL;
-      diagram[outerIdx].edgeReferenceArray[edgeCount].targetNodeEdges = NULL;
-    }
-    else
-    {
-      diagram[outerIdx].edgeReferenceArray = NULL;
-    }
-
-    /* What do we do if that malloc fails? */
-
-    /* increment the outer index: */
-    ++outerIdx;
-
-    /* Now do the same for this node's interior graph (if present) */
-    for (innerNodes = node->interiorNodes; innerNodes != NULL;
-         innerNodes = innerNodes->nextNode)
-    {
-      node = innerNodes->node;
-      diagram[innerIdx].node = node;
+      node = outerNodes->node;
+      /* This diagram entry needs a key */
+      diagram[outerIdx].node = node;
+      /* How many edges do we need? */
       edgeCount = node->edgeCount + node->entranceCount;
-      if (node->edgeCount >
+      if (edgeCount >
           0) /* allocate space for edgeIdArray (+1 for a terminus element) */
-      {
-        diagram[innerIdx].edgeReferenceArray =
-            malloc((edgeCount + 1) * sizeof(EdgeReferences));
-        diagram[innerIdx].edgeReferenceArray[edgeCount].edgeTarget = NULL;
-        diagram[innerIdx].edgeReferenceArray[edgeCount].targetNodeEdges = NULL;
-      }
+        {
+          diagram[outerIdx].edgeReferenceArray =
+              malloc((edgeCount + 1) * sizeof(EdgeReferences));
+          diagram[outerIdx].edgeReferenceArray[edgeCount].edgeTarget = NULL;
+          diagram[outerIdx].edgeReferenceArray[edgeCount].targetNodeEdges = NULL;
+        }
       else
-      {
-        diagram[innerIdx].edgeReferenceArray = NULL;
-      }
+        {
+          diagram[outerIdx].edgeReferenceArray = NULL;
+        }
 
-      /* Again, what do we do if that malloc fails? */
+      /* What do we do if that malloc fails? */
 
-      /* decrement the interior index: */
-      --innerIdx;
+      /* increment the outer index: */
+      ++outerIdx;
+
+      /* Now do the same for this node's interior graph (if present) */
+      for (innerNodes = node->interiorNodes; innerNodes != NULL;
+           innerNodes = innerNodes->nextNode)
+        {
+          node = innerNodes->node;
+          diagram[innerIdx].node = node;
+          edgeCount = node->edgeCount + node->entranceCount;
+          if (node->edgeCount >
+              0) /* allocate space for edgeIdArray (+1 for a terminus element) */
+            {
+              diagram[innerIdx].edgeReferenceArray =
+                  malloc((edgeCount + 1) * sizeof(EdgeReferences));
+              diagram[innerIdx].edgeReferenceArray[edgeCount].edgeTarget = NULL;
+              diagram[innerIdx].edgeReferenceArray[edgeCount].targetNodeEdges = NULL;
+            }
+          else
+            {
+              diagram[innerIdx].edgeReferenceArray = NULL;
+            }
+
+          /* Again, what do we do if that malloc fails? */
+
+          /* decrement the interior index: */
+          --innerIdx;
+        }
     }
-  }
 
   /* Check to make sure our counters line up. If they don't, we have a corrupt
    * graph. That is, there is a mismatch between node definitions and edge
@@ -175,11 +175,11 @@ SearchDiagram *SearchDiagram_build(NodeList *nodeTree, int nodeCount)
    * The innerIdx should reference the previous outerIdx location.
    */
   if (outerIdx != innerIdx + 1)
-  {
-    /* Houston, we have a problem */
-    printf("Bummer. outerIdx: %d, innerIdx: %d, node count: %d\n", outerIdx,
-           innerIdx, nodeCount);
-  }
+    {
+      /* Houston, we have a problem */
+      printf("Bummer. outerIdx: %d, innerIdx: %d, node count: %d\n", outerIdx,
+             innerIdx, nodeCount);
+    }
 
   /* For each node, populate its edge list - edges and entrance nodes (if there)
    */
@@ -187,37 +187,37 @@ SearchDiagram *SearchDiagram_build(NodeList *nodeTree, int nodeCount)
   innerIdx = nodeCount - 1;
   for (outerNodes = nodeTree; outerNodes != NULL;
        outerNodes = outerNodes->nextNode)
-  {
-    /* iterate through this node's edges to populate the EdgeIdArray */
-    node = outerNodes->node;
-    for (edges = node->edges, edgeCount = 0; edges != NULL;
-         edges = edges->nextEdge, ++edgeCount)
     {
-      element = SearchDiagram_findNode(diagram, edges->targetNode);
-      diagram[outerIdx].edgeReferenceArray[edgeCount].edgeTarget =
-          edges->targetNode;
-      diagram[outerIdx].edgeReferenceArray[edgeCount].targetNodeEdges =
-          element->edgeReferenceArray;
-    }
-    ++outerIdx;
-
-    /* And then scream through the interior nodes to take care of their edges */
-    for (innerNodes = node->interiorNodes; innerNodes != NULL;
-         innerNodes = innerNodes->nextNode)
-    {
-      node = innerNodes->node;
+      /* iterate through this node's edges to populate the EdgeIdArray */
+      node = outerNodes->node;
       for (edges = node->edges, edgeCount = 0; edges != NULL;
            edges = edges->nextEdge, ++edgeCount)
-      {
-        element = SearchDiagram_findNode(diagram, edges->targetNode);
-        diagram[innerIdx].edgeReferenceArray[edgeCount].edgeTarget =
-            edges->targetNode;
-        diagram[innerIdx].edgeReferenceArray[edgeCount].targetNodeEdges =
-            element->edgeReferenceArray;
-      }
-      --innerIdx;
+        {
+          element = SearchDiagram_findNode(diagram, edges->targetNode);
+          diagram[outerIdx].edgeReferenceArray[edgeCount].edgeTarget =
+              edges->targetNode;
+          diagram[outerIdx].edgeReferenceArray[edgeCount].targetNodeEdges =
+              element->edgeReferenceArray;
+        }
+      ++outerIdx;
+
+      /* And then scream through the interior nodes to take care of their edges */
+      for (innerNodes = node->interiorNodes; innerNodes != NULL;
+           innerNodes = innerNodes->nextNode)
+        {
+          node = innerNodes->node;
+          for (edges = node->edges, edgeCount = 0; edges != NULL;
+               edges = edges->nextEdge, ++edgeCount)
+            {
+              element = SearchDiagram_findNode(diagram, edges->targetNode);
+              diagram[innerIdx].edgeReferenceArray[edgeCount].edgeTarget =
+                  edges->targetNode;
+              diagram[innerIdx].edgeReferenceArray[edgeCount].targetNodeEdges =
+                  element->edgeReferenceArray;
+            }
+          --innerIdx;
+        }
     }
-  }
 
   return diagram;
 }
@@ -233,9 +233,9 @@ bool SearchDiagram_findSignatureAlongEdges(Node *node, EdgeReferences *edges,
 
   /* A little basic error checking */
   if (!node || !edges || !labels || !result || !visited)
-  {
-    return (false);
-  }
+    {
+      return (false);
+    }
 
   /* If this node has already been visited, we have found a loop. return false.
    */
@@ -247,60 +247,60 @@ bool SearchDiagram_findSignatureAlongEdges(Node *node, EdgeReferences *edges,
           NodePtrVec_push( visited, node );
   */
   if (Bitfield_nodeVisited(visited, node))
-  {
-    return (false);
-  }
+    {
+      return (false);
+    }
 
   NodePtrVec_push(result, node);
 
   /* Go through the edges once to see if we've found a label match */
   for (i = 0; edges[i].edgeTarget != NULL; ++i)
-  {
-    if (edges[i].edgeTarget->label)
     {
-      // strcmp based:
-      if (strcmp(edges[i].edgeTarget->label, labels[0]) == 0) /* match! */
-      // index based: if ( edges[i].edgeTarget->labelIdx == labelIdxs[0] )
-      {
-        if (labels[1] == NULL) /* end of the signature, we're DONE */
+      if (edges[i].edgeTarget->label)
         {
-          NodePtrVec_push(result, edges[i].edgeTarget);
-          return (true);
-        }
-        else /* RECURSE TO SEE IF THE REST OF THE SIGNATURE CAN BE FOUND!!! */
-        {
-          nextLegResult = NodePtrVec_new(
-              50); /* arbitrary size, malloc success checked in recursion */
-          nextLegVisited = Bitfield_new(visited->bitsNeeded);
+          // strcmp based:
+          if (strcmp(edges[i].edgeTarget->label, labels[0]) == 0) /* match! */
+            // index based: if ( edges[i].edgeTarget->labelIdx == labelIdxs[0] )
+            {
+              if (labels[1] == NULL) /* end of the signature, we're DONE */
+                {
+                  NodePtrVec_push(result, edges[i].edgeTarget);
+                  return (true);
+                }
+              else /* RECURSE TO SEE IF THE REST OF THE SIGNATURE CAN BE FOUND!!! */
+                {
+                  nextLegResult = NodePtrVec_new(
+                      50); /* arbitrary size, malloc success checked in recursion */
+                  nextLegVisited = Bitfield_new(visited->bitsNeeded);
 
-          success = SearchDiagram_findSignatureAlongEdges(
-              edges[i].edgeTarget, edges[i].targetNodeEdges, &labels[1],
-              nextLegResult, nextLegVisited);
-          Bitfield_delete(nextLegVisited);
-          if (success)
-          {
-            NodePtrVec_appendVectors(result, nextLegResult, true);
-            NodePtrVec_delete(nextLegResult);
-            return (true);
-          }
+                  success = SearchDiagram_findSignatureAlongEdges(
+                      edges[i].edgeTarget, edges[i].targetNodeEdges, &labels[1],
+                      nextLegResult, nextLegVisited);
+                  Bitfield_delete(nextLegVisited);
+                  if (success)
+                    {
+                      NodePtrVec_appendVectors(result, nextLegResult, true);
+                      NodePtrVec_delete(nextLegResult);
+                      return (true);
+                    }
+                }
+            }
         }
-      }
     }
-  }
 
   /* IF we made it here, we need to continue through the tree, seeing if any of
    * our
    * edge nodes have a connection to a labeled node.
    */
   for (i = 0; edges[i].edgeTarget != NULL; ++i)
-  {
-    success = SearchDiagram_findSignatureAlongEdges(
-        edges[i].edgeTarget, edges[i].targetNodeEdges, labels, result, visited);
-    if (success)
     {
-      return (true); /* this edge has a path to the ultimate signature path */
+      success = SearchDiagram_findSignatureAlongEdges(
+          edges[i].edgeTarget, edges[i].targetNodeEdges, labels, result, visited);
+      if (success)
+        {
+          return (true); /* this edge has a path to the ultimate signature path */
+        }
     }
-  }
 
   /* and, if we make it here, we have failed. */
   NodePtrVec_pop(result); /* take current node off the result stack */

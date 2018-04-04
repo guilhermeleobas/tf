@@ -33,9 +33,9 @@ jpeg_abort(j_common_ptr cinfo)
    * with some (brain-damaged) malloc libraries.
    */
   for (pool = JPOOL_NUMPOOLS - 1; pool > JPOOL_PERMANENT; pool--)
-  {
-    (*cinfo->mem->free_pool)(cinfo, pool);
-  }
+    {
+      (*cinfo->mem->free_pool)(cinfo, pool);
+    }
 
   /* Reset overall state for possible reuse of object */
   cinfo->global_state = (cinfo->is_decompressor ? DSTATE_START : CSTATE_START);
@@ -58,10 +58,10 @@ jpeg_destroy(j_common_ptr cinfo)
   /* We need only tell the memory manager to release everything. */
   /* NB: mem pointer is NULL if memory mgr failed to initialize. */
   if (cinfo->mem != NULL)
-  {
-    (*cinfo->mem->self_destruct)(cinfo);
-  }
-  cinfo->mem = NULL;       /* be safe if jpeg_destroy is called twice */
+    {
+      (*cinfo->mem->self_destruct)(cinfo);
+    }
+  cinfo->mem = NULL; /* be safe if jpeg_destroy is called twice */
   cinfo->global_state = 0; /* mark it destroyed */
 }
 

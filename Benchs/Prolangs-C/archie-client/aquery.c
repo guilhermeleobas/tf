@@ -79,8 +79,8 @@ VLINK archie_query(char *host, char *string, int max_hits, int offset,
                    char query_type, int (*cmp_proc)(), int flags)
 {
   char qstring[MAX_VPATH]; /* For construting the query  */
-  VLINK links;             /* Matches returned by server */
-  VDIR_ST dir_st;          /* Filled in by get_vdir      */
+  VLINK links; /* Matches returned by server */
+  VDIR_ST dir_st; /* Filled in by get_vdir      */
   VDIR1 dir = &dir_st;
 
   VLINK p, q, r, lowest, nextp, pnext, pprev;
@@ -104,15 +104,15 @@ VLINK archie_query(char *host, char *string, int max_hits, int offset,
 #if defined(MSDOS)
   if (tmp = get_vdir(host, qstring, "", dir, (long)GVD_ATTRIB | GVD_NOSORT,
                      NULL, NULL))
-  {
+    {
 #else
   if ((tmp = get_vdir(host, qstring, "", dir, GVD_ATTRIB | GVD_NOSORT, NULL,
                       NULL)))
-  {
+    {
 #endif
-    perrno = tmp;
-    return (NULL);
-  }
+      perrno = tmp;
+      return (NULL);
+    }
 
   /* Save the links, and clear in dir in case it's used again   */
   links = dir->links;
@@ -125,18 +125,19 @@ VLINK archie_query(char *host, char *string, int max_hits, int offset,
 
   /* First flatten the doubly-linked list */
   for (p = links; p != NULL; p = nextp)
-  {
-    nextp = p->next;
-    if (p->replicas != NULL)
     {
-      p->next = p->replicas;
-      p->next->previous = p;
-      for (r = p->replicas; r->next != NULL; r = r->next) /*EMPTY*/;
-      r->next = nextp;
-      nextp->previous = r;
-      p->replicas = NULL;
+      nextp = p->next;
+      if (p->replicas != NULL)
+        {
+          p->next = p->replicas;
+          p->next->previous = p;
+          for (r = p->replicas; r->next != NULL; r = r->next) /*EMPTY*/
+            ;
+          r->next = nextp;
+          nextp->previous = r;
+          p->replicas = NULL;
+        }
     }
-  }
 
   /* Translate the filenames unless NOTRANS was given */
   if (!(flags & AQ_NOTRANS))
@@ -144,49 +145,49 @@ VLINK archie_query(char *host, char *string, int max_hits, int offset,
 
   /* If NOSORT given, then just hand it back */
   if (flags & AQ_NOSORT)
-  {
-    perrno = PSUCCESS;
-    return (links);
-  }
+    {
+      perrno = PSUCCESS;
+      return (links);
+    }
 
   /* Otherwise sort it using a selection sort and the given cmp_proc */
   for (p = links; p != NULL; p = nextp)
-  {
-    nextp = p->next;
-    lowest = p;
-    for (q = p->next; q != NULL; q = q->next)
-      if ((*cmp_proc)(q, lowest) < 0) lowest = q;
-    if (p != lowest)
     {
-      /* swap the two links */
-      pnext = p->next;
-      pprev = p->previous;
-      if (lowest->next != NULL) lowest->next->previous = p;
-      p->next = lowest->next;
-      if (nextp == lowest)
-      {
-        p->previous = lowest;
-      }
-      else
-      {
-        lowest->previous->next = p;
-        p->previous = lowest->previous;
-      }
-      if (nextp == lowest)
-      {
-        lowest->next = p;
-      }
-      else
-      {
-        pnext->previous = lowest;
-        lowest->next = pnext;
-      }
-      if (pprev != NULL) pprev->next = lowest;
-      lowest->previous = pprev;
-      /* keep the head of the list in the right place */
-      if (links == p) links = lowest;
+      nextp = p->next;
+      lowest = p;
+      for (q = p->next; q != NULL; q = q->next)
+        if ((*cmp_proc)(q, lowest) < 0) lowest = q;
+      if (p != lowest)
+        {
+          /* swap the two links */
+          pnext = p->next;
+          pprev = p->previous;
+          if (lowest->next != NULL) lowest->next->previous = p;
+          p->next = lowest->next;
+          if (nextp == lowest)
+            {
+              p->previous = lowest;
+            }
+          else
+            {
+              lowest->previous->next = p;
+              p->previous = lowest->previous;
+            }
+          if (nextp == lowest)
+            {
+              lowest->next = p;
+            }
+          else
+            {
+              pnext->previous = lowest;
+              lowest->next = pnext;
+            }
+          if (pprev != NULL) pprev->next = lowest;
+          lowest->previous = pprev;
+          /* keep the head of the list in the right place */
+          if (links == p) links = lowest;
+        }
     }
-  }
 
   /* Return the links */
   perrno = PSUCCESS;
@@ -204,24 +205,24 @@ static void translateArchieResponse(VLINK l)
   char *slash;
 
   if (strcmp(l->type, "DIRECTORY") == 0)
-  {
-    if (strncmp(l->filename, "ARCHIE/HOST", 11) == 0)
     {
-      l->type = stcopyr("EXTERNAL(AFTP,DIRECTORY)", l->type);
-      l->host = stcopyr(l->filename + 12, l->host);
-      /*
+      if (strncmp(l->filename, "ARCHIE/HOST", 11) == 0)
+        {
+          l->type = stcopyr("EXTERNAL(AFTP,DIRECTORY)", l->type);
+          l->host = stcopyr(l->filename + 12, l->host);
+          /*
       slash = (char *)index(l->host,'/');
       */
-      slash = strchr(l->host, (int)'/');
-      if (slash)
-      {
-        l->filename = stcopyr(slash, l->filename);
-        *slash++ = '\0';
-      }
-      else
-        l->filename = stcopyr("", l->filename);
+          slash = strchr(l->host, (int)'/');
+          if (slash)
+            {
+              l->filename = stcopyr(slash, l->filename);
+              *slash++ = '\0';
+            }
+          else
+            l->filename = stcopyr("", l->filename);
+        }
     }
-  }
 }
 
 /*

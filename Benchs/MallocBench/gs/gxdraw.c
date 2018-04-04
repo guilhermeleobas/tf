@@ -23,7 +23,7 @@ copies.  */
 #include "gxbitmap.h"
 #include "gxfixed.h"
 #include "gxmatrix.h"
-#include "gzcolor.h"  /* requires gxdevice.h */
+#include "gzcolor.h" /* requires gxdevice.h */
 #include "gzdevice.h" /* requires gsstate.h */
 #include "gzstate.h"
 
@@ -44,39 +44,39 @@ int gz_fill_rectangle(int x, int y, int w, int h, gx_device_color *pdevc,
            (long)pdevc->color2, (long)pdevc->halftone_level);
 #endif
   if (color_is_pure(pdevc)) /* no halftoning */
-  {
-    return (*dev->procs->fill_rectangle)(dev, x, y, w, h, darker);
-  }
+    {
+      return (*dev->procs->fill_rectangle)(dev, x, y, w, h, darker);
+    }
   lighter = pdevc->color2;
   tile = pdevc->tile;
   /* See if the entire transfer falls within a single tile. */
   /* This is worth a quick check, because tiling is slow. */
   if (w <= tile->width && h <= tile->height)
-  {
-    int xmod = x % tile->width, ymod;
-    if (xmod + w <= tile->width &&
-        (ymod = y % tile->height) + h <= tile->height)
-    { /* Just do a copy. */
-      int raster = tile->raster;
-      byte *tdata = tile->data + ymod * raster;
-      return (
-          color_is_color_halftone(pdevc)
-              ? (*dev->procs->copy_color)(dev, tdata, xmod, raster, x, y, w, h)
-              : (*dev->procs->copy_mono)(dev, tdata, xmod, raster, x, y, w, h,
-                                         darker, lighter));
+    {
+      int xmod = x % tile->width, ymod;
+      if (xmod + w <= tile->width &&
+          (ymod = y % tile->height) + h <= tile->height)
+        { /* Just do a copy. */
+          int raster = tile->raster;
+          byte *tdata = tile->data + ymod * raster;
+          return (
+              color_is_color_halftone(pdevc)
+                  ? (*dev->procs->copy_color)(dev, tdata, xmod, raster, x, y, w, h)
+                  : (*dev->procs->copy_mono)(dev, tdata, xmod, raster, x, y, w, h,
+                                             darker, lighter));
+        }
     }
-  }
   /* Try to tile the rectangle primitively; */
   /* if this fails, use the default implementation. */
   if (color_is_color_halftone(pdevc))
-  {
-    darker = lighter = gx_no_color_index;
-  }
+    {
+      darker = lighter = gx_no_color_index;
+    }
   code = (*dev->procs->tile_rectangle)(dev, tile, x, y, w, h, darker, lighter);
   if (code < 0)
-  { /* Use the default implementation */
-    code = gx_default_tile_rectangle(dev, tile, x, y, w, h, darker, lighter);
-  }
+    { /* Use the default implementation */
+      code = gx_default_tile_rectangle(dev, tile, x, y, w, h, darker, lighter);
+    }
   return code;
 }
 
@@ -98,18 +98,18 @@ int gz_fill_trapezoid_fixed(fixed fx0, fixed fw0, fixed fy0, fixed fx1,
   int y1 = fixed2int_ceiling(fy1);
   int h = y1 - y0;
   if ((w0 == 0 && w1 == 0) || h <= 0)
-  {
-    return 0;
-  }
-  if (!swap_axes && color_is_pure(pdevc))
-  {
-    gx_device *dev = pgs->device->info;
-    if ((*dev->procs->fill_trapezoid)(dev, x0, y0, w0, x1, y1, w1,
-                                      pdevc->color1) >= 0)
     {
       return 0;
     }
-  }
+  if (!swap_axes && color_is_pure(pdevc))
+    {
+      gx_device *dev = pgs->device->info;
+      if ((*dev->procs->fill_trapezoid)(dev, x0, y0, w0, x1, y1, w1,
+                                        pdevc->color1) >= 0)
+        {
+          return 0;
+        }
+    }
   {
     int xl, fxl;
     int dxl, dxl1, dxlf = x1 - x0;
@@ -118,70 +118,71 @@ int gz_fill_trapezoid_fixed(fixed fx0, fixed fw0, fixed fy0, fixed fx1,
     int y = y0;
     int rxl, rxr, ry;
 /* Compute integer and fractional deltas */
-#define reduce_delta(df, d, d1, pos)          \
-  if (df >= 0)                                \
-  {                                           \
-    if (df >= h)                              \
-      d1 = (d = df / h) + 1, df -= d * h;     \
-    else /* save the divides */               \
-    {                                         \
-      pos();                                  \
-      d = 0, d1 = 1;                          \
-    }                                         \
-  }                                           \
-  else /* df < 0 */                           \
-  {                                           \
-    if (df <= -h)                             \
-      d1 = (d = df / h) - 1, df = d * h - df; \
-    else /* save the divides */               \
-      d = 0, d1 = -1, df = -df;               \
-  }
+#define reduce_delta(df, d, d1, pos)            \
+  if (df >= 0)                                  \
+    {                                           \
+      if (df >= h)                              \
+        d1 = (d = df / h) + 1, df -= d * h;     \
+      else /* save the divides */               \
+        {                                       \
+          pos();                                \
+          d = 0, d1 = 1;                        \
+        }                                       \
+    }                                           \
+  else /* df < 0 */                             \
+    {                                           \
+      if (df <= -h)                             \
+        d1 = (d = df / h) - 1, df = d * h - df; \
+      else /* save the divides */               \
+        d = 0, d1 = -1, df = -df;               \
+    }
 #define fill_trap_rect(x, y, w, h)             \
   if (swap_axes)                               \
     gz_fill_rectangle(y, x, h, w, pdevc, pgs); \
   else                                         \
-  gz_fill_rectangle(x, y, w, h, pdevc, pgs)
+    gz_fill_rectangle(x, y, w, h, pdevc, pgs)
 #define pos_for_xl() /* nothing */
     reduce_delta(dxlf, dxl, dxl1, pos_for_xl);
 #define pos_for_xr()                                             \
   if (dxl == 0 && dxlf == 0 && dxrf == 0) /* detect rectangle */ \
-  {                                                              \
-    fill_trap_rect(x0, y0, w0, h);                               \
-    return 0;                                                    \
-  }
+    {                                                            \
+      fill_trap_rect(x0, y0, w0, h);                             \
+      return 0;                                                  \
+    }
     reduce_delta(dxrf, dxr, dxr1, pos_for_xr);
     xl = x0, fxl = arith_rshift(dxlf, 1);
     xr = x0 + w0, fxr = arith_rshift(dxrf, 1);
     rxl = xl, rxr = xr, ry = y;
     /* Do the fill */
     do
-    {
-      if (xl != rxl || xr != rxr) /* detect rectangles */
+      {
+        if (xl != rxl || xr != rxr) /* detect rectangles */
+          {
+            fill_trap_rect(rxl, ry, rxr - rxl, y - ry);
+            rxl = xl, rxr = xr, ry = y;
+          }
+        if ((fxl += dxlf) >= h)
+          {
+            fxl -= h, xl += dxl1;
+          }
+        else
+          {
+            xl += dxl;
+          }
+        if ((fxr += dxrf) >= h)
+          {
+            fxr -= h, xr += dxr1;
+          }
+        else
+          {
+            xr += dxr;
+          }
+      }
+    while (++y < y1);
+    if (y != ry)
       {
         fill_trap_rect(rxl, ry, rxr - rxl, y - ry);
-        rxl = xl, rxr = xr, ry = y;
       }
-      if ((fxl += dxlf) >= h)
-      {
-        fxl -= h, xl += dxl1;
-      }
-      else
-      {
-        xl += dxl;
-      }
-      if ((fxr += dxrf) >= h)
-      {
-        fxr -= h, xr += dxr1;
-      }
-      else
-      {
-        xr += dxr;
-      }
-    } while (++y < y1);
-    if (y != ry)
-    {
-      fill_trap_rect(rxl, ry, rxr - rxl, y - ry);
-    }
 #undef fill_trap_rect
   }
   return 0;
@@ -211,36 +212,36 @@ int gx_default_tile_rectangle(gx_device *dev, register gx_bitmap *tile, int x,
       (color0 == gx_no_color_index && color1 == gx_no_color_index);
   int cx, cy;
   if (color_halftone)
-  {
-    proc_color = dev->procs->copy_color;
-  }
+    {
+      proc_color = dev->procs->copy_color;
+    }
   else
-  {
-    proc_mono = dev->procs->copy_mono;
-  }
+    {
+      proc_mono = dev->procs->copy_mono;
+    }
 #ifdef DEBUG
   if (gs_debug['t'])
-  {
-    int ptx, pty;
-    byte *ptp = tile->data;
-    printf("[t]tile w=%d h=%d raster=%d; x=%d y=%d w=%d h=%d\n", tile->width,
-           tile->height, tile->raster, x, y, w, h);
-    for (pty = 0; pty < tile->height; pty++)
     {
-      printf("   ");
-      for (ptx = 0; ptx < tile->raster; ptx++) printf("%3x", *ptp++);
+      int ptx, pty;
+      byte *ptp = tile->data;
+      printf("[t]tile w=%d h=%d raster=%d; x=%d y=%d w=%d h=%d\n", tile->width,
+             tile->height, tile->raster, x, y, w, h);
+      for (pty = 0; pty < tile->height; pty++)
+        {
+          printf("   ");
+          for (ptx = 0; ptx < tile->raster; ptx++) printf("%3x", *ptp++);
+        }
+      printf("\n");
     }
-    printf("\n");
-  }
 #endif
   if (icw > w)
-  {
-    icw = w;
-  }
+    {
+      icw = w;
+    }
   if (ch > h)
-  {
-    ch = h;
-  }
+    {
+      ch = h;
+    }
 #define real_copy_tile(sourcex, tx, tw)                                      \
   (color_halftone ? (*proc_color)(dev, row, sourcex, raster, tx, cy, tw, ch) \
                   : (*proc_mono)(dev, row, sourcex, raster, tx, cy, tw, ch,  \
@@ -254,22 +255,22 @@ int gx_default_tile_rectangle(gx_device *dev, register gx_bitmap *tile, int x,
 #define copy_tile(sx, tx, tw) real_copy_tile(sx, tx, tw)
 #endif
   for (cy = y; cy < ey;)
-  {
-    copy_tile(irx, x, icw);
-    cx = x + icw;
-    while (cx <= fex)
     {
-      copy_tile(0, cx, width);
-      cx += width;
+      copy_tile(irx, x, icw);
+      cx = x + icw;
+      while (cx <= fex)
+        {
+          copy_tile(0, cx, width);
+          cx += width;
+        }
+      if (cx < ex)
+        {
+          copy_tile(0, cx, ex - cx);
+        }
+      cy += ch;
+      ch = (cy > fey ? ey - cy : height);
+      row = tile->data;
     }
-    if (cx < ex)
-    {
-      copy_tile(0, cx, ex - cx);
-    }
-    cy += ch;
-    ch = (cy > fey ? ey - cy : height);
-    row = tile->data;
-  }
 #undef copy_tile
 #undef real_copy_tile
   return 0;
@@ -284,50 +285,50 @@ int gz_draw_line_fixed(fixed ixf, fixed iyf, fixed itoxf, fixed itoyf,
   int itox = fixed2int(itoxf);
   int itoy = fixed2int(itoyf);
   if (itoy == iy) /* horizontal line */
-  {
-    if (ix <= itox)
     {
-      gz_fill_rectangle(ix, iy, fixed2int_ceiling(itoxf) - ix, 1, pdevc, pgs);
+      if (ix <= itox)
+        {
+          gz_fill_rectangle(ix, iy, fixed2int_ceiling(itoxf) - ix, 1, pdevc, pgs);
+        }
+      else
+        {
+          gz_fill_rectangle(itox, iy, fixed2int_ceiling(ixf) - itox, 1, pdevc, pgs);
+        }
     }
-    else
-    {
-      gz_fill_rectangle(itox, iy, fixed2int_ceiling(ixf) - itox, 1, pdevc, pgs);
-    }
-  }
   else
-  {
-    gx_device *dev = pgs->device->info;
-    fixed h, w, tf;
+    {
+      gx_device *dev = pgs->device->info;
+      fixed h, w, tf;
 #define fswap(a, b) tf = a, a = b, b = tf
-    if (color_is_pure(pdevc) &&
-        (*dev->procs->draw_line)(dev, ix, iy, itox, itoy, pdevc->color1) >= 0)
-    {
-      return 0;
-    }
-    h = itoyf - iyf;
-    w = itoxf - ixf;
+      if (color_is_pure(pdevc) &&
+          (*dev->procs->draw_line)(dev, ix, iy, itox, itoy, pdevc->color1) >= 0)
+        {
+          return 0;
+        }
+      h = itoyf - iyf;
+      w = itoxf - ixf;
 #define fixed_eps (fixed)1
-    if ((w < 0 ? -w : w) <= (h < 0 ? -h : h))
-    {
-      if (h < 0)
-      {
-        fswap(ixf, itoxf), fswap(iyf, itoyf), h = -h;
-      }
-      gz_fill_trapezoid_fixed(ixf, fixed_eps, iyf, itoxf, fixed_eps, h, 0,
-                              pdevc, pgs);
-    }
-    else
-    {
-      if (w < 0)
-      {
-        fswap(ixf, itoxf), fswap(iyf, itoyf), w = -w;
-      }
-      gz_fill_trapezoid_fixed(iyf, fixed_eps, ixf, itoyf, fixed_eps, w, 1,
-                              pdevc, pgs);
-    }
+      if ((w < 0 ? -w : w) <= (h < 0 ? -h : h))
+        {
+          if (h < 0)
+            {
+              fswap(ixf, itoxf), fswap(iyf, itoyf), h = -h;
+            }
+          gz_fill_trapezoid_fixed(ixf, fixed_eps, iyf, itoxf, fixed_eps, h, 0,
+                                  pdevc, pgs);
+        }
+      else
+        {
+          if (w < 0)
+            {
+              fswap(ixf, itoxf), fswap(iyf, itoyf), w = -w;
+            }
+          gz_fill_trapezoid_fixed(iyf, fixed_eps, ixf, itoyf, fixed_eps, w, 1,
+                                  pdevc, pgs);
+        }
 #undef fixed_eps
 #undef fswap
-  }
+    }
   return 0;
 }
 

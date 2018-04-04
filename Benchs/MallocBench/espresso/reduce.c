@@ -50,14 +50,14 @@ IN pcover D;
 
   /* Order the cubes */
   if (use_random_order)
-  {
-    F = random_order(F);
-  }
+    {
+      F = random_order(F);
+    }
   else
-  {
-    F = toggle ? sort_reduce(F) : mini_sort(F, descend);
-    toggle = !toggle;
-  }
+    {
+      F = toggle ? sort_reduce(F) : mini_sort(F, descend);
+      toggle = !toggle;
+    }
 
   /* Try to reduce each cube */
   FD = cube2list(F, D);
@@ -65,28 +65,28 @@ IN pcover D;
   {
     cunder = reduce_cube(FD, p); /* reduce the cube */
     if (setp_equal(cunder, p))
-    {                 /* see if it actually did */
-      SET(p, ACTIVE); /* cube remains active */
-      SET(p, PRIME);  /* cube remains prime ? */
-    }
+      { /* see if it actually did */
+        SET(p, ACTIVE); /* cube remains active */
+        SET(p, PRIME); /* cube remains prime ? */
+      }
     else
-    {
-      if (debug & REDUCE)
       {
-        printf("REDUCE: %s to %s %s\n", pc1(p), pc2(cunder),
-               print_time(ptime()));
+        if (debug & REDUCE)
+          {
+            printf("REDUCE: %s to %s %s\n", pc1(p), pc2(cunder),
+                   print_time(ptime()));
+          }
+        set_copy(p, cunder); /* save reduced version */
+        RESET(p, PRIME); /* cube is no longer prime */
+        if (setp_empty(cunder))
+          {
+            RESET(p, ACTIVE); /* if null, kill the cube */
+          }
+        else
+          {
+            SET(p, ACTIVE); /* cube is active */
+          }
       }
-      set_copy(p, cunder); /* save reduced version */
-      RESET(p, PRIME);     /* cube is no longer prime */
-      if (setp_empty(cunder))
-      {
-        RESET(p, ACTIVE); /* if null, kill the cube */
-      }
-      else
-      {
-        SET(p, ACTIVE); /* cube is active */
-      }
-    }
     free_cube(cunder);
   }
   free_cubelist(FD);
@@ -113,29 +113,29 @@ pcube sccc(T) INOUT pcube *T; /* T will be disposed of */
   static int sccc_level = 0;
 
   if (debug & REDUCE1)
-  {
-    debug_print(T, "SCCC", sccc_level++);
-  }
+    {
+      debug_print(T, "SCCC", sccc_level++);
+    }
 
   if (sccc_special_cases(T, &r) == MAYBE)
-  {
-    cl = new_cube();
-    cr = new_cube();
-    best = binate_split_select(T, cl, cr, REDUCE1);
-    r = sccc_merge(sccc(scofactor(T, cl, best)), sccc(scofactor(T, cr, best)),
-                   cl, cr);
-    free_cubelist(T);
-  }
+    {
+      cl = new_cube();
+      cr = new_cube();
+      best = binate_split_select(T, cl, cr, REDUCE1);
+      r = sccc_merge(sccc(scofactor(T, cl, best)), sccc(scofactor(T, cr, best)),
+                     cl, cr);
+      free_cubelist(T);
+    }
 
   if (debug & REDUCE1)
-  {
-    printf("SCCC[%d]: result is %s\n", --sccc_level, pc1(r));
-  }
+    {
+      printf("SCCC[%d]: result is %s\n", --sccc_level, pc1(r));
+    }
   return r;
 }
 
 pcube sccc_merge(left, right, cl, cr) INOUT register pcube left,
-    right;                   /* will be disposed of ... */
+    right; /* will be disposed of ... */
 INOUT register pcube cl, cr; /* will be disposed of ... */
 {
   INLINEset_and(left, left, cl);
@@ -166,11 +166,11 @@ pcube sccc_cube(result, p) register pcube result, p;
   int var;
 
   if ((var = cactive(p)) >= 0)
-  {
-    mask = cube.var_mask[var];
-    INLINEset_xor(temp, p, mask);
-    INLINEset_and(result, result, temp);
-  }
+    {
+      mask = cube.var_mask[var];
+      INLINEset_xor(temp, p, mask);
+      INLINEset_and(result, result, temp);
+    }
   return result;
 }
 
@@ -180,93 +180,93 @@ pcube sccc_cube(result, p) register pcube result, p;
 
 bool sccc_special_cases(
     T, result) INOUT pcube *T; /* will be disposed if answer is determined */
-OUT pcube *result;             /* returned only if answer determined */
+OUT pcube *result; /* returned only if answer determined */
 {
   register pcube *T1, p, temp = cube.temp[1], ceil, cof = T[0];
   pcube *A, *B;
 
   /* empty cover => complement is universe => SCCC is universe */
   if (T[2] == NULL)
-  {
-    *result = set_save(cube.fullset);
-    free_cubelist(T);
-    return TRUE;
-  }
-
-  /* row of 1's => complement is empty => SCCC is empty */
-  for (T1 = T + 2; (p = *T1++) != NULL;)
-  {
-    if (full_row(p, cof))
     {
-      *result = new_cube();
+      *result = set_save(cube.fullset);
       free_cubelist(T);
       return TRUE;
     }
-  }
+
+  /* row of 1's => complement is empty => SCCC is empty */
+  for (T1 = T + 2; (p = *T1++) != NULL;)
+    {
+      if (full_row(p, cof))
+        {
+          *result = new_cube();
+          free_cubelist(T);
+          return TRUE;
+        }
+    }
 
   /* Collect column counts, determine unate variables, etc. */
   massive_count(T);
 
   /* If cover is unate (or single cube), apply simple rules to find SCCCU */
   if (cdata.vars_unate == cdata.vars_active || T[3] == NULL)
-  {
-    *result = set_save(cube.fullset);
-    for (T1 = T + 2; (p = *T1++) != NULL;)
     {
-      (void)sccc_cube(*result, set_or(temp, p, cof));
+      *result = set_save(cube.fullset);
+      for (T1 = T + 2; (p = *T1++) != NULL;)
+        {
+          (void)sccc_cube(*result, set_or(temp, p, cof));
+        }
+      free_cubelist(T);
+      return TRUE;
     }
-    free_cubelist(T);
-    return TRUE;
-  }
 
   /* Check for column of 0's (which can be easily factored( */
   ceil = set_save(cof);
   for (T1 = T + 2; (p = *T1++) != NULL;)
-  {
-    INLINEset_or(ceil, ceil, p);
-  }
+    {
+      INLINEset_or(ceil, ceil, p);
+    }
   if (!setp_equal(ceil, cube.fullset))
-  {
-    *result = sccc_cube(set_save(cube.fullset), ceil);
-    if (setp_equal(*result, cube.fullset))
     {
-      free_cube(ceil);
+      *result = sccc_cube(set_save(cube.fullset), ceil);
+      if (setp_equal(*result, cube.fullset))
+        {
+          free_cube(ceil);
+        }
+      else
+        {
+          *result = sccc_merge(sccc(cofactor(T, ceil)), set_save(cube.fullset),
+                               ceil, *result);
+        }
+      free_cubelist(T);
+      return TRUE;
     }
-    else
-    {
-      *result = sccc_merge(sccc(cofactor(T, ceil)), set_save(cube.fullset),
-                           ceil, *result);
-    }
-    free_cubelist(T);
-    return TRUE;
-  }
   free_cube(ceil);
 
   /* Single active column at this point => tautology => SCCC is empty */
   if (cdata.vars_active == 1)
-  {
-    *result = new_cube();
-    free_cubelist(T);
-    return TRUE;
-  }
+    {
+      *result = new_cube();
+      free_cubelist(T);
+      return TRUE;
+    }
 
   /* Check for components */
   if (cdata.var_zeros[cdata.best] < CUBELISTSIZE(T) / 2)
-  {
-    if (cubelist_partition(T, &A, &B, debug & REDUCE1) == 0)
     {
-      return MAYBE;
+      if (cubelist_partition(T, &A, &B, debug & REDUCE1) == 0)
+        {
+          return MAYBE;
+        }
+      else
+        {
+          free_cubelist(T);
+          *result = sccc(A);
+          ceil = sccc(B);
+          (void)set_and(*result, *result, ceil);
+          set_free(ceil);
+          return TRUE;
+        }
     }
-    else
-    {
-      free_cubelist(T);
-      *result = sccc(A);
-      ceil = sccc(B);
-      (void)set_and(*result, *result, ceil);
-      set_free(ceil);
-      return TRUE;
-    }
-  }
 
   /* Not much we can do about it */
   return MAYBE;

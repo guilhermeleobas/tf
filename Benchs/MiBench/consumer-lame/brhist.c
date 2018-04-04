@@ -27,11 +27,11 @@ void brhist_init(lame_global_flags *gfp, int br_min, int br_max)
   char tc[10];
 
   for (i = 0; i < 15; i++)
-  {
-    sprintf(brhist_bps[i], "%3d:", bitrate_table[gfp->version][i]);
-    brhist_count[i] = 0;
-    brhist_temp[i] = 0;
-  }
+    {
+      sprintf(brhist_bps[i], "%3d:", bitrate_table[gfp->version][i]);
+      brhist_count[i] = 0;
+      brhist_temp[i] = 0;
+    }
 
   brhist_vbrmin = br_min;
   brhist_vbrmax = br_max;
@@ -45,18 +45,18 @@ void brhist_init(lame_global_flags *gfp, int br_min, int br_max)
   brhist_backcur[0] = '\0';
 
   if ((termname = getenv("TERM")) == NULL)
-  {
-    fprintf(stderr, "can't get TERM environment string.\n");
-    disp_brhist = 0;
-    return;
-  }
+    {
+      fprintf(stderr, "can't get TERM environment string.\n");
+      disp_brhist = 0;
+      return;
+    }
 
   if (tgetent(term_buff, termname) != 1)
-  {
-    fprintf(stderr, "can't find termcap entry: %s\n", termname);
-    disp_brhist = 0;
-    return;
-  }
+    {
+      fprintf(stderr, "can't find termcap entry: %s\n", termname);
+      disp_brhist = 0;
+      return;
+    }
 
   tc[0] = '\0';
   tp = &tc[0];
@@ -71,11 +71,11 @@ void brhist_add_count(void)
   int i;
 
   for (i = brhist_vbrmin; i <= brhist_vbrmax; i++)
-  {
-    brhist_count[i] += brhist_temp[i];
-    if (brhist_count[i] > brhist_max) brhist_max = brhist_count[i];
-    brhist_temp[i] = 0;
-  }
+    {
+      brhist_count[i] += brhist_temp[i];
+      if (brhist_count[i] > brhist_max) brhist_max = brhist_count[i];
+      brhist_temp[i] = 0;
+    }
 }
 
 void brhist_disp(void)
@@ -87,13 +87,13 @@ void brhist_disp(void)
   full = (brhist_max < BRHIST_BARMAX) ? BRHIST_BARMAX : brhist_max;
   fputc('\n', stderr);
   for (i = brhist_vbrmin; i <= brhist_vbrmax; i++)
-  {
-    barlen = (brhist_count[i] * BRHIST_BARMAX + full - 1) / full;
-    fputs(brhist_bps[i], stderr);
-    fputs(&brhist_bar[BRHIST_BARMAX - barlen], stderr);
-    fputs(&brhist_spc[barlen], stderr);
-    fputc('\n', stderr);
-  }
+    {
+      barlen = (brhist_count[i] * BRHIST_BARMAX + full - 1) / full;
+      fputs(brhist_bps[i], stderr);
+      fputs(&brhist_bar[BRHIST_BARMAX - barlen], stderr);
+      fputs(&brhist_spc[barlen], stderr);
+      fputc('\n', stderr);
+    }
   fputs(brhist_backcur, stderr);
   fflush(stderr);
 }

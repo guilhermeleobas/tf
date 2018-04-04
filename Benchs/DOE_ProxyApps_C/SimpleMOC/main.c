@@ -24,9 +24,9 @@ int main(int argc, char* argv[])
   calculate_derived_inputs(&input);
 
   if (mype == 0)
-  {
-    logo(version);
-  }
+    {
+      logo(version);
+    }
 
 #ifdef OPENMP
   omp_set_num_threads(input.nthreads);
@@ -36,9 +36,9 @@ int main(int argc, char* argv[])
   CommGrid grid = init_mpi_grid(input);
 
   if (mype == 0)
-  {
-    print_input_summary(input);
-  }
+    {
+      print_input_summary(input);
+    }
 
   float res;
   float keff = 1.0;
@@ -52,72 +52,72 @@ int main(int argc, char* argv[])
   double start, stop;
 
   if (mype == 0)
-  {
-    center_print("SIMULATION", 79);
-    border_print();
-  }
+    {
+      center_print("SIMULATION", 79);
+      border_print();
+    }
 
   for (int i = 0; i < num_iters; i++)
-  {
-    // Transport Sweep
-    start = get_time();
-    transport_sweep(&params, &input);
-    stop = get_time();
-    time_transport += stop - start;
+    {
+      // Transport Sweep
+      start = get_time();
+      transport_sweep(&params, &input);
+      stop = get_time();
+      time_transport += stop - start;
 
 // Domain Boundary Flux Exchange (MPI)
 #ifdef MPI
-    start = get_time();
-    fast_transfer_boundary_fluxes(params, input, grid);
-    stop = get_time();
-    time_flux_exchange += stop - start;
+      start = get_time();
+      fast_transfer_boundary_fluxes(params, input, grid);
+      stop = get_time();
+      time_flux_exchange += stop - start;
 #endif
 
-    // Flux Renormalization
-    start = get_time();
-    renormalize_flux(params, input, grid);
-    stop = get_time();
-    time_renormalize_flux += stop - start;
+      // Flux Renormalization
+      start = get_time();
+      renormalize_flux(params, input, grid);
+      stop = get_time();
+      time_renormalize_flux += stop - start;
 
-    // Update Source Regions
-    start = get_time();
-    res = update_sources(params, input, keff);
-    stop = get_time();
-    time_update_sources += stop - start;
+      // Update Source Regions
+      start = get_time();
+      res = update_sources(params, input, keff);
+      stop = get_time();
+      time_update_sources += stop - start;
 
-    // Calculate K-Effective
-    start = get_time();
-    keff = compute_keff(params, input, grid);
-    stop = get_time();
-    time_compute_keff += stop - start;
-    if (mype == 0)
-    {
-      printf("keff = %f\n", keff);
+      // Calculate K-Effective
+      start = get_time();
+      keff = compute_keff(params, input, grid);
+      stop = get_time();
+      time_compute_keff += stop - start;
+      if (mype == 0)
+        {
+          printf("keff = %f\n", keff);
+        }
     }
-  }
 
   double time_total = time_transport + time_flux_exchange +
                       time_renormalize_flux + time_update_sources +
                       time_compute_keff;
 
   if (mype == 0)
-  {
-    border_print();
-    center_print("RESULTS SUMMARY", 79);
-    border_print();
+    {
+      border_print();
+      center_print("RESULTS SUMMARY", 79);
+      border_print();
 
-    printf("Transport Sweep Time:         %6.2lf sec   (%4.1lf%%)\n",
-           time_transport, 100 * time_transport / time_total);
-    printf("Domain Flux Exchange Time:    %6.2lf sec   (%4.1lf%%)\n",
-           time_flux_exchange, 100 * time_flux_exchange / time_total);
-    printf("Flux Renormalization Time:    %6.2lf sec   (%4.1lf%%)\n",
-           time_renormalize_flux, 100 * time_renormalize_flux / time_total);
-    printf("Update Source Time:           %6.2lf sec   (%4.1lf%%)\n",
-           time_update_sources, 100 * time_update_sources / time_total);
-    printf("K-Effective Calc Time:        %6.2lf sec   (%4.1lf%%)\n",
-           time_compute_keff, 100 * time_compute_keff / time_total);
-    printf("Total Time:                   %6.2lf sec\n", time_total);
-  }
+      printf("Transport Sweep Time:         %6.2lf sec   (%4.1lf%%)\n",
+             time_transport, 100 * time_transport / time_total);
+      printf("Domain Flux Exchange Time:    %6.2lf sec   (%4.1lf%%)\n",
+             time_flux_exchange, 100 * time_flux_exchange / time_total);
+      printf("Flux Renormalization Time:    %6.2lf sec   (%4.1lf%%)\n",
+             time_renormalize_flux, 100 * time_renormalize_flux / time_total);
+      printf("Update Source Time:           %6.2lf sec   (%4.1lf%%)\n",
+             time_update_sources, 100 * time_update_sources / time_total);
+      printf("K-Effective Calc Time:        %6.2lf sec   (%4.1lf%%)\n",
+             time_compute_keff, 100 * time_compute_keff / time_total);
+      printf("Total Time:                   %6.2lf sec\n", time_total);
+    }
 
   long tracks_per_second = 2 * input.ntracks / time_transport;
 
@@ -125,22 +125,22 @@ int main(int argc, char* argv[])
   MPI_Barrier(grid.cart_comm_3d);
   long global_tps = 0;
   MPI_Reduce(&tracks_per_second,  // Send Buffer
-             &global_tps,         // Receive Buffer
-             1,                   // Element Count
-             MPI_LONG,            // Element Type
-             MPI_SUM,             // Reduciton Operation Type
-             0,                   // Master Rank
+             &global_tps,  // Receive Buffer
+             1,  // Element Count
+             MPI_LONG,  // Element Type
+             MPI_SUM,  // Reduciton Operation Type
+             0,  // Master Rank
              grid.cart_comm_3d);  // MPI Communicator
   MPI_Barrier(grid.cart_comm_3d);
   tracks_per_second = global_tps;
 #endif
 
   if (mype == 0)
-  {
-    printf("Time per Intersection:          ");
-    printf("%.2lf ns\n", time_per_intersection(input, time_transport));
-    border_print();
-  }
+    {
+      printf("Time per Intersection:          ");
+      printf("%.2lf ns\n", time_per_intersection(input, time_transport));
+      border_print();
+    }
 
   free_2D_tracks(params.tracks_2D);
   free_tracks(params.tracks);

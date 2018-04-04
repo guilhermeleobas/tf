@@ -35,7 +35,7 @@
 
 #include <Memory.h> /* we use the MacOS memory manager */
 
-#ifndef SEEK_SET   /* pre-ANSI systems may not define this; */
+#ifndef SEEK_SET /* pre-ANSI systems may not define this; */
 #define SEEK_SET 0 /* if not, assume 0 is correct */
 #endif
 
@@ -178,4 +178,6 @@ jpeg_mem_init(j_common_ptr cinfo)
 }
 
 GLOBAL(void)
-jpeg_mem_term(j_common_ptr cinfo) { /* no work */ }
+jpeg_mem_term(j_common_ptr cinfo)
+{ /* no work */
+}

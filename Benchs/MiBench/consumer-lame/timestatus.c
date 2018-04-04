@@ -26,9 +26,9 @@ FLOAT ts_real_time(long frame)
   time(&current_time);
 
   if (frame == 0)
-  {
-    initial_time = current_time;
-  }
+    {
+      initial_time = current_time;
+    }
 
   return (FLOAT)difftime(current_time, initial_time);
 }
@@ -48,33 +48,33 @@ FLOAT ts_process_time(long frame)
     FILETIME Ignored1, Ignored2, KernelTime, UserTime;
 
     if (frame == 0)
-    {
-      hProcess = GetCurrentProcess();
-    }
+      {
+        hProcess = GetCurrentProcess();
+      }
 
     /* GetProcessTimes() always fails under Win9x */
     if (GetProcessTimes(hProcess, &Ignored1, &Ignored2, &KernelTime, &UserTime))
-    {
-      LARGE_INTEGER Kernel = {KernelTime.dwLowDateTime,
-                              KernelTime.dwHighDateTime};
-      LARGE_INTEGER User = {UserTime.dwLowDateTime, UserTime.dwHighDateTime};
+      {
+        LARGE_INTEGER Kernel = {KernelTime.dwLowDateTime,
+                                KernelTime.dwHighDateTime};
+        LARGE_INTEGER User = {UserTime.dwLowDateTime, UserTime.dwHighDateTime};
 
-      current_time = (clock_t)((FLOAT)(Kernel.QuadPart + User.QuadPart) *
-                               TS_CLOCKS_PER_SEC / 10000000);
-    }
+        current_time = (clock_t)((FLOAT)(Kernel.QuadPart + User.QuadPart) *
+                                 TS_CLOCKS_PER_SEC / 10000000);
+      }
     else
-    {
-      current_time = clock();
-    }
+      {
+        current_time = clock();
+      }
   }
 #else
   current_time = clock();
 #endif
 
   if (frame == 0)
-  {
-    initial_time = current_time;
-  }
+    {
+      initial_time = current_time;
+    }
 
   return (FLOAT)(current_time - initial_time) / TS_CLOCKS_PER_SEC;
 }
@@ -96,24 +96,24 @@ void ts_calc_times(ts_times *time, int samp_rate, long frame, long frames,
                    int framesize)
 {
   if (frame > 0)
-  {
-    time->estimated = time->so_far * frames / frame;
-    if (samp_rate * time->estimated > 0)
     {
-      time->speed = frames * framesize / (samp_rate * time->estimated);
+      time->estimated = time->so_far * frames / frame;
+      if (samp_rate * time->estimated > 0)
+        {
+          time->speed = frames * framesize / (samp_rate * time->estimated);
+        }
+      else
+        {
+          time->speed = 0;
+        }
+      time->eta = time->estimated - time->so_far;
     }
-    else
-    {
-      time->speed = 0;
-    }
-    time->eta = time->estimated - time->so_far;
-  }
   else
-  {
-    time->estimated = 0;
-    time->speed = 0;
-    time->eta = 0;
-  }
+    {
+      time->estimated = 0;
+      time->speed = 0;
+      time->eta = 0;
+    }
 }
 
 /*********************************************************/
@@ -128,24 +128,24 @@ void timestatus(int samp_rate, long frameNum, long totalframes, int framesize)
   process_time.so_far = ts_process_time(frameNum);
 
   if (frameNum == 0)
-  {
-    fprintf(stderr,
-            "    Frame          |  CPU/estimated  |  time/estimated | play/CPU "
-            "|   ETA\n");
-    return;
-  }
+    {
+      fprintf(stderr,
+              "    Frame          |  CPU/estimated  |  time/estimated | play/CPU "
+              "|   ETA\n");
+      return;
+    }
 
   ts_calc_times(&real_time, samp_rate, frameNum, totalframes, framesize);
   ts_calc_times(&process_time, samp_rate, frameNum, totalframes, framesize);
 
   if (totalframes > 1)
-  {
-    percent = (int)(100.0 * frameNum / (totalframes - 1));
-  }
+    {
+      percent = (int)(100.0 * frameNum / (totalframes - 1));
+    }
   else
-  {
-    percent = 100;
-  }
+    {
+      percent = 100;
+    }
 
 #define TS_TIME_DECOMPOSE(time)                                          \
   (int)((long)(time + .5) / 3600), (int)((long)((time + .5) / 60) % 60), \

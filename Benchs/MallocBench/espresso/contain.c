@@ -27,9 +27,9 @@ pset_family sf_contain(A) INOUT pset_family A; /* disposes of A */
   pset *A1;
   pset_family R;
 
-  A1 = sf_sort(A, descend);           /* sort into descending order */
-  cnt = rm_equal(A1, descend);        /* remove duplicates */
-  cnt = rm_contain(A1);               /* remove contained sets */
+  A1 = sf_sort(A, descend); /* sort into descending order */
+  cnt = rm_equal(A1, descend); /* remove duplicates */
+  cnt = rm_contain(A1); /* remove contained sets */
   R = sf_unlist(A1, cnt, A->sf_size); /* recreate the set family */
   sf_free(A);
   return R;
@@ -46,9 +46,9 @@ pset_family sf_rev_contain(A) INOUT pset_family A; /* disposes of A */
   pset *A1;
   pset_family R;
 
-  A1 = sf_sort(A, ascend);            /* sort into ascending order */
-  cnt = rm_equal(A1, ascend);         /* remove duplicates */
-  cnt = rm_rev_contain(A1);           /* remove containing sets */
+  A1 = sf_sort(A, ascend); /* sort into ascending order */
+  cnt = rm_equal(A1, ascend); /* remove duplicates */
+  cnt = rm_rev_contain(A1); /* remove containing sets */
   R = sf_unlist(A1, cnt, A->sf_size); /* recreate the set family */
   sf_free(A);
   return R;
@@ -69,9 +69,9 @@ INOUT int *row_indices; /* updated with the new values */
   pset *A1;
   pset_family R;
 
-  A1 = sf_sort(A, descend);    /* sort into descending order */
+  A1 = sf_sort(A, descend); /* sort into descending order */
   cnt = rm_equal(A1, descend); /* remove duplicates */
-  cnt = rm_contain(A1);        /* remove contained sets */
+  cnt = rm_contain(A1); /* remove contained sets */
   R = sf_ind_unlist(A1, cnt, A->sf_size, row_indices, A->data);
   sf_free(A);
   return R;
@@ -84,8 +84,8 @@ pset_family sf_dupl(A) INOUT pset_family A; /* disposes of A */
   register pset *A1;
   pset_family R;
 
-  A1 = sf_sort(A, descend);           /* sort the set family */
-  cnt = rm_equal(A1, descend);        /* remove duplicates */
+  A1 = sf_sort(A, descend); /* sort the set family */
+  cnt = rm_equal(A1, descend); /* remove duplicates */
   R = sf_unlist(A1, cnt, A->sf_size); /* recreate the set family */
   sf_free(A);
   return R;
@@ -143,29 +143,29 @@ IN int var;
 
 /* d1_rm_equal -- distance-1 merge (merge cubes which are equal under a mask) */
 int d1_rm_equal(A1, compare) register pset *A1; /* array of set pointers */
-int (*compare)();                               /* comparison function */
+int (*compare)(); /* comparison function */
 {
   register int i, j, dest;
 
   dest = 0;
   if (A1[0] != (pcube)NULL)
-  {
-    for (i = 0, j = 1; A1[j] != (pcube)NULL; j++)
     {
-      if ((*compare)(&A1[i], &A1[j]) == 0)
-      {
-        /* if sets are equal (under the mask) merge them */
-        set_or(A1[i], A1[i], A1[j]);
-      }
-      else
-      {
-        /* sets are unequal, so save the set i */
-        A1[dest++] = A1[i];
-        i = j;
-      }
+      for (i = 0, j = 1; A1[j] != (pcube)NULL; j++)
+        {
+          if ((*compare)(&A1[i], &A1[j]) == 0)
+            {
+              /* if sets are equal (under the mask) merge them */
+              set_or(A1[i], A1[i], A1[j]);
+            }
+          else
+            {
+              /* sets are unequal, so save the set i */
+              A1[dest++] = A1[i];
+              i = j;
+            }
+        }
+      A1[dest++] = A1[i];
     }
-    A1[dest++] = A1[i];
-  }
   A1[dest] = (pcube)NULL;
   return dest;
 }
@@ -177,17 +177,17 @@ IN int (*compare)();
   register pset *p, *pdest = A1;
 
   if (*A1 != NULL)
-  { /* If more than one set */
-    for (p = A1 + 1; *p != NULL; p++)
-    {
-      if ((*compare)(p, p - 1) != 0)
-      {
-        *pdest++ = *(p - 1);
-      }
+    { /* If more than one set */
+      for (p = A1 + 1; *p != NULL; p++)
+        {
+          if ((*compare)(p, p - 1) != 0)
+            {
+              *pdest++ = *(p - 1);
+            }
+        }
+      *pdest++ = *(p - 1);
+      *pdest = NULL;
     }
-    *pdest++ = *(p - 1);
-    *pdest = NULL;
-  }
   return pdest - A1;
 }
 
@@ -200,22 +200,22 @@ int rm_contain(A1) INOUT pset *A1; /* updated in place */
 
   /* Loop for all cubes of A1 */
   for (pa = A1; (a = *pa++) != NULL;)
-  {
-    /* Update the check pointer if the size has changed */
-    if (SIZE(a) != last_size)
     {
-      last_size = SIZE(a), pcheck = pdest;
+      /* Update the check pointer if the size has changed */
+      if (SIZE(a) != last_size)
+        {
+          last_size = SIZE(a), pcheck = pdest;
+        }
+      for (pb = A1; pb != pcheck;)
+        {
+          b = *pb++;
+          INLINEsetp_implies(a, b, /* when_false => */ continue);
+          goto lnext1;
+        }
+      /* set a was not contained by some larger set, so save it */
+      *pdest++ = a;
+    lnext1:;
     }
-    for (pb = A1; pb != pcheck;)
-    {
-      b = *pb++;
-      INLINEsetp_implies(a, b, /* when_false => */ continue);
-      goto lnext1;
-    }
-    /* set a was not contained by some larger set, so save it */
-    *pdest++ = a;
-  lnext1:;
-  }
 
   *pdest = NULL;
   return pdest - A1;
@@ -230,22 +230,22 @@ int rm_rev_contain(A1) INOUT pset *A1; /* updated in place */
 
   /* Loop for all cubes of A1 */
   for (pa = A1; (a = *pa++) != NULL;)
-  {
-    /* Update the check pointer if the size has changed */
-    if (SIZE(a) != last_size)
     {
-      last_size = SIZE(a), pcheck = pdest;
+      /* Update the check pointer if the size has changed */
+      if (SIZE(a) != last_size)
+        {
+          last_size = SIZE(a), pcheck = pdest;
+        }
+      for (pb = A1; pb != pcheck;)
+        {
+          b = *pb++;
+          INLINEsetp_implies(b, a, /* when_false => */ continue);
+          goto lnext1;
+        }
+      /* the set a did not contain some smaller set, so save it */
+      *pdest++ = a;
+    lnext1:;
     }
-    for (pb = A1; pb != pcheck;)
-    {
-      b = *pb++;
-      INLINEsetp_implies(b, a, /* when_false => */ continue);
-      goto lnext1;
-    }
-    /* the set a did not contain some smaller set, so save it */
-    *pdest++ = a;
-  lnext1:;
-  }
 
   *pdest = NULL;
   return pdest - A1;
@@ -261,31 +261,31 @@ IN int (*compare)();
 
   /* Walk through the arrays advancing pointer to larger cube */
   for (; *A1 != NULL && *B1 != NULL;)
-  {
-    switch ((*compare)(A1, B1))
     {
-      case -1: /* "a" comes before "b" */
-        *pda++ = *A1++;
-        break;
-      case 0: /* equal cubes */
-        *pde++ = *A1++;
-        B1++;
-        break;
-      case 1: /* "a" is to follow "b" */
-        *pdb++ = *B1++;
-        break;
+      switch ((*compare)(A1, B1))
+        {
+          case -1: /* "a" comes before "b" */
+            *pda++ = *A1++;
+            break;
+          case 0: /* equal cubes */
+            *pde++ = *A1++;
+            B1++;
+            break;
+          case 1: /* "a" is to follow "b" */
+            *pdb++ = *B1++;
+            break;
+        }
     }
-  }
 
   /* Finish moving down the pointers of A and B */
   while (*A1 != NULL)
-  {
-    *pda++ = *A1++;
-  }
+    {
+      *pda++ = *A1++;
+    }
   while (*B1 != NULL)
-  {
-    *pdb++ = *B1++;
-  }
+    {
+      *pdb++ = *B1++;
+    }
   *pda = *pdb = *pde = NULL;
 
   return pde - E1;
@@ -293,26 +293,26 @@ IN int (*compare)();
 
 /* rm2_contain -- perform containment between two arrays of set pointers */
 int rm2_contain(A1, B1) INOUT pset *A1; /* updated in place */
-IN pset *B1;                            /* unchanged */
+IN pset *B1; /* unchanged */
 {
   register pset *pa, *pb, a, b, *pdest = A1;
 
   /* for each set in the first array ... */
   for (pa = A1; (a = *pa++) != NULL;)
-  {
-    /* for each set in the second array which is larger ... */
-    for (pb = B1; (b = *pb++) != NULL && SIZE(b) > SIZE(a);)
     {
-      INLINEsetp_implies(a, b, /* when_false => */ continue);
-      /* set was contained in some set of B, so don't save pointer */
-      goto lnext1;
+      /* for each set in the second array which is larger ... */
+      for (pb = B1; (b = *pb++) != NULL && SIZE(b) > SIZE(a);)
+        {
+          INLINEsetp_implies(a, b, /* when_false => */ continue);
+          /* set was contained in some set of B, so don't save pointer */
+          goto lnext1;
+        }
+      /* set wasn't contained in any set of B, so save the pointer */
+      *pdest++ = a;
+    lnext1:;
     }
-    /* set wasn't contained in any set of B, so save the pointer */
-    *pdest++ = a;
-  lnext1:;
-  }
 
-  *pdest = NULL;     /* sentinel */
+  *pdest = NULL; /* sentinel */
   return pdest - A1; /* # elements in A1 */
 }
 
@@ -327,7 +327,7 @@ IN int (*compare)();
   foreach_set(A, last, p)
   {
     PUTSIZE(p, set_ord(p)); /* compute the set size */
-    *pdest++ = p;           /* save the pointer */
+    *pdest++ = p; /* save the pointer */
   }
   *pdest = NULL; /* Sentinel -- never seen by sort */
 
@@ -344,7 +344,7 @@ pset *sf_list(A) IN register pset_family A;
   /* Create a single array pointing to each cube of A */
   pdest = A1 = ALLOC(pset, A->count + 1);
   foreach_set(A, last, p) *pdest++ = p; /* save the pointer */
-  *pdest = NULL;                        /* Sentinel */
+  *pdest = NULL; /* Sentinel */
   return A1;
 }
 
@@ -375,14 +375,14 @@ IN register pset pfirst;
   R->count = totcnt;
   new_row_indices = ALLOC(int, totcnt);
   for (pr = R->data, pa = A1, i = 0; (p = *pa++) != NULL; pr += R->wsize, i++)
-  {
-    INLINEset_copy(pr, p);
-    new_row_indices[i] = row_indices[(p - pfirst) / R->wsize];
-  }
+    {
+      INLINEset_copy(pr, p);
+      new_row_indices[i] = row_indices[(p - pfirst) / R->wsize];
+    }
   for (i = 0; i < totcnt; i++)
-  {
-    row_indices[i] = new_row_indices[i];
-  }
+    {
+      row_indices[i] = new_row_indices[i];
+    }
   FREE(new_row_indices);
   FREE(A1);
   return R;
@@ -409,41 +409,41 @@ IN int totcnt, size;
   temp[1] = B1;
   temp[2] = E1;
   for (i = 0; i < n - 1; i++)
-  {
-    for (j = i + 1; j < n; j++)
     {
-      if (desc1(*temp[i], *temp[j]) > 0)
-      {
-        swap = temp[j];
-        temp[j] = temp[i];
-        temp[i] = swap;
-      }
+      for (j = i + 1; j < n; j++)
+        {
+          if (desc1(*temp[i], *temp[j]) > 0)
+            {
+              swap = temp[j];
+              temp[j] = temp[i];
+              temp[i] = swap;
+            }
+        }
     }
-  }
   pmin = temp[0];
   pmid = temp[1];
   pmax = temp[2];
 
   /* Save the minimum element, then update pmin, pmid, pmax */
   while (*pmin != (pset)NULL)
-  {
-    ps = *pmin++;
-    INLINEset_copy(pr, ps);
-    pr += R->wsize;
-    if (desc1(*pmin, *pmax) > 0)
     {
-      swap = pmax;
-      pmax = pmin;
-      pmin = pmid;
-      pmid = swap;
+      ps = *pmin++;
+      INLINEset_copy(pr, ps);
+      pr += R->wsize;
+      if (desc1(*pmin, *pmax) > 0)
+        {
+          swap = pmax;
+          pmax = pmin;
+          pmin = pmid;
+          pmid = swap;
+        }
+      else if (desc1(*pmin, *pmid) > 0)
+        {
+          swap = pmin;
+          pmin = pmid;
+          pmid = swap;
+        }
     }
-    else if (desc1(*pmin, *pmid) > 0)
-    {
-      swap = pmin;
-      pmin = pmid;
-      pmid = swap;
-    }
-  }
 
   FREE(A1);
   FREE(B1);

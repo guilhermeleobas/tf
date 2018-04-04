@@ -164,34 +164,34 @@ void driver(int size)
 
   /* Set the keys */
   for (k = 0; k < NUM_TESTS; k++)
-  {
-    if ((des_key_sched((C_Block *)key_data[k], ks[k])) != 0)
     {
-      printf("Key %d error!\n", k);
-      exit(-1);
+      if ((des_key_sched((C_Block *)key_data[k], ks[k])) != 0)
+        {
+          printf("Key %d error!\n", k);
+          exit(-1);
+        }
     }
-  }
 
   /*** VERSABENCH START ***/
 
   for (j = 0; j < REPEAT; j++)
-  {
-    for (k = 0; k < size; k++)
     {
-      des_ecb_encrypt((C_Block *)plain_data[k], (C_Block *)out[k], ks[k],
-                      DES_ENCRYPT);
+      for (k = 0; k < size; k++)
+        {
+          des_ecb_encrypt((C_Block *)plain_data[k], (C_Block *)out[k], ks[k],
+                          DES_ENCRYPT);
+        }
     }
-  }
   /*** VERSABENCH END ***/
 
   if (memcmp(cipher_data[0], out[0], BLOCK_SIZE * size) != 0)
-  {
-    printf("Encryption error.\n");
-  }
+    {
+      printf("Encryption error.\n");
+    }
   else
-  {
-    printf("Encrypted correctly.\n");
-  }
+    {
+      printf("Encrypted correctly.\n");
+    }
 
   return;
 }
@@ -206,32 +206,32 @@ main(int argc, char **argv)
   int size;
 
   if (argc != 2)
-  {
-    printf(
-        "Driver for Data Encryption Standard benchmark.\n"
-        "\n"
-        "usage: %s <size> (where size <= 34)\n"
-        "\n"
-        "size is the number of processing node for hardware version \n"
-        "\n",
-        argv[0]);
-    exit(-1);
-  };
+    {
+      printf(
+          "Driver for Data Encryption Standard benchmark.\n"
+          "\n"
+          "usage: %s <size> (where size <= 34)\n"
+          "\n"
+          "size is the number of processing node for hardware version \n"
+          "\n",
+          argv[0]);
+      exit(-1);
+    };
 
   size = atoi(argv[1]);
 
   if (size > 34)
-  {
-    printf(
-        "Driver for Data Encryption Standard benchmark.\n"
-        "\n"
-        "usage: %s <size> (where size <= 34)\n"
-        "\n"
-        "size is the number of processing node for hardware version \n"
-        "\n",
-        argv[0]);
-    exit(-1);
-  }
+    {
+      printf(
+          "Driver for Data Encryption Standard benchmark.\n"
+          "\n"
+          "usage: %s <size> (where size <= 34)\n"
+          "\n"
+          "size is the number of processing node for hardware version \n"
+          "\n",
+          argv[0]);
+      exit(-1);
+    }
 
   driver(size);
 

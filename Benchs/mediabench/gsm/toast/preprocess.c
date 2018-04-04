@@ -45,62 +45,62 @@ void Gsm_Preprocess P3((S, s, so), struct gsm_state* S, word* s,
   word msp, lsp;
   word SO;
 
-  longword ltmp;  /* for   ADD */
+  longword ltmp; /* for   ADD */
   ulongword utmp; /* for L_ADD */
 
   register int k = 160;
 
   while (k--)
-  {
-    /*  4.2.1   Downscaling of the input signal
+    {
+      /*  4.2.1   Downscaling of the input signal
      */
-    SO = SASR(*s, 3) << 2;
-    s++;
+      SO = SASR(*s, 3) << 2;
+      s++;
 
-    assert(SO >= -0x4000); /* downscaled by     */
-    assert(SO <= 0x3FFC);  /* previous routine. */
+      assert(SO >= -0x4000); /* downscaled by     */
+      assert(SO <= 0x3FFC); /* previous routine. */
 
-    /*  4.2.2   Offset compensation
+      /*  4.2.2   Offset compensation
      *
      *  This part implements a high-pass filter and requires extended
      *  arithmetic precision for the recursive part of this filter.
      *  The input of this procedure is the array so[0...159] and the
      *  output the array sof[ 0...159 ].
      */
-    /*   Compute the non-recursive part
+      /*   Compute the non-recursive part
      */
 
-    s1 = SO - z1; /* s1 = gsm_sub( *so, z1 ); */
-    z1 = SO;
+      s1 = SO - z1; /* s1 = gsm_sub( *so, z1 ); */
+      z1 = SO;
 
-    assert(s1 != MIN_WORD);
+      assert(s1 != MIN_WORD);
 
-    /*   Compute the recursive part
+      /*   Compute the recursive part
      */
-    L_s2 = s1;
-    L_s2 <<= 15;
+      L_s2 = s1;
+      L_s2 <<= 15;
 
-    /*   Execution of a 31 bv 16 bits multiplication
-     */
-
-    msp = SASR(L_z2, 15);
-    lsp = L_z2 - ((longword)msp << 15); /* gsm_L_sub(L_z2,(msp<<15)); */
-
-    L_s2 += GSM_MULT_R(lsp, 32735);
-    L_temp = (longword)msp * 32735; /* GSM_L_MULT(msp,32735) >> 1;*/
-    L_z2 = GSM_L_ADD(L_temp, L_s2);
-
-    /*    Compute sof[k] with rounding
-     */
-    L_temp = GSM_L_ADD(L_z2, 16384);
-
-    /*   4.2.3  Preemphasis
+      /*   Execution of a 31 bv 16 bits multiplication
      */
 
-    msp = GSM_MULT_R(mp, -28180);
-    mp = SASR(L_temp, 15);
-    *so++ = GSM_ADD(mp, msp);
-  }
+      msp = SASR(L_z2, 15);
+      lsp = L_z2 - ((longword)msp << 15); /* gsm_L_sub(L_z2,(msp<<15)); */
+
+      L_s2 += GSM_MULT_R(lsp, 32735);
+      L_temp = (longword)msp * 32735; /* GSM_L_MULT(msp,32735) >> 1;*/
+      L_z2 = GSM_L_ADD(L_temp, L_s2);
+
+      /*    Compute sof[k] with rounding
+     */
+      L_temp = GSM_L_ADD(L_z2, 16384);
+
+      /*   4.2.3  Preemphasis
+     */
+
+      msp = GSM_MULT_R(mp, -28180);
+      mp = SASR(L_temp, 15);
+      *so++ = GSM_ADD(mp, msp);
+    }
 
   S->z1 = z1;
   S->L_z2 = L_z2;

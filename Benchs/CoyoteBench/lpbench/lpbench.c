@@ -59,9 +59,9 @@ static double random_double()
   seed = IA * (seed - k * IQ) - IR * k;
 
   if (seed < 0)
-  {
-    seed += IM;
-  }
+    {
+      seed += IM;
+    }
 
   result = AM * seed;
   seed ^= MASK;
@@ -72,7 +72,7 @@ static double random_double()
 #if defined(ACOVEA)
 #if defined(arch_pentium4)
 static const int N = 1000;
-static const int NM1 = 999;   // N - 1
+static const int NM1 = 999;  // N - 1
 static const int NP1 = 1001;  // N + 1
 #else
 static const int N = 600;
@@ -98,25 +98,25 @@ void matgen(double **a, double *b)
   int i, j;
 
   for (i = 0; i < N; i++)
-  {
-    for (j = 0; j < N; j++)
     {
-      a[j][i] = random_double();
+      for (j = 0; j < N; j++)
+        {
+          a[j][i] = random_double();
+        }
     }
-  }
 
   for (i = 0; i < N; i++)
-  {
-    b[i] = 0.0;
-  }
+    {
+      b[i] = 0.0;
+    }
 
   for (j = 0; j < N; j++)
-  {
-    for (i = 0; i < N; i++)
     {
-      b[i] += a[j][i];
+      for (i = 0; i < N; i++)
+        {
+          b[i] += a[j][i];
+        }
     }
-  }
 }
 
 // finds the index of element having max. absolute value.
@@ -126,55 +126,55 @@ int idamax(int n, double *dx, int dx_off, int incx)
   int i, ix, itemp = 0;
 
   if (n < 1)
-  {
-    itemp = -1;
-  }
+    {
+      itemp = -1;
+    }
   else
-  {
-    if (n == 1)
     {
-      itemp = 0;
-    }
-    else
-    {
-      if (incx != 1)
-      {
-        // code for increment not equal to 1
-        dmax = fabs(dx[dx_off]);
-        ix = 1 + incx;
-
-        for (i = 1; i < n; i++)
+      if (n == 1)
         {
-          dtemp = fabs(dx[ix + dx_off]);
-
-          if (dtemp > dmax)
-          {
-            itemp = i;
-            dmax = dtemp;
-          }
-
-          ix += incx;
+          itemp = 0;
         }
-      }
       else
-      {
-        // code for increment equal to 1
-        itemp = 0;
-        dmax = fabs(dx[dx_off]);
-
-        for (i = 1; i < n; i++)
         {
-          dtemp = fabs(dx[i + dx_off]);
+          if (incx != 1)
+            {
+              // code for increment not equal to 1
+              dmax = fabs(dx[dx_off]);
+              ix = 1 + incx;
 
-          if (dtemp > dmax)
-          {
-            itemp = i;
-            dmax = dtemp;
-          }
+              for (i = 1; i < n; i++)
+                {
+                  dtemp = fabs(dx[ix + dx_off]);
+
+                  if (dtemp > dmax)
+                    {
+                      itemp = i;
+                      dmax = dtemp;
+                    }
+
+                  ix += incx;
+                }
+            }
+          else
+            {
+              // code for increment equal to 1
+              itemp = 0;
+              dmax = fabs(dx[dx_off]);
+
+              for (i = 1; i < n; i++)
+                {
+                  dtemp = fabs(dx[i + dx_off]);
+
+                  if (dtemp > dmax)
+                    {
+                      itemp = i;
+                      dmax = dtemp;
+                    }
+                }
+            }
         }
-      }
     }
-  }
 
   return itemp;
 }
@@ -187,39 +187,39 @@ static double ddot(int n, double *dx, int dx_off, int incx, double *dy,
   double dtemp = 0.0;
 
   if (n > 0)
-  {
-    if (incx != 1 || incy != 1)
     {
-      // code for unequal increments or equal increments not equal to 1
-      int ix = 0;
-      int iy = 0;
+      if (incx != 1 || incy != 1)
+        {
+          // code for unequal increments or equal increments not equal to 1
+          int ix = 0;
+          int iy = 0;
 
-      if (incx < 0)
-      {
-        ix = (-n + 1) * incx;
-      }
+          if (incx < 0)
+            {
+              ix = (-n + 1) * incx;
+            }
 
-      if (incy < 0)
-      {
-        iy = (-n + 1) * incy;
-      }
+          if (incy < 0)
+            {
+              iy = (-n + 1) * incy;
+            }
 
-      for (i = 0; i < n; i++)
-      {
-        dtemp += dx[ix + dx_off] * dy[iy + dy_off];
-        ix += incx;
-        iy += incy;
-      }
+          for (i = 0; i < n; i++)
+            {
+              dtemp += dx[ix + dx_off] * dy[iy + dy_off];
+              ix += incx;
+              iy += incy;
+            }
+        }
+      else
+        {
+          // code for both increments equal to 1
+          for (i = 0; i < n; i++)
+            {
+              dtemp += dx[i + dx_off] * dy[i + dy_off];
+            }
+        }
     }
-    else
-    {
-      // code for both increments equal to 1
-      for (i = 0; i < n; i++)
-      {
-        dtemp += dx[i + dx_off] * dy[i + dy_off];
-      }
-    }
-  }
 
   return (dtemp);
 }
@@ -230,26 +230,26 @@ void dscal(int n, double da, double *dx, int dx_off, int incx)
   int i;
 
   if (n > 0)
-  {
-    if (incx != 1)
     {
-      // code for increment not equal to 1
-      int nincx = n * incx;
+      if (incx != 1)
+        {
+          // code for increment not equal to 1
+          int nincx = n * incx;
 
-      for (i = 0; i < nincx; i += incx)
-      {
-        dx[i + dx_off] *= da;
-      }
+          for (i = 0; i < nincx; i += incx)
+            {
+              dx[i + dx_off] *= da;
+            }
+        }
+      else
+        {
+          // code for increment equal to 1
+          for (i = 0; i < n; i++)
+            {
+              dx[i + dx_off] *= da;
+            }
+        }
     }
-    else
-    {
-      // code for increment equal to 1
-      for (i = 0; i < n; i++)
-      {
-        dx[i + dx_off] *= da;
-      }
-    }
-  }
 }
 
 //  constant times a vector plus a vector.
@@ -259,41 +259,41 @@ void daxpy(int n, double da, double *dx, int dx_off, int incx, double *dy,
   int i;
 
   if ((n > 0) && (da != 0))
-  {
-    if (incx != 1 || incy != 1)
     {
-      // code for unequal increments or equal increments not equal to 1
-      int ix = 0;
-      int iy = 0;
+      if (incx != 1 || incy != 1)
+        {
+          // code for unequal increments or equal increments not equal to 1
+          int ix = 0;
+          int iy = 0;
 
-      if (incx < 0)
-      {
-        ix = (1 - n) * incx;
-      }
+          if (incx < 0)
+            {
+              ix = (1 - n) * incx;
+            }
 
-      if (incy < 0)
-      {
-        iy = (1 - n) * incy;
-      }
+          if (incy < 0)
+            {
+              iy = (1 - n) * incy;
+            }
 
-      for (i = 0; i < n; i++)
-      {
-        dy[iy + dy_off] += da * dx[ix + dx_off];
-        ix += incx;
-        iy += incy;
-      }
+          for (i = 0; i < n; i++)
+            {
+              dy[iy + dy_off] += da * dx[ix + dx_off];
+              ix += incx;
+              iy += incy;
+            }
 
-      return;
+          return;
+        }
+      else
+        {
+          // code for both increments equal to 1
+          for (i = 0; i < n; i++)
+            {
+              dy[i + dy_off] += da * dx[i + dx_off];
+            }
+        }
     }
-    else
-    {
-      // code for both increments equal to 1
-      for (i = 0; i < n; i++)
-      {
-        dy[i + dy_off] += da * dx[i + dx_off];
-      }
-    }
-  }
 }
 
 // Factors a double precision matrix by gaussian elimination.
@@ -303,45 +303,45 @@ void dgefa(double **a, int *ipvt)
   int k, j;
 
   for (k = 0; k < NM1; k++)
-  {
-    double *col_k = a[k];
-    int kp1 = k + 1;
-
-    // find l = pivot index
-    int l = idamax(N - k, col_k, k, 1) + k;
-    ipvt[k] = l;
-
-    // zero pivot implies this column already triangularized
-    if (col_k[l] != 0)
     {
-      // interchange if necessary
-      if (l != k)
-      {
-        temp = col_k[l];
-        col_k[l] = col_k[k];
-        col_k[k] = temp;
-      }
+      double *col_k = a[k];
+      int kp1 = k + 1;
 
-      // compute multipliers
-      temp = -1.0 / col_k[k];
-      dscal(N - kp1, temp, col_k, kp1, 1);
+      // find l = pivot index
+      int l = idamax(N - k, col_k, k, 1) + k;
+      ipvt[k] = l;
 
-      // row elimination with column indexing
-      for (j = kp1; j < N; j++)
-      {
-        double *col_j = a[j];
-        temp = col_j[l];
-
-        if (l != k)
+      // zero pivot implies this column already triangularized
+      if (col_k[l] != 0)
         {
-          col_j[l] = col_j[k];
-          col_j[k] = temp;
-        }
+          // interchange if necessary
+          if (l != k)
+            {
+              temp = col_k[l];
+              col_k[l] = col_k[k];
+              col_k[k] = temp;
+            }
 
-        daxpy(N - kp1, temp, col_k, kp1, 1, col_j, kp1, 1);
-      }
+          // compute multipliers
+          temp = -1.0 / col_k[k];
+          dscal(N - kp1, temp, col_k, kp1, 1);
+
+          // row elimination with column indexing
+          for (j = kp1; j < N; j++)
+            {
+              double *col_j = a[j];
+              temp = col_j[l];
+
+              if (l != k)
+                {
+                  col_j[l] = col_j[k];
+                  col_j[k] = temp;
+                }
+
+              daxpy(N - kp1, temp, col_k, kp1, 1, col_j, kp1, 1);
+            }
+        }
     }
-  }
 
   ipvt[N - 1] = N - 1;
 }
@@ -355,28 +355,28 @@ void dgesl(double **a, int *ipvt, double *b)
 
   // solve  a * x = b.  first solve  l*y = b
   for (k = 0; k < NM1; k++)
-  {
-    int l = ipvt[k];
-    t = b[l];
-
-    if (l != k)
     {
-      b[l] = b[k];
-      b[k] = t;
-    }
+      int l = ipvt[k];
+      t = b[l];
 
-    int kp1 = k + 1;
-    daxpy(N - kp1, t, a[k], kp1, 1, b, kp1, 1);
-  }
+      if (l != k)
+        {
+          b[l] = b[k];
+          b[k] = t;
+        }
+
+      int kp1 = k + 1;
+      daxpy(N - kp1, t, a[k], kp1, 1, b, kp1, 1);
+    }
 
   // now solve  u*x = y
   for (kb = 0; kb < N; kb++)
-  {
-    k = N - (kb + 1);
-    b[k] /= a[k][k];
-    t = -b[k];
-    daxpy(k, t, a[k], 0, 1, b, 0, 1);
-  }
+    {
+      k = N - (kb + 1);
+      b[k] /= a[k][k];
+      t = -b[k];
+      daxpy(k, t, a[k], 0, 1, b, 0, 1);
+    }
 }
 
 int main(int argc, char **argv)
@@ -387,23 +387,23 @@ int main(int argc, char **argv)
   bool ga_testing = false;
 
   if (argc > 1)
-  {
-    for (i = 1; i < argc; ++i)
     {
-      if (!strcmp(argv[1], "-ga"))
-      {
-        ga_testing = true;
-        break;
-      }
+      for (i = 1; i < argc; ++i)
+        {
+          if (!strcmp(argv[1], "-ga"))
+            {
+              ga_testing = true;
+              break;
+            }
+        }
     }
-  }
 
   double **a = (double **)malloc(sizeof(double) * N);
 
   for (i = 0; i < N; ++i)
-  {
-    a[i] = (double *)malloc(sizeof(double) * NP1);
-  }
+    {
+      a[i] = (double *)malloc(sizeof(double) * NP1);
+    }
 
   double *b = (double *)malloc(sizeof(double) * N);
   double *x = (double *)malloc(sizeof(double) * N);
@@ -426,7 +426,7 @@ int main(int argc, char **argv)
   // calculate run time
   // clock_gettime(CLOCK_REALTIME,&stop);
   double run_time = 0;  //(stop.tv_sec - start.tv_sec) + (double)(stop.tv_nsec -
-                        // start.tv_nsec) / 1000000000.0;
+      // start.tv_nsec) / 1000000000.0;
 
   // clean up
   free(ipvt);
@@ -434,21 +434,21 @@ int main(int argc, char **argv)
   free(b);
 
   for (i = 0; i < N; ++i)
-  {
-    free(a[i]);
-  }
+    {
+      free(a[i]);
+    }
 
   free(a);
 
   // report runtime
   if (ga_testing)
-  {
-    fprintf(stdout, "%f", run_time);
-  }
+    {
+      fprintf(stdout, "%f", run_time);
+    }
   else
-  {
-    fprintf(stdout, "\nlpbench (Std. C) run time: %f\n\n", run_time);
-  }
+    {
+      fprintf(stdout, "\nlpbench (Std. C) run time: %f\n\n", run_time);
+    }
 
   fflush(stdout);
 

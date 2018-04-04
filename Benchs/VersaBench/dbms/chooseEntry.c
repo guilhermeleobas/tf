@@ -24,22 +24,22 @@
  *	Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include <assert.h>         /* for assert()                             */
-#include <stdlib.h>         /* for NULL definition                      */
+#include <assert.h> /* for assert()                             */
+#include <stdlib.h> /* for NULL definition                      */
 #include "dataManagement.h" /* for primitive type definitions           */
-#include "index.h"          /* for IndexNode and IndexEntry definitions */
+#include "index.h" /* for IndexNode and IndexEntry definitions */
 
 /*
  *  Function prototypes
  */
 extern Float penalty(IndexEntry A, IndexEntry B);
 
-IndexEntry *chooseEntry(IndexNode *node,   /*  node to choose from  */
+IndexEntry *chooseEntry(IndexNode *node, /*  node to choose from  */
                         IndexEntry *entry) /*  entry to choose with */
-{                                          /*  beginning of chooseEntry()  */
-  IndexEntry *minPenaltyEntry;             /*  result entry to return  */
-  IndexEntry *temp;                        /*  used for looping        */
-  Float minPenalty;                        /*  value of min penalty    */
+{ /*  beginning of chooseEntry()  */
+  IndexEntry *minPenaltyEntry; /*  result entry to return  */
+  IndexEntry *temp; /*  used for looping        */
+  Float minPenalty; /*  value of min penalty    */
 
   assert(node);
   assert(node->entries);
@@ -51,16 +51,16 @@ IndexEntry *chooseEntry(IndexNode *node,   /*  node to choose from  */
   minPenaltyEntry = node->entries;
   minPenalty = penalty(*minPenaltyEntry, *entry);
   for (temp = minPenaltyEntry->next; temp != NULL; temp = temp->next)
-  {
-    Float tempPenalty;
-
-    tempPenalty = penalty(*temp, *entry);
-    if (tempPenalty < minPenalty)
     {
-      minPenaltyEntry = temp;
-      minPenalty = tempPenalty;
-    } /*  end of if ( tempPenalty < minPenalty )  */
-  }   /*  end of loop for temp    */
+      Float tempPenalty;
+
+      tempPenalty = penalty(*temp, *entry);
+      if (tempPenalty < minPenalty)
+        {
+          minPenaltyEntry = temp;
+          minPenalty = tempPenalty;
+        } /*  end of if ( tempPenalty < minPenalty )  */
+    } /*  end of loop for temp    */
 
   return (minPenaltyEntry);
 } /*  end of chooseEntry()    */

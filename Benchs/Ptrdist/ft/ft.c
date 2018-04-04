@@ -75,44 +75,44 @@ int main(int argc, char *argv[])
   nEdge = DEFAULT_N_EDGE;
 
   if (argc > 1)
-  {
-    nVertex = atoi(argv[1]);
-    if (argc > 2)
     {
-      nEdge = atoi(argv[2]);
-      if (argc > 3)
-      {
-        srandom(atoi(argv[3]));
-      }
+      nVertex = atoi(argv[1]);
+      if (argc > 2)
+        {
+          nEdge = atoi(argv[2]);
+          if (argc > 3)
+            {
+              srandom(atoi(argv[3]));
+            }
+        }
     }
-  }
 
   if (debug)
-  {
-    printf("Generating a connected graph ... ");
-  }
+    {
+      printf("Generating a connected graph ... ");
+    }
 
   graph = GenGraph(nVertex, nEdge);
 
   if (debug)
-  {
-    printf("done\nFinding the mininmum spanning tree ... ");
-  }
+    {
+      printf("done\nFinding the mininmum spanning tree ... ");
+    }
 
   graph = MST(graph);
 
   if (debug)
-  {
-    printf("done\nThe graph:\n");
-    PrintGraph(graph);
-    printf("The minimum spanning tree:\n");
-    PrintMST(graph);
-  }
+    {
+      printf("done\nThe graph:\n");
+      PrintGraph(graph);
+      printf("The minimum spanning tree:\n");
+      PrintMST(graph);
+    }
 
   if (debug)
-  {
-    printf("Time spent in finding the mininum spanning tree:\n");
-  }
+    {
+      printf("Time spent in finding the mininum spanning tree:\n");
+    }
 #ifdef PLUS_STATS
   PrintDerefStats(stderr);
   PrintHeapSize(stderr);
@@ -144,33 +144,33 @@ Vertices *MST(Vertices *graph)
 
   vertex = NEXT_VERTEX(vertex);
   while (vertex != graph)
-  {
-    KEY(vertex) = PLUS_INFINITY;
-    vertex = NEXT_VERTEX(vertex);
-  }
+    {
+      KEY(vertex) = PLUS_INFINITY;
+      vertex = NEXT_VERTEX(vertex);
+    }
   while (vertex != graph)
-  {
-    ;
-  }
+    {
+      ;
+    }
 
   vertex = FindMin(heap);
   while (vertex != NULL_VERTEX)
-  {
-    heap = DeleteMin(heap);
-    KEY(vertex) = MINUS_INFINITY;
-    edge = EDGES(vertex);
-    while (edge != NULL_EDGE)
     {
-      if (WEIGHT(edge) < KEY(VERTEX(edge)))
-      {
-        KEY(VERTEX(edge)) = WEIGHT(edge);
-        CHOSEN_EDGE(VERTEX(edge)) = edge;
-        (void)Insert(&heap, VERTEX(edge));
-      }
-      edge = NEXT_EDGE(edge);
-    }
-    vertex = FindMin(heap);
-  };
+      heap = DeleteMin(heap);
+      KEY(vertex) = MINUS_INFINITY;
+      edge = EDGES(vertex);
+      while (edge != NULL_EDGE)
+        {
+          if (WEIGHT(edge) < KEY(VERTEX(edge)))
+            {
+              KEY(VERTEX(edge)) = WEIGHT(edge);
+              CHOSEN_EDGE(VERTEX(edge)) = edge;
+              (void)Insert(&heap, VERTEX(edge));
+            }
+          edge = NEXT_EDGE(edge);
+        }
+      vertex = FindMin(heap);
+    };
   return (graph);
 }
 
@@ -183,8 +183,8 @@ void PrintMST(Vertices *graph)
   vertex = NEXT_VERTEX(graph);
 
   while (vertex != graph)
-  {
-    printf("vertex %d to %d\n", ID(vertex), ID(SOURCE(CHOSEN_EDGE(vertex))));
-    vertex = NEXT_VERTEX(vertex);
-  }
+    {
+      printf("vertex %d to %d\n", ID(vertex), ID(SOURCE(CHOSEN_EDGE(vertex))));
+      vertex = NEXT_VERTEX(vertex);
+    }
 }

@@ -60,7 +60,10 @@ int hypre_StructCopy(hypre_StructVector *x, hypre_StructVector *y)
                         y_data_box, start, unit_stride, yi);
 #define HYPRE_BOX_SMP_PRIVATE loopk, loopi, loopj, xi, yi
 #include "hypre_box_smp_forloop.h"
-    hypre_BoxLoop2For(loopi, loopj, loopk, xi, yi) { yp[yi] = xp[xi]; }
+    hypre_BoxLoop2For(loopi, loopj, loopk, xi, yi)
+    {
+      yp[yi] = xp[xi];
+    }
     hypre_BoxLoop2End(xi, yi);
   }
 

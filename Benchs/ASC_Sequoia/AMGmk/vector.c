@@ -75,13 +75,13 @@ int hypre_SeqVectorDestroy(hypre_Vector *vector)
   int ierr = 0;
 
   if (vector)
-  {
-    if (hypre_VectorOwnsData(vector))
     {
-      hypre_TFree(hypre_VectorData(vector));
+      if (hypre_VectorOwnsData(vector))
+        {
+          hypre_TFree(hypre_VectorData(vector));
+        }
+      hypre_TFree(vector);
     }
-    hypre_TFree(vector);
-  }
 
   return ierr;
 }
@@ -98,24 +98,24 @@ int hypre_SeqVectorInitialize(hypre_Vector *vector)
   int multivec_storage_method = hypre_VectorMultiVecStorageMethod(vector);
 
   if (!hypre_VectorData(vector))
-  {
-    hypre_VectorData(vector) = hypre_CTAlloc(double, num_vectors *size);
-  }
+    {
+      hypre_VectorData(vector) = hypre_CTAlloc(double, num_vectors *size);
+    }
 
   if (multivec_storage_method == 0)
-  {
-    hypre_VectorVectorStride(vector) = size;
-    hypre_VectorIndexStride(vector) = 1;
-  }
+    {
+      hypre_VectorVectorStride(vector) = size;
+      hypre_VectorIndexStride(vector) = 1;
+    }
   else if (multivec_storage_method == 1)
-  {
-    hypre_VectorVectorStride(vector) = 1;
-    hypre_VectorIndexStride(vector) = num_vectors;
-  }
+    {
+      hypre_VectorVectorStride(vector) = 1;
+      hypre_VectorIndexStride(vector) = num_vectors;
+    }
   else
-  {
-    ++ierr;
-  }
+    {
+      ++ierr;
+    }
 
   return ierr;
 }
@@ -161,9 +161,9 @@ hypre_Vector *hypre_SeqVectorRead(char *file_name)
 
   data = hypre_VectorData(vector);
   for (j = 0; j < size; j++)
-  {
-    fscanf(fp, "%le", &data[j]);
-  }
+    {
+      fscanf(fp, "%le", &data[j]);
+    }
 
   fclose(fp);
 
@@ -202,32 +202,32 @@ int hypre_SeqVectorPrint(hypre_Vector *vector, char *file_name)
   fp = fopen(file_name, "w");
 
   if (hypre_VectorNumVectors(vector) == 1)
-  {
-    fprintf(fp, "%d\n", size);
-  }
+    {
+      fprintf(fp, "%d\n", size);
+    }
   else
-  {
-    fprintf(fp, "%d vectors of size %d\n", num_vectors, size);
-  }
+    {
+      fprintf(fp, "%d vectors of size %d\n", num_vectors, size);
+    }
 
   if (num_vectors > 1)
-  {
-    for (j = 0; j < num_vectors; ++j)
     {
-      fprintf(fp, "vector %d\n", j);
-      for (i = 0; i < size; i++)
-      {
-        fprintf(fp, "%.14e\n", data[j * vecstride + i * idxstride]);
-      }
+      for (j = 0; j < num_vectors; ++j)
+        {
+          fprintf(fp, "vector %d\n", j);
+          for (i = 0; i < size; i++)
+            {
+              fprintf(fp, "%.14e\n", data[j * vecstride + i * idxstride]);
+            }
+        }
     }
-  }
   else
-  {
-    for (i = 0; i < size; i++)
     {
-      fprintf(fp, "%.14e\n", data[i]);
+      for (i = 0; i < size; i++)
+        {
+          fprintf(fp, "%.14e\n", data[i]);
+        }
     }
-  }
 
   fclose(fp);
 
@@ -250,9 +250,9 @@ int hypre_SeqVectorSetConstantValues(hypre_Vector *v, double value)
   size *= hypre_VectorNumVectors(v);
 
   for (i = 0; i < size; i++)
-  {
-    vector_data[i] = value;
-  }
+    {
+      vector_data[i] = value;
+    }
 
   return ierr;
 }
@@ -276,9 +276,9 @@ int hypre_SeqVectorCopy(hypre_Vector *x, hypre_Vector *y)
   size *= hypre_VectorNumVectors(x);
 
   for (i = 0; i < size; i++)
-  {
-    y_data[i] = x_data[i];
-  }
+    {
+      y_data[i] = x_data[i];
+    }
 
   return ierr;
 }
@@ -342,9 +342,9 @@ int hypre_SeqVectorScale(double alpha, hypre_Vector *y)
   size *= hypre_VectorNumVectors(y);
 
   for (i = 0; i < size; i++)
-  {
-    y_data[i] *= alpha;
-  }
+    {
+      y_data[i] *= alpha;
+    }
 
   return ierr;
 }
@@ -366,9 +366,9 @@ int hypre_SeqVectorAxpy(double alpha, hypre_Vector *x, hypre_Vector *y)
   size *= hypre_VectorNumVectors(x);
 
   for (i = 0; i < size; i++)
-  {
-    y_data[i] += alpha * x_data[i];
-  }
+    {
+      y_data[i] += alpha * x_data[i];
+    }
 
   return ierr;
 }
@@ -390,9 +390,9 @@ double hypre_SeqVectorInnerProd(hypre_Vector *x, hypre_Vector *y)
   size *= hypre_VectorNumVectors(x);
 
   for (i = 0; i < size; i++)
-  {
-    result += y_data[i] * x_data[i];
-  }
+    {
+      result += y_data[i] * x_data[i];
+    }
 
   return result;
 }
@@ -410,9 +410,9 @@ double hypre_VectorSumElts(hypre_Vector *vector)
   int i;
 
   for (i = 0; i < size; ++i)
-  {
-    sum += data[i];
-  }
+    {
+      sum += data[i];
+    }
 
   return sum;
 }

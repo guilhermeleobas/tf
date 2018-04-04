@@ -22,7 +22,7 @@ copies.  */
 #include "gserrors.h"
 #include "gx.h"
 #include "gxdevice.h" /* for gx_color_index */
-#include "gxfixed.h"  /* ditto */
+#include "gxfixed.h" /* ditto */
 #include "gxmatrix.h" /* for gzstate.h */
 #include "gzcolor.h"
 #include "gzht.h"
@@ -52,16 +52,16 @@ int gs_setgray(gs_state *pgs, floatp gray)
   int code;
   gs_color *pcolor = pgs->color;
   if (pgs->in_cachedevice)
-  {
-    return_error(gs_error_undefined);
-  }
+    {
+      return_error(gs_error_undefined);
+    }
   code = check_unit(gray, &fgray);
   if (!code)
-  {
-    pcolor->luminance = max_color_param * fgray;
-    pcolor->red = pcolor->green = pcolor->blue = pcolor->luminance;
-    pcolor->is_gray = pcolor->luminance_set = 1;
-  }
+    {
+      pcolor->luminance = max_color_param * fgray;
+      pcolor->red = pcolor->green = pcolor->blue = pcolor->luminance;
+      pcolor->is_gray = pcolor->luminance_set = 1;
+    }
   return code;
 }
 
@@ -75,9 +75,9 @@ float gs_currentgray(gs_state *pgs)
 int gs_setgscolor(gs_state *pgs, gs_color *pcolor)
 {
   if (pgs->in_cachedevice)
-  {
-    return_error(gs_error_undefined);
-  }
+    {
+      return_error(gs_error_undefined);
+    }
   *pgs->color = *pcolor;
   return 0;
 }
@@ -95,14 +95,14 @@ int gs_sethsbcolor(gs_state *pgs, floatp h, floatp s, floatp b)
   color_param params[3];
   int code;
   if (pgs->in_cachedevice)
-  {
-    return_error(gs_error_undefined);
-  }
+    {
+      return_error(gs_error_undefined);
+    }
   code = tri_param(h, s, b, params);
   if (!code)
-  {
-    gx_color_from_hsb(pgs->color, params[0], params[1], params[2]);
-  }
+    {
+      gx_color_from_hsb(pgs->color, params[0], params[1], params[2]);
+    }
   return code;
 }
 
@@ -121,18 +121,18 @@ int gs_setrgbcolor(gs_state *pgs, floatp r, floatp g, floatp b)
   color_param params[3];
   int code;
   if (pgs->in_cachedevice)
-  {
-    return_error(gs_error_undefined);
-  }
+    {
+      return_error(gs_error_undefined);
+    }
   code = tri_param(r, g, b, params);
   if (!code)
-  {
-    gs_color *pcolor = pgs->color;
-    pcolor->red = params[0];
-    pcolor->green = params[1];
-    pcolor->blue = params[2];
-    gx_color_from_rgb(pcolor);
-  }
+    {
+      gs_color *pcolor = pgs->color;
+      pcolor->red = params[0];
+      pcolor->green = params[1];
+      pcolor->blue = params[2];
+      gx_color_from_rgb(pcolor);
+    }
   return code;
 }
 
@@ -158,20 +158,20 @@ int gs_setscreen(gs_state *pgs, floatp freq, floatp angle,
   gs_point pt;
   int code = gs_screen_init(&senum, pgs, freq, angle);
   if (code < 0)
-  {
-    return code;
-  }
-  while ((code = gs_screen_currentpoint(&senum, &pt)) == 0)
-  {
-    if ((code = gs_screen_next(&senum, (*proc)(pt.x, pt.y))) < 0)
     {
       return code;
     }
-  }
+  while ((code = gs_screen_currentpoint(&senum, &pt)) == 0)
+    {
+      if ((code = gs_screen_next(&senum, (*proc)(pt.x, pt.y))) < 0)
+        {
+          return code;
+        }
+    }
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   pgs->ht_proc = proc;
   return 0;
 }
@@ -197,9 +197,9 @@ int gs_screen_init(gs_screen_enum *penum, gs_state *pgs, floatp freq,
   int code;
   ht_bit *order;
   if (freq < 0)
-  {
-    return_error(gs_error_rangecheck);
-  }
+    {
+      return_error(gs_error_rangecheck);
+    }
   /* Convert the frequency to cell width and height */
   {
     float cell_size = 72.0 / freq;
@@ -208,9 +208,9 @@ int gs_screen_init(gs_screen_enum *penum, gs_state *pgs, floatp freq,
     int dev_w, dev_h;
     gs_deviceparams(gs_currentdevice(pgs), &imat, &dev_w, &dev_h);
     if ((code = gs_distance_transform(cell_size, cell_size, &imat, &pcwh)) < 0)
-    {
-      return code;
-    }
+      {
+        return code;
+      }
 /* It isn't clear to me whether we should round the */
 /* width and height, truncate them, or do something */
 /* more complicated.  All the problems arise from devices */
@@ -224,23 +224,23 @@ int gs_screen_init(gs_screen_enum *penum, gs_state *pgs, floatp freq,
 #undef abs_round
   }
   if (cwidth == 0)
-  {
-    cwidth = 1;
-  }
+    {
+      cwidth = 1;
+    }
   if (cheight == 0)
-  {
-    cheight = 1;
-  }
+    {
+      cheight = 1;
+    }
   if (cwidth > max_ushort / cheight)
-  {
-    return_error(gs_error_rangecheck);
-  }
+    {
+      return_error(gs_error_rangecheck);
+    }
   order =
       (ht_bit *)gs_malloc(cwidth * cheight, sizeof(ht_bit), "halftone samples");
   if (order == 0)
-  {
-    return_error(gs_error_VMerror);
-  }
+    {
+      return_error(gs_error_VMerror);
+    }
   penum->freq = freq;
   penum->angle = angle;
   penum->order = order;
@@ -260,9 +260,9 @@ int gs_screen_init(gs_screen_enum *penum, gs_state *pgs, floatp freq,
     mat.tx = xscale * 0.5 - 1.0;
     mat.ty = yscale * 0.5 - 1.0;
     if ((code = gs_matrix_rotate(&mat, -angle, &penum->mat)) < 0)
-    {
-      return code;
-    }
+      {
+        return code;
+      }
 #ifdef DEBUG
     if (gs_debug['h'])
       printf("[h]Screen: w=%d h=%d [%f %f %f %f %f %f]\n", cwidth, cheight,
@@ -281,30 +281,30 @@ int gs_screen_currentpoint(gs_screen_enum *penum, gs_point *ppt)
   gs_point pt;
   int code;
   if (penum->y >= penum->height)
-  { /* all done */
-    return gx_screen_finish(penum);
-  }
+    { /* all done */
+      return gx_screen_finish(penum);
+    }
   if ((code = gs_point_transform((floatp)penum->x, (floatp)penum->y,
                                  &penum->mat, &pt)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   if (pt.x < -1.0)
-  {
-    pt.x += 2.0;
-  }
+    {
+      pt.x += 2.0;
+    }
   else if (pt.x > 1.0)
-  {
-    pt.x -= 2.0;
-  }
+    {
+      pt.x -= 2.0;
+    }
   if (pt.y < -1.0)
-  {
-    pt.y += 2.0;
-  }
+    {
+      pt.y += 2.0;
+    }
   else if (pt.y > 1.0)
-  {
-    pt.y -= 2.0;
-  }
+    {
+      pt.y -= 2.0;
+    }
   *ppt = pt;
   return 0;
 }
@@ -315,24 +315,24 @@ int gs_screen_next(gs_screen_enum *penum, floatp value)
   ushort sample;
   ht_bit *order = penum->order;
   if (value < -1.0 || value > 1.0)
-  {
-    return_error(gs_error_rangecheck);
-  }
+    {
+      return_error(gs_error_rangecheck);
+    }
   sample = (ushort)(value * (float)(int)(max_ushort >> 1)) + (max_ushort >> 1);
 #ifdef DEBUG
   if (gs_debug['h'])
-  {
-    gs_point pt;
-    gs_screen_currentpoint(penum, &pt);
-    printf("[h]sample x=%d y=%d (%f,%f): %f -> %u\n", penum->x, penum->y, pt.x,
-           pt.y, value, sample);
-  }
+    {
+      gs_point pt;
+      gs_screen_currentpoint(penum, &pt);
+      printf("[h]sample x=%d y=%d (%f,%f): %f -> %u\n", penum->x, penum->y, pt.x,
+             pt.y, value, sample);
+    }
 #endif
   order[penum->y * penum->width + penum->x].mask = sample;
   if (++(penum->x) >= penum->width)
-  {
-    penum->x = 0, ++(penum->y);
-  }
+    {
+      penum->x = 0, ++(penum->y);
+    }
   return 0;
 }
 
@@ -348,17 +348,17 @@ int gx_screen_finish(gs_screen_enum *penum)
   halftone *pht;
   /* Label each element with its ordinal position. */
   for (i = 0; i < size; i++)
-  {
-    order[i].offset = i;
-  }
+    {
+      order[i].offset = i;
+    }
   /* Sort the samples in increasing order by value. */
   gx_sort_ht_order(order, size);
   /* Set up the actual halftone description. */
   code = gx_ht_construct_order(penum->order, penum->width, penum->height);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   pht = penum->pgs->halftone;
   pht->frequency = penum->freq;
   pht->angle = penum->angle;
@@ -376,17 +376,17 @@ private
 int check_unit(floatp fval, float *pp)
 {
   if (fval < 0.0)
-  {
-    *pp = 0.0;
-  }
+    {
+      *pp = 0.0;
+    }
   else if (fval > 1.0)
-  {
-    *pp = 1.0;
-  }
+    {
+      *pp = 1.0;
+    }
   else
-  {
-    *pp = fval;
-  }
+    {
+      *pp = fval;
+    }
   return 0;
 }
 
@@ -400,9 +400,9 @@ int tri_param(floatp p1, floatp p2, floatp p3, color_param pq3[3])
   float f1, f2, f3;
   if ((code = check_unit(p1, &f1)) < 0 || (code = check_unit(p2, &f2)) < 0 ||
       (code = check_unit(p3, &f3)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   pq3[0] = f1 * max_color_param;
   pq3[1] = f2 * max_color_param;
   pq3[2] = f3 * max_color_param;

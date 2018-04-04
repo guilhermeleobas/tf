@@ -34,9 +34,9 @@ void center_print(const char *s, int width)
   int length = strlen(s);
   int i;
   for (i = 0; i <= (width - length) / 2; i++)
-  {
-    fputs(" ", stdout);
-  }
+    {
+      fputs(" ", stdout);
+    }
   fputs(s, stdout);
   fputs("\n", stdout);
 }
@@ -53,26 +53,26 @@ void border_print(void)
 void fancy_int(int a)
 {
   if (a < 1000)
-  {
-    printf("%d\n", a);
-  }
+    {
+      printf("%d\n", a);
+    }
   else if (a >= 1000 && a < 1000000)
-  {
-    printf("%d,%03d\n", a / 1000, a % 1000);
-  }
+    {
+      printf("%d,%03d\n", a / 1000, a % 1000);
+    }
   else if (a >= 1000000 && a < 1000000000)
-  {
-    printf("%d,%03d,%03d\n", a / 1000000, (a % 1000000) / 1000, a % 1000);
-  }
+    {
+      printf("%d,%03d,%03d\n", a / 1000000, (a % 1000000) / 1000, a % 1000);
+    }
   else if (a >= 1000000000)
-  {
-    printf("%d,%03d,%03d,%03d\n", a / 1000000000, (a % 1000000000) / 1000000,
-           (a % 1000000) / 1000, a % 1000);
-  }
+    {
+      printf("%d,%03d,%03d,%03d\n", a / 1000000000, (a % 1000000000) / 1000000,
+             (a % 1000000) / 1000, a % 1000);
+    }
   else
-  {
-    printf("%d\n", a);
-  }
+    {
+      printf("%d\n", a);
+    }
 }
 
 // Prints out the summary of User input
@@ -131,78 +131,78 @@ void read_CLI(int argc, char *argv[], Input *input)
 
   // Collect Raw Input
   for (int i = 1; i < argc; i++)
-  {
-    char *arg = argv[i];
+    {
+      char *arg = argv[i];
 
-    // nthreads (-t)
-    if (strcmp(arg, "-t") == 0)
-    {
-      if (++i < argc)
-      {
-        input->nthreads = atoi(argv[i]);
-      }
-      else
-      {
-        print_CLI_error();
-      }
-    }
-    // input file (-i)
-    else if (strcmp(arg, "-i") == 0)
-    {
-      if (++i < argc)
-      {
-        read_input_file(input, argv[i]);
-      }
-      else
-      {
-        print_CLI_error();
-      }
-    }
-    // set input for small problem (-s)
-    else if (strcmp(arg, "-s") == 0)
-    {
-      set_small_input(input);
+      // nthreads (-t)
+      if (strcmp(arg, "-t") == 0)
+        {
+          if (++i < argc)
+            {
+              input->nthreads = atoi(argv[i]);
+            }
+          else
+            {
+              print_CLI_error();
+            }
+        }
+      // input file (-i)
+      else if (strcmp(arg, "-i") == 0)
+        {
+          if (++i < argc)
+            {
+              read_input_file(input, argv[i]);
+            }
+          else
+            {
+              print_CLI_error();
+            }
+        }
+      // set input for small problem (-s)
+      else if (strcmp(arg, "-s") == 0)
+        {
+          set_small_input(input);
 
 #ifdef PAPI
-      // Add single PAPI event
-      else if (strcmp(arg, "-p") == 0)
-      {
-        if (++i < argc)
-        {
-          input->papi_event_set = -1;
-          strcpy(input->event_name, argv[i]);
-        }
-        else
-          print_CLI_error();
-      }
+          // Add single PAPI event
+          else if (strcmp(arg, "-p") == 0)
+          {
+            if (++i < argc)
+              {
+                input->papi_event_set = -1;
+                strcpy(input->event_name, argv[i]);
+              }
+            else
+              print_CLI_error();
+          }
 #endif
-      // Load OpenMOC track data file
-    }
-    else if (strcmp(arg, "-d") == 0)
-    {
-      if (++i < argc)
-      {
-        input->track_file = argv[i];
-        input->load_tracks = true;
-      }
+          // Load OpenMOC track data file
+        }
+      else if (strcmp(arg, "-d") == 0)
+        {
+          if (++i < argc)
+            {
+              input->track_file = argv[i];
+              input->load_tracks = true;
+            }
+          else
+            {
+              print_CLI_error();
+            }
+        }
       else
-      {
-        print_CLI_error();
-      }
+        {
+          print_CLI_error();
+        }
     }
-    else
-    {
-      print_CLI_error();
-    }
-  }
 
   // Validate Input
 
   // Validate nthreads
   if (input->nthreads < 1)
-  {
-    print_CLI_error();
-  }
+    {
+      print_CLI_error();
+    }
 }
 
 // print error to screen, inform program options
@@ -230,9 +230,9 @@ void read_input_file(Input *I, char *fname)
   printf("Opened FIle: %s\n", fname);
 #endif
   if (fp == NULL)
-  {
-    printf("FIle Open FAILED\n");
-  }
+    {
+      printf("FIle Open FAILED\n");
+    }
   char c[255];
 
   char *stat;
@@ -272,13 +272,13 @@ void read_input_file(Input *I, char *fname)
   err = fscanf(fp, "%d", &decompose);
   stat = fgets(c, 255, fp);
   if (decompose == 0)
-  {
-    I->decompose = false;
-  }
+    {
+      I->decompose = false;
+    }
   else
-  {
-    I->decompose = true;
-  }
+    {
+      I->decompose = true;
+    }
 
   err = fscanf(fp, "%d", &I->decomp_assemblies_ax);
   stat = fgets(c, 255, fp);

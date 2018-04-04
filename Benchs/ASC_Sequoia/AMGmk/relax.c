@@ -73,81 +73,81 @@ int hypre_BoomerAMGSeqRelax(hypre_CSRMatrix *A, hypre_Vector *f,
    *-----------------------------------------------------------------*/
 
   if (1)
-  {
-    tmp_data = hypre_CTAlloc(double, n);
-#pragma omp parallel private(num_threads)
     {
-      num_threads = 1; /* omp_get_num_threads(); */
+      tmp_data = hypre_CTAlloc(double, n);
+#pragma omp parallel private(num_threads)
+      {
+        num_threads = 1; /* omp_get_num_threads(); */
 
 #pragma omp for private(i)
-      for (i = 0; i < n; i++)
-      {
-        tmp_data[i] = u_data[i];
-      }
+        for (i = 0; i < n; i++)
+          {
+            tmp_data[i] = u_data[i];
+          }
 
 #pragma omp for private(i, ii, j, jj, ns, ne, res, rest, size)
-      for (j = 0; j < num_threads; j++)
-      {
-        size = n / num_threads;
-        rest = n - size * num_threads;
-        if (j < rest)
-        {
-          ns = j * size + j;
-          ne = (j + 1) * size + j + 1;
-        }
-        else
-        {
-          ns = j * size + rest;
-          ne = (j + 1) * size + rest;
-        }
-        for (i = ns; i < ne; i++) /* interior points first */
-        {
-          /*-----------------------------------------------------------
+        for (j = 0; j < num_threads; j++)
+          {
+            size = n / num_threads;
+            rest = n - size * num_threads;
+            if (j < rest)
+              {
+                ns = j * size + j;
+                ne = (j + 1) * size + j + 1;
+              }
+            else
+              {
+                ns = j * size + rest;
+                ne = (j + 1) * size + rest;
+              }
+            for (i = ns; i < ne; i++) /* interior points first */
+              {
+                /*-----------------------------------------------------------
            * If diagonal is nonzero, relax point i; otherwise, skip it.
            *-----------------------------------------------------------*/
 
-          if (A_diag_data[A_diag_i[i]] != 0.0)
-          {
-            res = f_data[i];
-            for (jj = A_diag_i[i] + 1; jj < A_diag_i[i + 1]; jj++)
-            {
-              ii = A_diag_j[jj];
-              if (ii >= ns && ii < ne)
-              {
-                res -= A_diag_data[jj] * u_data[ii];
+                if (A_diag_data[A_diag_i[i]] != 0.0)
+                  {
+                    res = f_data[i];
+                    for (jj = A_diag_i[i] + 1; jj < A_diag_i[i + 1]; jj++)
+                      {
+                        ii = A_diag_j[jj];
+                        if (ii >= ns && ii < ne)
+                          {
+                            res -= A_diag_data[jj] * u_data[ii];
+                          }
+                        else
+                          {
+                            res -= A_diag_data[jj] * tmp_data[ii];
+                          }
+                      }
+                    u_data[i] = res / A_diag_data[A_diag_i[i]];
+                  }
               }
-              else
-              {
-                res -= A_diag_data[jj] * tmp_data[ii];
-              }
-            }
-            u_data[i] = res / A_diag_data[A_diag_i[i]];
           }
-        }
       }
+      hypre_TFree(tmp_data);
     }
-    hypre_TFree(tmp_data);
-  }
   else
-  {
-    for (i = 0; i < n; i++) /* interior points first */
     {
-      /*-----------------------------------------------------------
+      for (i = 0; i < n; i++) /* interior points first */
+        {
+          /*-----------------------------------------------------------
        * If diagonal is nonzero, relax point i; otherwise, skip it.
        *-----------------------------------------------------------*/
 
-      if (A_diag_data[A_diag_i[i]] != 0.0)
-      {
-        res = f_data[i];
-        for (jj = A_diag_i[i] + 1; jj < A_diag_i[i + 1]; jj++)
-        {
-          ii = A_diag_j[jj];
-          res -= A_diag_data[jj] * u_data[ii];
+          if (A_diag_data[A_diag_i[i]] != 0.0)
+            {
+              res = f_data[i];
+              for (jj = A_diag_i[i] + 1; jj < A_diag_i[i + 1]; jj++)
+                {
+                  ii = A_diag_j[jj];
+                  res -= A_diag_data[jj] * u_data[ii];
+                }
+              u_data[i] = res / A_diag_data[A_diag_i[i]];
+            }
         }
-        u_data[i] = res / A_diag_data[A_diag_i[i]];
-      }
     }
-  }
 
   return (relax_error);
 }

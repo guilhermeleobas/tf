@@ -59,12 +59,12 @@ struct element
 };
 /*    emsgtype = packed array[1..15] of char;
 */
-/* Intmm, Mm */     /*
+/* Intmm, Mm */ /*
     index = 1 .. rowsize;
     intmatrix = array [index,index] of integer;
     realmatrix = array [index,index] of real;
 */
-/* Puzzle */        /*
+/* Puzzle */ /*
        piececlass = 0..classmax;
        piecetype = 0..typemax;
        position = 0..size;
@@ -123,7 +123,7 @@ void Initrand() { seed = 74755L; /* constant to long WR*/ }
 int Rand()
 {
   seed = (seed * 1309L + 13849L) & 65535L; /* constants to long WR*/
-  return ((int)seed);                      /* typecast back to int WR*/
+  return ((int)seed); /* typecast back to int WR*/
 }
 
 /* Sorts an array using treesort */
@@ -136,19 +136,19 @@ void tInitarr()
   biggest = 0;
   littlest = 0;
   for (i = 1; i <= sortelements; i++)
-  {
-    temp = Rand();
-    /* converted constants to long in next stmt, typecast back to int WR*/
-    sortlist[i] = (int)(temp - (temp / 100000L) * 100000L - 50000L);
-    if (sortlist[i] > biggest)
     {
-      biggest = sortlist[i];
+      temp = Rand();
+      /* converted constants to long in next stmt, typecast back to int WR*/
+      sortlist[i] = (int)(temp - (temp / 100000L) * 100000L - 50000L);
+      if (sortlist[i] > biggest)
+        {
+          biggest = sortlist[i];
+        }
+      else if (sortlist[i] < littlest)
+        {
+          littlest = sortlist[i];
+        }
     }
-    else if (sortlist[i] < littlest)
-    {
-      littlest = sortlist[i];
-    }
-  }
 }
 
 void CreateNode(struct node **t, int n)
@@ -163,27 +163,27 @@ void Insert(int n, struct node *t)
 {
   /* insert n into tree */
   if (n > t->val)
-  {
-    if (t->left == nil)
     {
-      CreateNode(&t->left, n);
+      if (t->left == nil)
+        {
+          CreateNode(&t->left, n);
+        }
+      else
+        {
+          Insert(n, t->left);
+        }
     }
-    else
-    {
-      Insert(n, t->left);
-    }
-  }
   else if (n < t->val)
-  {
-    if (t->right == nil)
     {
-      CreateNode(&t->right, n);
+      if (t->right == nil)
+        {
+          CreateNode(&t->right, n);
+        }
+      else
+        {
+          Insert(n, t->right);
+        }
     }
-    else
-    {
-      Insert(n, t->right);
-    }
-  }
 }
 
 int Checktree(struct node *p)
@@ -192,27 +192,27 @@ int Checktree(struct node *p)
   int result;
   result = true;
   if (p->left != nil)
-  {
-    if (p->left->val <= p->val)
     {
-      result = false;
+      if (p->left->val <= p->val)
+        {
+          result = false;
+        }
+      else
+        {
+          result = Checktree(p->left) && result;
+        }
     }
-    else
-    {
-      result = Checktree(p->left) && result;
-    }
-  }
   if (p->right != nil)
-  {
-    if (p->right->val >= p->val)
     {
-      result = false;
+      if (p->right->val >= p->val)
+        {
+          result = false;
+        }
+      else
+        {
+          result = Checktree(p->right) && result;
+        }
     }
-    else
-    {
-      result = Checktree(p->right) && result;
-    }
-  }
   return (result);
 } /* checktree */
 
@@ -225,22 +225,22 @@ void Trees(int run)
   tree->right = nil;
   tree->val = sortlist[1];
   for (i = 2; i <= sortelements; i++)
-  {
-    Insert(sortlist[i], tree);
-  }
+    {
+      Insert(sortlist[i], tree);
+    }
   printf("%d\n", sortlist[2 + run]);
   if (!Checktree(tree))
-  {
-    printf(" Error in Tree.\n");
-  }
+    {
+      printf(" Error in Tree.\n");
+    }
 }
 
 int main()
 {
   int i;
   for (i = 0; i < 100; i++)
-  {
-    Trees(i);
-  }
+    {
+      Trees(i);
+    }
   return 0;
 }

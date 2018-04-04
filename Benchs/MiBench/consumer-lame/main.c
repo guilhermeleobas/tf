@@ -39,9 +39,9 @@ int main(int argc, char **argv)
 
   lame_init(&gf); /* initialize libmp3lame */
   if (argc == 1)
-  {
-    lame_usage(&gf, argv[0]); /* no command-line args, print usage, exit  */
-  }
+    {
+      lame_usage(&gf, argv[0]); /* no command-line args, print usage, exit  */
+    }
 
   /* parse the command line arguments, setting various flags in the
    * struct 'gf'.  If you want to parse your own arguments,
@@ -52,36 +52,36 @@ int main(int argc, char **argv)
   lame_parse_args(&gf, argc, argv);
 
   if (!gf.gtkflag)
-  {
-    /* open the MP3 output file */
-    if (!strcmp(gf.outPath, "-"))
     {
+      /* open the MP3 output file */
+      if (!strcmp(gf.outPath, "-"))
+        {
 #ifdef __EMX__
-      _fsetmode(stdout, "b");
+          _fsetmode(stdout, "b");
 #elif (defined __BORLANDC__)
-      setmode(_fileno(stdout), O_BINARY);
+          setmode(_fileno(stdout), O_BINARY);
 #elif (defined __CYGWIN__)
-      setmode(fileno(stdout), _O_BINARY);
+          setmode(fileno(stdout), _O_BINARY);
 #elif (defined _WIN32)
-      _setmode(_fileno(stdout), _O_BINARY);
+          _setmode(_fileno(stdout), _O_BINARY);
 #endif
-      outf = stdout;
-    }
-    else
-    {
-      if ((outf = fopen(gf.outPath, "wb")) == NULL)
-      {
-        fprintf(stderr, "Could not create \"%s\".\n", gf.outPath);
-        exit(1);
-      }
-    }
+          outf = stdout;
+        }
+      else
+        {
+          if ((outf = fopen(gf.outPath, "wb")) == NULL)
+            {
+              fprintf(stderr, "Could not create \"%s\".\n", gf.outPath);
+              exit(1);
+            }
+        }
 #ifdef __riscos__
-    /* Assign correct file type */
-    for (i = 0; gf.outPath[i]; i++)
-      if (gf.outPath[i] == '.') gf.outPath[i] = '/';
-    SetFiletype(gf.outPath, 0x1ad);
+      /* Assign correct file type */
+      for (i = 0; gf.outPath[i]; i++)
+        if (gf.outPath[i] == '.') gf.outPath[i] = '/';
+      SetFiletype(gf.outPath, 0x1ad);
 #endif
-  }
+    }
 
   /* open the wav/aiff/raw pcm or mp3 input file.  This call will
    * open the file with name gf.inFile, try to parse the headers and
@@ -104,31 +104,32 @@ int main(int argc, char **argv)
     gtkcontrol(&gf);
   else
 #endif
-  {
-    /* encode until we hit eof */
-    do
     {
-      /* read in 'iread' samples */
-      iread = lame_readframe(&gf, Buffer);
+      /* encode until we hit eof */
+      do
+        {
+          /* read in 'iread' samples */
+          iread = lame_readframe(&gf, Buffer);
 
-      /* encode */
-      imp3 = lame_encode_buffer(&gf, Buffer[0], Buffer[1], iread, mp3buffer,
-                                (int)sizeof(mp3buffer));
+          /* encode */
+          imp3 = lame_encode_buffer(&gf, Buffer[0], Buffer[1], iread, mp3buffer,
+                                    (int)sizeof(mp3buffer));
 
-      /* was our output buffer big enough? */
-      if (imp3 == -1)
-      {
-        fprintf(stderr, "mp3 buffer is not big enough... \n");
-        exit(1);
-      }
+          /* was our output buffer big enough? */
+          if (imp3 == -1)
+            {
+              fprintf(stderr, "mp3 buffer is not big enough... \n");
+              exit(1);
+            }
 
-      if (fwrite(mp3buffer, 1, imp3, outf) != imp3)
-      {
-        fprintf(stderr, "Error writing mp3 output");
-        exit(1);
-      }
-    } while (iread);
-  }
+          if (fwrite(mp3buffer, 1, imp3, outf) != imp3)
+            {
+              fprintf(stderr, "Error writing mp3 output");
+              exit(1);
+            }
+        }
+      while (iread);
+    }
 
   imp3 = lame_encode_finish(
       &gf, mp3buffer,
@@ -136,6 +137,6 @@ int main(int argc, char **argv)
   fwrite(mp3buffer, 1, imp3, outf);
   fclose(outf);
   lame_close_infile(&gf); /* close the input file */
-  lame_mp3_tags(&gf);     /* add id3 or VBR tags to mp3 file */
+  lame_mp3_tags(&gf); /* add id3 or VBR tags to mp3 file */
   return 0;
 }

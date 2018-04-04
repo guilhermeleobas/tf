@@ -42,14 +42,14 @@
  *	Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include "delete.h"         /* for delete() return codes                */
-#include <assert.h>         /* for assert()                             */
-#include <stdlib.h>         /* for free() and NULL definitions          */
+#include "delete.h" /* for delete() return codes                */
+#include <assert.h> /* for assert()                             */
+#include <stdlib.h> /* for free() and NULL definitions          */
 #include "dataManagement.h" /* for primitive type definitions           */
-#include "dataObject.h"     /* for DataAttribute definition             */
-#include "errorMessage.h"   /* for errorMessage() definition            */
-#include "index.h"          /* for IndexNode and IndexEntry definitions */
-#include "indexKey.h"       /* for IndexKey definition                  */
+#include "dataObject.h" /* for DataAttribute definition             */
+#include "errorMessage.h" /* for errorMessage() definition            */
+#include "index.h" /* for IndexNode and IndexEntry definitions */
+#include "indexKey.h" /* for IndexKey definition                  */
 
 /*
  *  Function prototypes
@@ -59,10 +59,10 @@ extern Boolean validAttributes(DataAttribute *attributes);
 extern void deleteEntry(IndexNode *node, IndexKey *searchKey,
                         DataAttribute *searchNonKey, Boolean *adjustmentFlag);
 
-Int delete (IndexNode **root,            /*  root node of index      */
-            IndexKey *searchKey,         /*  index key search values */
+Int delete (IndexNode **root, /*  root node of index      */
+            IndexKey *searchKey, /*  index key search values */
             DataAttribute *searchNonKey) /*  non-key search values   */
-{                                        /* beginning of delete()    */
+{ /* beginning of delete()    */
   Boolean adjustmentFlag; /*  place-holder for deleteEntry routine     */
 
   static Char name[] = "delete";
@@ -76,17 +76,17 @@ Int delete (IndexNode **root,            /*  root node of index      */
    *  Check validity of search values
    */
   if (validIndexKey(searchKey) == FALSE)
-  {
-    errorMessage("invalid index key search values", REPLACE);
-    errorMessage(name, PREPEND);
-    return (DELETE_INVALID_KEY_SEARCH_VALUE);
-  } /*  end validity check of key values    */
+    {
+      errorMessage("invalid index key search values", REPLACE);
+      errorMessage(name, PREPEND);
+      return (DELETE_INVALID_KEY_SEARCH_VALUE);
+    } /*  end validity check of key values    */
   else if (validAttributes(searchNonKey) == FALSE)
-  {
-    errorMessage("invalid non-key search values", REPLACE);
-    errorMessage(name, PREPEND);
-    return (DELETE_INVALID_NON_KEY_SEARCH_VALUE);
-  } /*  end validity check of non-key values    */
+    {
+      errorMessage("invalid non-key search values", REPLACE);
+      errorMessage(name, PREPEND);
+      return (DELETE_INVALID_NON_KEY_SEARCH_VALUE);
+    } /*  end validity check of non-key values    */
 
   /*
    *  Call deleteEntry routine for root node which will recursively process
@@ -106,9 +106,9 @@ Int delete (IndexNode **root,            /*  root node of index      */
    *  to be the LEAF level and continue.
    */
   if ((*root)->level > LEAF && (*root)->entries == NULL)
-  {
-    (*root)->level = LEAF;
-  }
+    {
+      (*root)->level = LEAF;
+    }
 
   /*
    *  If there is at least one entry on the current root node (root->entries
@@ -119,26 +119,26 @@ Int delete (IndexNode **root,            /*  root node of index      */
    *  prevents the deleteIndexNode() routine from removing the child entry
    *  which has become the new root.
    */
-  while ((*root)->level != LEAF &&   /* current root not LEAF     */
+  while ((*root)->level != LEAF && /* current root not LEAF     */
          (*root)->entries != NULL && /* at least one child entry  */
          ((*root)->entries)->next == NULL)
-  {                  /* only one child entry      */
-    IndexNode *temp; /* placeholder for old root to delete */
+    { /* only one child entry      */
+      IndexNode *temp; /* placeholder for old root to delete */
 
-    temp = (*root);                         /* save old root for removal */
-    *root = ((*root)->entries)->child.node; /* replace root with child   */
-                                            /* which is referenced by    */
-                                            /* entries                   */
-    free(temp->entries);                    /* delete old entry which    */
-                                            /* referenced old root's     */
-                                            /* child which is now the    */
-                                            /* new root.                 */
-    temp->entries = NULL;                   /* Need to set the value to  */
-                                            /* NULL which will prevent   */
-                                            /* the next step from        */
-                                            /* deleting the entire index */
-    deleteIndexNode(temp);                  /* delete old root node      */
-  } /*  end of loop for checking number of entries <= 1 */
+      temp = (*root); /* save old root for removal */
+      *root = ((*root)->entries)->child.node; /* replace root with child   */
+      /* which is referenced by    */
+      /* entries                   */
+      free(temp->entries); /* delete old entry which    */
+      /* referenced old root's     */
+      /* child which is now the    */
+      /* new root.                 */
+      temp->entries = NULL; /* Need to set the value to  */
+      /* NULL which will prevent   */
+      /* the next step from        */
+      /* deleting the entire index */
+      deleteIndexNode(temp); /* delete old root node      */
+    } /*  end of loop for checking number of entries <= 1 */
 
   return (DELETE_SUCCESS);
 } /*  end delete()    */

@@ -98,25 +98,25 @@ int hypre_PointRelaxDestroy(void *relax_vdata)
   int ierr = 0;
 
   if (relax_data)
-  {
-    for (i = 0; i < (relax_data->num_pointsets); i++)
     {
-      hypre_TFree(relax_data->pointset_indices[i]);
-      hypre_ComputePkgDestroy(relax_data->compute_pkgs[i]);
-    }
-    hypre_TFree(relax_data->pointset_sizes);
-    hypre_TFree(relax_data->pointset_ranks);
-    hypre_TFree(relax_data->pointset_strides);
-    hypre_TFree(relax_data->pointset_indices);
-    hypre_StructMatrixDestroy(relax_data->A);
-    hypre_StructVectorDestroy(relax_data->b);
-    hypre_StructVectorDestroy(relax_data->x);
-    hypre_TFree(relax_data->compute_pkgs);
-    hypre_StructVectorDestroy(relax_data->t);
+      for (i = 0; i < (relax_data->num_pointsets); i++)
+        {
+          hypre_TFree(relax_data->pointset_indices[i]);
+          hypre_ComputePkgDestroy(relax_data->compute_pkgs[i]);
+        }
+      hypre_TFree(relax_data->pointset_sizes);
+      hypre_TFree(relax_data->pointset_ranks);
+      hypre_TFree(relax_data->pointset_strides);
+      hypre_TFree(relax_data->pointset_indices);
+      hypre_StructMatrixDestroy(relax_data->A);
+      hypre_StructVectorDestroy(relax_data->b);
+      hypre_StructVectorDestroy(relax_data->x);
+      hypre_TFree(relax_data->compute_pkgs);
+      hypre_StructVectorDestroy(relax_data->t);
 
-    hypre_FinalizeTiming(relax_data->time_index);
-    hypre_TFree(relax_data);
-  }
+      hypre_FinalizeTiming(relax_data->time_index);
+      hypre_TFree(relax_data);
+    }
 
   return ierr;
 }
@@ -175,14 +175,14 @@ int hypre_PointRelaxSetup(void *relax_vdata, hypre_StructMatrix *A,
    *----------------------------------------------------------*/
 
   if ((relax_data->t) == NULL)
-  {
-    t = hypre_StructVectorCreate(hypre_StructVectorComm(b),
-                                 hypre_StructVectorGrid(b));
-    hypre_StructVectorSetNumGhost(t, hypre_StructVectorNumGhost(b));
-    hypre_StructVectorInitialize(t);
-    hypre_StructVectorAssemble(t);
-    (relax_data->t) = t;
-  }
+    {
+      t = hypre_StructVectorCreate(hypre_StructVectorComm(b),
+                                   hypre_StructVectorGrid(b));
+      hypre_StructVectorSetNumGhost(t, hypre_StructVectorNumGhost(b));
+      hypre_StructVectorInitialize(t);
+      hypre_StructVectorAssemble(t);
+      (relax_data->t) = t;
+    }
 
   /*----------------------------------------------------------
    * Find the matrix diagonal
@@ -203,73 +203,73 @@ int hypre_PointRelaxSetup(void *relax_vdata, hypre_StructMatrix *A,
   compute_pkgs = hypre_CTAlloc(hypre_ComputePkg *, num_pointsets);
 
   for (p = 0; p < num_pointsets; p++)
-  {
-    hypre_CreateComputeInfo(grid, stencil, &send_boxes, &recv_boxes,
-                            &send_processes, &recv_processes, &orig_indt_boxes,
-                            &orig_dept_boxes);
-
-    stride = pointset_strides[p];
-
-    for (compute_i = 0; compute_i < 2; compute_i++)
     {
-      switch (compute_i)
-      {
-        case 0:
-          box_aa = orig_indt_boxes;
-          break;
+      hypre_CreateComputeInfo(grid, stencil, &send_boxes, &recv_boxes,
+                              &send_processes, &recv_processes, &orig_indt_boxes,
+                              &orig_dept_boxes);
 
-        case 1:
-          box_aa = orig_dept_boxes;
-          break;
-      }
-      box_aa_size = hypre_BoxArrayArraySize(box_aa);
-      new_box_aa = hypre_BoxArrayArrayCreate(box_aa_size);
+      stride = pointset_strides[p];
 
-      for (i = 0; i < box_aa_size; i++)
-      {
-        box_a = hypre_BoxArrayArrayBoxArray(box_aa, i);
-        box_a_size = hypre_BoxArraySize(box_a);
-        new_box_a = hypre_BoxArrayArrayBoxArray(new_box_aa, i);
-        hypre_BoxArraySetSize(new_box_a, box_a_size * pointset_sizes[p]);
-
-        k = 0;
-        for (m = 0; m < pointset_sizes[p]; m++)
+      for (compute_i = 0; compute_i < 2; compute_i++)
         {
-          index = pointset_indices[p][m];
+          switch (compute_i)
+            {
+              case 0:
+                box_aa = orig_indt_boxes;
+                break;
 
-          for (j = 0; j < box_a_size; j++)
-          {
-            box = hypre_BoxArrayBox(box_a, j);
-            new_box = hypre_BoxArrayBox(new_box_a, k);
+              case 1:
+                box_aa = orig_dept_boxes;
+                break;
+            }
+          box_aa_size = hypre_BoxArrayArraySize(box_aa);
+          new_box_aa = hypre_BoxArrayArrayCreate(box_aa_size);
 
-            hypre_CopyBox(box, new_box);
-            hypre_ProjectBox(new_box, index, stride);
+          for (i = 0; i < box_aa_size; i++)
+            {
+              box_a = hypre_BoxArrayArrayBoxArray(box_aa, i);
+              box_a_size = hypre_BoxArraySize(box_a);
+              new_box_a = hypre_BoxArrayArrayBoxArray(new_box_aa, i);
+              hypre_BoxArraySetSize(new_box_a, box_a_size * pointset_sizes[p]);
 
-            k++;
-          }
+              k = 0;
+              for (m = 0; m < pointset_sizes[p]; m++)
+                {
+                  index = pointset_indices[p][m];
+
+                  for (j = 0; j < box_a_size; j++)
+                    {
+                      box = hypre_BoxArrayBox(box_a, j);
+                      new_box = hypre_BoxArrayBox(new_box_a, k);
+
+                      hypre_CopyBox(box, new_box);
+                      hypre_ProjectBox(new_box, index, stride);
+
+                      k++;
+                    }
+                }
+            }
+
+          switch (compute_i)
+            {
+              case 0:
+                indt_boxes = new_box_aa;
+                break;
+
+              case 1:
+                dept_boxes = new_box_aa;
+                break;
+            }
         }
-      }
 
-      switch (compute_i)
-      {
-        case 0:
-          indt_boxes = new_box_aa;
-          break;
+      hypre_ComputePkgCreate(send_boxes, recv_boxes, unit_stride, unit_stride,
+                             send_processes, recv_processes, indt_boxes,
+                             dept_boxes, stride, grid,
+                             hypre_StructVectorDataSpace(x), 1, &compute_pkgs[p]);
 
-        case 1:
-          dept_boxes = new_box_aa;
-          break;
-      }
+      hypre_BoxArrayArrayDestroy(orig_indt_boxes);
+      hypre_BoxArrayArrayDestroy(orig_dept_boxes);
     }
-
-    hypre_ComputePkgCreate(send_boxes, recv_boxes, unit_stride, unit_stride,
-                           send_processes, recv_processes, indt_boxes,
-                           dept_boxes, stride, grid,
-                           hypre_StructVectorDataSpace(x), 1, &compute_pkgs[p]);
-
-    hypre_BoxArrayArrayDestroy(orig_indt_boxes);
-    hypre_BoxArrayArrayDestroy(orig_dept_boxes);
-  }
 
   /*----------------------------------------------------------
    * Set up the relax data structure
@@ -287,13 +287,13 @@ int hypre_PointRelaxSetup(void *relax_vdata, hypre_StructMatrix *A,
 
   scale = 0.0;
   for (p = 0; p < num_pointsets; p++)
-  {
-    stride = pointset_strides[p];
-    frac = hypre_IndexX(stride);
-    frac *= hypre_IndexY(stride);
-    frac *= hypre_IndexZ(stride);
-    scale += (pointset_sizes[p] / frac);
-  }
+    {
+      stride = pointset_strides[p];
+      frac = hypre_IndexX(stride);
+      frac *= hypre_IndexY(stride);
+      frac *= hypre_IndexZ(stride);
+      scale += (pointset_sizes[p] / frac);
+    }
   (relax_data->flops) = scale * (hypre_StructMatrixGlobalSize(A) +
                                  hypre_StructVectorGlobalSize(x));
 
@@ -372,16 +372,16 @@ int hypre_PointRelax(void *relax_vdata, hypre_StructMatrix *A,
 
   /* if max_iter is zero, return */
   if (max_iter == 0)
-  {
-    /* if using a zero initial guess, return zero */
-    if (zero_guess)
     {
-      hypre_StructVectorSetConstantValues(x, 0.0);
-    }
+      /* if using a zero initial guess, return zero */
+      if (zero_guess)
+        {
+          hypre_StructVectorSetConstantValues(x, 0.0);
+        }
 
-    hypre_EndTiming(relax_data->time_index);
-    return ierr;
-  }
+      hypre_EndTiming(relax_data->time_index);
+      return ierr;
+    }
 
   stencil = hypre_StructMatrixStencil(A);
   stencil_shape = hypre_StructStencilShape(stencil);
@@ -395,174 +395,180 @@ int hypre_PointRelax(void *relax_vdata, hypre_StructMatrix *A,
   iter = 0;
 
   if (zero_guess)
-  {
-    pointset = pointset_ranks[p];
-    compute_pkg = compute_pkgs[pointset];
-    stride = pointset_strides[pointset];
-
-    for (compute_i = 0; compute_i < 2; compute_i++)
     {
-      switch (compute_i)
-      {
-        case 0:
+      pointset = pointset_ranks[p];
+      compute_pkg = compute_pkgs[pointset];
+      stride = pointset_strides[pointset];
+
+      for (compute_i = 0; compute_i < 2; compute_i++)
         {
-          compute_box_aa = hypre_ComputePkgIndtBoxes(compute_pkg);
-        }
-        break;
+          switch (compute_i)
+            {
+              case 0:
+                {
+                  compute_box_aa = hypre_ComputePkgIndtBoxes(compute_pkg);
+                }
+                break;
 
-        case 1:
-        {
-          compute_box_aa = hypre_ComputePkgDeptBoxes(compute_pkg);
-        }
-        break;
-      }
+              case 1:
+                {
+                  compute_box_aa = hypre_ComputePkgDeptBoxes(compute_pkg);
+                }
+                break;
+            }
 
-      hypre_ForBoxArrayI(i, compute_box_aa)
-      {
-        compute_box_a = hypre_BoxArrayArrayBoxArray(compute_box_aa, i);
+          hypre_ForBoxArrayI(i, compute_box_aa)
+          {
+            compute_box_a = hypre_BoxArrayArrayBoxArray(compute_box_aa, i);
 
-        A_data_box = hypre_BoxArrayBox(hypre_StructMatrixDataSpace(A), i);
-        b_data_box = hypre_BoxArrayBox(hypre_StructVectorDataSpace(b), i);
-        x_data_box = hypre_BoxArrayBox(hypre_StructVectorDataSpace(x), i);
+            A_data_box = hypre_BoxArrayBox(hypre_StructMatrixDataSpace(A), i);
+            b_data_box = hypre_BoxArrayBox(hypre_StructVectorDataSpace(b), i);
+            x_data_box = hypre_BoxArrayBox(hypre_StructVectorDataSpace(x), i);
 
-        Ap = hypre_StructMatrixBoxData(A, i, diag_rank);
-        bp = hypre_StructVectorBoxData(b, i);
-        xp = hypre_StructVectorBoxData(x, i);
+            Ap = hypre_StructMatrixBoxData(A, i, diag_rank);
+            bp = hypre_StructVectorBoxData(b, i);
+            xp = hypre_StructVectorBoxData(x, i);
 
-        hypre_ForBoxI(j, compute_box_a)
-        {
-          compute_box = hypre_BoxArrayBox(compute_box_a, j);
+            hypre_ForBoxI(j, compute_box_a)
+            {
+              compute_box = hypre_BoxArrayBox(compute_box_a, j);
 
-          start = hypre_BoxIMin(compute_box);
-          hypre_BoxGetStrideSize(compute_box, stride, loop_size);
+              start = hypre_BoxIMin(compute_box);
+              hypre_BoxGetStrideSize(compute_box, stride, loop_size);
 
-          hypre_BoxLoop3Begin(loop_size, A_data_box, start, stride, Ai,
-                              b_data_box, start, stride, bi, x_data_box, start,
-                              stride, xi);
+              hypre_BoxLoop3Begin(loop_size, A_data_box, start, stride, Ai,
+                                  b_data_box, start, stride, bi, x_data_box, start,
+                                  stride, xi);
 #define HYPRE_BOX_SMP_PRIVATE loopk, loopi, loopj, Ai, bi, xi
 #include "hypre_box_smp_forloop.h"
-          hypre_BoxLoop3For(loopi, loopj, loopk, Ai, bi, xi)
-          {
-            xp[xi] = bp[bi] / Ap[Ai];
+              hypre_BoxLoop3For(loopi, loopj, loopk, Ai, bi, xi)
+              {
+                xp[xi] = bp[bi] / Ap[Ai];
+              }
+              hypre_BoxLoop3End(Ai, bi, xi);
+            }
           }
-          hypre_BoxLoop3End(Ai, bi, xi);
         }
-      }
-    }
 
-    if (weight != 1.0)
-    {
-      hypre_StructScale(weight, x);
-    }
+      if (weight != 1.0)
+        {
+          hypre_StructScale(weight, x);
+        }
 
-    p = (p + 1) % num_pointsets;
-    iter = iter + (p == 0);
-  }
+      p = (p + 1) % num_pointsets;
+      iter = iter + (p == 0);
+    }
 
   /*----------------------------------------------------------
    * Do regular iterations
    *----------------------------------------------------------*/
 
   while (iter < max_iter)
-  {
-    pointset = pointset_ranks[p];
-    compute_pkg = compute_pkgs[pointset];
-    stride = pointset_strides[pointset];
-
-    hypre_StructCopy(x, t);
-
-    for (compute_i = 0; compute_i < 2; compute_i++)
     {
-      switch (compute_i)
-      {
-        case 0:
+      pointset = pointset_ranks[p];
+      compute_pkg = compute_pkgs[pointset];
+      stride = pointset_strides[pointset];
+
+      hypre_StructCopy(x, t);
+
+      for (compute_i = 0; compute_i < 2; compute_i++)
         {
-          xp = hypre_StructVectorData(x);
-          hypre_InitializeIndtComputations(compute_pkg, xp, &comm_handle);
-          compute_box_aa = hypre_ComputePkgIndtBoxes(compute_pkg);
-        }
-        break;
+          switch (compute_i)
+            {
+              case 0:
+                {
+                  xp = hypre_StructVectorData(x);
+                  hypre_InitializeIndtComputations(compute_pkg, xp, &comm_handle);
+                  compute_box_aa = hypre_ComputePkgIndtBoxes(compute_pkg);
+                }
+                break;
 
-        case 1:
-        {
-          hypre_FinalizeIndtComputations(comm_handle);
-          compute_box_aa = hypre_ComputePkgDeptBoxes(compute_pkg);
-        }
-        break;
-      }
+              case 1:
+                {
+                  hypre_FinalizeIndtComputations(comm_handle);
+                  compute_box_aa = hypre_ComputePkgDeptBoxes(compute_pkg);
+                }
+                break;
+            }
 
-      hypre_ForBoxArrayI(i, compute_box_aa)
-      {
-        compute_box_a = hypre_BoxArrayArrayBoxArray(compute_box_aa, i);
+          hypre_ForBoxArrayI(i, compute_box_aa)
+          {
+            compute_box_a = hypre_BoxArrayArrayBoxArray(compute_box_aa, i);
 
-        A_data_box = hypre_BoxArrayBox(hypre_StructMatrixDataSpace(A), i);
-        b_data_box = hypre_BoxArrayBox(hypre_StructVectorDataSpace(b), i);
-        x_data_box = hypre_BoxArrayBox(hypre_StructVectorDataSpace(x), i);
-        t_data_box = hypre_BoxArrayBox(hypre_StructVectorDataSpace(t), i);
+            A_data_box = hypre_BoxArrayBox(hypre_StructMatrixDataSpace(A), i);
+            b_data_box = hypre_BoxArrayBox(hypre_StructVectorDataSpace(b), i);
+            x_data_box = hypre_BoxArrayBox(hypre_StructVectorDataSpace(x), i);
+            t_data_box = hypre_BoxArrayBox(hypre_StructVectorDataSpace(t), i);
 
-        bp = hypre_StructVectorBoxData(b, i);
-        tp = hypre_StructVectorBoxData(t, i);
+            bp = hypre_StructVectorBoxData(b, i);
+            tp = hypre_StructVectorBoxData(t, i);
 
-        hypre_ForBoxI(j, compute_box_a)
-        {
-          compute_box = hypre_BoxArrayBox(compute_box_a, j);
+            hypre_ForBoxI(j, compute_box_a)
+            {
+              compute_box = hypre_BoxArrayBox(compute_box_a, j);
 
-          start = hypre_BoxIMin(compute_box);
-          hypre_BoxGetStrideSize(compute_box, stride, loop_size);
+              start = hypre_BoxIMin(compute_box);
+              hypre_BoxGetStrideSize(compute_box, stride, loop_size);
 
-          hypre_BoxLoop2Begin(loop_size, b_data_box, start, stride, bi,
-                              t_data_box, start, stride, ti);
+              hypre_BoxLoop2Begin(loop_size, b_data_box, start, stride, bi,
+                                  t_data_box, start, stride, ti);
 #define HYPRE_BOX_SMP_PRIVATE loopk, loopi, loopj, bi, ti
 #include "hypre_box_smp_forloop.h"
-          hypre_BoxLoop2For(loopi, loopj, loopk, bi, ti) { tp[ti] = bp[bi]; }
-          hypre_BoxLoop2End(bi, ti);
+              hypre_BoxLoop2For(loopi, loopj, loopk, bi, ti)
+              {
+                tp[ti] = bp[bi];
+              }
+              hypre_BoxLoop2End(bi, ti);
 
-          for (si = 0; si < stencil_size; si++)
-          {
-            if (si != diag_rank)
-            {
-              Ap = hypre_StructMatrixBoxData(A, i, si);
-              xp = hypre_StructVectorBoxData(x, i) +
-                   hypre_BoxOffsetDistance(x_data_box, stencil_shape[si]);
+              for (si = 0; si < stencil_size; si++)
+                {
+                  if (si != diag_rank)
+                    {
+                      Ap = hypre_StructMatrixBoxData(A, i, si);
+                      xp = hypre_StructVectorBoxData(x, i) +
+                           hypre_BoxOffsetDistance(x_data_box, stencil_shape[si]);
 
-              hypre_BoxLoop3Begin(loop_size, A_data_box, start, stride, Ai,
-                                  x_data_box, start, stride, xi, t_data_box,
-                                  start, stride, ti);
+                      hypre_BoxLoop3Begin(loop_size, A_data_box, start, stride, Ai,
+                                          x_data_box, start, stride, xi, t_data_box,
+                                          start, stride, ti);
 #define HYPRE_BOX_SMP_PRIVATE loopk, loopi, loopj, Ai, xi, ti
 #include "hypre_box_smp_forloop.h"
-              hypre_BoxLoop3For(loopi, loopj, loopk, Ai, xi, ti)
-              {
-                tp[ti] -= Ap[Ai] * xp[xi];
-              }
-              hypre_BoxLoop3End(Ai, xi, ti);
-            }
-          }
+                      hypre_BoxLoop3For(loopi, loopj, loopk, Ai, xi, ti)
+                      {
+                        tp[ti] -= Ap[Ai] * xp[xi];
+                      }
+                      hypre_BoxLoop3End(Ai, xi, ti);
+                    }
+                }
 
-          Ap = hypre_StructMatrixBoxData(A, i, diag_rank);
+              Ap = hypre_StructMatrixBoxData(A, i, diag_rank);
 
-          hypre_BoxLoop2Begin(loop_size, A_data_box, start, stride, Ai,
-                              t_data_box, start, stride, ti);
+              hypre_BoxLoop2Begin(loop_size, A_data_box, start, stride, Ai,
+                                  t_data_box, start, stride, ti);
 #define HYPRE_BOX_SMP_PRIVATE loopk, loopi, loopj, Ai, ti
 #include "hypre_box_smp_forloop.h"
-          hypre_BoxLoop2For(loopi, loopj, loopk, Ai, ti) { tp[ti] /= Ap[Ai]; }
-          hypre_BoxLoop2End(Ai, ti);
+              hypre_BoxLoop2For(loopi, loopj, loopk, Ai, ti)
+              {
+                tp[ti] /= Ap[Ai];
+              }
+              hypre_BoxLoop2End(Ai, ti);
+            }
+          }
         }
-      }
-    }
 
-    if (weight != 1.0)
-    {
-      hypre_StructScale((1.0 - weight), x);
-      hypre_StructAxpy(weight, t, x);
-    }
-    else
-    {
-      hypre_StructCopy(t, x);
-    }
+      if (weight != 1.0)
+        {
+          hypre_StructScale((1.0 - weight), x);
+          hypre_StructAxpy(weight, t, x);
+        }
+      else
+        {
+          hypre_StructCopy(t, x);
+        }
 
-    p = (p + 1) % num_pointsets;
-    iter = iter + (p == 0);
-  }
+      p = (p + 1) % num_pointsets;
+      iter = iter + (p == 0);
+    }
 
   (relax_data->num_iterations) = iter;
 
@@ -644,9 +650,9 @@ int hypre_PointRelaxSetNumPointsets(void *relax_vdata, int num_pointsets)
 
   /* free up old pointset memory */
   for (i = 0; i < (relax_data->num_pointsets); i++)
-  {
-    hypre_TFree(relax_data->pointset_indices[i]);
-  }
+    {
+      hypre_TFree(relax_data->pointset_indices[i]);
+    }
   hypre_TFree(relax_data->pointset_sizes);
   hypre_TFree(relax_data->pointset_ranks);
   hypre_TFree(relax_data->pointset_strides);
@@ -659,11 +665,11 @@ int hypre_PointRelaxSetNumPointsets(void *relax_vdata, int num_pointsets)
   (relax_data->pointset_strides) = hypre_TAlloc(hypre_Index, num_pointsets);
   (relax_data->pointset_indices) = hypre_TAlloc(hypre_Index *, num_pointsets);
   for (i = 0; i < num_pointsets; i++)
-  {
-    (relax_data->pointset_sizes[i]) = 0;
-    (relax_data->pointset_ranks[i]) = i;
-    (relax_data->pointset_indices[i]) = NULL;
-  }
+    {
+      (relax_data->pointset_sizes[i]) = 0;
+      (relax_data->pointset_ranks[i]) = i;
+      (relax_data->pointset_indices[i]) = NULL;
+    }
 
   return ierr;
 }
@@ -690,10 +696,10 @@ int hypre_PointRelaxSetPointset(void *relax_vdata, int pointset,
   (relax_data->pointset_sizes[pointset]) = pointset_size;
   hypre_CopyIndex(pointset_stride, (relax_data->pointset_strides[pointset]));
   for (i = 0; i < pointset_size; i++)
-  {
-    hypre_CopyIndex(pointset_indices[i],
-                    (relax_data->pointset_indices[pointset][i]));
-  }
+    {
+      hypre_CopyIndex(pointset_indices[i],
+                      (relax_data->pointset_indices[pointset][i]));
+    }
 
   return ierr;
 }

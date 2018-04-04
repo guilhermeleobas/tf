@@ -72,14 +72,14 @@ int main(int argc, char *argv[])
   int iter;
   time_t time_and_date; /* Self-explanatory */
   struct tm *loctime;
-  double bmean;       /* Benchmark mean */
-  double bstdev;      /* Benchmark stdev */
+  double bmean; /* Benchmark mean */
+  double bstdev; /* Benchmark stdev */
   double lx_memindex; /* Linux memory index (mainly integer operations)*/
   double lx_intindex; /* Linux integer index */
-  double lx_fpindex;  /* Linux floating-point index */
-  double intindex;    /* Integer index */
-  double fpindex;     /* Floating-point index */
-  ulong bnumrun;      /* # of runs */
+  double lx_fpindex; /* Linux floating-point index */
+  double intindex; /* Integer index */
+  double fpindex; /* Floating-point index */
+  ulong bnumrun; /* # of runs */
 
 #ifdef MAC
   MaxApplZone();
@@ -102,15 +102,15 @@ int main(int argc, char *argv[])
   win31tinfo.dwSize = (DWORD)sizeof(TIMERINFO);
   /* Load library */
   if ((hThlp = LoadLibrary("TOOLHELP.DLL")) < 32)
-  {
-    printf("Error loading TOOLHELP\n");
-    exit(0);
-  }
+    {
+      printf("Error loading TOOLHELP\n");
+      exit(0);
+    }
   if (!(lpfn = GetProcAddress(hThlp, "TimerCount")))
-  {
-    printf("TOOLHELP error\n");
-    exit(0);
-  }
+    {
+      printf("TOOLHELP error\n");
+      exit(0);
+    }
 #endif
 
   /*
@@ -134,9 +134,9 @@ int main(int argc, char *argv[])
   ** otherwise
   */
   for (i = 0; i < NUMTESTS; i++)
-  {
-    tests_to_do[i] = 1;
-  }
+    {
+      tests_to_do[i] = 1;
+    }
 
   /*
   ** Initialize test data structures to default
@@ -180,16 +180,16 @@ int main(int argc, char *argv[])
   ** Handle any command-line arguments.
   */
   if (argc > 1)
-  {
-    for (i = 1; i < argc; i++)
     {
-      if (parse_arg(argv[i]) == -1)
-      {
-        display_help(argv[0]);
-        exit(0);
-      }
+      for (i = 1; i < argc; i++)
+        {
+          if (parse_arg(argv[i]) == -1)
+            {
+              display_help(argv[0]);
+              exit(0);
+            }
+        }
     }
-  }
 /*
 ** Output header
 */
@@ -212,37 +212,37 @@ int main(int argc, char *argv[])
   ** if so.
   */
   if (global_allstats)
-  {
-    output_string("\n");
-    output_string(
-        "============================== ALL STATISTICS "
-        "===============================\n");
-    time(&time_and_date);
-    loctime = localtime(&time_and_date);
-    sprintf(buffer, "**Date and time of benchmark run: %s", asctime(loctime));
-    output_string(buffer);
-    sprintf(buffer,
-            "**Sizeof: char:%u short:%u int:%u long:%u u8:%u u16:%u u32:%u "
-            "int32:%u\n",
-            (unsigned int)sizeof(char), (unsigned int)sizeof(short),
-            (unsigned int)sizeof(int), (unsigned int)sizeof(long),
-            (unsigned int)sizeof(u8), (unsigned int)sizeof(u16),
-            (unsigned int)sizeof(u32), (unsigned int)sizeof(int32));
-    output_string(buffer);
+    {
+      output_string("\n");
+      output_string(
+          "============================== ALL STATISTICS "
+          "===============================\n");
+      time(&time_and_date);
+      loctime = localtime(&time_and_date);
+      sprintf(buffer, "**Date and time of benchmark run: %s", asctime(loctime));
+      output_string(buffer);
+      sprintf(buffer,
+              "**Sizeof: char:%u short:%u int:%u long:%u u8:%u u16:%u u32:%u "
+              "int32:%u\n",
+              (unsigned int)sizeof(char), (unsigned int)sizeof(short),
+              (unsigned int)sizeof(int), (unsigned int)sizeof(long),
+              (unsigned int)sizeof(u8), (unsigned int)sizeof(u16),
+              (unsigned int)sizeof(u32), (unsigned int)sizeof(int32));
+      output_string(buffer);
 #ifdef LINUX
 #include "sysinfo.c"
 #else
-    sprintf(buffer, "**%s\n", sysname);
-    output_string(buffer);
-    sprintf(buffer, "**%s\n", compilername);
-    output_string(buffer);
-    sprintf(buffer, "**%s\n", compilerversion);
-    output_string(buffer);
+      sprintf(buffer, "**%s\n", sysname);
+      output_string(buffer);
+      sprintf(buffer, "**%s\n", compilername);
+      output_string(buffer);
+      sprintf(buffer, "**%s\n", compilerversion);
+      output_string(buffer);
 #endif
-    output_string(
-        "======================================================================"
-        "=======\n");
-  }
+      output_string(
+          "======================================================================"
+          "=======\n");
+    }
 
   /*
   ** Execute the tests.
@@ -259,11 +259,11 @@ int main(int argc, char *argv[])
 #endif
 
   for (i = 0; i < NUMTESTS; i++)
-  {
-    if (tests_to_do[i])
     {
-      sprintf(buffer, "%s    :", ftestnames[i]);
-      output_string(buffer);
+      if (tests_to_do[i])
+        {
+          sprintf(buffer, "%s    :", ftestnames[i]);
+          output_string(buffer);
 #if 0
                 if (0!=bench_with_confidence(i,
                         &bmean,
@@ -274,103 +274,103 @@ int main(int argc, char *argv[])
 		  output_string("                    :");
 		}
 #endif
-      for (iter = 0; iter < N_ITERATIONS; ++iter)
-      {
-        (*funcpointer[i])();
-      }
+          for (iter = 0; iter < N_ITERATIONS; ++iter)
+            {
+              (*funcpointer[i])();
+            }
 #ifdef LINUX
-      sprintf(buffer, " %15.5g  :  %9.2f  :  %9.2f\n", bmean, bmean / bindex[i],
-              bmean / lx_bindex[i]);
+          sprintf(buffer, " %15.5g  :  %9.2f  :  %9.2f\n", bmean, bmean / bindex[i],
+                  bmean / lx_bindex[i]);
 #else
-      sprintf(buffer, "  Iterations/sec.: %13.2f  Index: %6.2f\n",
-              /*bmean,bmean/bindex[i],*/ 0.0, 0.0);
+          sprintf(buffer, "  Iterations/sec.: %13.2f  Index: %6.2f\n",
+                  /*bmean,bmean/bindex[i],*/ 0.0, 0.0);
 #endif
-      output_string(buffer);
-      /*
+          output_string(buffer);
+          /*
       ** Gather integer or FP indexes
       */
-      if ((i == 4) || (i == 8) || (i == 9))
-      {
-        /* FP index */
-        fpindex = fpindex * (bmean / bindex[i]);
-        /* Linux FP index */
-        lx_fpindex = lx_fpindex * (bmean / lx_bindex[i]);
-      }
-      else
-      {
-        /* Integer index */
-        intindex = intindex * (bmean / bindex[i]);
-        if ((i == 0) || (i == 3) || (i == 6) || (i == 7))
-        {
-          /* Linux integer index */
-          lx_intindex = lx_intindex * (bmean / lx_bindex[i]);
-        }
-        else
-        {
-          /* Linux memory index */
-          lx_memindex = lx_memindex * (bmean / lx_bindex[i]);
-        }
-      }
+          if ((i == 4) || (i == 8) || (i == 9))
+            {
+              /* FP index */
+              fpindex = fpindex * (bmean / bindex[i]);
+              /* Linux FP index */
+              lx_fpindex = lx_fpindex * (bmean / lx_bindex[i]);
+            }
+          else
+            {
+              /* Integer index */
+              intindex = intindex * (bmean / bindex[i]);
+              if ((i == 0) || (i == 3) || (i == 6) || (i == 7))
+                {
+                  /* Linux integer index */
+                  lx_intindex = lx_intindex * (bmean / lx_bindex[i]);
+                }
+              else
+                {
+                  /* Linux memory index */
+                  lx_memindex = lx_memindex * (bmean / lx_bindex[i]);
+                }
+            }
 
-      if (global_allstats)
-      {
-        sprintf(buffer, "  Absolute standard deviation: %g\n", bstdev);
-        output_string(buffer);
-        if (bmean > (double)1e-100)
-        {
-          /* avoid division by zero */
-          sprintf(buffer, "  Relative standard deviation: %g %%\n",
-                  (double)100 * bstdev / bmean);
-          output_string(buffer);
+          if (global_allstats)
+            {
+              sprintf(buffer, "  Absolute standard deviation: %g\n", bstdev);
+              output_string(buffer);
+              if (bmean > (double)1e-100)
+                {
+                  /* avoid division by zero */
+                  sprintf(buffer, "  Relative standard deviation: %g %%\n",
+                          (double)100 * bstdev / bmean);
+                  output_string(buffer);
+                }
+              sprintf(buffer, "  Number of runs: %lu\n", bnumrun);
+              output_string(buffer);
+              show_stats(i);
+              sprintf(buffer, "Done with %s\n\n", ftestnames[i]);
+              output_string(buffer);
+            }
         }
-        sprintf(buffer, "  Number of runs: %lu\n", bnumrun);
-        output_string(buffer);
-        show_stats(i);
-        sprintf(buffer, "Done with %s\n\n", ftestnames[i]);
-        output_string(buffer);
-      }
     }
-  }
   /* printf("...done...\n"); */
 
   /*
   ** Output the total indexes
   */
   if (global_custrun == 0)
-  {
-    output_string(
-        "==========================ORIGINAL BYTEMARK "
-        "RESULTS==========================\n");
-    sprintf(buffer, "INTEGER INDEX       : %.3f\n",
-            /*pow(intindex,(double).142857)*/ 0.0);
-    output_string(buffer);
-    sprintf(buffer, "FLOATING-POINT INDEX: %.3f\n",
-            /*pow(fpindex,(double).33333)*/ 0.0);
-    output_string(buffer);
-    output_string(
-        "Baseline (MSDOS*)   : Pentium* 90, 256 KB L2-cache, Watcom* compiler "
-        "10.0\n");
+    {
+      output_string(
+          "==========================ORIGINAL BYTEMARK "
+          "RESULTS==========================\n");
+      sprintf(buffer, "INTEGER INDEX       : %.3f\n",
+              /*pow(intindex,(double).142857)*/ 0.0);
+      output_string(buffer);
+      sprintf(buffer, "FLOATING-POINT INDEX: %.3f\n",
+              /*pow(fpindex,(double).33333)*/ 0.0);
+      output_string(buffer);
+      output_string(
+          "Baseline (MSDOS*)   : Pentium* 90, 256 KB L2-cache, Watcom* compiler "
+          "10.0\n");
 #ifdef LINUX
-    output_string(
-        "==============================LINUX DATA "
-        "BELOW===============================\n");
-    hardware(write_to_file, global_ofile);
+      output_string(
+          "==============================LINUX DATA "
+          "BELOW===============================\n");
+      hardware(write_to_file, global_ofile);
 #include "sysinfoc.c"
-    sprintf(buffer, "MEMORY INDEX        : %.3f\n",
-            pow(lx_memindex, (double).3333333333));
-    output_string(buffer);
-    sprintf(buffer, "INTEGER INDEX       : %.3f\n",
-            pow(lx_intindex, (double).25));
-    output_string(buffer);
-    sprintf(buffer, "FLOATING-POINT INDEX: %.3f\n",
-            pow(lx_fpindex, (double).3333333333));
-    output_string(buffer);
-    output_string(
-        "Baseline (LINUX)    : AMD K6/233*, 512 KB L2-cache, gcc 2.7.2.3, "
-        "libc-5.4.38\n");
+      sprintf(buffer, "MEMORY INDEX        : %.3f\n",
+              pow(lx_memindex, (double).3333333333));
+      output_string(buffer);
+      sprintf(buffer, "INTEGER INDEX       : %.3f\n",
+              pow(lx_intindex, (double).25));
+      output_string(buffer);
+      sprintf(buffer, "FLOATING-POINT INDEX: %.3f\n",
+              pow(lx_fpindex, (double).3333333333));
+      output_string(buffer);
+      output_string(
+          "Baseline (LINUX)    : AMD K6/233*, 512 KB L2-cache, gcc 2.7.2.3, "
+          "libc-5.4.38\n");
 #endif
-    output_string("* Trademarks are property of their respective holder.\n");
-  }
+      output_string("* Trademarks are property of their respective holder.\n");
+    }
 
   exit(0);
 }
@@ -384,54 +384,54 @@ int main(int argc, char *argv[])
 */
 static int parse_arg(char *argptr)
 {
-  int i;       /* Index */
+  int i; /* Index */
   FILE *cfile; /* Command file identifier */
 
   /*
   ** First character has got to be a hyphen.
   */
   if (*argptr++ != '-')
-  {
-    return (-1);
-  }
+    {
+      return (-1);
+    }
 
   /*
   ** Convert the rest of the argument to upper case
   ** so there's little chance of confusion.
   */
   for (i = 0; i < strlen(argptr); i++)
-  {
-    argptr[i] = (char)toupper((int)argptr[i]);
-  }
+    {
+      argptr[i] = (char)toupper((int)argptr[i]);
+    }
 
   /*
   ** Next character picks the action.
   */
   switch (*argptr++)
-  {
-    case '?':
-      return (-1); /* Will display help */
+    {
+      case '?':
+        return (-1); /* Will display help */
 
-    case 'V':
-      global_allstats = 1;
-      return (0); /* verbose mode */
+      case 'V':
+        global_allstats = 1;
+        return (0); /* verbose mode */
 
-    case 'C': /* Command file name */
-              /*
+      case 'C': /* Command file name */
+        /*
               ** First try to open the file for reading.
               */
-      cfile = fopen(argptr, "r");
-      if (cfile == (FILE *)NULL)
-      {
-        printf("**Error opening file: %s\n", argptr);
+        cfile = fopen(argptr, "r");
+        if (cfile == (FILE *)NULL)
+          {
+            printf("**Error opening file: %s\n", argptr);
+            return (-1);
+          }
+        read_comfile(cfile); /* Read commands */
+        fclose(cfile);
+        break;
+      default:
         return (-1);
-      }
-      read_comfile(cfile); /* Read commands */
-      fclose(cfile);
-      break;
-    default:
-      return (-1);
-  }
+    }
   return (0);
 }
 
@@ -460,251 +460,252 @@ static void read_comfile(FILE *cfile)
 {
   char inbuf[40];
   char *eptr; /* Offset to "=" sign */
-  int i;      /* Index */
+  int i; /* Index */
 
   /*
   ** Sit in a big loop, reading a line from the file at each
   ** pass.  Terminate on EOF.
   */
   while (fgets(inbuf, 39, cfile) != (char *)NULL)
-  {
-    /* Overwrite the CR character */
-    if (strlen(inbuf) > 0)
     {
-      inbuf[strlen(inbuf) - 1] = '\0';
+      /* Overwrite the CR character */
+      if (strlen(inbuf) > 0)
+        {
+          inbuf[strlen(inbuf) - 1] = '\0';
 
-      /*
+          /*
       ** Parse up to the "=" sign.  If we don't find an
       ** "=", then flag an error.
       */
-    }
-    if ((eptr = strchr(inbuf, (int)'=')) == (char *)NULL)
-    {
-      printf("**COMMAND FILE ERROR at LINE:\n %s\n", inbuf);
-      goto skipswitch; /* A GOTO!!!! */
-    }
+        }
+      if ((eptr = strchr(inbuf, (int)'=')) == (char *)NULL)
+        {
+          printf("**COMMAND FILE ERROR at LINE:\n %s\n", inbuf);
+          goto skipswitch; /* A GOTO!!!! */
+        }
 
-    /*
+      /*
     ** Insert a null where the "=" was, then convert
     ** the substring to uppercase.  That will enable
     ** us to perform the match.
     */
-    *eptr++ = '\0';
-    strtoupper((char *)&inbuf[0]);
-    i = MAXPARAM;
-    do
-    {
-      if (strcmp(inbuf, paramnames[i]) == 0)
-      {
-        break;
-      }
-    } while (--i >= 0);
+      *eptr++ = '\0';
+      strtoupper((char *)&inbuf[0]);
+      i = MAXPARAM;
+      do
+        {
+          if (strcmp(inbuf, paramnames[i]) == 0)
+            {
+              break;
+            }
+        }
+      while (--i >= 0);
 
-    if (i < 0)
-    {
-      printf("**COMMAND FILE ERROR -- UNKNOWN PARAM: %s", inbuf);
-      goto skipswitch;
-    }
+      if (i < 0)
+        {
+          printf("**COMMAND FILE ERROR -- UNKNOWN PARAM: %s", inbuf);
+          goto skipswitch;
+        }
 
-    /*
+      /*
     ** Advance eptr to the next field...which should be
     ** the value assigned to the parameter.
     */
-    switch (i)
-    {
-      case PF_GMTICKS: /* GLOBALMINTICKS */
-        global_min_ticks = (ulong)atol(eptr);
-        break;
+      switch (i)
+        {
+          case PF_GMTICKS: /* GLOBALMINTICKS */
+            global_min_ticks = (ulong)atol(eptr);
+            break;
 
-      case PF_MINSECONDS: /* MINSECONDS */
-        global_min_seconds = (ulong)atol(eptr);
-        set_request_secs();
-        break;
+          case PF_MINSECONDS: /* MINSECONDS */
+            global_min_seconds = (ulong)atol(eptr);
+            set_request_secs();
+            break;
 
-      case PF_ALLSTATS: /* ALLSTATS */
-        global_allstats = getflag(eptr);
-        break;
+          case PF_ALLSTATS: /* ALLSTATS */
+            global_allstats = getflag(eptr);
+            break;
 
-      case PF_OUTFILE: /* OUTFILE */
-        strcpy(global_ofile_name, eptr);
-        global_ofile = fopen(global_ofile_name, "a");
-        /*
+          case PF_OUTFILE: /* OUTFILE */
+            strcpy(global_ofile_name, eptr);
+            global_ofile = fopen(global_ofile_name, "a");
+            /*
         ** Open the output file.
         */
-        if (global_ofile == (FILE *)NULL)
-        {
-          printf("**Error opening output file: %s\n", global_ofile_name);
-          ErrorExit();
+            if (global_ofile == (FILE *)NULL)
+              {
+                printf("**Error opening output file: %s\n", global_ofile_name);
+                ErrorExit();
+              }
+            write_to_file = -1;
+            break;
+
+          case PF_CUSTOMRUN: /* CUSTOMRUN */
+            global_custrun = getflag(eptr);
+            for (i = 0; i < NUMTESTS; i++)
+              {
+                tests_to_do[i] = 1 - global_custrun;
+              }
+            break;
+
+          case PF_DONUM: /* DONUMSORT */
+            tests_to_do[TF_NUMSORT] = getflag(eptr);
+            break;
+
+          case PF_NUMNUMA: /* NUMNUMARRAYS */
+            global_numsortstruct.numarrays = (ushort)atoi(eptr);
+            global_numsortstruct.adjust = 1;
+            break;
+
+          case PF_NUMASIZE: /* NUMARRAYSIZE */
+            global_numsortstruct.arraysize = (ulong)atol(eptr);
+            break;
+
+          case PF_NUMMINS: /* NUMMINSECONDS */
+            global_numsortstruct.request_secs = (ulong)atol(eptr);
+            break;
+
+          case PF_DOSTR: /* DOSTRINGSORT */
+            tests_to_do[TF_SSORT] = getflag(eptr);
+            break;
+
+          case PF_STRASIZE: /* STRARRAYSIZE */
+            global_strsortstruct.arraysize = (ulong)atol(eptr);
+            break;
+
+          case PF_NUMSTRA: /* NUMSTRARRAYS */
+            global_strsortstruct.numarrays = (ushort)atoi(eptr);
+            global_strsortstruct.adjust = 1;
+            break;
+
+          case PF_STRMINS: /* STRMINSECONDS */
+            global_strsortstruct.request_secs = (ulong)atol(eptr);
+            break;
+
+          case PF_DOBITF: /* DOBITFIELD */
+            tests_to_do[TF_BITOP] = getflag(eptr);
+            break;
+
+          case PF_NUMBITOPS: /* NUMBITOPS */
+            global_bitopstruct.bitoparraysize = (ulong)atol(eptr);
+            global_bitopstruct.adjust = 1;
+            break;
+
+          case PF_BITFSIZE: /* BITFIELDSIZE */
+            global_bitopstruct.bitfieldarraysize = (ulong)atol(eptr);
+            break;
+
+          case PF_BITMINS: /* BITMINSECONDS */
+            global_bitopstruct.request_secs = (ulong)atol(eptr);
+            break;
+
+          case PF_DOEMF: /* DOEMF */
+            tests_to_do[TF_FPEMU] = getflag(eptr);
+            break;
+
+          case PF_EMFASIZE: /* EMFARRAYSIZE */
+            global_emfloatstruct.arraysize = (ulong)atol(eptr);
+            break;
+
+          case PF_EMFLOOPS: /* EMFLOOPS */
+            global_emfloatstruct.loops = (ulong)atol(eptr);
+            break;
+
+          case PF_EMFMINS: /* EMFMINSECOND */
+            global_emfloatstruct.request_secs = (ulong)atol(eptr);
+            break;
+
+          case PF_DOFOUR: /* DOFOUR */
+            tests_to_do[TF_FFPU] = getflag(eptr);
+            break;
+
+          case PF_FOURASIZE: /* FOURASIZE */
+            global_fourierstruct.arraysize = (ulong)atol(eptr);
+            global_fourierstruct.adjust = 1;
+            break;
+
+          case PF_FOURMINS: /* FOURMINSECONDS */
+            global_fourierstruct.request_secs = (ulong)atol(eptr);
+            break;
+
+          case PF_DOASSIGN: /* DOASSIGN */
+            tests_to_do[TF_ASSIGN] = getflag(eptr);
+            break;
+
+          case PF_AARRAYS: /* ASSIGNARRAYS */
+            global_assignstruct.numarrays = (ulong)atol(eptr);
+            break;
+
+          case PF_ASSIGNMINS: /* ASSIGNMINSECONDS */
+            global_assignstruct.request_secs = (ulong)atol(eptr);
+            break;
+
+          case PF_DOIDEA: /* DOIDEA */
+            tests_to_do[TF_IDEA] = getflag(eptr);
+            break;
+
+          case PF_IDEAASIZE: /* IDEAARRAYSIZE */
+            global_ideastruct.arraysize = (ulong)atol(eptr);
+            break;
+
+          case PF_IDEALOOPS: /* IDEALOOPS */
+            global_ideastruct.loops = (ulong)atol(eptr);
+            break;
+
+          case PF_IDEAMINS: /* IDEAMINSECONDS */
+            global_ideastruct.request_secs = (ulong)atol(eptr);
+            break;
+
+          case PF_DOHUFF: /* DOHUFF */
+            tests_to_do[TF_HUFF] = getflag(eptr);
+            break;
+
+          case PF_HUFFASIZE: /* HUFFARRAYSIZE */
+            global_huffstruct.arraysize = (ulong)atol(eptr);
+            break;
+
+          case PF_HUFFLOOPS: /* HUFFLOOPS */
+            global_huffstruct.loops = (ulong)atol(eptr);
+            global_huffstruct.adjust = 1;
+            break;
+
+          case PF_HUFFMINS: /* HUFFMINSECONDS */
+            global_huffstruct.request_secs = (ulong)atol(eptr);
+            break;
+
+          case PF_DONNET: /* DONNET */
+            tests_to_do[TF_NNET] = getflag(eptr);
+            break;
+
+          case PF_NNETLOOPS: /* NNETLOOPS */
+            global_nnetstruct.loops = (ulong)atol(eptr);
+            global_nnetstruct.adjust = 1;
+            break;
+
+          case PF_NNETMINS: /* NNETMINSECONDS */
+            global_nnetstruct.request_secs = (ulong)atol(eptr);
+            break;
+
+          case PF_DOLU: /* DOLU */
+            tests_to_do[TF_LU] = getflag(eptr);
+            break;
+
+          case PF_LUNARRAYS: /* LUNUMARRAYS */
+            global_lustruct.numarrays = (ulong)atol(eptr);
+            global_lustruct.adjust = 1;
+            break;
+
+          case PF_LUMINS: /* LUMINSECONDS */
+            global_lustruct.request_secs = (ulong)atol(eptr);
+            break;
+
+          case PF_ALIGN: /* ALIGN */
+            global_align = atoi(eptr);
+            break;
         }
-        write_to_file = -1;
-        break;
-
-      case PF_CUSTOMRUN: /* CUSTOMRUN */
-        global_custrun = getflag(eptr);
-        for (i = 0; i < NUMTESTS; i++)
-        {
-          tests_to_do[i] = 1 - global_custrun;
-        }
-        break;
-
-      case PF_DONUM: /* DONUMSORT */
-        tests_to_do[TF_NUMSORT] = getflag(eptr);
-        break;
-
-      case PF_NUMNUMA: /* NUMNUMARRAYS */
-        global_numsortstruct.numarrays = (ushort)atoi(eptr);
-        global_numsortstruct.adjust = 1;
-        break;
-
-      case PF_NUMASIZE: /* NUMARRAYSIZE */
-        global_numsortstruct.arraysize = (ulong)atol(eptr);
-        break;
-
-      case PF_NUMMINS: /* NUMMINSECONDS */
-        global_numsortstruct.request_secs = (ulong)atol(eptr);
-        break;
-
-      case PF_DOSTR: /* DOSTRINGSORT */
-        tests_to_do[TF_SSORT] = getflag(eptr);
-        break;
-
-      case PF_STRASIZE: /* STRARRAYSIZE */
-        global_strsortstruct.arraysize = (ulong)atol(eptr);
-        break;
-
-      case PF_NUMSTRA: /* NUMSTRARRAYS */
-        global_strsortstruct.numarrays = (ushort)atoi(eptr);
-        global_strsortstruct.adjust = 1;
-        break;
-
-      case PF_STRMINS: /* STRMINSECONDS */
-        global_strsortstruct.request_secs = (ulong)atol(eptr);
-        break;
-
-      case PF_DOBITF: /* DOBITFIELD */
-        tests_to_do[TF_BITOP] = getflag(eptr);
-        break;
-
-      case PF_NUMBITOPS: /* NUMBITOPS */
-        global_bitopstruct.bitoparraysize = (ulong)atol(eptr);
-        global_bitopstruct.adjust = 1;
-        break;
-
-      case PF_BITFSIZE: /* BITFIELDSIZE */
-        global_bitopstruct.bitfieldarraysize = (ulong)atol(eptr);
-        break;
-
-      case PF_BITMINS: /* BITMINSECONDS */
-        global_bitopstruct.request_secs = (ulong)atol(eptr);
-        break;
-
-      case PF_DOEMF: /* DOEMF */
-        tests_to_do[TF_FPEMU] = getflag(eptr);
-        break;
-
-      case PF_EMFASIZE: /* EMFARRAYSIZE */
-        global_emfloatstruct.arraysize = (ulong)atol(eptr);
-        break;
-
-      case PF_EMFLOOPS: /* EMFLOOPS */
-        global_emfloatstruct.loops = (ulong)atol(eptr);
-        break;
-
-      case PF_EMFMINS: /* EMFMINSECOND */
-        global_emfloatstruct.request_secs = (ulong)atol(eptr);
-        break;
-
-      case PF_DOFOUR: /* DOFOUR */
-        tests_to_do[TF_FFPU] = getflag(eptr);
-        break;
-
-      case PF_FOURASIZE: /* FOURASIZE */
-        global_fourierstruct.arraysize = (ulong)atol(eptr);
-        global_fourierstruct.adjust = 1;
-        break;
-
-      case PF_FOURMINS: /* FOURMINSECONDS */
-        global_fourierstruct.request_secs = (ulong)atol(eptr);
-        break;
-
-      case PF_DOASSIGN: /* DOASSIGN */
-        tests_to_do[TF_ASSIGN] = getflag(eptr);
-        break;
-
-      case PF_AARRAYS: /* ASSIGNARRAYS */
-        global_assignstruct.numarrays = (ulong)atol(eptr);
-        break;
-
-      case PF_ASSIGNMINS: /* ASSIGNMINSECONDS */
-        global_assignstruct.request_secs = (ulong)atol(eptr);
-        break;
-
-      case PF_DOIDEA: /* DOIDEA */
-        tests_to_do[TF_IDEA] = getflag(eptr);
-        break;
-
-      case PF_IDEAASIZE: /* IDEAARRAYSIZE */
-        global_ideastruct.arraysize = (ulong)atol(eptr);
-        break;
-
-      case PF_IDEALOOPS: /* IDEALOOPS */
-        global_ideastruct.loops = (ulong)atol(eptr);
-        break;
-
-      case PF_IDEAMINS: /* IDEAMINSECONDS */
-        global_ideastruct.request_secs = (ulong)atol(eptr);
-        break;
-
-      case PF_DOHUFF: /* DOHUFF */
-        tests_to_do[TF_HUFF] = getflag(eptr);
-        break;
-
-      case PF_HUFFASIZE: /* HUFFARRAYSIZE */
-        global_huffstruct.arraysize = (ulong)atol(eptr);
-        break;
-
-      case PF_HUFFLOOPS: /* HUFFLOOPS */
-        global_huffstruct.loops = (ulong)atol(eptr);
-        global_huffstruct.adjust = 1;
-        break;
-
-      case PF_HUFFMINS: /* HUFFMINSECONDS */
-        global_huffstruct.request_secs = (ulong)atol(eptr);
-        break;
-
-      case PF_DONNET: /* DONNET */
-        tests_to_do[TF_NNET] = getflag(eptr);
-        break;
-
-      case PF_NNETLOOPS: /* NNETLOOPS */
-        global_nnetstruct.loops = (ulong)atol(eptr);
-        global_nnetstruct.adjust = 1;
-        break;
-
-      case PF_NNETMINS: /* NNETMINSECONDS */
-        global_nnetstruct.request_secs = (ulong)atol(eptr);
-        break;
-
-      case PF_DOLU: /* DOLU */
-        tests_to_do[TF_LU] = getflag(eptr);
-        break;
-
-      case PF_LUNARRAYS: /* LUNUMARRAYS */
-        global_lustruct.numarrays = (ulong)atol(eptr);
-        global_lustruct.adjust = 1;
-        break;
-
-      case PF_LUMINS: /* LUMINSECONDS */
-        global_lustruct.request_secs = (ulong)atol(eptr);
-        break;
-
-      case PF_ALIGN: /* ALIGN */
-        global_align = atoi(eptr);
-        break;
-    }
-  skipswitch:
-    continue;
-  } /* End while */
+    skipswitch:
+      continue;
+    } /* End while */
 
   return;
 }
@@ -717,9 +718,9 @@ static void read_comfile(FILE *cfile)
 static int getflag(char *cptr)
 {
   if (toupper((int)*cptr) == 'T')
-  {
-    return (1);
-  }
+    {
+      return (1);
+    }
   return (0);
 }
 
@@ -733,15 +734,16 @@ static int getflag(char *cptr)
 static void strtoupper(char *s)
 {
   do
-  {
-    /*
+    {
+      /*
     ** Oddly enough, the following line did not work under THINK C.
     ** So, I modified it....hmmmm. --RG
             *s++=(char)toupper((int)*s);
     */
-    *s = (char)toupper((int)*s);
-    s++;
-  } while (*s != (char)'\0');
+      *s = (char)toupper((int)*s);
+      s++;
+    }
+  while (*s != (char)'\0');
   return;
 }
 
@@ -787,27 +789,27 @@ static void set_request_secs(void)
 ** Return 0 if ok, -1 if failure.  Returns mean
 ** and std. deviation of results if successful.
 */
-static int bench_with_confidence(int fid,         /* Function id */
-                                 double *mean,    /* Mean of scores */
-                                 double *stdev,   /* Standard deviation */
+static int bench_with_confidence(int fid, /* Function id */
+                                 double *mean, /* Mean of scores */
+                                 double *stdev, /* Standard deviation */
                                  ulong *numtries) /* # of attempts */
 {
-  double myscores[30];    /* Need at least 5 scores, use at most 30 */
+  double myscores[30]; /* Need at least 5 scores, use at most 30 */
   double c_half_interval; /* Confidence half interval */
-  int i;                  /* Index */
-  /* double newscore; */  /* For improving confidence interval */
+  int i; /* Index */
+  /* double newscore; */ /* For improving confidence interval */
 
   /*
   ** Get first 5 scores.  Then begin confidence testing.
   */
   for (i = 0; i < 5; i++)
-  {
-    (*funcpointer[fid])();
-    myscores[i] = getscore(fid);
+    {
+      (*funcpointer[fid])();
+      myscores[i] = getscore(fid);
 #ifdef DEBUG
-    printf("score # %d = %g\n", i, myscores[i]);
+      printf("score # %d = %g\n", i, myscores[i]);
 #endif
-  }
+    }
   *numtries = 5; /* Show 5 attempts */
 
   /*
@@ -819,57 +821,58 @@ static int bench_with_confidence(int fid,         /* Function id */
   ** Enter loop to test for confidence criteria.
   */
   while (1)
-  {
-    /*
+    {
+      /*
     ** Calculate confidence. Should always return 0.
     */
-    if (0 !=
-        calc_confidence(myscores, *numtries, &c_half_interval, mean, stdev))
-    {
-      return (-1);
-    }
+      if (0 !=
+          calc_confidence(myscores, *numtries, &c_half_interval, mean, stdev))
+        {
+          return (-1);
+        }
 
-    /*
+      /*
     ** Is the length of the half interval 5% or less of mean?
     ** If so, we can go home.  Otherwise, we have to continue.
     */
-    if (c_half_interval / (*mean) <= (double)0.05)
-    {
-      break;
-    }
+      if (c_half_interval / (*mean) <= (double)0.05)
+        {
+          break;
+        }
 
 #ifdef OLDCODE
 #undef OLDCODE
 #endif
 #ifdef OLDCODE
-    /* this code is no longer valid, we now do not replace but add new scores */
-    /* Uwe F. Mayer */
-    /*
+      /* this code is no longer valid, we now do not replace but add new scores */
+      /* Uwe F. Mayer */
+      /*
     ** Go get a new score and see if it
     ** improves existing scores.
     */
-    do
-    {
-      if (*numtries == 10) return (-1);
-      (*funcpointer[fid])();
-      *numtries += 1;
-      newscore = getscore(fid);
-    } while (seek_confidence(myscores, &newscore, &c_half_interval, mean,
+      do
+        {
+          if (*numtries == 10) return (-1);
+          (*funcpointer[fid])();
+          *numtries += 1;
+          newscore = getscore(fid);
+        }
+      while (seek_confidence(myscores, &newscore, &c_half_interval, mean,
                              stdev) == 0);
 #endif
-    /* We now simply add a new test run and hope that the runs
+      /* We now simply add a new test run and hope that the runs
        finally stabilize, Uwe F. Mayer */
-    if (*numtries == 30)
-    {
-      return (-1);
-    }
-    (*funcpointer[fid])();
-    myscores[*numtries] = getscore(fid);
+      if (*numtries == 30)
+        {
+          return (-1);
+        }
+      (*funcpointer[fid])();
+      myscores[*numtries] = getscore(fid);
 #ifdef DEBUG
-    printf("score # %ld = %g\n", *numtries, myscores[*numtries]);
+      printf("score # %ld = %g\n", *numtries, myscores[*numtries]);
 #endif
-    *numtries += 1;
-  }
+      *numtries += 1;
+    }
 
   return (0);
 }
@@ -892,9 +895,9 @@ static int seek_confidence(double scores[5], double *newscore,
                            double *c_half_interval, double *smean, double *sdev)
 {
   double sdev_to_beat; /* Original sdev to be beaten */
-  double temp;         /* For doing a swap */
-  int is_beaten;       /* Indicates original was beaten */
-  int i;               /* Index */
+  double temp; /* For doing a swap */
+  int is_beaten; /* Indicates original was beaten */
+  int i; /* Index */
 
   /*
   ** First calculate original standard deviation
@@ -908,23 +911,23 @@ static int seek_confidence(double scores[5], double *newscore,
   ** loop with a flag.
   */
   for (i = 0; i < 5; i++)
-  {
-    temp = scores[i];
-    scores[i] = *newscore;
-    calc_confidence(scores, c_half_interval, smean, sdev);
-    scores[i] = temp;
-    if (sdev_to_beat > *sdev)
     {
-      is_beaten = i;
-      sdev_to_beat = *sdev;
+      temp = scores[i];
+      scores[i] = *newscore;
+      calc_confidence(scores, c_half_interval, smean, sdev);
+      scores[i] = temp;
+      if (sdev_to_beat > *sdev)
+        {
+          is_beaten = i;
+          sdev_to_beat = *sdev;
+        }
     }
-  }
 
   if (is_beaten != -1)
-  {
-    scores[is_beaten] = *newscore;
-    return (-1);
-  }
+    {
+      scores[is_beaten] = *newscore;
+      return (-1);
+    }
   return (0);
 }
 #endif
@@ -940,42 +943,42 @@ static int seek_confidence(double scores[5], double *newscore,
 ** returns 0 if there is an error, otherwise -1
 */
 static int calc_confidence(double scores[], /* Array of scores */
-                           int num_scores,  /* number of scores in array */
+                           int num_scores, /* number of scores in array */
                            double *c_half_interval, /* Confidence half-int */
-                           double *smean,           /* Standard mean */
-                           double *sdev)            /* Sample stand dev */
+                           double *smean, /* Standard mean */
+                           double *sdev) /* Sample stand dev */
 {
   /* Here is a list of the student-t distribution up to 29 degrees of
      freedom. The value at 0 is bogus, as there is no value for zero
      degrees of freedom. */
   double student_t[30] = {
-      0.0,   12.706, 4.303, 3.182, 2.776, 2.571, 2.447, 2.365, 2.306, 2.262,
-      2.228, 2.201,  2.179, 2.160, 2.145, 2.131, 2.120, 2.110, 2.101, 2.093,
-      2.086, 2.080,  2.074, 2.069, 2.064, 2.060, 2.056, 2.052, 2.048, 2.045};
+      0.0, 12.706, 4.303, 3.182, 2.776, 2.571, 2.447, 2.365, 2.306, 2.262,
+      2.228, 2.201, 2.179, 2.160, 2.145, 2.131, 2.120, 2.110, 2.101, 2.093,
+      2.086, 2.080, 2.074, 2.069, 2.064, 2.060, 2.056, 2.052, 2.048, 2.045};
   int i; /* Index */
   if ((num_scores < 2) || (num_scores > 30))
-  {
-    output_string(
-        "Internal error: calc_confidence called with an illegal number of "
-        "scores\n");
-    return (-1);
-  }
+    {
+      output_string(
+          "Internal error: calc_confidence called with an illegal number of "
+          "scores\n");
+      return (-1);
+    }
   /*
   ** First calculate mean.
   */
   *smean = (double)0.0;
   for (i = 0; i < num_scores; i++)
-  {
-    *smean += scores[i];
-  }
+    {
+      *smean += scores[i];
+    }
   *smean /= (double)num_scores;
 
   /* Get standard deviation */
   *sdev = (double)0.0;
   for (i = 0; i < num_scores; i++)
-  {
-    *sdev += (scores[i] - (*smean)) * (scores[i] - (*smean));
-  }
+    {
+      *sdev += (scores[i] - (*smean)) * (scores[i] - (*smean));
+    }
   *sdev /= (double)(num_scores - 1);
   *sdev = sqrt(*sdev);
 
@@ -1002,28 +1005,28 @@ static double getscore(int fid)
   ** doing the proper coercion.
   */
   switch (fid)
-  {
-    case TF_NUMSORT:
-      return (global_numsortstruct.sortspersec);
-    case TF_SSORT:
-      return (global_strsortstruct.sortspersec);
-    case TF_BITOP:
-      return (global_bitopstruct.bitopspersec);
-    case TF_FPEMU:
-      return (global_emfloatstruct.emflops);
-    case TF_FFPU:
-      return (global_fourierstruct.fflops);
-    case TF_ASSIGN:
-      return (global_assignstruct.iterspersec);
-    case TF_IDEA:
-      return (global_ideastruct.iterspersec);
-    case TF_HUFF:
-      return (global_huffstruct.iterspersec);
-    case TF_NNET:
-      return (global_nnetstruct.iterspersec);
-    case TF_LU:
-      return (global_lustruct.iterspersec);
-  }
+    {
+      case TF_NUMSORT:
+        return (global_numsortstruct.sortspersec);
+      case TF_SSORT:
+        return (global_strsortstruct.sortspersec);
+      case TF_BITOP:
+        return (global_bitopstruct.bitopspersec);
+      case TF_FPEMU:
+        return (global_emfloatstruct.emflops);
+      case TF_FFPU:
+        return (global_fourierstruct.fflops);
+      case TF_ASSIGN:
+        return (global_assignstruct.iterspersec);
+      case TF_IDEA:
+        return (global_ideastruct.iterspersec);
+      case TF_HUFF:
+        return (global_huffstruct.iterspersec);
+      case TF_NNET:
+        return (global_nnetstruct.iterspersec);
+      case TF_LU:
+        return (global_lustruct.iterspersec);
+    }
   return ((double)0.0);
 }
 
@@ -1039,9 +1042,9 @@ static void output_string(char *buffer)
 {
   printf("%s", buffer);
   if (write_to_file != 0)
-  {
-    fprintf(global_ofile, "%s", buffer);
-  }
+    {
+      fprintf(global_ofile, "%s", buffer);
+    }
   return;
 }
 
@@ -1056,75 +1059,75 @@ static void show_stats(int bid)
   char buffer[80]; /* Display buffer */
 
   switch (bid)
-  {
-    case TF_NUMSORT: /* Numeric sort */
-      sprintf(buffer, "  Number of arrays: %d\n",
-              global_numsortstruct.numarrays);
-      output_string(buffer);
-      sprintf(buffer, "  Array size: %ld\n", global_numsortstruct.arraysize);
-      output_string(buffer);
-      break;
+    {
+      case TF_NUMSORT: /* Numeric sort */
+        sprintf(buffer, "  Number of arrays: %d\n",
+                global_numsortstruct.numarrays);
+        output_string(buffer);
+        sprintf(buffer, "  Array size: %ld\n", global_numsortstruct.arraysize);
+        output_string(buffer);
+        break;
 
-    case TF_SSORT: /* String sort */
-      sprintf(buffer, "  Number of arrays: %d\n",
-              global_strsortstruct.numarrays);
-      output_string(buffer);
-      sprintf(buffer, "  Array size: %ld\n", global_strsortstruct.arraysize);
-      output_string(buffer);
-      break;
+      case TF_SSORT: /* String sort */
+        sprintf(buffer, "  Number of arrays: %d\n",
+                global_strsortstruct.numarrays);
+        output_string(buffer);
+        sprintf(buffer, "  Array size: %ld\n", global_strsortstruct.arraysize);
+        output_string(buffer);
+        break;
 
-    case TF_BITOP: /* Bitmap operation */
-      sprintf(buffer, "  Operations array size: %ld\n",
-              global_bitopstruct.bitoparraysize);
-      output_string(buffer);
-      sprintf(buffer, "  Bitfield array size: %ld\n",
-              global_bitopstruct.bitfieldarraysize);
-      output_string(buffer);
-      break;
+      case TF_BITOP: /* Bitmap operation */
+        sprintf(buffer, "  Operations array size: %ld\n",
+                global_bitopstruct.bitoparraysize);
+        output_string(buffer);
+        sprintf(buffer, "  Bitfield array size: %ld\n",
+                global_bitopstruct.bitfieldarraysize);
+        output_string(buffer);
+        break;
 
-    case TF_FPEMU: /* Floating-point emulation */
-      sprintf(buffer, "  Number of loops: %lu\n", global_emfloatstruct.loops);
-      output_string(buffer);
-      sprintf(buffer, "  Array size: %lu\n", global_emfloatstruct.arraysize);
-      output_string(buffer);
-      break;
+      case TF_FPEMU: /* Floating-point emulation */
+        sprintf(buffer, "  Number of loops: %lu\n", global_emfloatstruct.loops);
+        output_string(buffer);
+        sprintf(buffer, "  Array size: %lu\n", global_emfloatstruct.arraysize);
+        output_string(buffer);
+        break;
 
-    case TF_FFPU: /* Fourier test */
-      sprintf(buffer, "  Number of coefficients: %lu\n",
-              global_fourierstruct.arraysize);
-      output_string(buffer);
-      break;
+      case TF_FFPU: /* Fourier test */
+        sprintf(buffer, "  Number of coefficients: %lu\n",
+                global_fourierstruct.arraysize);
+        output_string(buffer);
+        break;
 
-    case TF_ASSIGN:
-      sprintf(buffer, "  Number of arrays: %lu\n",
-              global_assignstruct.numarrays);
-      output_string(buffer);
-      break;
+      case TF_ASSIGN:
+        sprintf(buffer, "  Number of arrays: %lu\n",
+                global_assignstruct.numarrays);
+        output_string(buffer);
+        break;
 
-    case TF_IDEA:
-      sprintf(buffer, "  Array size: %lu\n", global_ideastruct.arraysize);
-      output_string(buffer);
-      sprintf(buffer, " Number of loops: %lu\n", global_ideastruct.loops);
-      output_string(buffer);
-      break;
+      case TF_IDEA:
+        sprintf(buffer, "  Array size: %lu\n", global_ideastruct.arraysize);
+        output_string(buffer);
+        sprintf(buffer, " Number of loops: %lu\n", global_ideastruct.loops);
+        output_string(buffer);
+        break;
 
-    case TF_HUFF:
-      sprintf(buffer, "  Array size: %lu\n", global_huffstruct.arraysize);
-      output_string(buffer);
-      sprintf(buffer, "  Number of loops: %lu\n", global_huffstruct.loops);
-      output_string(buffer);
-      break;
+      case TF_HUFF:
+        sprintf(buffer, "  Array size: %lu\n", global_huffstruct.arraysize);
+        output_string(buffer);
+        sprintf(buffer, "  Number of loops: %lu\n", global_huffstruct.loops);
+        output_string(buffer);
+        break;
 
-    case TF_NNET:
-      sprintf(buffer, "  Number of loops: %lu\n", global_nnetstruct.loops);
-      output_string(buffer);
-      break;
+      case TF_NNET:
+        sprintf(buffer, "  Number of loops: %lu\n", global_nnetstruct.loops);
+        output_string(buffer);
+        break;
 
-    case TF_LU:
-      sprintf(buffer, "  Number of arrays: %lu\n", global_lustruct.numarrays);
-      output_string(buffer);
-      break;
-  }
+      case TF_LU:
+        sprintf(buffer, "  Number of arrays: %lu\n", global_lustruct.numarrays);
+        output_string(buffer);
+        break;
+    }
   return;
 }
 
@@ -1171,22 +1174,22 @@ void UParse(void)
 {
   unsigned char *ptr;
 
-  argc = 0;        /* Start arg count */
+  argc = 0; /* Start arg count */
   Udummy[0] = '*'; /* Set dummy first argument */
   Udummy[1] = '\0';
   argv[argc++] = (char *)Udummy;
 
   ptr = Uargbuff; /* Start pointer */
   while (*ptr)
-  {
-    if (isspace(*ptr))
     {
-      ++ptr;
-      continue;
+      if (isspace(*ptr))
+        {
+          ++ptr;
+          continue;
+        }
+      if (argc < 20) argv[argc++] = (char *)ptr;
+      ptr = UField(ptr);
     }
-    if (argc < 20) argv[argc++] = (char *)ptr;
-    ptr = UField(ptr);
-  }
   return;
 }
 /***********
@@ -1197,14 +1200,14 @@ void UParse(void)
 unsigned char *UField(unsigned char *ptr)
 {
   while (*ptr)
-  {
-    if (isspace(*ptr))
     {
-      *ptr = (unsigned char)NULL;
-      return (++ptr);
+      if (isspace(*ptr))
+        {
+          *ptr = (unsigned char)NULL;
+          return (++ptr);
+        }
+      ++ptr;
     }
-    ++ptr;
-  }
   return (ptr);
 }
 #endif

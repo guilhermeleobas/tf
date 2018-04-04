@@ -28,12 +28,12 @@ int hypre_IntersectBoxes(hypre_Box *box1, hypre_Box *box2, hypre_Box *ibox)
 
   /* find x, y, and z bounds */
   for (d = 0; d < 3; d++)
-  {
-    hypre_BoxIMinD(ibox, d) =
-        hypre_max(hypre_BoxIMinD(box1, d), hypre_BoxIMinD(box2, d));
-    hypre_BoxIMaxD(ibox, d) =
-        hypre_min(hypre_BoxIMaxD(box1, d), hypre_BoxIMaxD(box2, d));
-  }
+    {
+      hypre_BoxIMinD(ibox, d) =
+          hypre_max(hypre_BoxIMinD(box1, d), hypre_BoxIMinD(box2, d));
+      hypre_BoxIMaxD(ibox, d) =
+          hypre_min(hypre_BoxIMaxD(box1, d), hypre_BoxIMaxD(box2, d));
+    }
 
   return ierr;
 }
@@ -68,37 +68,37 @@ int hypre_SubtractBoxes(hypre_Box *box1, hypre_Box *box2,
 
   size = 0;
   for (d = 0; d < 3; d++)
-  {
-    /* if the boxes do not intersect, the subtraction is trivial */
-    if ((hypre_BoxIMinD(box2, d) > hypre_BoxIMaxD(rembox, d)) ||
-        (hypre_BoxIMaxD(box2, d) < hypre_BoxIMinD(rembox, d)))
     {
-      hypre_CopyBox(box1, hypre_BoxArrayBox(box_array, 0));
-      size = 1;
-      break;
-    }
+      /* if the boxes do not intersect, the subtraction is trivial */
+      if ((hypre_BoxIMinD(box2, d) > hypre_BoxIMaxD(rembox, d)) ||
+          (hypre_BoxIMaxD(box2, d) < hypre_BoxIMinD(rembox, d)))
+        {
+          hypre_CopyBox(box1, hypre_BoxArrayBox(box_array, 0));
+          size = 1;
+          break;
+        }
 
-    /* update the box array */
-    else
-    {
-      if (hypre_BoxIMinD(box2, d) > hypre_BoxIMinD(rembox, d))
-      {
-        box = hypre_BoxArrayBox(box_array, size);
-        hypre_CopyBox(rembox, box);
-        hypre_BoxIMaxD(box, d) = hypre_BoxIMinD(box2, d) - 1;
-        hypre_BoxIMinD(rembox, d) = hypre_BoxIMinD(box2, d);
-        size++;
-      }
-      if (hypre_BoxIMaxD(box2, d) < hypre_BoxIMaxD(rembox, d))
-      {
-        box = hypre_BoxArrayBox(box_array, size);
-        hypre_CopyBox(rembox, box);
-        hypre_BoxIMinD(box, d) = hypre_BoxIMaxD(box2, d) + 1;
-        hypre_BoxIMaxD(rembox, d) = hypre_BoxIMaxD(box2, d);
-        size++;
-      }
+      /* update the box array */
+      else
+        {
+          if (hypre_BoxIMinD(box2, d) > hypre_BoxIMinD(rembox, d))
+            {
+              box = hypre_BoxArrayBox(box_array, size);
+              hypre_CopyBox(rembox, box);
+              hypre_BoxIMaxD(box, d) = hypre_BoxIMinD(box2, d) - 1;
+              hypre_BoxIMinD(rembox, d) = hypre_BoxIMinD(box2, d);
+              size++;
+            }
+          if (hypre_BoxIMaxD(box2, d) < hypre_BoxIMaxD(rembox, d))
+            {
+              box = hypre_BoxArrayBox(box_array, size);
+              hypre_CopyBox(rembox, box);
+              hypre_BoxIMinD(box, d) = hypre_BoxIMaxD(box2, d) + 1;
+              hypre_BoxIMaxD(rembox, d) = hypre_BoxIMaxD(box2, d);
+              size++;
+            }
+        }
     }
-  }
   hypre_BoxArraySetSize(box_array, size);
 
   return ierr;
@@ -171,9 +171,9 @@ int hypre_UnionBoxes(hypre_BoxArray *boxes)
    *------------------------------------------------------*/
 
   if (hypre_BoxArraySize(boxes) < 2)
-  {
-    return ierr;
-  }
+    {
+      return ierr;
+    }
 
   /*------------------------------------------------------
    * Set up the block_index array
@@ -183,43 +183,43 @@ int hypre_UnionBoxes(hypre_BoxArray *boxes)
   block_index[0] = hypre_TAlloc(int, 3 * i_tmp0);
   block_sz[0] = 0;
   for (d = 1; d < 3; d++)
-  {
-    block_index[d] = block_index[d - 1] + i_tmp0;
-    block_sz[d] = 0;
-  }
+    {
+      block_index[d] = block_index[d - 1] + i_tmp0;
+      block_sz[d] = 0;
+    }
 
   hypre_ForBoxI(bi, boxes)
   {
     box = hypre_BoxArrayBox(boxes, bi);
 
     for (d = 0; d < 3; d++)
-    {
-      iminmax[0] = hypre_BoxIMinD(box, d);
-      iminmax[1] = hypre_BoxIMaxD(box, d) + 1;
-
-      for (i = 0; i < 2; i++)
       {
-        /* find the new index position in the block_index array */
-        index_not_there = 1;
-        for (j = 0; j < block_sz[d]; j++)
-        {
-          if (iminmax[i] <= block_index[d][j])
-          {
-            if (iminmax[i] == block_index[d][j]) index_not_there = 0;
-            break;
-          }
-        }
+        iminmax[0] = hypre_BoxIMinD(box, d);
+        iminmax[1] = hypre_BoxIMaxD(box, d) + 1;
 
-        /* if the index is already there, don't add it again */
-        if (index_not_there)
-        {
-          for (k = block_sz[d]; k > j; k--)
-            block_index[d][k] = block_index[d][k - 1];
-          block_index[d][j] = iminmax[i];
-          block_sz[d]++;
-        }
+        for (i = 0; i < 2; i++)
+          {
+            /* find the new index position in the block_index array */
+            index_not_there = 1;
+            for (j = 0; j < block_sz[d]; j++)
+              {
+                if (iminmax[i] <= block_index[d][j])
+                  {
+                    if (iminmax[i] == block_index[d][j]) index_not_there = 0;
+                    break;
+                  }
+              }
+
+            /* if the index is already there, don't add it again */
+            if (index_not_there)
+              {
+                for (k = block_sz[d]; k > j; k--)
+                  block_index[d][k] = block_index[d][k - 1];
+                block_index[d][j] = iminmax[i];
+                block_sz[d]++;
+              }
+          }
       }
-    }
   }
 
   for (d = 0; d < 3; d++) block_sz[d]--;
@@ -245,29 +245,29 @@ int hypre_UnionBoxes(hypre_BoxArray *boxes)
 
     /* find the block_index indices corresponding to the current box */
     for (d = 0; d < 3; d++)
-    {
-      j = 0;
+      {
+        j = 0;
 
-      while (hypre_BoxIMinD(box, d) != block_index[d][j]) j++;
-      imin[d] = j;
+        while (hypre_BoxIMinD(box, d) != block_index[d][j]) j++;
+        imin[d] = j;
 
-      while (hypre_BoxIMaxD(box, d) + 1 != block_index[d][j]) j++;
-      imax[d] = j;
-    }
+        while (hypre_BoxIMaxD(box, d) + 1 != block_index[d][j]) j++;
+        imax[d] = j;
+      }
 
     /* note: boxes of size zero will not be added to block */
     for (k = imin[2]; k < imax[2]; k++)
-    {
-      for (j = imin[1]; j < imax[1]; j++)
       {
-        for (i = imin[0]; i < imax[0]; i++)
-        {
-          index = ((k)*block_sz[1] + j) * block_sz[0] + i;
+        for (j = imin[1]; j < imax[1]; j++)
+          {
+            for (i = imin[0]; i < imax[0]; i++)
+              {
+                index = ((k)*block_sz[1] + j) * block_sz[0] + i;
 
-          block[index] = factor[2] + factor[1] + factor[0];
-        }
+                block[index] = factor[2] + factor[1] + factor[0];
+              }
+          }
       }
-    }
   }
 
   /*------------------------------------------------------
@@ -281,57 +281,57 @@ int hypre_UnionBoxes(hypre_BoxArray *boxes)
    *------------------------------------------------------*/
 
   for (d = 0; d < 3; d++)
-  {
-    switch (d)
     {
-      case 0: /* join in x */
-        dd[0] = 0;
-        dd[1] = 1;
-        dd[2] = 2;
-        break;
-
-      case 1: /* join in y */
-        dd[0] = 1;
-        dd[1] = 0;
-        dd[2] = 2;
-        break;
-
-      case 2: /* join in z */
-        dd[0] = 2;
-        dd[1] = 1;
-        dd[2] = 0;
-        break;
-    }
-
-    for (ii[dd[2]] = 0; ii[dd[2]] < block_sz[dd[2]]; ii[dd[2]]++)
-    {
-      for (ii[dd[1]] = 0; ii[dd[1]] < block_sz[dd[1]]; ii[dd[1]]++)
-      {
-        join = 0;
-        for (ii[dd[0]] = 0; ii[dd[0]] < block_sz[dd[0]]; ii[dd[0]]++)
+      switch (d)
         {
-          index = ((ii[2]) * block_sz[1] + ii[1]) * block_sz[0] + ii[0];
+          case 0: /* join in x */
+            dd[0] = 0;
+            dd[1] = 1;
+            dd[2] = 2;
+            break;
 
-          if ((join) && (block[index] == i_tmp1))
-          {
-            block[index] = 0;
-            block[i_tmp0] += factor[dd[0]];
-          }
-          else
-          {
-            if (block[index])
-            {
-              i_tmp0 = index;
-              i_tmp1 = block[index];
-              join = 1;
-            }
-            else
-              join = 0;
-          }
+          case 1: /* join in y */
+            dd[0] = 1;
+            dd[1] = 0;
+            dd[2] = 2;
+            break;
+
+          case 2: /* join in z */
+            dd[0] = 2;
+            dd[1] = 1;
+            dd[2] = 0;
+            break;
         }
-      }
+
+      for (ii[dd[2]] = 0; ii[dd[2]] < block_sz[dd[2]]; ii[dd[2]]++)
+        {
+          for (ii[dd[1]] = 0; ii[dd[1]] < block_sz[dd[1]]; ii[dd[1]]++)
+            {
+              join = 0;
+              for (ii[dd[0]] = 0; ii[dd[0]] < block_sz[dd[0]]; ii[dd[0]]++)
+                {
+                  index = ((ii[2]) * block_sz[1] + ii[1]) * block_sz[0] + ii[0];
+
+                  if ((join) && (block[index] == i_tmp1))
+                    {
+                      block[index] = 0;
+                      block[i_tmp0] += factor[dd[0]];
+                    }
+                  else
+                    {
+                      if (block[index])
+                        {
+                          i_tmp0 = index;
+                          i_tmp1 = block[index];
+                          join = 1;
+                        }
+                      else
+                        join = 0;
+                    }
+                }
+            }
+        }
     }
-  }
 
   /*------------------------------------------------------
    * Set up the boxes BoxArray
@@ -339,40 +339,40 @@ int hypre_UnionBoxes(hypre_BoxArray *boxes)
 
   size = 0;
   for (index = 0; index < block_volume; index++)
-  {
-    if (block[index]) size++;
-  }
+    {
+      if (block[index]) size++;
+    }
   hypre_BoxArraySetSize(boxes, size);
 
   index = 0;
   size = 0;
   for (k = 0; k < block_sz[2]; k++)
-  {
-    for (j = 0; j < block_sz[1]; j++)
     {
-      for (i = 0; i < block_sz[0]; i++)
-      {
-        if (block[index])
+      for (j = 0; j < block_sz[1]; j++)
         {
-          ioff = (block[index] % factor[1]);
-          joff = (block[index] % factor[2]) / factor[1];
-          koff = (block[index]) / factor[2];
+          for (i = 0; i < block_sz[0]; i++)
+            {
+              if (block[index])
+                {
+                  ioff = (block[index] % factor[1]);
+                  joff = (block[index] % factor[2]) / factor[1];
+                  koff = (block[index]) / factor[2];
 
-          box = hypre_BoxArrayBox(boxes, size);
-          hypre_BoxIMinD(box, 0) = block_index[0][i];
-          hypre_BoxIMinD(box, 1) = block_index[1][j];
-          hypre_BoxIMinD(box, 2) = block_index[2][k];
-          hypre_BoxIMaxD(box, 0) = block_index[0][i + ioff] - 1;
-          hypre_BoxIMaxD(box, 1) = block_index[1][j + joff] - 1;
-          hypre_BoxIMaxD(box, 2) = block_index[2][k + koff] - 1;
+                  box = hypre_BoxArrayBox(boxes, size);
+                  hypre_BoxIMinD(box, 0) = block_index[0][i];
+                  hypre_BoxIMinD(box, 1) = block_index[1][j];
+                  hypre_BoxIMinD(box, 2) = block_index[2][k];
+                  hypre_BoxIMaxD(box, 0) = block_index[0][i + ioff] - 1;
+                  hypre_BoxIMaxD(box, 1) = block_index[1][j + joff] - 1;
+                  hypre_BoxIMaxD(box, 2) = block_index[2][k + koff] - 1;
 
-          size++;
+                  size++;
+                }
+
+              index++;
+            }
         }
-
-        index++;
-      }
     }
-  }
 
   /*---------------------------------------------------------
    * Clean up and return

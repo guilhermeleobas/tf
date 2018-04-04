@@ -14,15 +14,15 @@ void reset()
 
   plycnt = 0;
   for (i = 0; i < 19; i++)
-  {
-    dias[i] = 0;
-  }
+    {
+      dias[i] = 0;
+    }
   for (i = 0; i < 8; i++)
-  {
-    columns[i] = 1;
-    height[i] = 1;
-    rows[i] = 0;
-  }
+    {
+      columns[i] = 1;
+      height[i] = 1;
+      rows[i] = 0;
+    }
 }
 
 void play_init()
@@ -30,14 +30,14 @@ void play_init()
   int i;
 
   for (i = 8; i < 128; i += 8)
-  {
-    colthr[i] = 1;
-    colthr[i + 7] = 2;
-  }
+    {
+      colthr[i] = 1;
+      colthr[i + 7] = 2;
+    }
   for (i = 16; i < 128; i += 16)
-  {
-    colwon[i] = colwon[i + 15] = TRUE;
-  }
+    {
+      colwon[i] = colwon[i + 15] = TRUE;
+    }
 
   reset();
 }
@@ -47,9 +47,9 @@ void printMoves()
   int i;
 
   for (i = 1; i <= plycnt; i++)
-  {
-    printf("%d", moves[i]);
-  }
+    {
+      printf("%d", moves[i]);
+    }
 }
 
 /* return whether a move by player side in column n at height h would win */
@@ -62,15 +62,15 @@ boolean wins(int n, int h, int sidemask)
   x = rows[h] | sidemask;
   y = x & (x << 2);
   if ((y & (y << 4)) != 0)
-  {
-    return TRUE;
-  }
+    {
+      return TRUE;
+    }
   x = dias[5 + n + h] | sidemask;
   y = x & (x << 2);
   if ((y & (y << 4)) != 0)
-  {
-    return TRUE;
-  }
+    {
+      return TRUE;
+    }
   x = dias[5 + n - h] | sidemask;
   y = x & (x << 2);
   return (y & (y << 4)) != 0;

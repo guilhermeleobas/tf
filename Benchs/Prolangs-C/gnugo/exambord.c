@@ -53,51 +53,51 @@ void examboard(int color)
 
   /* initialize piece captured */
   if (color == mymove)
-  {
-    mik = -1;
-    mjk = -1;
-  }
+    {
+      mik = -1;
+      mjk = -1;
+    }
   else
-  {
-    uik = -1;
-    ujk = -1;
-  }
+    {
+      uik = -1;
+      ujk = -1;
+    }
   n = 0; /* The number of captures this move for Ko purposes */
 
   /* remove all piece of zero liberty */
   for (i = 0; i < 19; i++)
-  {
-    for (j = 0; j < 19; j++)
     {
-      if ((p[i][j] == color) && (l[i][j] == 0))
-      {
-        p[i][j] = EMPTY;
-        /* record piece captured */
-        if (color == mymove)
+      for (j = 0; j < 19; j++)
         {
-          mik = i;
-          mjk = j;
-          ++mk;
+          if ((p[i][j] == color) && (l[i][j] == 0))
+            {
+              p[i][j] = EMPTY;
+              /* record piece captured */
+              if (color == mymove)
+                {
+                  mik = i;
+                  mjk = j;
+                  ++mk;
+                }
+              else
+                {
+                  uik = i;
+                  ujk = j;
+                  ++uk;
+                }
+              ++n; /* increment number of captures on this move */
+            }
         }
-        else
-        {
-          uik = i;
-          ujk = j;
-          ++uk;
-        }
-        ++n; /* increment number of captures on this move */
-      }
     }
-  }
   /* reset to -1 if more than one stone captured since  no Ko possible */
   if (color == mymove && n > 1)
-  {
-    mik = -1;
-    mjk = -1;
-  }
+    {
+      mik = -1;
+      mjk = -1;
+    }
   else if (n > 1)
-  {
-    uik = -1;
-    ujk = -1;
-  }
+    {
+      uik = -1;
+      ujk = -1;
+    }
 } /* end examboard */

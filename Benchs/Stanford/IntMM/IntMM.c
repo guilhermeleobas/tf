@@ -59,12 +59,12 @@ struct element
 };
 /*    emsgtype = packed array[1..15] of char;
 */
-/* Intmm, Mm */     /*
+/* Intmm, Mm */ /*
     index = 1 .. rowsize;
     intmatrix = array [index,index] of integer;
     realmatrix = array [index,index] of real;
 */
-/* Puzzle */        /*
+/* Puzzle */ /*
        piececlass = 0..classmax;
        piecetype = 0..typemax;
        position = 0..size;
@@ -123,7 +123,7 @@ void Initrand() { seed = 74755L; /* constant to long WR*/ }
 int Rand()
 {
   seed = (seed * 1309L + 13849L) & 65535L; /* constants to long WR*/
-  return ((int)seed);                      /* typecast back to int WR*/
+  return ((int)seed); /* typecast back to int WR*/
 }
 
 /* Multiplies two integer matrices. */
@@ -132,13 +132,13 @@ void Initmatrix(int m[rowsize + 1][rowsize + 1])
 {
   int temp, i, j;
   for (i = 1; i <= rowsize; i++)
-  {
-    for (j = 1; j <= rowsize; j++)
     {
-      temp = Rand();
-      m[i][j] = temp - (temp / 120) * 120 - 60;
+      for (j = 1; j <= rowsize; j++)
+        {
+          temp = Rand();
+          m[i][j] = temp - (temp / 120) * 120 - 60;
+        }
     }
-  }
 }
 
 void Innerproduct(int *result, int a[rowsize + 1][rowsize + 1],
@@ -148,9 +148,9 @@ void Innerproduct(int *result, int a[rowsize + 1][rowsize + 1],
   int i;
   *result = 0;
   for (i = 1; i <= rowsize; i++)
-  {
-    *result = *result + a[row][i] * b[i][column];
-  }
+    {
+      *result = *result + a[row][i] * b[i][column];
+    }
 }
 
 void Intmm(int run)
@@ -160,12 +160,12 @@ void Intmm(int run)
   Initmatrix(ima);
   Initmatrix(imb);
   for (i = 1; i <= rowsize; i++)
-  {
-    for (j = 1; j <= rowsize; j++)
     {
-      Innerproduct(&imr[i][j], ima, imb, i, j);
+      for (j = 1; j <= rowsize; j++)
+        {
+          Innerproduct(&imr[i][j], ima, imb, i, j);
+        }
     }
-  }
   printf("%d\n", imr[run + 1][run + 1]);
 }
 
@@ -173,8 +173,8 @@ int main()
 {
   int i;
   for (i = 0; i < 10; i++)
-  {
-    Intmm(i);
-  }
+    {
+      Intmm(i);
+    }
   return 0;
 }

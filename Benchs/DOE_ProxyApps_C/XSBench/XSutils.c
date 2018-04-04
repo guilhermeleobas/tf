@@ -10,12 +10,12 @@ NuclideGridPoint **gpmatrix(size_t m, size_t n)
       (NuclideGridPoint **)malloc(m * sizeof(NuclideGridPoint *));
 
   for (i = 0, j = 0; i < m * n; i++)
-  {
-    if (i % n == 0)
     {
-      M[j++] = &full[i];
+      if (i % n == 0)
+        {
+          M[j++] = &full[i];
+        }
     }
-  }
 
   return M;
 }
@@ -36,17 +36,17 @@ int NGP_compare(const void *a, const void *b)
   j = (NuclideGridPoint *)b;
 
   if (i->energy > j->energy)
-  {
-    return 1;
-  }
+    {
+      return 1;
+    }
   else if (i->energy < j->energy)
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
   else
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
 }
 
 // Binary Search function for nuclide grid
@@ -59,31 +59,31 @@ int binary_search(NuclideGridPoint *A, double quarry, int n)
 
   // checks to ensure we're not reading off the end of the grid
   if (A[0].energy > quarry)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
   else if (A[n - 1].energy < quarry)
-  {
-    return n - 2;
-  }
+    {
+      return n - 2;
+    }
 
   // Begins binary search
   while (max >= min)
-  {
-    mid = min + floor((max - min) / 2.0);
-    if (A[mid].energy < quarry)
     {
-      min = mid + 1;
+      mid = min + floor((max - min) / 2.0);
+      if (A[mid].energy < quarry)
+        {
+          min = mid + 1;
+        }
+      else if (A[mid].energy > quarry)
+        {
+          max = mid - 1;
+        }
+      else
+        {
+          return mid;
+        }
     }
-    else if (A[mid].energy > quarry)
-    {
-      max = mid - 1;
-    }
-    else
-    {
-      return mid;
-    }
-  }
   return max;
 }
 
@@ -124,9 +124,9 @@ unsigned int hash(unsigned char *str, int nbins)
   int c;
 
   while ((c == *str++))
-  {
-    hash = ((hash << 5) + hash) + c;
-  }
+    {
+      hash = ((hash << 5) + hash) + c;
+    }
 
   return hash % nbins;
 }
@@ -152,18 +152,18 @@ void binary_dump(long n_isotopes, long n_gridpoints,
   FILE *fp = fopen("XS_data.dat", "wb");
   // Dump Nuclide Grid Data
   for (long i = 0; i < n_isotopes; i++)
-  {
-    fwrite(nuclide_grids[i], sizeof(NuclideGridPoint), n_gridpoints, fp);
-  }
+    {
+      fwrite(nuclide_grids[i], sizeof(NuclideGridPoint), n_gridpoints, fp);
+    }
   // Dump UEG Data
   for (long i = 0; i < n_isotopes * n_gridpoints; i++)
-  {
-    // Write energy level
-    fwrite(&energy_grid[i].energy, sizeof(double), 1, fp);
+    {
+      // Write energy level
+      fwrite(&energy_grid[i].energy, sizeof(double), 1, fp);
 
-    // Write index data array (xs_ptrs array)
-    fwrite(energy_grid[i].xs_ptrs, sizeof(int), n_isotopes, fp);
-  }
+      // Write index data array (xs_ptrs array)
+      fwrite(energy_grid[i].xs_ptrs, sizeof(int), n_isotopes, fp);
+    }
 
   fclose(fp);
 }
@@ -175,18 +175,18 @@ void binary_read(long n_isotopes, long n_gridpoints,
   FILE *fp = fopen("XS_data.dat", "rb");
   // Read Nuclide Grid Data
   for (long i = 0; i < n_isotopes; i++)
-  {
-    stat = fread(nuclide_grids[i], sizeof(NuclideGridPoint), n_gridpoints, fp);
-  }
+    {
+      stat = fread(nuclide_grids[i], sizeof(NuclideGridPoint), n_gridpoints, fp);
+    }
   // Dump UEG Data
   for (long i = 0; i < n_isotopes * n_gridpoints; i++)
-  {
-    // Write energy level
-    stat = fread(&energy_grid[i].energy, sizeof(double), 1, fp);
+    {
+      // Write energy level
+      stat = fread(&energy_grid[i].energy, sizeof(double), 1, fp);
 
-    // Write index data array (xs_ptrs array)
-    stat = fread(energy_grid[i].xs_ptrs, sizeof(int), n_isotopes, fp);
-  }
+      // Write index data array (xs_ptrs array)
+      stat = fread(energy_grid[i].xs_ptrs, sizeof(int), n_isotopes, fp);
+    }
 
   fclose(fp);
 }

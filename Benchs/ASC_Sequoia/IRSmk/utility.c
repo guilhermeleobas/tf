@@ -17,11 +17,11 @@ void readInput(const char *filename)
 {
   FILE *fp;
   if ((fp = fopen(filename, "r")) == NULL)
-  {
-    printf("***** ERROR \n");
-    printf("      Cannot open input file: %s\n", filename);
-    exit(1);
-  }
+    {
+      printf("***** ERROR \n");
+      printf("      Cannot open input file: %s\n", filename);
+      exit(1);
+    }
 
   fscanf(fp, "%d %d %d %d %d %d %d %d", &kmin, &kmax, &jmin, &jmax, &imin,
          &imax, &kp, &jp);
@@ -44,11 +44,11 @@ void readInput(const char *filename)
   //  sanity check for xdbl
   //-----
   if ((i_lb - kp - jp - 1) < 0)
-  {
-    printf("***** ERROR \n");
-    printf("      lb of xdbl < 0 \n");
-    exit(1);
-  }
+    {
+      printf("***** ERROR \n");
+      printf("      lb of xdbl < 0 \n");
+      exit(1);
+    }
 
   //-----
   // in theory
@@ -104,9 +104,9 @@ void allocMem(RadiationData_t *rblk)
   rblk->ufr = (double *)malloc(size);
 
   if ((rblk->ufr) == NULL)
-  {
-    printf("*****ERROR: allocMem out of memory \n");
-  }
+    {
+      printf("*****ERROR: allocMem out of memory \n");
+    }
 }
 
 //--------------
@@ -153,39 +153,39 @@ void init(Domain_t *domain, RadiationData_t *rblk, double *x, double *b)
   double *ufr = rblk->ufr;
 
   for (i = 0; i < i_ub; i++)
-  {
-    *b++ = 0.0;
-    *dbl++ = i;
-    *dbc++ = i + 1;
-    *dbr++ = i + 2;
-    *dcl++ = i + 3;
-    *dcc++ = i + 4;
-    *dcr++ = i + 5;
-    *dfl++ = i + 6;
-    *dfc++ = i + 7;
-    *dfr++ = i + 8;
-    *cbl++ = i + 9;
-    *cbc++ = i + 10;
-    *cbr++ = i + 11;
-    *ccl++ = i + 12;
-    *ccc++ = i + 13;
-    *ccr++ = i + 14;
-    *cfl++ = i + 15;
-    *cfc++ = i + 16;
-    *cfr++ = i + 17;
-    *ubl++ = i + 18;
-    *ubc++ = i + 19;
-    *ubr++ = i + 20;
-    *ucl++ = i + 21;
-    *ucc++ = i + 22;
-    *ucr++ = i + 23;
-    *ufl++ = i + 24;
-    *ufc++ = i + 25;
-    *ufr++ = i + 26;
-  }
+    {
+      *b++ = 0.0;
+      *dbl++ = i;
+      *dbc++ = i + 1;
+      *dbr++ = i + 2;
+      *dcl++ = i + 3;
+      *dcc++ = i + 4;
+      *dcr++ = i + 5;
+      *dfl++ = i + 6;
+      *dfc++ = i + 7;
+      *dfr++ = i + 8;
+      *cbl++ = i + 9;
+      *cbc++ = i + 10;
+      *cbr++ = i + 11;
+      *ccl++ = i + 12;
+      *ccc++ = i + 13;
+      *ccr++ = i + 14;
+      *cfl++ = i + 15;
+      *cfc++ = i + 16;
+      *cfr++ = i + 17;
+      *ubl++ = i + 18;
+      *ubc++ = i + 19;
+      *ubr++ = i + 20;
+      *ucl++ = i + 21;
+      *ucc++ = i + 22;
+      *ucr++ = i + 23;
+      *ufl++ = i + 24;
+      *ufc++ = i + 25;
+      *ufr++ = i + 26;
+    }
 
   for (i = 0; i < x_size; ++i)
-  {
-    *x++ = 2.0 * i;
-  }
+    {
+      *x++ = 2.0 * i;
+    }
 }

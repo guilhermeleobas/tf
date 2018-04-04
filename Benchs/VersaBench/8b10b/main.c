@@ -31,18 +31,18 @@ int main(int argc, char **argv)
 {
   int numberOfWords;
   if (argc == 3)
-  {
-    calcSetup();
+    {
+      calcSetup();
 #ifdef BIG_CALC
-    bigTableSetup();
+      bigTableSetup();
 #endif
-    numberOfWords = atoi(argv[2]);
-    runTestbench(numberOfWords, argv[1], 0);
-    return 0;
-  }
+      numberOfWords = atoi(argv[2]);
+      runTestbench(numberOfWords, argv[1], 0);
+      return 0;
+    }
   else
-  {
-    printf("Usage: input_name output_0_name number_of_bytes\n");
-    return -1;
-  }
+    {
+      printf("Usage: input_name output_0_name number_of_bytes\n");
+      return -1;
+    }
 }

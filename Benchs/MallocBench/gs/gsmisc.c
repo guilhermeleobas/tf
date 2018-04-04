@@ -39,9 +39,9 @@ char *gs_malloc(uint num_elts, uint elt_size, char *client_name)
 #endif
 
   if (ptr == 0)
-  {
-    dprintf1("%s: malloc failed\n", client_name);
-  }
+    {
+      dprintf1("%s: malloc failed\n", client_name);
+    }
   return ptr;
 }
 void gs_free(char *ptr, uint num_elts, uint elt_size, char *client_name)

@@ -10,10 +10,10 @@ int mylog(int num)
   int j = 0, k = 1;
 
   while (k < num)
-  {
-    k *= 2;
-    j++;
-  }
+    {
+      k *= 2;
+      j++;
+    }
   return j;
 }
 

@@ -30,27 +30,27 @@ void map(int argc, char **argv, char *hostv[], char *userv[],
   hostz = hostbuf;
 
   for (i = 0; i < argc; i++)
-  {
+    {
 #ifdef DEFQUEUE
-    cost = queuecost + 1; /* default is queueing */
+      cost = queuecost + 1; /* default is queueing */
 #else
-    cost = queuecost - 1; /* default is no queueing */
+      cost = queuecost - 1; /* default is no queueing */
 #endif
-    userv[i] = userz; /* put results here */
-    hostv[i] = hostz;
-    if (**argv == '(')
-    { /* strip () */
-      ++*argv;
-      c = index(*argv, ')');
-      if (c)
-      {
-        *c = '\0';
-      }
+      userv[i] = userz; /* put results here */
+      hostv[i] = hostz;
+      if (**argv == '(')
+        { /* strip () */
+          ++*argv;
+          c = index(*argv, ')');
+          if (c)
+            {
+              *c = '\0';
+            }
+        }
+      /* here it comes! */
+      formv[i] = resolve(*argv++, hostz, userz, &cost);
+      costv[i] = cost;
+      userz += strlen(userz) + 1; /* skip past \0 */
+      hostz += strlen(hostz) + 1;
     }
-    /* here it comes! */
-    formv[i] = resolve(*argv++, hostz, userz, &cost);
-    costv[i] = cost;
-    userz += strlen(userz) + 1; /* skip past \0 */
-    hostz += strlen(hostz) + 1;
-  }
 }

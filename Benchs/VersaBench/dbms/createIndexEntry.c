@@ -22,12 +22,12 @@
  *	Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include <stdlib.h>       /* for NULL and malloc() definitions */
+#include <stdlib.h> /* for NULL and malloc() definitions */
 #include "errorMessage.h" /* for errorMessage() definition     */
-#include "index.h"        /* for IndexEntry definition         */
+#include "index.h" /* for IndexEntry definition         */
 
 IndexEntry *createIndexEntry(void)
-{                    /*  beginning of createIndexEntry() */
+{ /*  beginning of createIndexEntry() */
   IndexEntry *entry; /* entry to create */
 
   static Char name[] = "createIndexEntry";
@@ -39,13 +39,13 @@ IndexEntry *createIndexEntry(void)
    */
   entry = (IndexEntry *)malloc(sizeof(IndexEntry));
   if (entry == NULL)
-  {
-    errorMessage("allocation failure", REPLACE);
-    errorMessage(name, PREPEND);
-  } /*  end of if ( entry == NULL ) */
+    {
+      errorMessage("allocation failure", REPLACE);
+      errorMessage(name, PREPEND);
+    } /*  end of if ( entry == NULL ) */
   else
-  {
-    /*
+    {
+      /*
      *  Set values of entry
      *      - the pointer to the child reference is set to NULL
      *      - the index key values are set to the largest
@@ -53,20 +53,20 @@ IndexEntry *createIndexEntry(void)
      *        probability that uninitialized key values will
      *        be noticed in the case of an error.
      */
-    entry->child.node = NULL;
-    entry->child.dataObject = NULL;
+      entry->child.node = NULL;
+      entry->child.dataObject = NULL;
 
-    entry->key.lower.T = MINIMUM_VALUE_OF_FLOAT;
-    entry->key.lower.X = MINIMUM_VALUE_OF_FLOAT;
-    entry->key.lower.Y = MINIMUM_VALUE_OF_FLOAT;
-    entry->key.lower.Z = MINIMUM_VALUE_OF_FLOAT;
-    entry->key.upper.T = MAXIMUM_VALUE_OF_FLOAT;
-    entry->key.upper.X = MAXIMUM_VALUE_OF_FLOAT;
-    entry->key.upper.Y = MAXIMUM_VALUE_OF_FLOAT;
-    entry->key.upper.Z = MAXIMUM_VALUE_OF_FLOAT;
+      entry->key.lower.T = MINIMUM_VALUE_OF_FLOAT;
+      entry->key.lower.X = MINIMUM_VALUE_OF_FLOAT;
+      entry->key.lower.Y = MINIMUM_VALUE_OF_FLOAT;
+      entry->key.lower.Z = MINIMUM_VALUE_OF_FLOAT;
+      entry->key.upper.T = MAXIMUM_VALUE_OF_FLOAT;
+      entry->key.upper.X = MAXIMUM_VALUE_OF_FLOAT;
+      entry->key.upper.Y = MAXIMUM_VALUE_OF_FLOAT;
+      entry->key.upper.Z = MAXIMUM_VALUE_OF_FLOAT;
 
-    entry->next = NULL;
-  } /*  end of entry default assignment */
+      entry->next = NULL;
+    } /*  end of entry default assignment */
 
   return (entry);
 } /*  end of createIndexEntry()   */

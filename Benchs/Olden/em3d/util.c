@@ -29,9 +29,9 @@ int gen_signed_number(int range)
   temp = lrand48() % (2 * range); /* 0..2*range-1 */
   temp = temp - (range);
   if (temp >= 0)
-  {
-    temp++;
-  }
+    {
+      temp++;
+    }
   return temp;
 }
 
@@ -43,9 +43,9 @@ int check_percent(int percent)
   retval = (drand48() < (double)(percent / 100.0));
   percentcheck++;
   if (retval)
-  {
-    numlocal++;
-  }
+    {
+      numlocal++;
+    }
   return retval;
 }
 

@@ -45,13 +45,13 @@ int zbind(register ref *op)
 {
   ref *bsp = op; /* bottom of stack */
   switch (r_type(op))
-  {
-    case t_array:
-    case t_packedarray:
-      break;
-    default:
-      return e_typecheck;
-  }
+    {
+      case t_array:
+      case t_packedarray:
+        break;
+      default:
+        return e_typecheck;
+    }
   /* It appears from the PostScript manual that bind works */
   /* even on procedures whose top level isn't writable. */
   /* This seems a little counter-intuitive, but we do the same. */
@@ -61,40 +61,40 @@ int zbind(register ref *op)
   /*	for every pointer p such that op < p <= bsp, */
   /*	  *p is an array (or packedarray) ref. */
   while (bsp > op)
-  {
-    while (bsp->size)
     {
-      ref *tp = bsp->value.refs++;
-      bsp->size--;
-      switch (r_type(tp))
-      {
-        case t_name: /* bind the name if an operator */
-          if (r_has_attrs(tp, a_executable))
-          {
-            ref *pvalue;
-            if (dict_lookup(dstack, dsp, tp, &pvalue) > 0 &&
-                r_btype(pvalue) == t_operator &&
-                r_has_attrs(pvalue, a_executable))
+      while (bsp->size)
+        {
+          ref *tp = bsp->value.refs++;
+          bsp->size--;
+          switch (r_type(tp))
             {
-              store(tp, *pvalue);
+              case t_name: /* bind the name if an operator */
+                if (r_has_attrs(tp, a_executable))
+                  {
+                    ref *pvalue;
+                    if (dict_lookup(dstack, dsp, tp, &pvalue) > 0 &&
+                        r_btype(pvalue) == t_operator &&
+                        r_has_attrs(pvalue, a_executable))
+                      {
+                        store(tp, *pvalue);
+                      }
+                  }
+                break;
+              case t_array: /* push into array if procedure */
+                if (!r_has_attrs(tp, a_write))
+                  {
+                    break;
+                  }
+              case t_packedarray:
+                if (r_has_attrs(tp, a_executable) && bsp < ostop)
+                  { /* Make reference read-only */
+                    r_clear_attrs(tp, a_write);
+                    *++bsp = *tp;
+                  }
             }
-          }
-          break;
-        case t_array: /* push into array if procedure */
-          if (!r_has_attrs(tp, a_write))
-          {
-            break;
-          }
-        case t_packedarray:
-          if (r_has_attrs(tp, a_executable) && bsp < ostop)
-          { /* Make reference read-only */
-            r_clear_attrs(tp, a_write);
-            *++bsp = *tp;
-          }
-      }
+        }
+      bsp--;
     }
-    bsp--;
-  }
   return 0;
 }
 
@@ -116,21 +116,21 @@ int zgetenv(register ref *op)
   check_read_type(*op, t_string);
   str = ref_to_string(op, "getenv name");
   if (str == 0)
-  {
-    return e_VMerror;
-  }
+    {
+      return e_VMerror;
+    }
   value = getenv(str);
   alloc_free(str, op->size + 1, 1, "getenv name");
   if (value == 0) /* not found */
-  {
-    make_bool(op, 0);
-    return 0;
-  }
+    {
+      make_bool(op, 0);
+      return 0;
+    }
   code = string_to_ref(value, op, "getenv value");
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   push(1);
   make_bool(op, 1);
   return 0;
@@ -165,15 +165,15 @@ int type1crypt(register ref *op,
   check_type(op[-2], t_integer);
   state = op[-2].value.intval;
   if (op[-2].value.intval != state)
-  {
-    return e_rangecheck; /* state value was truncated */
-  }
+    {
+      return e_rangecheck; /* state value was truncated */
+    }
   check_read_type(op[-1], t_string);
   check_write_type(*op, t_string);
   if (op->size < op[-1].size)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   (void)(*proc)(op->value.bytes, op[-1].value.bytes, op[-1].size,
                 &state); /* can't fail */
   op[-2].value.intval = state;

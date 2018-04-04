@@ -15,20 +15,21 @@ int pcmpz(u) register precision u;
   i = 0;
   uPtr = u->value;
   do
-  {
-    if (*uPtr++ != 0)
     {
-      if (u->sign)
-      {
-        i = -1;
-      }
-      else
-      {
-        i = 1;
-      }
-      break;
+      if (*uPtr++ != 0)
+        {
+          if (u->sign)
+            {
+              i = -1;
+            }
+          else
+            {
+              i = 1;
+            }
+          break;
+        }
     }
-  } while (uPtr < u->value + u->size);
+  while (uPtr < u->value + u->size);
 
   pdestroy(u);
   return i;
@@ -53,45 +54,46 @@ int pcmp(u, v) precision u, v;
   (void)pparm(u);
   (void)pparm(v);
   if (u->sign != v->sign)
-  {
-    if (u->sign)
     {
-      i = -1;
-    }
-    else
-    {
-      i = 1;
-    }
-  }
-  else
-  {
-    i = u->size - v->size;
-    if (i == 0)
-    {
-      uPtr = u->value + u->size;
-      vPtr = v->value + v->size;
-      do
-      {
-        if (*--uPtr != *--vPtr)
+      if (u->sign)
         {
-          break;
+          i = -1;
         }
-      } while (vPtr > v->value);
-      if (*uPtr > *vPtr)
-      {
-        i = 1;
-      }
-      else if (*uPtr < *vPtr)
-      {
-        i = -1;
-      }
+      else
+        {
+          i = 1;
+        }
     }
-
-    if (u->sign)
+  else
     {
-      i = -i;
+      i = u->size - v->size;
+      if (i == 0)
+        {
+          uPtr = u->value + u->size;
+          vPtr = v->value + v->size;
+          do
+            {
+              if (*--uPtr != *--vPtr)
+                {
+                  break;
+                }
+            }
+          while (vPtr > v->value);
+          if (*uPtr > *vPtr)
+            {
+              i = 1;
+            }
+          else if (*uPtr < *vPtr)
+            {
+              i = -1;
+            }
+        }
+
+      if (u->sign)
+        {
+          i = -i;
+        }
     }
-  }
 
   pdestroy(u);
   pdestroy(v);

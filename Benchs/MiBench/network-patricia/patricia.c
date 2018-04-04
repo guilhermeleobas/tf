@@ -44,9 +44,9 @@ static int pat_count(struct ptree *t, int b)
   int count;
 
   if (t->p_b <= b)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
 
   count = t->p_mlen;
 
@@ -63,21 +63,21 @@ static struct ptree *insertR(struct ptree *h, struct ptree *n, int d,
                              struct ptree *p)
 {
   if ((h->p_b >= d) || (h->p_b <= p->p_b))
-  {
-    n->p_b = d;
-    n->p_left = bit(d, n->p_key) ? h : n;
-    n->p_right = bit(d, n->p_key) ? n : h;
-    return n;
-  }
+    {
+      n->p_b = d;
+      n->p_left = bit(d, n->p_key) ? h : n;
+      n->p_right = bit(d, n->p_key) ? n : h;
+      return n;
+    }
 
   if (bit(h->p_b, n->p_key))
-  {
-    h->p_right = insertR(h->p_right, n, d, h);
-  }
+    {
+      h->p_right = insertR(h->p_right, n, d, h);
+    }
   else
-  {
-    h->p_left = insertR(h->p_left, n, d, h);
-  }
+    {
+      h->p_left = insertR(h->p_left, n, d, h);
+    }
   return h;
 }
 
@@ -96,9 +96,9 @@ struct ptree *pat_insert(struct ptree *n, struct ptree *head)
   int i, copied;
 
   if (!head || !n || !n->p_m)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
 
   /*
    * Make sure the key matches the mask.
@@ -110,94 +110,95 @@ struct ptree *pat_insert(struct ptree *n, struct ptree *head)
    */
   t = head;
   do
-  {
-    i = t->p_b;
-    t = bit(t->p_b, n->p_key) ? t->p_right : t->p_left;
-  } while (i < t->p_b);
+    {
+      i = t->p_b;
+      t = bit(t->p_b, n->p_key) ? t->p_right : t->p_left;
+    }
+  while (i < t->p_b);
 
   /*
    * If the keys are the same we need to check the masks.
    */
   if (n->p_key == t->p_key)
-  {
-    /*
+    {
+      /*
      * If we have a duplicate mask, replace the entry
      * with the new one.
      */
-    for (i = 0; i < t->p_mlen; i++)
-    {
-      if (n->p_m->pm_mask == t->p_m[i].pm_mask)
-      {
-        t->p_m[i].pm_data = n->p_m->pm_data;
-        free(n->p_m);
-        free(n);
-        n = 0;
-        return t;
-      }
-    }
+      for (i = 0; i < t->p_mlen; i++)
+        {
+          if (n->p_m->pm_mask == t->p_m[i].pm_mask)
+            {
+              t->p_m[i].pm_data = n->p_m->pm_data;
+              free(n->p_m);
+              free(n);
+              n = 0;
+              return t;
+            }
+        }
 
-    /*
+      /*
      * Allocate space for a new set of masks.
      */
-    buf = (struct ptree_mask *)malloc(sizeof(struct ptree_mask) *
-                                      (t->p_mlen + 1));
+      buf = (struct ptree_mask *)malloc(sizeof(struct ptree_mask) *
+                                        (t->p_mlen + 1));
 
-    /*
+      /*
      * Insert the new mask in the proper order from least
      * to greatest mask.
      */
-    copied = 0;
-    for (i = 0, pm = buf; i < t->p_mlen; pm++)
-    {
-      if (n->p_m->pm_mask > t->p_m[i].pm_mask)
-      {
-        bcopy(t->p_m + i, pm, sizeof(struct ptree_mask));
-        i++;
-      }
-      else
-      {
-        bcopy(n->p_m, pm, sizeof(struct ptree_mask));
-        n->p_m->pm_mask = 0xffffffff;
-        copied = 1;
-      }
-    }
-    if (!copied)
-    {
-      bcopy(n->p_m, pm, sizeof(struct ptree_mask));
-    }
-    free(n->p_m);
-    free(n);
-    n = 0;
-    t->p_mlen++;
+      copied = 0;
+      for (i = 0, pm = buf; i < t->p_mlen; pm++)
+        {
+          if (n->p_m->pm_mask > t->p_m[i].pm_mask)
+            {
+              bcopy(t->p_m + i, pm, sizeof(struct ptree_mask));
+              i++;
+            }
+          else
+            {
+              bcopy(n->p_m, pm, sizeof(struct ptree_mask));
+              n->p_m->pm_mask = 0xffffffff;
+              copied = 1;
+            }
+        }
+      if (!copied)
+        {
+          bcopy(n->p_m, pm, sizeof(struct ptree_mask));
+        }
+      free(n->p_m);
+      free(n);
+      n = 0;
+      t->p_mlen++;
 
-    /*
+      /*
      * Free old masks and point to new ones.
      */
-    free(t->p_m);
-    t->p_m = buf;
+      free(t->p_m);
+      t->p_m = buf;
 
-    return t;
-  }
+      return t;
+    }
 
   /*
    * Find the first bit that differs.
    */
   for (i = 1; i < 32 && bit(i, n->p_key) == bit(i, t->p_key); i++)
-  {
-    ;
-  }
+    {
+      ;
+    }
 
   /*
    * Recursive step.
    */
   if (bit(head->p_b, n->p_key))
-  {
-    head->p_right = insertR(head->p_right, n, i, head);
-  }
+    {
+      head->p_right = insertR(head->p_right, n, i, head);
+    }
   else
-  {
-    head->p_left = insertR(head->p_left, n, i, head);
-  }
+    {
+      head->p_left = insertR(head->p_left, n, i, head);
+    }
 
   return n;
 }
@@ -212,9 +213,9 @@ int pat_remove(struct ptree *n, struct ptree *head)
   int i;
 
   if (!n || !n->p_m || !t)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
 
   /*
    * Search for the target node, while keeping track of the
@@ -222,110 +223,112 @@ int pat_remove(struct ptree *n, struct ptree *head)
    */
   g = p = t = head;
   do
-  {
-    i = t->p_b;
-    g = p;
-    p = t;
-    t = bit(t->p_b, n->p_key) ? t->p_right : t->p_left;
-  } while (i < t->p_b);
+    {
+      i = t->p_b;
+      g = p;
+      p = t;
+      t = bit(t->p_b, n->p_key) ? t->p_right : t->p_left;
+    }
+  while (i < t->p_b);
 
   /*
    * For removal, we need an exact match.
    */
   if (t->p_key != n->p_key)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
 
   /*
    * If there is only 1 mask, we can remove the entire node.
    */
   if (t->p_mlen == 1)
-  {
-    /*
+    {
+      /*
      * Don't allow removal of the default entry.
      */
-    if (t->p_b == 0)
-    {
-      return 0;
-    }
+      if (t->p_b == 0)
+        {
+          return 0;
+        }
 
-    /*
+      /*
      * Must match on the mask.
      */
-    if (t->p_m->pm_mask != n->p_m->pm_mask)
-    {
-      return 0;
-    }
+      if (t->p_m->pm_mask != n->p_m->pm_mask)
+        {
+          return 0;
+        }
 
-    /*
+      /*
      * Search for the node that points to the parent, so
      * we can make sure it doesn't get lost.
      */
-    pp = pt = p;
-    do
-    {
-      i = pt->p_b;
-      pp = pt;
-      pt = bit(pt->p_b, p->p_key) ? pt->p_right : pt->p_left;
-    } while (i < pt->p_b);
+      pp = pt = p;
+      do
+        {
+          i = pt->p_b;
+          pp = pt;
+          pt = bit(pt->p_b, p->p_key) ? pt->p_right : pt->p_left;
+        }
+      while (i < pt->p_b);
 
-    if (bit(pp->p_b, p->p_key))
-    {
-      pp->p_right = t;
-    }
-    else
-    {
-      pp->p_left = t;
-    }
+      if (bit(pp->p_b, p->p_key))
+        {
+          pp->p_right = t;
+        }
+      else
+        {
+          pp->p_left = t;
+        }
 
-    /*
+      /*
      * Point the grandparent to the proper node.
      */
-    if (bit(g->p_b, n->p_key))
-    {
-      g->p_right = bit(p->p_b, n->p_key) ? p->p_left : p->p_right;
-    }
-    else
-    {
-      g->p_left = bit(p->p_b, n->p_key) ? p->p_left : p->p_right;
-    }
+      if (bit(g->p_b, n->p_key))
+        {
+          g->p_right = bit(p->p_b, n->p_key) ? p->p_left : p->p_right;
+        }
+      else
+        {
+          g->p_left = bit(p->p_b, n->p_key) ? p->p_left : p->p_right;
+        }
 
-    /*
+      /*
      * Delete the target's data and copy in its parent's
      * data, but not the bit value.
      */
-    if (t->p_m->pm_data)
-    {
-      free(t->p_m->pm_data);
-    }
-    free(t->p_m);
-    if (t != p)
-    {
-      t->p_key = p->p_key;
-      t->p_m = p->p_m;
-      t->p_mlen = p->p_mlen;
-    }
-    free(p);
+      if (t->p_m->pm_data)
+        {
+          free(t->p_m->pm_data);
+        }
+      free(t->p_m);
+      if (t != p)
+        {
+          t->p_key = p->p_key;
+          t->p_m = p->p_m;
+          t->p_mlen = p->p_mlen;
+        }
+      free(p);
 
-    return 1;
-  }
+      return 1;
+    }
 
   /*
    * Multiple masks, so we need to find the one to remove.
    * Return if we don't match on any of them.
    */
   for (i = 0; i < t->p_mlen; i++)
-  {
-    if (n->p_m->pm_mask == t->p_m[i].pm_mask)
     {
-      break;
+      if (n->p_m->pm_mask == t->p_m[i].pm_mask)
+        {
+          break;
+        }
     }
-  }
   if (i >= t->p_mlen)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
 
   /*
    * Allocate space for a new set of masks.
@@ -334,12 +337,12 @@ int pat_remove(struct ptree *n, struct ptree *head)
       (struct ptree_mask *)malloc(sizeof(struct ptree_mask) * (t->p_mlen - 1));
 
   for (i = 0, pm = buf; i < t->p_mlen; i++)
-  {
-    if (n->p_m->pm_mask != t->p_m[i].pm_mask)
     {
-      bcopy(t->p_m + i, pm++, sizeof(struct ptree_mask));
+      if (n->p_m->pm_mask != t->p_m[i].pm_mask)
+        {
+          bcopy(t->p_m + i, pm++, sizeof(struct ptree_mask));
+        }
     }
-  }
 
   /*
    * Free old masks and point to new ones.
@@ -359,26 +362,27 @@ struct ptree *pat_search(unsigned long key, struct ptree *head)
   int i;
 
   if (!t)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
 
   /*
    * Find closest matching leaf node.
    */
   do
-  {
-    /*
+    {
+      /*
      * Keep track of most complete match so far.
      */
-    if (t->p_key == (key & t->p_m->pm_mask))
-    {
-      p = t;
-    }
+      if (t->p_key == (key & t->p_m->pm_mask))
+        {
+          p = t;
+        }
 
-    i = t->p_b;
-    t = bit(t->p_b, key) ? t->p_right : t->p_left;
-  } while (i < t->p_b);
+      i = t->p_b;
+      t = bit(t->p_b, key) ? t->p_right : t->p_left;
+    }
+  while (i < t->p_b);
 
   /*
    * Compare keys (and masks) to see if this

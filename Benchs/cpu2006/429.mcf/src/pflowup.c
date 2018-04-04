@@ -28,26 +28,26 @@ node_t *w;
 #endif
 {
   for (; iplus != w; iplus = iplus->pred)
-  {
-    if (iplus->orientation)
     {
-      iplus->flow = (flow_t)0;
+      if (iplus->orientation)
+        {
+          iplus->flow = (flow_t)0;
+        }
+      else
+        {
+          iplus->flow = (flow_t)1;
+        }
     }
-    else
-    {
-      iplus->flow = (flow_t)1;
-    }
-  }
 
   for (; jplus != w; jplus = jplus->pred)
-  {
-    if (jplus->orientation)
     {
-      jplus->flow = (flow_t)1;
+      if (jplus->orientation)
+        {
+          jplus->flow = (flow_t)1;
+        }
+      else
+        {
+          jplus->flow = (flow_t)0;
+        }
     }
-    else
-    {
-      jplus->flow = (flow_t)0;
-    }
-  }
 }

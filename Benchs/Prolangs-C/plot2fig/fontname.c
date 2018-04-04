@@ -35,12 +35,12 @@ int match(char *s1, char *s2)
   len2 = strlen(s2);
 
   for (i = 0; i < len2; i++)
-  {
-    if (strcmp(s1, &s2[i]) == 0)
     {
-      return 1;
+      if (strcmp(s1, &s2[i]) == 0)
+        {
+          return 1;
+        }
     }
-  }
   return 0;
 }
 
@@ -61,11 +61,11 @@ int fontname(char *s)
 
   r = regcomp(res, s, 1);
   if (!r)
-  {
-    fprintf(stderr, "error in matching fontname!\n");
-    fprintf(stderr, "Fontname `%s' ignored.\n", s);
-    return 0;
-  }
+    {
+      fprintf(stderr, "error in matching fontname!\n");
+      fprintf(stderr, "Fontname `%s' ignored.\n", s);
+      return 0;
+    }
 
 #define re_exec(x) regexec(res, x, 1, &res, 1)
 
@@ -93,36 +93,36 @@ int fontname(char *s)
 
   res = (char *)re_comp(s);
   if (res)
-  {
-    fprintf(stderr, "error in matching fontname: %s\n", res);
-    fprintf(stderr, "Fontname `%s' ignored.\n", s);
-    return 0;
-  }
+    {
+      fprintf(stderr, "error in matching fontname: %s\n", res);
+      fprintf(stderr, "Fontname `%s' ignored.\n", s);
+      return 0;
+    }
 
   if (re_exec("typewriter") || re_exec("courier"))
-  {
-    font_id = 5;
-  }
+    {
+      font_id = 5;
+    }
   else if (re_exec("modern"))
-  {
-    font_id = 4;
-  }
+    {
+      font_id = 4;
+    }
   else if (re_exec("italic") || re_exec("oblique"))
-  {
-    font_id = 3;
-  }
+    {
+      font_id = 3;
+    }
   else if (re_exec("bold"))
-  {
-    font_id = 2;
-  }
+    {
+      font_id = 2;
+    }
   else if (re_exec("times") || re_exec("roman"))
-  {
-    font_id = 2;
-  }
+    {
+      font_id = 2;
+    }
   else
-  {
-    fprintf(stderr, "Unrecognized font name `%s' ignored.\n", s);
-  }
+    {
+      fprintf(stderr, "Unrecognized font name `%s' ignored.\n", s);
+    }
 
   return 0;
 }

@@ -33,14 +33,14 @@ int ar_name(name) char *name;
   char *p = index(name, '('), *end = name + strlen(name) - 1;
 
   if (p == 0 || p == name || *end != ')')
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
 
   if (p[1] == '(' && end[-1] == ')')
-  {
-    fatal("attempt to use unsupported feature: `%s'", name);
-  }
+    {
+      fatal("attempt to use unsupported feature: `%s'", name);
+    }
 
   return 1;
 }
@@ -55,14 +55,14 @@ void ar_parse_name(name, arname_p, memname_p) char *name, **arname_p,
   char *p = index(name, '('), *end = name + strlen(name) - 1;
 
   if (arname_p != 0)
-  {
-    *arname_p = savestring(name, p - name);
-  }
+    {
+      *arname_p = savestring(name, p - name);
+    }
 
   if (memname_p != 0)
-  {
-    *memname_p = savestring(p + 1, end - (p + 1));
-  }
+    {
+      *memname_p = savestring(p + 1, end - (p + 1));
+    }
 }
 
 static long int ar_member_date_1();
@@ -85,10 +85,10 @@ time_t ar_member_date(name) char *name;
     struct file *arfile;
     arfile = lookup_file(arname);
     if (arfile == 0)
-    {
-      arfile = enter_file(arname);
-      arname_used = 1;
-    }
+      {
+        arfile = enter_file(arname);
+        arname_used = 1;
+      }
 
     (void)f_mtime(arfile, 0);
   }
@@ -96,9 +96,9 @@ time_t ar_member_date(name) char *name;
   val = ar_scan(arname, ar_member_date_1, (long int)memname);
 
   if (!arname_used)
-  {
-    free(arname);
-  }
+    {
+      free(arname);
+    }
   free(memname);
 
   return (val <= 0 ? (time_t)-1 : (time_t)val);
@@ -133,40 +133,40 @@ int ar_touch(name) char *name;
     struct file *arfile;
     arfile = lookup_file(arname);
     if (arfile == 0)
-    {
-      arfile = enter_file(arname);
-      arname_used = 1;
-    }
+      {
+        arfile = enter_file(arname);
+        arname_used = 1;
+      }
 
     (void)f_mtime(arfile, 0);
   }
 
   val = 1;
   switch (ar_member_touch(arname, memname))
-  {
-    case -1:
-      error("touch: Archive `%s' does not exist", arname);
-      break;
-    case -2:
-      error("touch: `%s' is not a valid archive", arname);
-      break;
-    case -3:
-      perror_with_name("touch: ", arname);
-      break;
-    case 1:
-      error("touch: Member `%s' does not exist in `%s'", memname, arname);
-      break;
-    case 0:
-      val = 0;
-      break;
-    default:
-      error("touch: Bad return code from ar_member_touch on `%s'", name);
-  }
+    {
+      case -1:
+        error("touch: Archive `%s' does not exist", arname);
+        break;
+      case -2:
+        error("touch: `%s' is not a valid archive", arname);
+        break;
+      case -3:
+        perror_with_name("touch: ", arname);
+        break;
+      case 1:
+        error("touch: Member `%s' does not exist in `%s'", memname, arname);
+        break;
+      case 0:
+        val = 0;
+        break;
+      default:
+        error("touch: Bad return code from ar_member_touch on `%s'", name);
+    }
 
   if (!arname_used)
-  {
-    free(arname);
-  }
+    {
+      free(arname);
+    }
   free(memname);
 
   return val;

@@ -11,17 +11,18 @@ precision utop(i) register unsigned int i;
   register precision u = palloc(INTSIZE);
 
   if (u == pUndef)
-  {
-    return pUndef;
-  }
+    {
+      return pUndef;
+    }
 
   u->sign = false;
   uPtr = u->value;
   do
-  {
-    *uPtr++ = modBase(i);
-    i = divBase(i);
-  } while (i != 0);
+    {
+      *uPtr++ = modBase(i);
+      i = divBase(i);
+    }
+  while (i != 0);
 
   u->size = (uPtr - u->value);
   return presult(u);

@@ -109,42 +109,42 @@ defdouble ConvertFromIeeeSingle(char *bytes)
          (unsigned long)(bytes[3] & 0xFF); /* Assemble bytes into a long */
 
   if ((bits & 0x7FFFFFFF) == 0)
-  {
-    f = 0;
-  }
+    {
+      f = 0;
+    }
 
   else
-  {
-    expon = (bits & 0x7F800000) >> SEXP_POSITION;
-    if (expon == SEXP_MAX)
-    {               /* Infinity or NaN */
-      f = HUGE_VAL; /* Map NaN's to infinity */
-    }
-    else
     {
-      if (expon == 0)
-      { /* Denormalized number */
-        mantissa = (bits & 0x7fffff);
-        f = ldexp((defdouble)mantissa,
-                  (int)(expon - SEXP_OFFSET - SEXP_POSITION + 1));
-      }
+      expon = (bits & 0x7F800000) >> SEXP_POSITION;
+      if (expon == SEXP_MAX)
+        { /* Infinity or NaN */
+          f = HUGE_VAL; /* Map NaN's to infinity */
+        }
       else
-      {                                          /* Normalized number */
-        mantissa = (bits & 0x7fffff) + 0x800000; /* Insert hidden bit */
-        f = ldexp((defdouble)mantissa,
-                  (int)(expon - SEXP_OFFSET - SEXP_POSITION));
-      }
+        {
+          if (expon == 0)
+            { /* Denormalized number */
+              mantissa = (bits & 0x7fffff);
+              f = ldexp((defdouble)mantissa,
+                        (int)(expon - SEXP_OFFSET - SEXP_POSITION + 1));
+            }
+          else
+            { /* Normalized number */
+              mantissa = (bits & 0x7fffff) + 0x800000; /* Insert hidden bit */
+              f = ldexp((defdouble)mantissa,
+                        (int)(expon - SEXP_OFFSET - SEXP_POSITION));
+            }
+        }
     }
-  }
 
   if (bits & LONG_MIN)
-  {
-    return -f;
-  }
+    {
+      return -f;
+    }
   else
-  {
-    return f;
-  }
+    {
+      return f;
+    }
 }
 
 /****************************************************************/
@@ -155,60 +155,60 @@ void ConvertToIeeeSingle(defdouble num, char *bytes)
   register long bits;
 
   if (num < 0)
-  { /* Can't distinguish a negative zero */
-    sign = LONG_MIN;
-    num *= -1;
-  }
+    { /* Can't distinguish a negative zero */
+      sign = LONG_MIN;
+      num *= -1;
+    }
   else
-  {
-    sign = 0;
-  }
+    {
+      sign = 0;
+    }
 
   if (num == 0)
-  {
-    bits = 0;
-  }
+    {
+      bits = 0;
+    }
 
   else
-  {
-    defdouble fMant;
-    int expon;
-
-    fMant = frexp(num, &expon);
-
-    if ((expon > (SEXP_MAX - SEXP_OFFSET + 1)) || !(fMant < 1))
     {
-      /* NaN's and infinities fail second test */
-      bits = sign | 0x7F800000; /* +/- infinity */
-    }
+      defdouble fMant;
+      int expon;
 
-    else
-    {
-      long mantissa;
+      fMant = frexp(num, &expon);
 
-      if (expon < -(SEXP_OFFSET - 2))
-      { /* Smaller than normalized */
-        int shift = (SEXP_POSITION + 1) + (SEXP_OFFSET - 2) + expon;
-        if (shift < 0)
-        { /* Way too small: flush to zero */
-          bits = sign;
+      if ((expon > (SEXP_MAX - SEXP_OFFSET + 1)) || !(fMant < 1))
+        {
+          /* NaN's and infinities fail second test */
+          bits = sign | 0x7F800000; /* +/- infinity */
         }
-        else
-        { /* Nonzero denormalized number */
-          mantissa = (long)(fMant * (1L << shift));
-          bits = sign | mantissa;
-        }
-      }
 
       else
-      { /* Normalized number */
-        mantissa = (long)floor(fMant * (1L << (SEXP_POSITION + 1)));
-        mantissa -= (1L << SEXP_POSITION); /* Hide MSB */
-        bits = sign | ((long)((expon + SEXP_OFFSET - 1)) << SEXP_POSITION) |
-               mantissa;
-      }
+        {
+          long mantissa;
+
+          if (expon < -(SEXP_OFFSET - 2))
+            { /* Smaller than normalized */
+              int shift = (SEXP_POSITION + 1) + (SEXP_OFFSET - 2) + expon;
+              if (shift < 0)
+                { /* Way too small: flush to zero */
+                  bits = sign;
+                }
+              else
+                { /* Nonzero denormalized number */
+                  mantissa = (long)(fMant * (1L << shift));
+                  bits = sign | mantissa;
+                }
+            }
+
+          else
+            { /* Normalized number */
+              mantissa = (long)floor(fMant * (1L << (SEXP_POSITION + 1)));
+              mantissa -= (1L << SEXP_POSITION); /* Hide MSB */
+              bits = sign | ((long)((expon + SEXP_OFFSET - 1)) << SEXP_POSITION) |
+                     mantissa;
+            }
+        }
     }
-  }
 
   bytes[0] = (char)(bits >> 24); /* Copy to byte string */
   bytes[1] = (char)(bits >> 16);
@@ -241,46 +241,46 @@ defdouble ConvertFromIeeeDouble(char *bytes)
            (unsigned long)(bytes[7] & 0xFF);
 
   if (first == 0 && second == 0)
-  {
-    f = 0;
-  }
+    {
+      f = 0;
+    }
 
   else
-  {
-    expon = (first & 0x7FF00000) >> DEXP_POSITION;
-    if (expon == DEXP_MAX)
-    {               /* Infinity or NaN */
-      f = HUGE_VAL; /* Map NaN's to infinity */
-    }
-    else
     {
-      if (expon == 0)
-      { /* Denormalized number */
-        mantissa = (first & 0x000FFFFF);
-        f = ldexp((defdouble)mantissa,
-                  (int)(expon - DEXP_OFFSET - DEXP_POSITION + 1));
-        f += ldexp(UnsignedToFloat(second),
-                   (int)(expon - DEXP_OFFSET - DEXP_POSITION + 1 - 32));
-      }
+      expon = (first & 0x7FF00000) >> DEXP_POSITION;
+      if (expon == DEXP_MAX)
+        { /* Infinity or NaN */
+          f = HUGE_VAL; /* Map NaN's to infinity */
+        }
       else
-      {                                               /* Normalized number */
-        mantissa = (first & 0x000FFFFF) + 0x00100000; /* Insert hidden bit */
-        f = ldexp((defdouble)mantissa,
-                  (int)(expon - DEXP_OFFSET - DEXP_POSITION));
-        f += ldexp(UnsignedToFloat(second),
-                   (int)(expon - DEXP_OFFSET - DEXP_POSITION - 32));
-      }
+        {
+          if (expon == 0)
+            { /* Denormalized number */
+              mantissa = (first & 0x000FFFFF);
+              f = ldexp((defdouble)mantissa,
+                        (int)(expon - DEXP_OFFSET - DEXP_POSITION + 1));
+              f += ldexp(UnsignedToFloat(second),
+                         (int)(expon - DEXP_OFFSET - DEXP_POSITION + 1 - 32));
+            }
+          else
+            { /* Normalized number */
+              mantissa = (first & 0x000FFFFF) + 0x00100000; /* Insert hidden bit */
+              f = ldexp((defdouble)mantissa,
+                        (int)(expon - DEXP_OFFSET - DEXP_POSITION));
+              f += ldexp(UnsignedToFloat(second),
+                         (int)(expon - DEXP_OFFSET - DEXP_POSITION - 32));
+            }
+        }
     }
-  }
 
   if (first & 0x80000000)
-  {
-    return -f;
-  }
+    {
+      return -f;
+    }
   else
-  {
-    return f;
-  }
+    {
+      return f;
+    }
 }
 
 /****************************************************************/
@@ -291,76 +291,76 @@ void ConvertToIeeeDouble(defdouble num, char *bytes)
   long first, second;
 
   if (num < 0)
-  { /* Can't distinguish a negative zero */
-    sign = LONG_MIN;
-    num *= -1;
-  }
+    { /* Can't distinguish a negative zero */
+      sign = LONG_MIN;
+      num *= -1;
+    }
   else
-  {
-    sign = 0;
-  }
+    {
+      sign = 0;
+    }
 
   if (num == 0)
-  {
-    first = 0;
-    second = 0;
-  }
-
-  else
-  {
-    defdouble fMant, fsMant;
-    int expon;
-
-    fMant = frexp(num, &expon);
-
-    if ((expon > (DEXP_MAX - DEXP_OFFSET + 1)) || !(fMant < 1))
     {
-      /* NaN's and infinities fail second test */
-      first = sign | 0x7FF00000; /* +/- infinity */
+      first = 0;
       second = 0;
     }
 
-    else
+  else
     {
-      long mantissa;
+      defdouble fMant, fsMant;
+      int expon;
 
-      if (expon < -(DEXP_OFFSET - 2))
-      { /* Smaller than normalized */
-        int shift = (DEXP_POSITION + 1) + (DEXP_OFFSET - 2) + expon;
-        if (shift < 0)
-        { /* Too small for something in the MS word */
-          first = sign;
-          shift += 32;
-          if (shift < 0)
-          { /* Way too small: flush to zero */
-            second = 0;
-          }
-          else
-          { /* Pretty small demorn */
-            second = FloatToUnsigned(floor(ldexp(fMant, shift)));
-          }
+      fMant = frexp(num, &expon);
+
+      if ((expon > (DEXP_MAX - DEXP_OFFSET + 1)) || !(fMant < 1))
+        {
+          /* NaN's and infinities fail second test */
+          first = sign | 0x7FF00000; /* +/- infinity */
+          second = 0;
         }
-        else
-        { /* Nonzero denormalized number */
-          fsMant = ldexp(fMant, shift);
-          mantissa = (long)floor(fsMant);
-          first = sign | mantissa;
-          second = FloatToUnsigned(floor(ldexp(fsMant - mantissa, 32)));
-        }
-      }
 
       else
-      { /* Normalized number */
-        fsMant = ldexp(fMant, DEXP_POSITION + 1);
-        mantissa = (long)floor(fsMant);
-        mantissa -= (1L << DEXP_POSITION); /* Hide MSB */
-        fsMant -= (1L << DEXP_POSITION);
-        first = sign | ((long)((expon + DEXP_OFFSET - 1)) << DEXP_POSITION) |
-                mantissa;
-        second = FloatToUnsigned(floor(ldexp(fsMant - mantissa, 32)));
-      }
+        {
+          long mantissa;
+
+          if (expon < -(DEXP_OFFSET - 2))
+            { /* Smaller than normalized */
+              int shift = (DEXP_POSITION + 1) + (DEXP_OFFSET - 2) + expon;
+              if (shift < 0)
+                { /* Too small for something in the MS word */
+                  first = sign;
+                  shift += 32;
+                  if (shift < 0)
+                    { /* Way too small: flush to zero */
+                      second = 0;
+                    }
+                  else
+                    { /* Pretty small demorn */
+                      second = FloatToUnsigned(floor(ldexp(fMant, shift)));
+                    }
+                }
+              else
+                { /* Nonzero denormalized number */
+                  fsMant = ldexp(fMant, shift);
+                  mantissa = (long)floor(fsMant);
+                  first = sign | mantissa;
+                  second = FloatToUnsigned(floor(ldexp(fsMant - mantissa, 32)));
+                }
+            }
+
+          else
+            { /* Normalized number */
+              fsMant = ldexp(fMant, DEXP_POSITION + 1);
+              mantissa = (long)floor(fsMant);
+              mantissa -= (1L << DEXP_POSITION); /* Hide MSB */
+              fsMant -= (1L << DEXP_POSITION);
+              first = sign | ((long)((expon + DEXP_OFFSET - 1)) << DEXP_POSITION) |
+                      mantissa;
+              second = FloatToUnsigned(floor(ldexp(fsMant - mantissa, 32)));
+            }
+        }
     }
-  }
 
   bytes[0] = (char)(first >> 24);
   bytes[1] = (char)(first >> 16);
@@ -400,31 +400,31 @@ defdouble ConvertFromIeeeExtended(char *bytes)
            ((unsigned long)(bytes[9] & 0xFF));
 
   if (expon == 0 && hiMant == 0 && loMant == 0)
-  {
-    f = 0;
-  }
-  else
-  {
-    if (expon == 0x7FFF)
-    { /* Infinity or NaN */
-      f = HUGE_VAL;
-    }
-    else
     {
-      expon -= 16383;
-      f = ldexp(UnsignedToFloat(hiMant), (int)(expon -= 31));
-      f += ldexp(UnsignedToFloat(loMant), (int)(expon -= 32));
+      f = 0;
     }
-  }
+  else
+    {
+      if (expon == 0x7FFF)
+        { /* Infinity or NaN */
+          f = HUGE_VAL;
+        }
+      else
+        {
+          expon -= 16383;
+          f = ldexp(UnsignedToFloat(hiMant), (int)(expon -= 31));
+          f += ldexp(UnsignedToFloat(loMant), (int)(expon -= 32));
+        }
+    }
 
   if (bytes[0] & 0x80)
-  {
-    return -f;
-  }
+    {
+      return -f;
+    }
   else
-  {
-    return f;
-  }
+    {
+      return f;
+    }
 }
 
 /****************************************************************/
@@ -437,47 +437,47 @@ void ConvertToIeeeExtended(defdouble num, char *bytes)
   unsigned long hiMant, loMant;
 
   if (num < 0)
-  {
-    sign = 0x8000;
-    num *= -1;
-  }
+    {
+      sign = 0x8000;
+      num *= -1;
+    }
   else
-  {
-    sign = 0;
-  }
+    {
+      sign = 0;
+    }
 
   if (num == 0)
-  {
-    expon = 0;
-    hiMant = 0;
-    loMant = 0;
-  }
-  else
-  {
-    fMant = frexp(num, &expon);
-    if ((expon > 16384) || !(fMant < 1))
-    { /* Infinity or NaN */
-      expon = sign | 0x7FFF;
+    {
+      expon = 0;
       hiMant = 0;
-      loMant = 0; /* infinity */
+      loMant = 0;
     }
-    else
-    { /* Finite */
-      expon += 16382;
-      if (expon < 0)
-      { /* denormalized */
-        fMant = ldexp(fMant, expon);
-        expon = 0;
-      }
-      expon |= sign;
-      fMant = ldexp(fMant, 32);
-      fsMant = floor(fMant);
-      hiMant = FloatToUnsigned(fsMant);
-      fMant = ldexp(fMant - fsMant, 32);
-      fsMant = floor(fMant);
-      loMant = FloatToUnsigned(fsMant);
+  else
+    {
+      fMant = frexp(num, &expon);
+      if ((expon > 16384) || !(fMant < 1))
+        { /* Infinity or NaN */
+          expon = sign | 0x7FFF;
+          hiMant = 0;
+          loMant = 0; /* infinity */
+        }
+      else
+        { /* Finite */
+          expon += 16382;
+          if (expon < 0)
+            { /* denormalized */
+              fMant = ldexp(fMant, expon);
+              expon = 0;
+            }
+          expon |= sign;
+          fMant = ldexp(fMant, 32);
+          fsMant = floor(fMant);
+          hiMant = FloatToUnsigned(fsMant);
+          fMant = ldexp(fMant - fsMant, 32);
+          fsMant = floor(fMant);
+          loMant = FloatToUnsigned(fsMant);
+        }
     }
-  }
 
   bytes[0] = expon >> 8;
   bytes[1] = expon;
@@ -520,15 +520,18 @@ void ConvertToIeeeExtended(defdouble num, char *bytes)
 
 #ifdef MAIN
 
-union SParts {
+union SParts
+{
   Single s;
   long i;
 };
-union DParts {
+union DParts
+{
   Double d;
   long i[2];
 };
-union EParts {
+union EParts
+{
   defdouble e;
   short i[6];
 };
@@ -552,10 +555,10 @@ int GetHexValue(register int x)
 void Hex2Bytes(register char *hex, register char *bytes)
 {
   for (; *hex; hex += 2)
-  {
-    *bytes++ = (GetHexValue(hex[0]) << 4) | GetHexValue(hex[1]);
-    if (hex[1] == 0) break; /* Guard against odd bytes */
-  }
+    {
+      *bytes++ = (GetHexValue(hex[0]) << 4) | GetHexValue(hex[1]);
+      if (hex[1] == 0) break; /* Guard against odd bytes */
+    }
 }
 
 int GetHexSymbol(register int x)
@@ -571,10 +574,10 @@ int GetHexSymbol(register int x)
 void Bytes2Hex(register char *bytes, register char *hex, register int nBytes)
 {
   for (; nBytes--; bytes++)
-  {
-    *hex++ = GetHexSymbol(*bytes >> 4);
-    *hex++ = GetHexSymbol(*bytes);
-  }
+    {
+      *hex++ = GetHexSymbol(*bytes >> 4);
+      *hex++ = GetHexSymbol(*bytes);
+    }
   *hex = 0;
 }
 
@@ -583,11 +586,11 @@ void MaybeSwapBytes(char *bytes, int nBytes)
 #ifdef LITTLE_ENDIAN
   register char *p, *q, t;
   for (p = bytes, q = bytes + nBytes - 1; p < q; p++, q--)
-  {
-    t = *p;
-    *p = *q;
-    *q = t;
-  }
+    {
+      t = *p;
+      *p = *q;
+      *q = t;
+    }
 #else
   if (bytes, nBytes)
     ; /* Just so it's used */
@@ -661,7 +664,7 @@ void TestFromIeeeDouble(char *hex)
 #ifdef IEEE
   fprintf(stderr, "IEEE(%g) [%.8s %.8s] --> double(%g) [%08lX %08lX]\n",
           MachineIEEEDouble(bytes), hex, hex + 8, f, p.i[0], p.i[1]);
-#else  /* IEEE */
+#else /* IEEE */
   fprintf(stderr, "IEEE[%.8s %.8s] --> double(%g) [%08lX %08lX]\n", hex,
           hex + 8, f, p.i[0], p.i[1]);
 #endif /* IEEE */
@@ -680,7 +683,7 @@ void TestToIeeeDouble(defdouble f)
 #ifdef IEEE
   fprintf(stderr, "double(%g) [%08lX %08lX] --> IEEE(%g) [%.8s %.8s]\n", f,
           p.i[0], p.i[1], MachineIEEEDouble(bytes), hex, hex + 8);
-#else  /* IEEE */
+#else /* IEEE */
   fprintf(stderr, "double(%g) [%08lX %08lX] --> IEEE[%.8s %.8s]\n", f, p.i[0],
           p.i[1], hex, hex + 8);
 #endif /* IEEE */
@@ -713,7 +716,7 @@ void TestFromIeeeExtended(char *hex)
       "IEEE(%g) [%.4s %.8s %.8s] --> extended(%g) [%04X %04X%04X %04X%04X]\n",
       *((defdouble *)(bytes)), hex, hex + 4, hex + 12, f, p.i[0] & 0xFFFF,
       p.i[2] & 0xFFFF, p.i[3] & 0xFFFF, p.i[4] & 0xFFFF, p.i[5] & 0xFFFF);
-#else  /* !Macintosh */
+#else /* !Macintosh */
   fprintf(stderr,
           "IEEE[%.4s %.8s %.8s] --> extended(%g) [%04X %04X%04X %04X%04X]\n",
           hex, hex + 4, hex + 12, f, p.i[0] & 0xFFFF, p.i[2] & 0xFFFF,
@@ -743,7 +746,7 @@ void TestToIeeeExtended(defdouble f)
 #if defined(applec) || defined(THINK_C) || defined(METROWERKS)
   fprintf(stderr, "extended(%g) --> IEEE(%g) [%.4s %.8s %.8s]\n", f,
           *((defdouble *)(bytes)), hex, hex + 4, hex + 12);
-#else  /* !Macintosh */
+#else /* !Macintosh */
   fprintf(stderr, "extended(%g) --> IEEE[%.4s %.8s %.8s]\n", f, hex, hex + 4,
           hex + 12);
 #endif /* Macintosh */
@@ -818,8 +821,8 @@ void main(void)
   d[0] = 0x7F800100L;
   MaybeSwapBytes(d, 4);
   TestToIeeeSingle(*((float *)(&d[0]))); /* Signalling NaN(1) */
-#endif                                   /* sgi */
-#endif                                   /* IEEE */
+#endif /* sgi */
+#endif /* IEEE */
 
   TestFromIeeeDouble("0000000000000000");
   TestFromIeeeDouble("8000000000000000");
@@ -882,8 +885,8 @@ void main(void)
   Hex2Bytes("7FF0002000000000", bytes);
   MaybeSwapBytes(d, 8);
   TestToIeeeDouble(*((Double *)(bytes))); /* Signalling NaN(1) */
-#endif                                    /* sgi */
-#endif                                    /* IEEE */
+#endif /* sgi */
+#endif /* IEEE */
 
   TestFromIeeeExtended("00000000000000000000"); /* +0 */
   TestFromIeeeExtended("80000000000000000000"); /* -0 */

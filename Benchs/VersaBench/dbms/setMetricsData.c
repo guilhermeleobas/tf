@@ -26,19 +26,19 @@
  *	Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include <assert.h>             /* for assert()                   */
-#include "dataManagement.h"     /* for primitive type definitions */
+#include <assert.h> /* for assert()                   */
+#include "dataManagement.h" /* for primitive type definitions */
 #include "getNextCommandCode.h" /* for Commandtype enumeration    */
-#include "metrics.h"            /* for Metrics definition         */
+#include "metrics.h" /* for Metrics definition         */
 
 /*
  *  Function prototype
  */
 extern Time getTime(void);
 
-void setMetricsData(Metrics *metrics,    /* metrics struct to update */
+void setMetricsData(Metrics *metrics, /* metrics struct to update */
                     CommandType command) /* command to update        */
-{                                        /*  begin setMetricsData()  */
+{ /*  begin setMetricsData()  */
   Time temp; /*  variable used to find current time          */
 
   assert(metrics);
@@ -54,24 +54,24 @@ void setMetricsData(Metrics *metrics,    /* metrics struct to update */
    */
   temp = getTime();
   if (command == INSERT)
-  {
-    metrics->insertCommandMetric.lastTimeMark = temp;
-    metrics->lastCommand = INSERT;
-  } /*  end of command == INSERT        */
+    {
+      metrics->insertCommandMetric.lastTimeMark = temp;
+      metrics->lastCommand = INSERT;
+    } /*  end of command == INSERT        */
   else if (command == QUERY)
-  {
-    metrics->queryCommandMetric.lastTimeMark = temp;
-    metrics->lastCommand = QUERY;
-  } /*  end of command == QUERY         */
+    {
+      metrics->queryCommandMetric.lastTimeMark = temp;
+      metrics->lastCommand = QUERY;
+    } /*  end of command == QUERY         */
   else if (command == DELETE)
-  {
-    metrics->deleteCommandMetric.lastTimeMark = temp;
-    metrics->lastCommand = DELETE;
-  } /*  end of command == DELETE        */
+    {
+      metrics->deleteCommandMetric.lastTimeMark = temp;
+      metrics->lastCommand = DELETE;
+    } /*  end of command == DELETE        */
   else
-  {
-    metrics->lastCommand = INVALID;
-  } /*  end of inappropriate command    */
+    {
+      metrics->lastCommand = INVALID;
+    } /*  end of inappropriate command    */
 
   return;
 } /*  end of setMetricsData() */

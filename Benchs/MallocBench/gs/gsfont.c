@@ -39,10 +39,10 @@ gs_font_dir *gs_font_dir_alloc(proc_alloc_t palloc, proc_free_t pfree)
 {
   return gs_font_dir_alloc_limits(
       palloc, pfree, 10, /* smax - # of scaled fonts */
-      20000,             /* bmax - space for cached chars */
-      20,                /* mmax - # of cached font/matrix pairs */
-      500,               /* cmax - # of cached chars */
-      100);              /* blimit/upper - max size of a single cached char */
+      20000, /* bmax - space for cached chars */
+      20, /* mmax - # of cached font/matrix pairs */
+      500, /* cmax - # of cached chars */
+      100); /* blimit/upper - max size of a single cached char */
 }
 gs_font_dir *gs_font_dir_alloc_limits(proc_alloc_t palloc, proc_free_t pfree,
                                       uint smax, uint bmax, uint mmax,
@@ -54,33 +54,33 @@ gs_font_dir *gs_font_dir_alloc_limits(proc_alloc_t palloc, proc_free_t pfree,
   struct cached_fm_pair_s *mdata;
   struct cached_char_s *cdata;
   if (pdir == 0)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
   bdata = (byte *)(*palloc)(bmax, 1, "font_dir_alloc(bdata)");
   mdata = (struct cached_fm_pair_s *)(*palloc)(mmax, cached_fm_pair_sizeof,
                                                "font_dir_alloc(mdata)");
   cdata = (struct cached_char_s *)(*palloc)(cmax, cached_char_sizeof,
                                             "font_dir_alloc(cdata)");
   if (bdata == 0 || mdata == 0 || cdata == 0)
-  {
-    if (cdata != 0)
     {
-      (*pfree)((char *)cdata, cmax, cached_char_sizeof,
-               "font_dir_alloc(cdata)");
+      if (cdata != 0)
+        {
+          (*pfree)((char *)cdata, cmax, cached_char_sizeof,
+                   "font_dir_alloc(cdata)");
+        }
+      if (mdata != 0)
+        {
+          (*pfree)((char *)mdata, mmax, cached_fm_pair_sizeof,
+                   "font_dir_alloc(mdata)");
+        }
+      if (bdata != 0)
+        {
+          (*pfree)((char *)bdata, bmax, 1, "font_dir_alloc(bdata)");
+        }
+      (*pfree)((char *)pdir, 1, sizeof(gs_font_dir), "font_dir_alloc(dir)");
+      return 0;
     }
-    if (mdata != 0)
-    {
-      (*pfree)((char *)mdata, mmax, cached_fm_pair_sizeof,
-               "font_dir_alloc(mdata)");
-    }
-    if (bdata != 0)
-    {
-      (*pfree)((char *)bdata, bmax, 1, "font_dir_alloc(bdata)");
-    }
-    (*pfree)((char *)pdir, 1, sizeof(gs_font_dir), "font_dir_alloc(dir)");
-    return 0;
-  }
   memset((char *)pdir, 0,
          sizeof(gs_font_dir)); /* easiest to clear everything first */
   pdir->alloc = palloc;
@@ -122,65 +122,65 @@ int gs_makefont(gs_font_dir *pdir, gs_font *pfont, gs_matrix *pmat,
   *pdfont = 0;
   gs_make_identity(&newmat); /* fill in tags */
   if ((code = gs_matrix_multiply(&pfont->matrix, pmat, &newmat)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
 /* Check for the font already being in the scaled font cache. */
 /* Only attempt to share fonts if the current font has */
 /* a real unique_id (i.e., not -1). */
 #ifdef DEBUG
   if (gs_debug['m'])
-  {
-    printf("[m]unique_id=%ld, font_type=%d,\n", pfont->unique_id,
-           pfont->font_type);
-    printf("[m]  ctm=[%g %g %g %g %g %g]\n", pmat->xx, pmat->xy, pmat->yx,
-           pmat->yy, pmat->tx, pmat->ty);
-  }
+    {
+      printf("[m]unique_id=%ld, font_type=%d,\n", pfont->unique_id,
+             pfont->font_type);
+      printf("[m]  ctm=[%g %g %g %g %g %g]\n", pmat->xx, pmat->xy, pmat->yx,
+             pmat->yy, pmat->tx, pmat->ty);
+    }
 #endif
   if (pfont->unique_id != -1)
-  {
-    for (; pf_out != 0; prev = pf_out, pf_out = pf_out->next)
     {
-      if (pf_out->unique_id == pfont->unique_id &&
-          pf_out->font_type == pfont->font_type &&
-          pf_out->matrix.xx == newmat.xx && pf_out->matrix.xy == newmat.xy &&
-          pf_out->matrix.yx == newmat.yx && pf_out->matrix.yy == newmat.yy)
-      {
-        *ppfont = pf_out;
+      for (; pf_out != 0; prev = pf_out, pf_out = pf_out->next)
+        {
+          if (pf_out->unique_id == pfont->unique_id &&
+              pf_out->font_type == pfont->font_type &&
+              pf_out->matrix.xx == newmat.xx && pf_out->matrix.xy == newmat.xy &&
+              pf_out->matrix.yx == newmat.yx && pf_out->matrix.yy == newmat.yy)
+            {
+              *ppfont = pf_out;
 #ifdef DEBUG
-        if (gs_debug['m']) printf("[m]found font=%lx\n", (ulong)pf_out);
+              if (gs_debug['m']) printf("[m]found font=%lx\n", (ulong)pf_out);
 #endif
-        return 0;
-      }
+              return 0;
+            }
+        }
     }
-  }
   pf_out = (gs_font *)(*pdir->alloc)(1, sizeof(gs_font), "gs_makefont");
   if (!pf_out)
-  {
-    return_error(gs_error_VMerror);
-  }
+    {
+      return_error(gs_error_VMerror);
+    }
   *pf_out = *pfont;
   pf_out->matrix = newmat;
   if (pdir->ssize == pdir->smax)
-  { /* Must discard a cached scaled font. */
-    /* Scan for the oldest font if we didn't already. */
-    if (!prev)
-    {
-      for (prev = pdir->scaled_fonts; prev->next != 0; prev = prev->next)
-      {
-        ;
-      }
-    }
+    { /* Must discard a cached scaled font. */
+      /* Scan for the oldest font if we didn't already. */
+      if (!prev)
+        {
+          for (prev = pdir->scaled_fonts; prev->next != 0; prev = prev->next)
+            {
+              ;
+            }
+        }
 #ifdef DEBUG
-    if (gs_debug['m']) printf("[m]discarding font %lx\n", (ulong)prev);
+      if (gs_debug['m']) printf("[m]discarding font %lx\n", (ulong)prev);
 #endif
-    *pdfont = prev;
-    prev->prev->next = 0;
-  }
+      *pdfont = prev;
+      prev->prev->next = 0;
+    }
   else
-  {
-    pdir->ssize++;
-  }
+    {
+      pdir->ssize++;
+    }
   link_first(pdir->scaled_fonts, pf_out);
   pf_out->base = pfont->base;
   pf_out->dir = pdir;

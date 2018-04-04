@@ -37,9 +37,9 @@
  *	Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include <assert.h>         /* for assert()                   */
+#include <assert.h> /* for assert()                   */
 #include "dataManagement.h" /* for primitive type definitions */
-#include "metrics.h"        /* for Metrics definition         */
+#include "metrics.h" /* for Metrics definition         */
 
 /*
  *  Function prototypes
@@ -48,7 +48,7 @@ extern void initTime(void);
 extern Time getTime(void);
 
 void initMetricsData(Metrics *metrics) /*  metrics struct to initialize */
-{                                      /*  begin initMetricsData() */
+{ /*  begin initMetricsData() */
   Time temp; /*  variable used to find current time          */
 
   assert(metrics);

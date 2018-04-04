@@ -37,33 +37,33 @@ void addfile(trie t, FILE *f)
   charsequence cs = CHARSTREAM_INIT;
 
   while (!feof(f))
-  {
-    c = tolower(getc(f));
-    if (wstate)
     {
-      if (ISLOWER(c))
-      {
-        charsequence_push(&cs, c);
-      }
-      else /* stop reading word */
-      {
-        char *str;
-        str = charsequence_val(&cs);
-        trie_insert(t, str);
-        free(str);
+      c = tolower(getc(f));
+      if (wstate)
+        {
+          if (ISLOWER(c))
+            {
+              charsequence_push(&cs, c);
+            }
+          else /* stop reading word */
+            {
+              char *str;
+              str = charsequence_val(&cs);
+              trie_insert(t, str);
+              free(str);
 
-        wstate = FALSE;
-      }
+              wstate = FALSE;
+            }
+        }
+      else /* !wstate */
+          if (ISLOWER(c)) /* start reading word */
+        {
+          charsequence_reset(&cs);
+          charsequence_push(&cs, c);
+          wstate = TRUE;
+        }
+      /* else, ignore it */
     }
-    else                /* !wstate */
-        if (ISLOWER(c)) /* start reading word */
-    {
-      charsequence_reset(&cs);
-      charsequence_push(&cs, c);
-      wstate = TRUE;
-    }
-    /* else, ignore it */
-  }
 }
 
 int main(int argc, char *argv[])
@@ -72,26 +72,26 @@ int main(int argc, char *argv[])
 
   t = trie_init();
   if (argc == 1)
-  {
-    addfile(t, stdin);
-  }
-  else
-  {
-    while (argc > 1)
     {
-      input = fopen(argv[1], "rb");
-      if (input == NULL)
-      {
-        fprintf(stderr, "unable to open file '%s'\n", argv[1]);
-      }
-      else
-      {
-        addfile(t, input);
-      }
-      argc--;
-      argv++;
+      addfile(t, stdin);
     }
-  }
+  else
+    {
+      while (argc > 1)
+        {
+          input = fopen(argv[1], "rb");
+          if (input == NULL)
+            {
+              fprintf(stderr, "unable to open file '%s'\n", argv[1]);
+            }
+          else
+            {
+              addfile(t, input);
+            }
+          argc--;
+          argv++;
+        }
+    }
   trie_scan(t, printit);
   return 0;
 }

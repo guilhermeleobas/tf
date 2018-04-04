@@ -72,27 +72,27 @@
  *	Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include "insert.h"         /* for insert() return codes                     */
-#include <assert.h>         /* for assert()                                  */
-#include <stdlib.h>         /* for NULL definition                           */
+#include "insert.h" /* for insert() return codes                     */
+#include <assert.h> /* for assert()                                  */
+#include <stdlib.h> /* for NULL definition                           */
 #include "dataManagement.h" /* for primitive type definitions                */
-#include "dataObject.h"     /* for DataObject definition                     */
-#include "errorMessage.h"   /* for errorMessage() definition                 */
-#include "index.h"          /* for IndexNode and IndexEntry definitions      */
-#include "insertEntry.h"    /* for insertEntry() and return code definitions */
+#include "dataObject.h" /* for DataObject definition                     */
+#include "errorMessage.h" /* for errorMessage() definition                 */
+#include "index.h" /* for IndexNode and IndexEntry definitions      */
+#include "insertEntry.h" /* for insertEntry() and return code definitions */
 
 /*
  *  Function prototypes
  */
 extern void keysUnion(IndexEntry *I, IndexKey *U);
 
-Int insert(IndexNode **root,       /*  root node of index          */
+Int insert(IndexNode **root, /*  root node of index          */
            DataObject *dataObject, /*  object to insert into index */
-           Int fan)                /*  fan or order of index       */
-{                                  /* beginning of insert()    */
-  IndexEntry *entry;      /* entry created for data object                */
+           Int fan) /*  fan or order of index       */
+{ /* beginning of insert()    */
+  IndexEntry *entry; /* entry created for data object                */
   IndexEntry *splitEntry; /* placeholder for splitEntry for insertEntry() */
-  Int returnCode;         /* return code for insertEntry()                */
+  Int returnCode; /* return code for insertEntry()                */
 
   static Char name[] = "insert";
 
@@ -109,11 +109,11 @@ Int insert(IndexNode **root,       /*  root node of index          */
    */
   entry = createIndexEntry();
   if (entry == NULL)
-  {
-    errorMessage("can't create entry for new data object", REPLACE);
-    errorMessage(name, PREPEND);
-    return (INSERT_ALLOCATION_FAILURE);
-  } /*  end of entry == NULL    */
+    {
+      errorMessage("can't create entry for new data object", REPLACE);
+      errorMessage(name, PREPEND);
+      return (INSERT_ALLOCATION_FAILURE);
+    } /*  end of entry == NULL    */
   entry->child.dataObject = dataObject;
   entry->key.lower.T = dataObject->attributes[LOWER_POINT_T].value.key;
   entry->key.lower.X = dataObject->attributes[LOWER_POINT_X].value.key;
@@ -132,63 +132,63 @@ Int insert(IndexNode **root,       /*  root node of index          */
    */
   returnCode = insertEntry(*root, entry, LEAF, fan, &splitEntry);
   if (returnCode == INSERT_ENTRY_SUCCESS)
-  {
-    /*
+    {
+      /*
      *  The new entry has been successfully inserted somewhere beneath
      *  the root node.  If a split occurred, then splitEntry references a
      *  new sibling node.  Since the root node has no parent, a new parent
      *  node is created which becomes the new root node.  The old node and
      *  splitEntry are placed onto this new root.
      */
-    if (splitEntry != NULL)
-    { /*  check for root splitting  */
-      IndexNode *newRoot = NULL;
+      if (splitEntry != NULL)
+        { /*  check for root splitting  */
+          IndexNode *newRoot = NULL;
 
-      /*
+          /*
        *  Create new root node and new entry which will reference old root
        */
-      newRoot = createIndexNode((*root)->level + 1);
-      if (newRoot == NULL)
-      {
-        errorMessage("can't create new root node", REPLACE);
-        errorMessage(name, PREPEND);
-        return (INSERT_ALLOCATION_FAILURE);
-      } /*  end of newRoot == NULL  */
+          newRoot = createIndexNode((*root)->level + 1);
+          if (newRoot == NULL)
+            {
+              errorMessage("can't create new root node", REPLACE);
+              errorMessage(name, PREPEND);
+              return (INSERT_ALLOCATION_FAILURE);
+            } /*  end of newRoot == NULL  */
 
-      newRoot->entries = createIndexEntry();
-      if (newRoot->entries == NULL)
-      {
-        errorMessage("can't create entry for old root", REPLACE);
-        errorMessage(name, PREPEND);
-        return (INSERT_ALLOCATION_FAILURE);
-      } /*  end of newRoot->entries == NULL */
+          newRoot->entries = createIndexEntry();
+          if (newRoot->entries == NULL)
+            {
+              errorMessage("can't create entry for old root", REPLACE);
+              errorMessage(name, PREPEND);
+              return (INSERT_ALLOCATION_FAILURE);
+            } /*  end of newRoot->entries == NULL */
 
-      /*
+          /*
        *  Setup new entry for old root, which will also place old root
        *  onto new root node.  Place splitEntry onto new root.
        */
-      newRoot->entries->child.node = *root;
-      keysUnion((*root)->entries, &(newRoot->entries->key));
-      newRoot->entries->next = splitEntry;
+          newRoot->entries->child.node = *root;
+          keysUnion((*root)->entries, &(newRoot->entries->key));
+          newRoot->entries->next = splitEntry;
 
-      /*
+          /*
        *  Set root to updated value
        */
-      *root = newRoot;
-    } /* end of if ( splitEntry != NULL ) */
-  }   /*  end of returnCode == INSERT_ENTRY_SUCCESS   */
+          *root = newRoot;
+        } /* end of if ( splitEntry != NULL ) */
+    } /*  end of returnCode == INSERT_ENTRY_SUCCESS   */
   else if (returnCode == INSERT_ENTRY_CHOOSE_ENTRY_FAILURE)
-  {
-    return (INSERT_INSERT_ENTRY_FAILURE_NON_FATAL);
-  } /*  end of returnCode == INSERT_ENTRY_CHOOSE_ENTRY_FAILURE */
+    {
+      return (INSERT_INSERT_ENTRY_FAILURE_NON_FATAL);
+    } /*  end of returnCode == INSERT_ENTRY_CHOOSE_ENTRY_FAILURE */
   else if (returnCode == INSERT_ENTRY_SPLIT_NODE_FATAL)
-  {
-    return (INSERT_INSERT_ENTRY_FAILURE_FATAL);
-  } /*  end of returnCode == INSERT_ENTRY_SPLIT_NODE_FATAL */
+    {
+      return (INSERT_INSERT_ENTRY_FAILURE_FATAL);
+    } /*  end of returnCode == INSERT_ENTRY_SPLIT_NODE_FATAL */
   else if (returnCode == INSERT_ENTRY_SPLIT_NODE_NON_FATAL)
-  {
-    return (INSERT_INSERT_ENTRY_FAILURE_NON_FATAL);
-  } /*  end of returnCode == INSERT_ENTRY_SPLIT_NODE_NON_FATAL */
+    {
+      return (INSERT_INSERT_ENTRY_FAILURE_NON_FATAL);
+    } /*  end of returnCode == INSERT_ENTRY_SPLIT_NODE_NON_FATAL */
 
   return (INSERT_SUCCESS);
 } /*  end insert()    */

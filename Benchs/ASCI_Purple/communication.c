@@ -164,27 +164,27 @@ int hypre_CommPkgDestroy(hypre_CommPkg *comm_pkg)
 #endif
 
   if (comm_pkg)
-  {
+    {
 #if defined(HYPRE_COMM_SIMPLE) || defined(HYPRE_COMM_VOLATILE)
-    /* free up comm types */
-    for (i = 0; i < hypre_CommPkgNumSends(comm_pkg); i++)
-      hypre_CommTypeDestroy(hypre_CommPkgSendType(comm_pkg, i));
-    hypre_TFree(hypre_CommPkgSendTypes(comm_pkg));
-    for (i = 0; i < hypre_CommPkgNumRecvs(comm_pkg); i++)
-      hypre_CommTypeDestroy(hypre_CommPkgRecvType(comm_pkg, i));
-    hypre_TFree(hypre_CommPkgRecvTypes(comm_pkg));
+      /* free up comm types */
+      for (i = 0; i < hypre_CommPkgNumSends(comm_pkg); i++)
+        hypre_CommTypeDestroy(hypre_CommPkgSendType(comm_pkg, i));
+      hypre_TFree(hypre_CommPkgSendTypes(comm_pkg));
+      for (i = 0; i < hypre_CommPkgNumRecvs(comm_pkg); i++)
+        hypre_CommTypeDestroy(hypre_CommPkgRecvType(comm_pkg, i));
+      hypre_TFree(hypre_CommPkgRecvTypes(comm_pkg));
 #else
-    hypre_CommPkgUnCommit(comm_pkg);
+      hypre_CommPkgUnCommit(comm_pkg);
 #endif
 
-    hypre_TFree(hypre_CommPkgSendProcs(comm_pkg));
-    hypre_TFree(hypre_CommPkgRecvProcs(comm_pkg));
+      hypre_TFree(hypre_CommPkgSendProcs(comm_pkg));
+      hypre_TFree(hypre_CommPkgRecvProcs(comm_pkg));
 
-    hypre_CommTypeDestroy(hypre_CommPkgCopyFromType(comm_pkg));
-    hypre_CommTypeDestroy(hypre_CommPkgCopyToType(comm_pkg));
+      hypre_CommTypeDestroy(hypre_CommPkgCopyFromType(comm_pkg));
+      hypre_CommTypeDestroy(hypre_CommPkgCopyToType(comm_pkg));
 
-    hypre_TFree(comm_pkg);
-  }
+      hypre_TFree(comm_pkg);
+    }
 
   return ierr;
 }
@@ -272,113 +272,113 @@ int hypre_InitializeCommunication(hypre_CommPkg *comm_pkg, double *send_data,
   send_sizes = hypre_TAlloc(int, num_sends);
   total_size = 0;
   for (i = 0; i < num_sends; i++)
-  {
-    send_type = hypre_CommPkgSendType(comm_pkg, i);
-
-    send_sizes[i] = 0;
-    for (j = 0; j < hypre_CommTypeNumEntries(send_type); j++)
     {
-      send_entry = hypre_CommTypeCommEntry(send_type, j);
-      length_array = hypre_CommTypeEntryLengthArray(send_entry);
+      send_type = hypre_CommPkgSendType(comm_pkg, i);
 
-      entry_size = 1;
-      for (k = 0; k < 4; k++)
-      {
-        entry_size *= length_array[k];
-      }
-      send_sizes[i] += entry_size;
+      send_sizes[i] = 0;
+      for (j = 0; j < hypre_CommTypeNumEntries(send_type); j++)
+        {
+          send_entry = hypre_CommTypeCommEntry(send_type, j);
+          length_array = hypre_CommTypeEntryLengthArray(send_entry);
+
+          entry_size = 1;
+          for (k = 0; k < 4; k++)
+            {
+              entry_size *= length_array[k];
+            }
+          send_sizes[i] += entry_size;
+        }
+
+      total_size += send_sizes[i];
     }
-
-    total_size += send_sizes[i];
-  }
   if (num_sends > 0)
-  {
-    send_buffers[0] = hypre_SharedTAlloc(double, total_size);
-    for (i = 1; i < num_sends; i++)
     {
-      send_buffers[i] = send_buffers[i - 1] + send_sizes[i - 1];
+      send_buffers[0] = hypre_SharedTAlloc(double, total_size);
+      for (i = 1; i < num_sends; i++)
+        {
+          send_buffers[i] = send_buffers[i - 1] + send_sizes[i - 1];
+        }
     }
-  }
 
   /* allocate recv buffers */
   recv_buffers = hypre_TAlloc(double *, num_recvs);
   recv_sizes = hypre_TAlloc(int, num_recvs);
   total_size = 0;
   for (i = 0; i < num_recvs; i++)
-  {
-    recv_type = hypre_CommPkgRecvType(comm_pkg, i);
-
-    recv_sizes[i] = 0;
-    for (j = 0; j < hypre_CommTypeNumEntries(recv_type); j++)
     {
-      recv_entry = hypre_CommTypeCommEntry(recv_type, j);
-      length_array = hypre_CommTypeEntryLengthArray(recv_entry);
+      recv_type = hypre_CommPkgRecvType(comm_pkg, i);
 
-      entry_size = 1;
-      for (k = 0; k < 4; k++)
-      {
-        entry_size *= length_array[k];
-      }
-      recv_sizes[i] += entry_size;
+      recv_sizes[i] = 0;
+      for (j = 0; j < hypre_CommTypeNumEntries(recv_type); j++)
+        {
+          recv_entry = hypre_CommTypeCommEntry(recv_type, j);
+          length_array = hypre_CommTypeEntryLengthArray(recv_entry);
+
+          entry_size = 1;
+          for (k = 0; k < 4; k++)
+            {
+              entry_size *= length_array[k];
+            }
+          recv_sizes[i] += entry_size;
+        }
+
+      total_size += recv_sizes[i];
     }
-
-    total_size += recv_sizes[i];
-  }
   if (num_recvs > 0)
-  {
-    recv_buffers[0] = hypre_SharedTAlloc(double, total_size);
-    for (i = 1; i < num_recvs; i++)
     {
-      recv_buffers[i] = recv_buffers[i - 1] + recv_sizes[i - 1];
+      recv_buffers[0] = hypre_SharedTAlloc(double, total_size);
+      for (i = 1; i < num_recvs; i++)
+        {
+          recv_buffers[i] = recv_buffers[i - 1] + recv_sizes[i - 1];
+        }
     }
-  }
 
   /*--------------------------------------------------------------------
    * pack send buffers
    *--------------------------------------------------------------------*/
 
   for (i = 0; i < num_sends; i++)
-  {
-    send_type = hypre_CommPkgSendType(comm_pkg, i);
-
-    bptr = (double *)send_buffers[i];
-    for (j = 0; j < hypre_CommTypeNumEntries(send_type); j++)
     {
-      send_entry = hypre_CommTypeCommEntry(send_type, j);
-      length_array = hypre_CommTypeEntryLengthArray(send_entry);
-      stride_array = hypre_CommTypeEntryStrideArray(send_entry);
+      send_type = hypre_CommPkgSendType(comm_pkg, i);
 
-      lptr = send_data + hypre_CommTypeEntryOffset(send_entry);
-      for (ll = 0; ll < length_array[3]; ll++)
-      {
-        kptr = lptr;
-        for (kk = 0; kk < length_array[2]; kk++)
+      bptr = (double *)send_buffers[i];
+      for (j = 0; j < hypre_CommTypeNumEntries(send_type); j++)
         {
-          jptr = kptr;
-          for (jj = 0; jj < length_array[1]; jj++)
-          {
-            if (stride_array[0] == 1)
+          send_entry = hypre_CommTypeCommEntry(send_type, j);
+          length_array = hypre_CommTypeEntryLengthArray(send_entry);
+          stride_array = hypre_CommTypeEntryStrideArray(send_entry);
+
+          lptr = send_data + hypre_CommTypeEntryOffset(send_entry);
+          for (ll = 0; ll < length_array[3]; ll++)
             {
-              memcpy(bptr, jptr, length_array[0] * sizeof(double));
+              kptr = lptr;
+              for (kk = 0; kk < length_array[2]; kk++)
+                {
+                  jptr = kptr;
+                  for (jj = 0; jj < length_array[1]; jj++)
+                    {
+                      if (stride_array[0] == 1)
+                        {
+                          memcpy(bptr, jptr, length_array[0] * sizeof(double));
+                        }
+                      else
+                        {
+                          iptr = jptr;
+                          for (ii = 0; ii < length_array[0]; ii++)
+                            {
+                              bptr[ii] = *iptr;
+                              iptr += stride_array[0];
+                            }
+                        }
+                      bptr += length_array[0];
+                      jptr += stride_array[1];
+                    }
+                  kptr += stride_array[2];
+                }
+              lptr += stride_array[3];
             }
-            else
-            {
-              iptr = jptr;
-              for (ii = 0; ii < length_array[0]; ii++)
-              {
-                bptr[ii] = *iptr;
-                iptr += stride_array[0];
-              }
-            }
-            bptr += length_array[0];
-            jptr += stride_array[1];
-          }
-          kptr += stride_array[2];
         }
-        lptr += stride_array[3];
-      }
     }
-  }
 
   /*--------------------------------------------------------------------
    * post receives and initiate sends
@@ -386,15 +386,15 @@ int hypre_InitializeCommunication(hypre_CommPkg *comm_pkg, double *send_data,
 
   j = 0;
   for (i = 0; i < num_recvs; i++)
-  {
-    MPI_Irecv(recv_buffers[i], recv_sizes[i], MPI_DOUBLE,
-              hypre_CommPkgRecvProc(comm_pkg, i), 0, comm, &requests[j++]);
-  }
+    {
+      MPI_Irecv(recv_buffers[i], recv_sizes[i], MPI_DOUBLE,
+                hypre_CommPkgRecvProc(comm_pkg, i), 0, comm, &requests[j++]);
+    }
   for (i = 0; i < num_sends; i++)
-  {
-    MPI_Isend(send_buffers[i], send_sizes[i], MPI_DOUBLE,
-              hypre_CommPkgSendProc(comm_pkg, i), 0, comm, &requests[j++]);
-  }
+    {
+      MPI_Isend(send_buffers[i], send_sizes[i], MPI_DOUBLE,
+                hypre_CommPkgSendProc(comm_pkg, i), 0, comm, &requests[j++]);
+    }
 
   hypre_ExchangeLocalData(comm_pkg, send_data, recv_data);
 
@@ -450,7 +450,7 @@ int hypre_InitializeCommunication(hypre_CommPkg *comm_pkg, double *send_data,
   requests = hypre_CTAlloc(MPI_Request, num_requests);
   status = hypre_CTAlloc(MPI_Status, num_requests);
 
-/*--------------------------------------------------------------------
+  /*--------------------------------------------------------------------
  * post receives and initiate sends
  *--------------------------------------------------------------------*/
 
@@ -462,15 +462,15 @@ int hypre_InitializeCommunication(hypre_CommPkg *comm_pkg, double *send_data,
 
   j = 0;
   for (i = 0; i < num_recvs; i++)
-  {
-    MPI_Irecv((void *)recv_data, 1, hypre_CommPkgRecvMPIType(comm_pkg, i),
-              hypre_CommPkgRecvProc(comm_pkg, i), 0, comm, &requests[j++]);
-  }
+    {
+      MPI_Irecv((void *)recv_data, 1, hypre_CommPkgRecvMPIType(comm_pkg, i),
+                hypre_CommPkgRecvProc(comm_pkg, i), 0, comm, &requests[j++]);
+    }
   for (i = 0; i < num_sends; i++)
-  {
-    MPI_Isend((void *)send_data, 1, hypre_CommPkgSendMPIType(comm_pkg, i),
-              hypre_CommPkgSendProc(comm_pkg, i), 0, comm, &requests[j++]);
-  }
+    {
+      MPI_Isend((void *)send_data, 1, hypre_CommPkgSendMPIType(comm_pkg, i),
+                hypre_CommPkgSendProc(comm_pkg, i), 0, comm, &requests[j++]);
+    }
 
 #if defined(HYPRE_COMM_VOLATILE)
   /* un-commit the communication package */
@@ -553,59 +553,59 @@ int hypre_FinalizeCommunication(hypre_CommHandle *comm_handle)
    *--------------------------------------------------------------------*/
 
   if (hypre_CommHandleNumRequests(comm_handle))
-  {
-    MPI_Waitall(hypre_CommHandleNumRequests(comm_handle),
-                hypre_CommHandleRequests(comm_handle),
-                hypre_CommHandleStatus(comm_handle));
-  }
+    {
+      MPI_Waitall(hypre_CommHandleNumRequests(comm_handle),
+                  hypre_CommHandleRequests(comm_handle),
+                  hypre_CommHandleStatus(comm_handle));
+    }
 
   /*--------------------------------------------------------------------
    * unpack recv buffers
    *--------------------------------------------------------------------*/
 
   for (i = 0; i < num_recvs; i++)
-  {
-    recv_type = hypre_CommPkgRecvType(comm_pkg, i);
-
-    bptr = (double *)recv_buffers[i];
-    for (j = 0; j < hypre_CommTypeNumEntries(recv_type); j++)
     {
-      recv_entry = hypre_CommTypeCommEntry(recv_type, j);
-      length_array = hypre_CommTypeEntryLengthArray(recv_entry);
-      stride_array = hypre_CommTypeEntryStrideArray(recv_entry);
+      recv_type = hypre_CommPkgRecvType(comm_pkg, i);
 
-      lptr = hypre_CommHandleRecvData(comm_handle) +
-             hypre_CommTypeEntryOffset(recv_entry);
-      for (ll = 0; ll < length_array[3]; ll++)
-      {
-        kptr = lptr;
-        for (kk = 0; kk < length_array[2]; kk++)
+      bptr = (double *)recv_buffers[i];
+      for (j = 0; j < hypre_CommTypeNumEntries(recv_type); j++)
         {
-          jptr = kptr;
-          for (jj = 0; jj < length_array[1]; jj++)
-          {
-            if (stride_array[0] == 1)
+          recv_entry = hypre_CommTypeCommEntry(recv_type, j);
+          length_array = hypre_CommTypeEntryLengthArray(recv_entry);
+          stride_array = hypre_CommTypeEntryStrideArray(recv_entry);
+
+          lptr = hypre_CommHandleRecvData(comm_handle) +
+                 hypre_CommTypeEntryOffset(recv_entry);
+          for (ll = 0; ll < length_array[3]; ll++)
             {
-              memcpy(jptr, bptr, length_array[0] * sizeof(double));
+              kptr = lptr;
+              for (kk = 0; kk < length_array[2]; kk++)
+                {
+                  jptr = kptr;
+                  for (jj = 0; jj < length_array[1]; jj++)
+                    {
+                      if (stride_array[0] == 1)
+                        {
+                          memcpy(jptr, bptr, length_array[0] * sizeof(double));
+                        }
+                      else
+                        {
+                          iptr = jptr;
+                          for (ii = 0; ii < length_array[0]; ii++)
+                            {
+                              *iptr = bptr[ii];
+                              iptr += stride_array[0];
+                            }
+                        }
+                      bptr += length_array[0];
+                      jptr += stride_array[1];
+                    }
+                  kptr += stride_array[2];
+                }
+              lptr += stride_array[3];
             }
-            else
-            {
-              iptr = jptr;
-              for (ii = 0; ii < length_array[0]; ii++)
-              {
-                *iptr = bptr[ii];
-                iptr += stride_array[0];
-              }
-            }
-            bptr += length_array[0];
-            jptr += stride_array[1];
-          }
-          kptr += stride_array[2];
         }
-        lptr += stride_array[3];
-      }
     }
-  }
 
   /*--------------------------------------------------------------------
    * Free up communication handle
@@ -614,13 +614,13 @@ int hypre_FinalizeCommunication(hypre_CommHandle *comm_handle)
   hypre_TFree(hypre_CommHandleRequests(comm_handle));
   hypre_TFree(hypre_CommHandleStatus(comm_handle));
   if (num_sends > 0)
-  {
-    hypre_SharedTFree(send_buffers[0]);
-  }
+    {
+      hypre_SharedTFree(send_buffers[0]);
+    }
   if (num_recvs > 0)
-  {
-    hypre_SharedTFree(recv_buffers[0]);
-  }
+    {
+      hypre_SharedTFree(recv_buffers[0]);
+    }
   hypre_TFree(send_buffers);
   hypre_TFree(recv_buffers);
   hypre_TFree(send_sizes);
@@ -637,11 +637,11 @@ int hypre_FinalizeCommunication(hypre_CommHandle *comm_handle)
   int ierr = 0;
 
   if (hypre_CommHandleNumRequests(comm_handle))
-  {
-    MPI_Waitall(hypre_CommHandleNumRequests(comm_handle),
-                hypre_CommHandleRequests(comm_handle),
-                hypre_CommHandleStatus(comm_handle));
-  }
+    {
+      MPI_Waitall(hypre_CommHandleNumRequests(comm_handle),
+                  hypre_CommHandleRequests(comm_handle),
+                  hypre_CommHandleStatus(comm_handle));
+    }
 
   /*--------------------------------------------------------------------
    * Free up communication handle
@@ -704,43 +704,43 @@ int hypre_ExchangeLocalData(hypre_CommPkg *comm_pkg, double *send_data,
   copy_to_type = hypre_CommPkgCopyToType(comm_pkg);
 
   for (i = 0; i < hypre_CommTypeNumEntries(copy_from_type); i++)
-  {
-    copy_from_entry = hypre_CommTypeCommEntry(copy_from_type, i);
-    copy_to_entry = hypre_CommTypeCommEntry(copy_to_type, i);
-
-    from_dp = send_data + hypre_CommTypeEntryOffset(copy_from_entry);
-    to_dp = recv_data + hypre_CommTypeEntryOffset(copy_to_entry);
-
-    /* copy data only when necessary */
-    if (to_dp != from_dp)
     {
-      length_array = hypre_CommTypeEntryLengthArray(copy_from_entry);
+      copy_from_entry = hypre_CommTypeCommEntry(copy_from_type, i);
+      copy_to_entry = hypre_CommTypeCommEntry(copy_to_type, i);
 
-      from_stride_array = hypre_CommTypeEntryStrideArray(copy_from_entry);
-      to_stride_array = hypre_CommTypeEntryStrideArray(copy_to_entry);
+      from_dp = send_data + hypre_CommTypeEntryOffset(copy_from_entry);
+      to_dp = recv_data + hypre_CommTypeEntryOffset(copy_to_entry);
 
-      for (i3 = 0; i3 < length_array[3]; i3++)
-      {
-        for (i2 = 0; i2 < length_array[2]; i2++)
+      /* copy data only when necessary */
+      if (to_dp != from_dp)
         {
-          for (i1 = 0; i1 < length_array[1]; i1++)
-          {
-            from_i = (i3 * from_stride_array[3] + i2 * from_stride_array[2] +
-                      i1 * from_stride_array[1]);
-            to_i = (i3 * to_stride_array[3] + i2 * to_stride_array[2] +
-                    i1 * to_stride_array[1]);
-            for (i0 = 0; i0 < length_array[0]; i0++)
-            {
-              to_dp[to_i] = from_dp[from_i];
+          length_array = hypre_CommTypeEntryLengthArray(copy_from_entry);
 
-              from_i += from_stride_array[0];
-              to_i += to_stride_array[0];
+          from_stride_array = hypre_CommTypeEntryStrideArray(copy_from_entry);
+          to_stride_array = hypre_CommTypeEntryStrideArray(copy_to_entry);
+
+          for (i3 = 0; i3 < length_array[3]; i3++)
+            {
+              for (i2 = 0; i2 < length_array[2]; i2++)
+                {
+                  for (i1 = 0; i1 < length_array[1]; i1++)
+                    {
+                      from_i = (i3 * from_stride_array[3] + i2 * from_stride_array[2] +
+                                i1 * from_stride_array[1]);
+                      to_i = (i3 * to_stride_array[3] + i2 * to_stride_array[2] +
+                              i1 * to_stride_array[1]);
+                      for (i0 = 0; i0 < length_array[0]; i0++)
+                        {
+                          to_dp[to_i] = from_dp[from_i];
+
+                          from_i += from_stride_array[0];
+                          to_i += to_stride_array[0];
+                        }
+                    }
+                }
             }
-          }
         }
-      }
     }
-  }
 
   return (ierr);
 }
@@ -797,19 +797,19 @@ int hypre_CommTypeDestroy(hypre_CommType *comm_type)
   int i;
 
   if (comm_type)
-  {
-    if (hypre_CommTypeCommEntries(comm_type) != NULL)
     {
-      for (i = 0; i < hypre_CommTypeNumEntries(comm_type); i++)
-      {
-        comm_entry = hypre_CommTypeCommEntry(comm_type, i);
-        hypre_CommTypeEntryDestroy(comm_entry);
-      }
-    }
+      if (hypre_CommTypeCommEntries(comm_type) != NULL)
+        {
+          for (i = 0; i < hypre_CommTypeNumEntries(comm_type); i++)
+            {
+              comm_entry = hypre_CommTypeCommEntry(comm_type, i);
+              hypre_CommTypeEntryDestroy(comm_entry);
+            }
+        }
 
-    hypre_TFree(hypre_CommTypeCommEntries(comm_type));
-    hypre_TFree(comm_type);
-  }
+      hypre_TFree(hypre_CommTypeCommEntries(comm_type));
+      hypre_TFree(comm_type);
+    }
 
   return ierr;
 }
@@ -876,33 +876,33 @@ hypre_CommTypeEntry *hypre_CommTypeEntryCreate(hypre_Box *box,
 
   /* initialize stride_array */
   for (i = 0; i < 3; i++)
-  {
-    stride_array[i] = hypre_IndexD(stride, i);
-    for (j = 0; j < i; j++) stride_array[i] *= hypre_BoxSizeD(data_box, j);
-  }
+    {
+      stride_array[i] = hypre_IndexD(stride, i);
+      for (j = 0; j < i; j++) stride_array[i] *= hypre_BoxSizeD(data_box, j);
+    }
   stride_array[3] = hypre_BoxVolume(data_box);
 
   /* eliminate dimensions with length_array = 1 */
   dim = 4;
   i = 0;
   while (i < dim)
-  {
-    if (length_array[i] == 1)
     {
-      for (j = i; j < (dim - 1); j++)
-      {
-        length_array[j] = length_array[j + 1];
-        stride_array[j] = stride_array[j + 1];
-      }
-      length_array[dim - 1] = 1;
-      stride_array[dim - 1] = 1;
-      dim--;
+      if (length_array[i] == 1)
+        {
+          for (j = i; j < (dim - 1); j++)
+            {
+              length_array[j] = length_array[j + 1];
+              stride_array[j] = stride_array[j + 1];
+            }
+          length_array[dim - 1] = 1;
+          stride_array[dim - 1] = 1;
+          dim--;
+        }
+      else
+        {
+          i++;
+        }
     }
-    else
-    {
-      i++;
-    }
-  }
 
 #if 0
    /* sort the array according to length_array (largest to smallest) */
@@ -948,9 +948,9 @@ int hypre_CommTypeEntryDestroy(hypre_CommTypeEntry *comm_entry)
   int ierr = 0;
 
   if (comm_entry)
-  {
-    hypre_TFree(comm_entry);
-  }
+    {
+      hypre_TFree(comm_entry);
+    }
 
   return ierr;
 }
@@ -1039,13 +1039,13 @@ int hypre_CommPkgCreateInfo(hypre_BoxArrayArray *boxes, hypre_Index stride,
       p = processes[i][j];
 
       if (hypre_BoxVolume(box) != 0)
-      {
-        num_entries[p]++;
-        if ((num_entries[p] == 1) && (p != my_proc))
         {
-          num_comms++;
+          num_entries[p]++;
+          if ((num_entries[p] == 1) && (p != my_proc))
+            {
+              num_comms++;
+            }
         }
-      }
     }
   }
 
@@ -1070,26 +1070,26 @@ int hypre_CommPkgCreateInfo(hypre_BoxArrayArray *boxes, hypre_Index stride,
       p = processes[i][j];
 
       if (hypre_BoxVolume(box) != 0)
-      {
-        /* allocate comm_entries pointer */
-        if (comm_entries[p] == NULL)
         {
-          comm_entries[p] =
-              hypre_CTAlloc(hypre_CommTypeEntry *, num_entries[p]);
-          num_entries[p] = 0;
+          /* allocate comm_entries pointer */
+          if (comm_entries[p] == NULL)
+            {
+              comm_entries[p] =
+                  hypre_CTAlloc(hypre_CommTypeEntry *, num_entries[p]);
+              num_entries[p] = 0;
 
-          if (p != my_proc)
-          {
-            comm_processes[m] = p;
-            m++;
-          }
+              if (p != my_proc)
+                {
+                  comm_processes[m] = p;
+                  m++;
+                }
+            }
+
+          comm_entries[p][num_entries[p]] = hypre_CommTypeEntryCreate(
+              box, stride, data_box, num_values, data_box_offset);
+
+          num_entries[p]++;
         }
-
-        comm_entries[p][num_entries[p]] = hypre_CommTypeEntryCreate(
-            box, stride, data_box, num_values, data_box_offset);
-
-        num_entries[p]++;
-      }
     }
 
     data_box_offset += hypre_BoxVolume(data_box) * num_values;
@@ -1102,26 +1102,26 @@ int hypre_CommPkgCreateInfo(hypre_BoxArrayArray *boxes, hypre_Index stride,
   comm_types = hypre_TAlloc(hypre_CommType *, num_comms);
 
   for (m = 0; m < num_comms; m++)
-  {
-    p = comm_processes[m];
-    comm_types[m] = hypre_CommTypeCreate(comm_entries[p], num_entries[p]);
-    hypre_CommTypeSort(comm_types[m], periodic);
-  }
+    {
+      p = comm_processes[m];
+      comm_types[m] = hypre_CommTypeCreate(comm_entries[p], num_entries[p]);
+      hypre_CommTypeSort(comm_types[m], periodic);
+    }
 
   /*------------------------------------------------------
    * Build copy_type
    *------------------------------------------------------*/
 
   if (comm_entries[my_proc] != NULL)
-  {
-    p = my_proc;
-    copy_type = hypre_CommTypeCreate(comm_entries[p], num_entries[p]);
-    hypre_CommTypeSort(copy_type, periodic);
-  }
+    {
+      p = my_proc;
+      copy_type = hypre_CommTypeCreate(comm_entries[p], num_entries[p]);
+      hypre_CommTypeSort(copy_type, periodic);
+    }
   else
-  {
-    copy_type = hypre_CommTypeCreate(NULL, 0);
-  }
+    {
+      copy_type = hypre_CommTypeCreate(NULL, 0);
+    }
 
   /*------------------------------------------------------
    * Return
@@ -1177,108 +1177,108 @@ int hypre_CommTypeSort(hypre_CommType *comm_type, hypre_Index periodic)
    *------------------------------------------------*/
 
   for (i = (num_entries - 1); i > 0; i--)
-  {
-    for (j = 0; j < i; j++)
     {
-      swap = 0;
-      imin0 = hypre_CommTypeEntryIMin(comm_entries[j]);
-      imin1 = hypre_CommTypeEntryIMin(comm_entries[j + 1]);
-      if (hypre_IModPeriodZ(imin0, periodic) >
-          hypre_IModPeriodZ(imin1, periodic))
-      {
-        swap = 1;
-      }
-      else if (hypre_IModPeriodZ(imin0, periodic) ==
-               hypre_IModPeriodZ(imin1, periodic))
-      {
-        if (hypre_IModPeriodY(imin0, periodic) >
-            hypre_IModPeriodY(imin1, periodic))
+      for (j = 0; j < i; j++)
         {
-          swap = 1;
-        }
-        else if (hypre_IModPeriodY(imin0, periodic) ==
-                 hypre_IModPeriodY(imin1, periodic))
-        {
-          if (hypre_IModPeriodX(imin0, periodic) >
-              hypre_IModPeriodX(imin1, periodic))
-          {
-            swap = 1;
-          }
-        }
-      }
+          swap = 0;
+          imin0 = hypre_CommTypeEntryIMin(comm_entries[j]);
+          imin1 = hypre_CommTypeEntryIMin(comm_entries[j + 1]);
+          if (hypre_IModPeriodZ(imin0, periodic) >
+              hypre_IModPeriodZ(imin1, periodic))
+            {
+              swap = 1;
+            }
+          else if (hypre_IModPeriodZ(imin0, periodic) ==
+                   hypre_IModPeriodZ(imin1, periodic))
+            {
+              if (hypre_IModPeriodY(imin0, periodic) >
+                  hypre_IModPeriodY(imin1, periodic))
+                {
+                  swap = 1;
+                }
+              else if (hypre_IModPeriodY(imin0, periodic) ==
+                       hypre_IModPeriodY(imin1, periodic))
+                {
+                  if (hypre_IModPeriodX(imin0, periodic) >
+                      hypre_IModPeriodX(imin1, periodic))
+                    {
+                      swap = 1;
+                    }
+                }
+            }
 
-      if (swap)
-      {
-        comm_entry = comm_entries[j];
-        comm_entries[j] = comm_entries[j + 1];
-        comm_entries[j + 1] = comm_entry;
-      }
+          if (swap)
+            {
+              comm_entry = comm_entries[j];
+              comm_entries[j] = comm_entries[j + 1];
+              comm_entries[j + 1] = comm_entry;
+            }
+        }
     }
-  }
 
   /*------------------------------------------------
    * Sort entries with common imin by imax:
    *------------------------------------------------*/
 
   for (ii = 0; ii < (num_entries - 1); ii = jj)
-  {
-    /* want jj where entries ii through jj-1 have common imin */
-    imin0 = hypre_CommTypeEntryIMin(comm_entries[ii]);
-    for (jj = (ii + 1); jj < num_entries; jj++)
     {
-      imin1 = hypre_CommTypeEntryIMin(comm_entries[jj]);
-      if ((hypre_IModPeriodX(imin0, periodic) !=
-           hypre_IModPeriodX(imin1, periodic)) ||
-          (hypre_IModPeriodY(imin0, periodic) !=
-           hypre_IModPeriodY(imin1, periodic)) ||
-          (hypre_IModPeriodZ(imin0, periodic) !=
-           hypre_IModPeriodZ(imin1, periodic)))
-      {
-        break;
-      }
-    }
-
-    /* sort entries ii through jj-1 by imax */
-    for (i = (jj - 1); i > ii; i--)
-    {
-      for (j = ii; j < i; j++)
-      {
-        swap = 0;
-        imax0 = hypre_CommTypeEntryIMax(comm_entries[j]);
-        imax1 = hypre_CommTypeEntryIMax(comm_entries[j + 1]);
-        if (hypre_IModPeriodZ(imax0, periodic) >
-            hypre_IModPeriodZ(imax1, periodic))
+      /* want jj where entries ii through jj-1 have common imin */
+      imin0 = hypre_CommTypeEntryIMin(comm_entries[ii]);
+      for (jj = (ii + 1); jj < num_entries; jj++)
         {
-          swap = 1;
-        }
-        else if (hypre_IModPeriodZ(imax0, periodic) ==
-                 hypre_IModPeriodZ(imax1, periodic))
-        {
-          if (hypre_IModPeriodY(imax0, periodic) >
-              hypre_IModPeriodY(imax1, periodic))
-          {
-            swap = 1;
-          }
-          else if (hypre_IModPeriodY(imax0, periodic) ==
-                   hypre_IModPeriodY(imax1, periodic))
-          {
-            if (hypre_IModPeriodX(imax0, periodic) >
-                hypre_IModPeriodX(imax1, periodic))
+          imin1 = hypre_CommTypeEntryIMin(comm_entries[jj]);
+          if ((hypre_IModPeriodX(imin0, periodic) !=
+               hypre_IModPeriodX(imin1, periodic)) ||
+              (hypre_IModPeriodY(imin0, periodic) !=
+               hypre_IModPeriodY(imin1, periodic)) ||
+              (hypre_IModPeriodZ(imin0, periodic) !=
+               hypre_IModPeriodZ(imin1, periodic)))
             {
-              swap = 1;
+              break;
             }
-          }
         }
 
-        if (swap)
+      /* sort entries ii through jj-1 by imax */
+      for (i = (jj - 1); i > ii; i--)
         {
-          comm_entry = comm_entries[j];
-          comm_entries[j] = comm_entries[j + 1];
-          comm_entries[j + 1] = comm_entry;
+          for (j = ii; j < i; j++)
+            {
+              swap = 0;
+              imax0 = hypre_CommTypeEntryIMax(comm_entries[j]);
+              imax1 = hypre_CommTypeEntryIMax(comm_entries[j + 1]);
+              if (hypre_IModPeriodZ(imax0, periodic) >
+                  hypre_IModPeriodZ(imax1, periodic))
+                {
+                  swap = 1;
+                }
+              else if (hypre_IModPeriodZ(imax0, periodic) ==
+                       hypre_IModPeriodZ(imax1, periodic))
+                {
+                  if (hypre_IModPeriodY(imax0, periodic) >
+                      hypre_IModPeriodY(imax1, periodic))
+                    {
+                      swap = 1;
+                    }
+                  else if (hypre_IModPeriodY(imax0, periodic) ==
+                           hypre_IModPeriodY(imax1, periodic))
+                    {
+                      if (hypre_IModPeriodX(imax0, periodic) >
+                          hypre_IModPeriodX(imax1, periodic))
+                        {
+                          swap = 1;
+                        }
+                    }
+                }
+
+              if (swap)
+                {
+                  comm_entry = comm_entries[j];
+                  comm_entries[j] = comm_entries[j + 1];
+                  comm_entries[j + 1] = comm_entry;
+                }
+            }
         }
-      }
     }
-  }
 #endif
 
   return ierr;
@@ -1345,23 +1345,23 @@ int hypre_CommPkgUnCommit(hypre_CommPkg *comm_pkg)
   int ierr = 0;
 
   if (comm_pkg)
-  {
-    types = hypre_CommPkgSendMPITypes(comm_pkg);
-    if (types)
     {
-      for (i = 0; i < hypre_CommPkgNumSends(comm_pkg); i++)
-        MPI_Type_free(&types[i]);
-      hypre_TFree(types);
-    }
+      types = hypre_CommPkgSendMPITypes(comm_pkg);
+      if (types)
+        {
+          for (i = 0; i < hypre_CommPkgNumSends(comm_pkg); i++)
+            MPI_Type_free(&types[i]);
+          hypre_TFree(types);
+        }
 
-    types = hypre_CommPkgRecvMPITypes(comm_pkg);
-    if (types)
-    {
-      for (i = 0; i < hypre_CommPkgNumRecvs(comm_pkg); i++)
-        MPI_Type_free(&types[i]);
-      hypre_TFree(types);
+      types = hypre_CommPkgRecvMPITypes(comm_pkg);
+      if (types)
+        {
+          for (i = 0; i < hypre_CommPkgNumRecvs(comm_pkg); i++)
+            MPI_Type_free(&types[i]);
+          hypre_TFree(types);
+        }
     }
-  }
 
   return ierr;
 }
@@ -1403,41 +1403,41 @@ int hypre_CommTypeBuildMPI(int num_comms, int *comm_procs,
   int ierr = 0;
 
   for (m = 0; m < num_comms; m++)
-  {
-    comm_type = comm_types[m];
-
-    num_entries = hypre_CommTypeNumEntries(comm_type);
-    comm_entry_blocklengths = hypre_TAlloc(int, num_entries);
-    comm_entry_displacements = hypre_TAlloc(MPI_Aint, num_entries);
-    comm_entry_mpi_types = hypre_TAlloc(MPI_Datatype, num_entries);
-
-    for (i = 0; i < num_entries; i++)
     {
-      comm_entry = hypre_CommTypeCommEntry(comm_type, i);
+      comm_type = comm_types[m];
 
-      /* set blocklengths */
-      comm_entry_blocklengths[i] = 1;
+      num_entries = hypre_CommTypeNumEntries(comm_type);
+      comm_entry_blocklengths = hypre_TAlloc(int, num_entries);
+      comm_entry_displacements = hypre_TAlloc(MPI_Aint, num_entries);
+      comm_entry_mpi_types = hypre_TAlloc(MPI_Datatype, num_entries);
 
-      /* compute displacements */
-      comm_entry_displacements[i] =
-          hypre_CommTypeEntryOffset(comm_entry) * sizeof(double);
+      for (i = 0; i < num_entries; i++)
+        {
+          comm_entry = hypre_CommTypeCommEntry(comm_type, i);
 
-      /* compute types */
-      hypre_CommTypeEntryBuildMPI(comm_entry, &comm_entry_mpi_types[i]);
+          /* set blocklengths */
+          comm_entry_blocklengths[i] = 1;
+
+          /* compute displacements */
+          comm_entry_displacements[i] =
+              hypre_CommTypeEntryOffset(comm_entry) * sizeof(double);
+
+          /* compute types */
+          hypre_CommTypeEntryBuildMPI(comm_entry, &comm_entry_mpi_types[i]);
+        }
+
+      /* create `comm_mpi_types' */
+      MPI_Type_struct(num_entries, comm_entry_blocklengths,
+                      comm_entry_displacements, comm_entry_mpi_types,
+                      &comm_mpi_types[m]);
+      MPI_Type_commit(&comm_mpi_types[m]);
+
+      /* free up memory */
+      for (i = 0; i < num_entries; i++) MPI_Type_free(&comm_entry_mpi_types[i]);
+      hypre_TFree(comm_entry_blocklengths);
+      hypre_TFree(comm_entry_displacements);
+      hypre_TFree(comm_entry_mpi_types);
     }
-
-    /* create `comm_mpi_types' */
-    MPI_Type_struct(num_entries, comm_entry_blocklengths,
-                    comm_entry_displacements, comm_entry_mpi_types,
-                    &comm_mpi_types[m]);
-    MPI_Type_commit(&comm_mpi_types[m]);
-
-    /* free up memory */
-    for (i = 0; i < num_entries; i++) MPI_Type_free(&comm_entry_mpi_types[i]);
-    hypre_TFree(comm_entry_blocklengths);
-    hypre_TFree(comm_entry_displacements);
-    hypre_TFree(comm_entry_mpi_types);
-  }
 
   return ierr;
 }
@@ -1474,38 +1474,38 @@ int hypre_CommTypeEntryBuildMPI(hypre_CommTypeEntry *comm_entry,
   int ierr = 0;
 
   if (dim == 1)
-  {
-    MPI_Type_hvector(length_array[0], 1,
-                     (MPI_Aint)(stride_array[0] * sizeof(double)), MPI_DOUBLE,
-                     comm_entry_mpi_type);
-  }
-  else
-  {
-    old_type = hypre_CTAlloc(MPI_Datatype, 1);
-    new_type = hypre_CTAlloc(MPI_Datatype, 1);
-
-    MPI_Type_hvector(length_array[0], 1,
-                     (MPI_Aint)(stride_array[0] * sizeof(double)), MPI_DOUBLE,
-                     old_type);
-    for (i = 1; i < (dim - 1); i++)
     {
+      MPI_Type_hvector(length_array[0], 1,
+                       (MPI_Aint)(stride_array[0] * sizeof(double)), MPI_DOUBLE,
+                       comm_entry_mpi_type);
+    }
+  else
+    {
+      old_type = hypre_CTAlloc(MPI_Datatype, 1);
+      new_type = hypre_CTAlloc(MPI_Datatype, 1);
+
+      MPI_Type_hvector(length_array[0], 1,
+                       (MPI_Aint)(stride_array[0] * sizeof(double)), MPI_DOUBLE,
+                       old_type);
+      for (i = 1; i < (dim - 1); i++)
+        {
+          MPI_Type_hvector(length_array[i], 1,
+                           (MPI_Aint)(stride_array[i] * sizeof(double)), *old_type,
+                           new_type);
+
+          MPI_Type_free(old_type);
+          tmp_type = old_type;
+          old_type = new_type;
+          new_type = tmp_type;
+        }
       MPI_Type_hvector(length_array[i], 1,
                        (MPI_Aint)(stride_array[i] * sizeof(double)), *old_type,
-                       new_type);
-
+                       comm_entry_mpi_type);
       MPI_Type_free(old_type);
-      tmp_type = old_type;
-      old_type = new_type;
-      new_type = tmp_type;
-    }
-    MPI_Type_hvector(length_array[i], 1,
-                     (MPI_Aint)(stride_array[i] * sizeof(double)), *old_type,
-                     comm_entry_mpi_type);
-    MPI_Type_free(old_type);
 
-    hypre_TFree(old_type);
-    hypre_TFree(new_type);
-  }
+      hypre_TFree(old_type);
+      hypre_TFree(new_type);
+    }
 
   return ierr;
 }

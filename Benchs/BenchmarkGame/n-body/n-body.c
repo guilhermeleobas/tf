@@ -59,12 +59,12 @@ void offset_momentum(struct body *bodies, unsigned int nbodies)
 {
   unsigned int i, k;
   for (i = 0; i < nbodies; ++i)
-  {
-    for (k = 0; k < 3; ++k)
     {
-      bodies[0].v[k] -= bodies[i].v[k] * bodies[i].mass / SOLAR_MASS;
+      for (k = 0; k < 3; ++k)
+        {
+          bodies[0].v[k] -= bodies[i].v[k] * bodies[i].mass / SOLAR_MASS;
+        }
     }
-  }
 }
 
 void bodies_advance(struct body *bodies, unsigned int nbodies, double dt)
@@ -79,57 +79,57 @@ void bodies_advance(struct body *bodies, unsigned int nbodies, double dt)
   __m128d dx[3], dsquared, distance, dmag;
 
   for (k = 0, i = 0; i < nbodies - 1; ++i)
-  {
-    for (j = i + 1; j < nbodies; ++j, ++k)
     {
-      for (m = 0; m < 3; ++m)
-      {
-        r[k].dx[m] = bodies[i].x[m] - bodies[j].x[m];
-      }
+      for (j = i + 1; j < nbodies; ++j, ++k)
+        {
+          for (m = 0; m < 3; ++m)
+            {
+              r[k].dx[m] = bodies[i].x[m] - bodies[j].x[m];
+            }
+        }
     }
-  }
 
   for (i = 0; i < N; i += 2)
-  {
-    for (m = 0; m < 3; ++m)
-    {
-      dx[m] = _mm_loadl_pd(dx[m], &r[i].dx[m]);
-      dx[m] = _mm_loadh_pd(dx[m], &r[i + 1].dx[m]);
-    }
-
-    dsquared = dx[0] * dx[0] + dx[1] * dx[1] + dx[2] * dx[2];
-    distance = _mm_cvtps_pd(_mm_rsqrt_ps(_mm_cvtpd_ps(dsquared)));
-
-    for (j = 0; j < 2; ++j)
-    {
-      distance =
-          distance * _mm_set1_pd(1.5) -
-          ((_mm_set1_pd(0.5) * dsquared) * distance) * (distance * distance);
-    }
-
-    dmag = _mm_set1_pd(dt) / (dsquared)*distance;
-    _mm_store_pd(&mag[i], dmag);
-  }
-
-  for (i = 0, k = 0; i < nbodies - 1; ++i)
-  {
-    for (j = i + 1; j < nbodies; ++j, ++k)
     {
       for (m = 0; m < 3; ++m)
-      {
-        bodies[i].v[m] -= r[k].dx[m] * bodies[j].mass * mag[k];
-        bodies[j].v[m] += r[k].dx[m] * bodies[i].mass * mag[k];
-      }
+        {
+          dx[m] = _mm_loadl_pd(dx[m], &r[i].dx[m]);
+          dx[m] = _mm_loadh_pd(dx[m], &r[i + 1].dx[m]);
+        }
+
+      dsquared = dx[0] * dx[0] + dx[1] * dx[1] + dx[2] * dx[2];
+      distance = _mm_cvtps_pd(_mm_rsqrt_ps(_mm_cvtpd_ps(dsquared)));
+
+      for (j = 0; j < 2; ++j)
+        {
+          distance =
+              distance * _mm_set1_pd(1.5) -
+              ((_mm_set1_pd(0.5) * dsquared) * distance) * (distance * distance);
+        }
+
+      dmag = _mm_set1_pd(dt) / (dsquared)*distance;
+      _mm_store_pd(&mag[i], dmag);
     }
-  }
+
+  for (i = 0, k = 0; i < nbodies - 1; ++i)
+    {
+      for (j = i + 1; j < nbodies; ++j, ++k)
+        {
+          for (m = 0; m < 3; ++m)
+            {
+              bodies[i].v[m] -= r[k].dx[m] * bodies[j].mass * mag[k];
+              bodies[j].v[m] += r[k].dx[m] * bodies[i].mass * mag[k];
+            }
+        }
+    }
 
   for (i = 0; i < nbodies; ++i)
-  {
-    for (m = 0; m < 3; ++m)
     {
-      bodies[i].x[m] += dt * bodies[i].v[m];
+      for (m = 0; m < 3; ++m)
+        {
+          bodies[i].x[m] += dt * bodies[i].v[m];
+        }
     }
-  }
 }
 
 double bodies_energy(struct body *bodies, unsigned int nbodies)
@@ -138,23 +138,23 @@ double bodies_energy(struct body *bodies, unsigned int nbodies)
   unsigned int i, j, k;
 
   for (i = 0; i < nbodies; ++i)
-  {
-    e += bodies[i].mass *
-         (bodies[i].v[0] * bodies[i].v[0] + bodies[i].v[1] * bodies[i].v[1] +
-          bodies[i].v[2] * bodies[i].v[2]) /
-         2.;
-
-    for (j = i + 1; j < nbodies; ++j)
     {
-      for (k = 0; k < 3; ++k)
-      {
-        dx[k] = bodies[i].x[k] - bodies[j].x[k];
-      }
+      e += bodies[i].mass *
+           (bodies[i].v[0] * bodies[i].v[0] + bodies[i].v[1] * bodies[i].v[1] +
+            bodies[i].v[2] * bodies[i].v[2]) /
+           2.;
 
-      distance = sqrt(dx[0] * dx[0] + dx[1] * dx[1] + dx[2] * dx[2]);
-      e -= (bodies[i].mass * bodies[j].mass) / distance;
+      for (j = i + 1; j < nbodies; ++j)
+        {
+          for (k = 0; k < 3; ++k)
+            {
+              dx[k] = bodies[i].x[k] - bodies[j].x[k];
+            }
+
+          distance = sqrt(dx[0] * dx[0] + dx[1] * dx[1] + dx[2] * dx[2]);
+          e -= (bodies[i].mass * bodies[j].mass) / distance;
+        }
     }
-  }
   return e;
 }
 
@@ -164,9 +164,9 @@ int main(int argc, char **argv)
   offset_momentum(solar_bodies, BODIES_SIZE);
   printf("%.9f\n", bodies_energy(solar_bodies, BODIES_SIZE));
   for (i = 0; i < n; ++i)
-  {
-    bodies_advance(solar_bodies, BODIES_SIZE, 0.01);
-  }
+    {
+      bodies_advance(solar_bodies, BODIES_SIZE, 0.01);
+    }
   printf("%.9f\n", bodies_energy(solar_bodies, BODIES_SIZE));
   return 0;
 }

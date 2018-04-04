@@ -101,26 +101,26 @@ emit_message(j_common_ptr cinfo, int msg_level)
   struct jpeg_error_mgr *err = cinfo->err;
 
   if (msg_level < 0)
-  {
-    /* It's a warning message.  Since corrupt files may generate many warnings,
+    {
+      /* It's a warning message.  Since corrupt files may generate many warnings,
      * the policy implemented here is to show only the first warning,
      * unless trace_level >= 3.
      */
-    if (err->num_warnings == 0 || err->trace_level >= 3)
-    {
-      (*err->output_message)(cinfo);
+      if (err->num_warnings == 0 || err->trace_level >= 3)
+        {
+          (*err->output_message)(cinfo);
+        }
+      /* Always count warnings in num_warnings. */
+      err->num_warnings++;
     }
-    /* Always count warnings in num_warnings. */
-    err->num_warnings++;
-  }
   else
-  {
-    /* It's a trace message.  Show it if trace_level >= msg_level. */
-    if (err->trace_level >= msg_level)
     {
-      (*err->output_message)(cinfo);
+      /* It's a trace message.  Show it if trace_level >= msg_level. */
+      if (err->trace_level >= msg_level)
+        {
+          (*err->output_message)(cinfo);
+        }
     }
-  }
 }
 
 /*
@@ -142,49 +142,49 @@ format_message(j_common_ptr cinfo, char *buffer)
 
   /* Look up message string in proper table */
   if (msg_code > 0 && msg_code <= err->last_jpeg_message)
-  {
-    msgtext = err->jpeg_message_table[msg_code];
-  }
+    {
+      msgtext = err->jpeg_message_table[msg_code];
+    }
   else if (err->addon_message_table != NULL &&
            msg_code >= err->first_addon_message &&
            msg_code <= err->last_addon_message)
-  {
-    msgtext = err->addon_message_table[msg_code - err->first_addon_message];
-  }
+    {
+      msgtext = err->addon_message_table[msg_code - err->first_addon_message];
+    }
 
   /* Defend against bogus message number */
   if (msgtext == NULL)
-  {
-    err->msg_parm.i[0] = msg_code;
-    msgtext = err->jpeg_message_table[0];
-  }
+    {
+      err->msg_parm.i[0] = msg_code;
+      msgtext = err->jpeg_message_table[0];
+    }
 
   /* Check for string parameter, as indicated by %s in the message text */
   isstring = FALSE;
   msgptr = msgtext;
   while ((ch = *msgptr++) != '\0')
-  {
-    if (ch == '%')
     {
-      if (*msgptr == 's')
-      {
-        isstring = TRUE;
-      }
-      break;
+      if (ch == '%')
+        {
+          if (*msgptr == 's')
+            {
+              isstring = TRUE;
+            }
+          break;
+        }
     }
-  }
 
   /* Format the message into the passed buffer */
   if (isstring)
-  {
-    sprintf(buffer, msgtext, err->msg_parm.s);
-  }
+    {
+      sprintf(buffer, msgtext, err->msg_parm.s);
+    }
   else
-  {
-    sprintf(buffer, msgtext, err->msg_parm.i[0], err->msg_parm.i[1],
-            err->msg_parm.i[2], err->msg_parm.i[3], err->msg_parm.i[4],
-            err->msg_parm.i[5], err->msg_parm.i[6], err->msg_parm.i[7]);
-  }
+    {
+      sprintf(buffer, msgtext, err->msg_parm.i[0], err->msg_parm.i[1],
+              err->msg_parm.i[2], err->msg_parm.i[3], err->msg_parm.i[4],
+              err->msg_parm.i[5], err->msg_parm.i[6], err->msg_parm.i[7]);
+    }
 }
 
 /*
@@ -222,9 +222,9 @@ jpeg_std_error(struct jpeg_error_mgr *err)
   err->format_message = format_message;
   err->reset_error_mgr = reset_error_mgr;
 
-  err->trace_level = 0;  /* default = no tracing */
+  err->trace_level = 0; /* default = no tracing */
   err->num_warnings = 0; /* no warnings emitted yet */
-  err->msg_code = 0;     /* may be useful as a flag for "no error" */
+  err->msg_code = 0; /* may be useful as a flag for "no error" */
 
   /* Initialize message table pointers */
   err->jpeg_message_table = jpeg_std_message_table;

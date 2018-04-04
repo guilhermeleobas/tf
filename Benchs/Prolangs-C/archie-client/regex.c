@@ -209,11 +209,11 @@
 typedef /*unsigned*/ char CHAR;
 
 static int tagstk[MAXTAG]; /* subpat tag stack..*/
-static CHAR nfa[MAXNFA];   /* automaton..       */
-static int sta = NOP;      /* status of lastpat */
+static CHAR nfa[MAXNFA]; /* automaton..       */
+static int sta = NOP; /* status of lastpat */
 
 static CHAR bittab[BITBLK]; /* bit table for CCL */
-                            /* pre-set bits...   */
+/* pre-set bits...   */
 static CHAR bitarr[] = {1, 2, 4, 8, 16, 32, 64, 128};
 
 static int internal_error;
@@ -228,9 +228,9 @@ static void chset(register CHAR c)
 
 char *re_comp(char *pat)
 {
-  register char *p;        /* pattern pointer   */
+  register char *p; /* pattern pointer   */
   register CHAR *mp = nfa; /* nfa pointer       */
-  register CHAR *lp;       /* saved pointer..   */
+  register CHAR *lp; /* saved pointer..   */
   register CHAR *sp = nfa; /* another one..     */
 
   register int tagi = 0; /* tag stack index   */
@@ -248,188 +248,188 @@ char *re_comp(char *pat)
   sta = NOP;
 
   for (p = pat; *p; p++)
-  {
-    lp = mp;
-    switch (*p)
     {
-      case '.': /* match any char..  */
-        store(ANY);
-        break;
-
-      case '^': /* match beginning.. */
-        if (p == pat)
-          store(BOL);
-        else
+      lp = mp;
+      switch (*p)
         {
-          store(CHR);
-          store(*p);
-        }
-        break;
+          case '.': /* match any char..  */
+            store(ANY);
+            break;
 
-      case '$': /* match endofline.. */
-        if (!*(p + 1))
-          store(EOL);
-        else
-        {
-          store(CHR);
-          store(*p);
-        }
-        break;
+          case '^': /* match beginning.. */
+            if (p == pat)
+              store(BOL);
+            else
+              {
+                store(CHR);
+                store(*p);
+              }
+            break;
 
-      case '[': /* match char class..*/
-        store(CCL);
+          case '$': /* match endofline.. */
+            if (!*(p + 1))
+              store(EOL);
+            else
+              {
+                store(CHR);
+                store(*p);
+              }
+            break;
 
-        if (*++p == '^')
-        {
-          mask = 0377;
-          p++;
-        }
-        else
-          mask = 0;
+          case '[': /* match char class..*/
+            store(CCL);
 
-        if (*p == '-') /* real dash */
-          chset(*p++);
-        if (*p == ']') /* real brac */
-          chset(*p++);
-        while (*p && *p != ']')
-        {
-          if (*p == '-' && *(p + 1) && *(p + 1) != ']')
-          {
-            p++;
-            c1 = *(p - 2) + 1;
-            c2 = *p++;
-            while (c1 <= c2) chset(c1++);
-          }
+            if (*++p == '^')
+              {
+                mask = 0377;
+                p++;
+              }
+            else
+              mask = 0;
+
+            if (*p == '-') /* real dash */
+              chset(*p++);
+            if (*p == ']') /* real brac */
+              chset(*p++);
+            while (*p && *p != ']')
+              {
+                if (*p == '-' && *(p + 1) && *(p + 1) != ']')
+                  {
+                    p++;
+                    c1 = *(p - 2) + 1;
+                    c2 = *p++;
+                    while (c1 <= c2) chset(c1++);
+                  }
 #ifdef EXTEND
-          else if (*p == '\\' && *(p + 1))
-          {
-            p++;
-            chset(*p++);
-          }
+                else if (*p == '\\' && *(p + 1))
+                  {
+                    p++;
+                    chset(*p++);
+                  }
 #endif
-          else
-            chset(*p++);
-        }
-        if (!*p) badpat("Missing ]");
+                else
+                  chset(*p++);
+              }
+            if (!*p) badpat("Missing ]");
 
-        for (n = 0; n < BITBLK; bittab[n++] = (char)0) store(mask ^ bittab[n]);
+            for (n = 0; n < BITBLK; bittab[n++] = (char)0) store(mask ^ bittab[n]);
 
-        break;
+            break;
 
-      case '*': /* match 0 or more.. */
-      case '+': /* match 1 or more.. */
-        if (p == pat) badpat("Empty closure");
-        lp = sp;        /* previous opcode */
-        if (*lp == CLO) /* equivalence..   */
-          break;
-        switch (*lp)
-        {
-          case BOL:
-          case BOT:
-          case EOT:
-          case BOW:
-          case EOW:
-          case REF:
-            badpat("Illegal closure");
-          default:
-            break;
-        }
+          case '*': /* match 0 or more.. */
+          case '+': /* match 1 or more.. */
+            if (p == pat) badpat("Empty closure");
+            lp = sp; /* previous opcode */
+            if (*lp == CLO) /* equivalence..   */
+              break;
+            switch (*lp)
+              {
+                case BOL:
+                case BOT:
+                case EOT:
+                case BOW:
+                case EOW:
+                case REF:
+                  badpat("Illegal closure");
+                default:
+                  break;
+              }
 
-        if (*p == '+')
-          for (sp = mp; lp < sp; lp++) store(*lp);
+            if (*p == '+')
+              for (sp = mp; lp < sp; lp++) store(*lp);
 
-        store(END);
-        store(END);
-        sp = mp;
-        while (--mp > lp) *mp = mp[-1];
-        store(CLO);
-        mp = sp;
-        break;
+            store(END);
+            store(END);
+            sp = mp;
+            while (--mp > lp) *mp = mp[-1];
+            store(CLO);
+            mp = sp;
+            break;
 
-      case '\\': /* tags, backrefs .. */
-        switch (*++p)
-        {
-          case '(':
-            if (tagc < MAXTAG)
-            {
-              tagstk[++tagi] = tagc;
-              store(BOT);
-              store(tagc++);
-            }
-            else
-              badpat("Too many \\(\\) pairs");
-            break;
-          case ')':
-            if (*sp == BOT) badpat("Null pattern inside \\(\\)");
-            if (tagi > 0)
-            {
-              store(EOT);
-              store(tagstk[tagi--]);
-            }
-            else
-              badpat("Unmatched \\)");
-            break;
-          case '<':
-            store(BOW);
-            break;
-          case '>':
-            if (*sp == BOW) badpat("Null pattern inside \\<\\>");
-            store(EOW);
-            break;
-          case '1':
-          case '2':
-          case '3':
-          case '4':
-          case '5':
-          case '6':
-          case '7':
-          case '8':
-          case '9':
-            n = *p - '0';
-            if (tagi > 0 && tagstk[tagi] == n) badpat("Cyclical reference");
-            if (tagc > n)
-            {
-              store(REF);
-              store(n);
-            }
-            else
-              badpat("Undetermined reference");
-            break;
+          case '\\': /* tags, backrefs .. */
+            switch (*++p)
+              {
+                case '(':
+                  if (tagc < MAXTAG)
+                    {
+                      tagstk[++tagi] = tagc;
+                      store(BOT);
+                      store(tagc++);
+                    }
+                  else
+                    badpat("Too many \\(\\) pairs");
+                  break;
+                case ')':
+                  if (*sp == BOT) badpat("Null pattern inside \\(\\)");
+                  if (tagi > 0)
+                    {
+                      store(EOT);
+                      store(tagstk[tagi--]);
+                    }
+                  else
+                    badpat("Unmatched \\)");
+                  break;
+                case '<':
+                  store(BOW);
+                  break;
+                case '>':
+                  if (*sp == BOW) badpat("Null pattern inside \\<\\>");
+                  store(EOW);
+                  break;
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                  n = *p - '0';
+                  if (tagi > 0 && tagstk[tagi] == n) badpat("Cyclical reference");
+                  if (tagc > n)
+                    {
+                      store(REF);
+                      store(n);
+                    }
+                  else
+                    badpat("Undetermined reference");
+                  break;
 #ifdef EXTEND
-          case 'b':
-            store(CHR);
-            store('\b');
-            break;
-          case 'n':
-            store(CHR);
-            store('\n');
-            break;
-          case 'f':
-            store(CHR);
-            store('\f');
-            break;
-          case 'r':
-            store(CHR);
-            store('\r');
-            break;
-          case 't':
-            store(CHR);
-            store('\t');
-            break;
+                case 'b':
+                  store(CHR);
+                  store('\b');
+                  break;
+                case 'n':
+                  store(CHR);
+                  store('\n');
+                  break;
+                case 'f':
+                  store(CHR);
+                  store('\f');
+                  break;
+                case 'r':
+                  store(CHR);
+                  store('\r');
+                  break;
+                case 't':
+                  store(CHR);
+                  store('\t');
+                  break;
 #endif
-          default:
+                default:
+                  store(CHR);
+                  store(*p);
+              }
+            break;
+
+          default: /* an ordinary char  */
             store(CHR);
             store(*p);
+            break;
         }
-        break;
-
-      default: /* an ordinary char  */
-        store(CHR);
-        store(*p);
-        break;
+      sp = lp;
     }
-    sp = lp;
-  }
   if (tagi > 0) badpat("Unmatched \\(");
   store(END);
   sta = OKP;
@@ -483,25 +483,25 @@ int re_exec(register char *lp)
   bopat[9] = 0;
 
   switch (*ap)
-  {
-    case BOL: /* anchored: match from BOL only */
-      ep = pmatch(lp, ap);
-      break;
-    case CHR: /* ordinary char: locate it fast */
-      c = *(ap + 1);
-      while (*lp && *lp != c) lp++;
-      if (!*lp) /* if EOS, fail, else fall thru. */
+    {
+      case BOL: /* anchored: match from BOL only */
+        ep = pmatch(lp, ap);
+        break;
+      case CHR: /* ordinary char: locate it fast */
+        c = *(ap + 1);
+        while (*lp && *lp != c) lp++;
+        if (!*lp) /* if EOS, fail, else fall thru. */
+          return 0;
+      default: /* regular matching all the way. */
+        while (*lp)
+          {
+            if ((ep = pmatch(lp, ap))) break;
+            lp++;
+          }
+        break;
+      case END: /* munged automaton. fail always */
         return 0;
-    default: /* regular matching all the way. */
-      while (*lp)
-      {
-        if ((ep = pmatch(lp, ap))) break;
-        lp++;
-      }
-      break;
-    case END: /* munged automaton. fail always */
-      return 0;
-  }
+    }
   if (!ep) return 0;
 
   if (internal_error) return -1;
@@ -572,90 +572,90 @@ static char chrtyp[MAXCHR] = {
  *
  */
 
-#define ANYSKIP 2  /* [CLO] ANY END ...	     */
-#define CHRSKIP 3  /* [CLO] CHR chr END ...     */
+#define ANYSKIP 2 /* [CLO] ANY END ...	     */
+#define CHRSKIP 3 /* [CLO] CHR chr END ...     */
 #define CCLSKIP 18 /* [CLO] CCL 16bytes END ... */
 
 static char *pmatch(register char *lp, register CHAR *ap)
 {
   register int op, c, n;
-  register char *e;  /* extra pointer for CLO */
+  register char *e; /* extra pointer for CLO */
   register char *bp; /* beginning of subpat.. */
   register char *ep; /* ending of subpat..	 */
-  char *are;         /* to save the line ptr. */
+  char *are; /* to save the line ptr. */
 
   while ((op = *ap++) != END) switch (op)
-    {
-      case CHR:
-        if (*lp++ != *ap++) return 0;
-        break;
-      case ANY:
-        if (!*lp++) return 0;
-        break;
-      case CCL:
-        c = *lp++;
-        if (!isinset(ap, c)) return 0;
-        ap += BITBLK;
-        break;
-      case BOL:
-        if (lp != bol) return 0;
-        break;
-      case EOL:
-        if (*lp) return 0;
-        break;
-      case BOT:
-        bopat[*ap++] = lp;
-        break;
-      case EOT:
-        eopat[*ap++] = lp;
-        break;
-      case BOW:
-        if (lp != bol && iswordc(lp[-1]) || !iswordc(*lp)) return 0;
-        break;
-      case EOW:
-        if (lp == bol || !iswordc(lp[-1]) || iswordc(*lp)) return 0;
-        break;
-      case REF:
-        n = *ap++;
-        bp = bopat[n];
-        ep = eopat[n];
-        while (bp < ep)
-          if (*bp++ != *lp++) return 0;
-        break;
-      case CLO:
-        are = lp;
-        switch (*ap)
-        {
-          case ANY:
-            while (*lp) lp++;
-            n = ANYSKIP;
-            break;
-          case CHR:
-            c = *(ap + 1);
-            while (*lp && c == *lp) lp++;
-            n = CHRSKIP;
-            break;
-          case CCL:
-            while ((c = *lp) && isinset(ap + 1, c)) lp++;
-            n = CCLSKIP;
-            break;
-          default:
-            internal_error++;
-            return 0;
-        }
+      {
+        case CHR:
+          if (*lp++ != *ap++) return 0;
+          break;
+        case ANY:
+          if (!*lp++) return 0;
+          break;
+        case CCL:
+          c = *lp++;
+          if (!isinset(ap, c)) return 0;
+          ap += BITBLK;
+          break;
+        case BOL:
+          if (lp != bol) return 0;
+          break;
+        case EOL:
+          if (*lp) return 0;
+          break;
+        case BOT:
+          bopat[*ap++] = lp;
+          break;
+        case EOT:
+          eopat[*ap++] = lp;
+          break;
+        case BOW:
+          if (lp != bol && iswordc(lp[-1]) || !iswordc(*lp)) return 0;
+          break;
+        case EOW:
+          if (lp == bol || !iswordc(lp[-1]) || iswordc(*lp)) return 0;
+          break;
+        case REF:
+          n = *ap++;
+          bp = bopat[n];
+          ep = eopat[n];
+          while (bp < ep)
+            if (*bp++ != *lp++) return 0;
+          break;
+        case CLO:
+          are = lp;
+          switch (*ap)
+            {
+              case ANY:
+                while (*lp) lp++;
+                n = ANYSKIP;
+                break;
+              case CHR:
+                c = *(ap + 1);
+                while (*lp && c == *lp) lp++;
+                n = CHRSKIP;
+                break;
+              case CCL:
+                while ((c = *lp) && isinset(ap + 1, c)) lp++;
+                n = CCLSKIP;
+                break;
+              default:
+                internal_error++;
+                return 0;
+            }
 
-        ap += n;
+          ap += n;
 
-        while (lp >= are)
-        {
-          if (e = pmatch(lp, ap)) return e;
-          --lp;
-        }
-        return 0;
-      default:
-        internal_error++;
-        return 0;
-    }
+          while (lp >= are)
+            {
+              if (e = pmatch(lp, ap)) return e;
+              --lp;
+            }
+          return 0;
+        default:
+          internal_error++;
+          return 0;
+      }
   return lp;
 }
 #endif /* Need regex libraries? Compile to nothing if not.  */

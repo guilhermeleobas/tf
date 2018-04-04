@@ -46,22 +46,22 @@ void uncompress(int argc, char *argv[])
 
   fpi = fopen(argv[1], "r"); /* open the infile */
   if (fpi == NULL)
-  {
-    fprintf(stderr, "ERROR: Could not find infile.\n");
-    exit(1);
-  }
+    {
+      fprintf(stderr, "ERROR: Could not find infile.\n");
+      exit(1);
+    }
 
 #ifndef BENCHMARK
-  strcpy(outname, argv[1]);    /* name the outfile */
+  strcpy(outname, argv[1]); /* name the outfile */
   strcat(outname, ".uncompr"); /* add the suffix '.uncompr' */
   fpo = fopen(outname, "w");
   if (fpo == NULL)
-  {
-    fprintf(
-        stderr,
-        "ERROR: Could not open outfile (do you have write permission here?)\n");
-    exit(1);
-  }
+    {
+      fprintf(
+          stderr,
+          "ERROR: Could not open outfile (do you have write permission here?)\n");
+      exit(1);
+    }
 #endif
 
   fread(&size, sizeof(unsigned int), 1, fpi); /* Read size of original file */
@@ -73,10 +73,10 @@ void uncompress(int argc, char *argv[])
   derle = (unsigned char *)malloc(2 * size * sizeof(unsigned char));
   debw = (unsigned char *)malloc(2 * size * sizeof(unsigned char));
   if (!in || !deari || !derle || !debw)
-  {
-    fprintf(stderr, "ERROR: Out of memory\n");
-    exit(1);
-  }
+    {
+      fprintf(stderr, "ERROR: Out of memory\n");
+      exit(1);
+    }
 
   insize = fread(in, sizeof(unsigned char), 2 * size, fpi);
   fclose(fpi);
@@ -106,22 +106,22 @@ static void do_derle(int rlesize)
 
   /* Do the deRLE coding */
   for (j = 0; j < rlesize;)
-  {
-    if (deari[j] & 0x80)
-    { /* is bit 7 set? YES! */
-      for (k = 0; k < (deari[j] & 0x7F); k++)
-      {
-        derle[derlepos++] = deari[j + 1];
-      }
-      j += 2;
+    {
+      if (deari[j] & 0x80)
+        { /* is bit 7 set? YES! */
+          for (k = 0; k < (deari[j] & 0x7F); k++)
+            {
+              derle[derlepos++] = deari[j + 1];
+            }
+          j += 2;
+        }
+      else
+        { /* is bit 7 set? NO! */
+          memcpy(derle + derlepos, deari + j + 1, deari[j]);
+          derlepos += deari[j];
+          j += deari[j] + 1;
+        }
     }
-    else
-    { /* is bit 7 set? NO! */
-      memcpy(derle + derlepos, deari + j + 1, deari[j]);
-      derlepos += deari[j];
-      j += deari[j] + 1;
-    }
-  }
 }
 
 static void do_debwe()
@@ -135,35 +135,35 @@ static void do_debwe()
   T = (unsigned int *)malloc(size * sizeof(unsigned int));
 
   for (k = 0; k < 256; k++)
-  {
-    count[k] = 0;
-  }
+    {
+      count[k] = 0;
+    }
 
   for (k = 0; k < size; k++)
-  {
-    count[L[k]]++;
-  }
+    {
+      count[L[k]]++;
+    }
 
   for (i = 0; i < 256; i++)
-  {
-    total[i] = sum;
-    sum += count[i];
-    count[i] = 0;
-  }
+    {
+      total[i] = sum;
+      sum += count[i];
+      count[i] = 0;
+    }
 
   for (i = 0; i < size; i++)
-  {
-    indx = L[i];
-    T[i] = count[indx] + total[indx];
-    count[indx]++;
-  }
+    {
+      indx = L[i];
+      T[i] = count[indx] + total[indx];
+      count[indx]++;
+    }
 
   debw[size - 1] = L[orgpos];
   for (k = 1; k < size; k++)
-  {
-    debw[size - k - 1] = L[T[orgpos]];
-    orgpos = T[orgpos];
-  }
+    {
+      debw[size - k - 1] = L[T[orgpos]];
+      orgpos = T[orgpos];
+    }
 
   free(T);
 }

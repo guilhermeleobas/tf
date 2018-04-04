@@ -54,17 +54,17 @@ typedef struct
 
 /* Global variables are used to save time during the search */
 
-static int goal;       /* the value of t explained above */
+static int goal; /* the value of t explained above */
 static int listLength; /* |S| */
 static int *workList;
 static Comb *combList;
 static Comb *solution;
-static int best = 0;      /* value of best solution found yet */
-static int dmax;          /* maximal depth of search */
-static int stopSearch;    /* flag so we stop at first solution */
+static int best = 0; /* value of best solution found yet */
+static int dmax; /* maximal depth of search */
+static int stopSearch; /* flag so we stop at first solution */
 static int bestDepth = 0; /* depth of best solution; used if no exact
                              solution is found */
-static int nbNodes;       /* statistics: number of nodes examined
+static int nbNodes; /* statistics: number of nodes examined
                              (number of calls to recSearch) */
 
 /************************* INITIALIZATION STUFF *************************/
@@ -79,14 +79,14 @@ int *newWorkList(int length)
   int *newList = (int *)calloc(length, sizeof(int));
 
   if (newList)
-  {
-    return newList;
-  }
+    {
+      return newList;
+    }
   else
-  {
-    fprintf(stderr, "Out of memory for work list\n");
-    exit(1);
-  }
+    {
+      fprintf(stderr, "Out of memory for work list\n");
+      exit(1);
+    }
 }
 
 Comb *newCombList(int length)
@@ -99,14 +99,14 @@ Comb *newCombList(int length)
   Comb *newList = (Comb *)calloc(length, sizeof(Comb));
 
   if (newList)
-  {
-    return newList;
-  }
+    {
+      return newList;
+    }
   else
-  {
-    fprintf(stderr, "Out of memory for combination list\n");
-    exit(1);
-  }
+    {
+      fprintf(stderr, "Out of memory for combination list\n");
+      exit(1);
+    }
 }
 
 void initWorkList(int *workList, int *givenList, int length)
@@ -115,9 +115,9 @@ void initWorkList(int *workList, int *givenList, int length)
   int i;
 
   for (i = 0; i < length; i++)
-  {
-    workList[i] = givenList[i];
-  }
+    {
+      workList[i] = givenList[i];
+    }
 }
 
 void initCombList(Comb *combList, int length)
@@ -125,9 +125,9 @@ void initCombList(Comb *combList, int length)
   int i;
 
   for (i = 0; i < length; i++)
-  {
-    combList[i].operation = NOOP;
-  }
+    {
+      combList[i].operation = NOOP;
+    }
 }
 
 /************************* AUXILIARY FUNCTIONS *************************/
@@ -141,11 +141,11 @@ void saveSolution(Comb *sol, Comb *combList, int length)
   int i;
 
   for (i = 0; i < length; i++)
-  {
-    sol[i].operand1 = combList[i].operand1;
-    sol[i].operand2 = combList[i].operand2;
-    sol[i].operation = combList[i].operation;
-  }
+    {
+      sol[i].operand1 = combList[i].operand1;
+      sol[i].operand2 = combList[i].operand2;
+      sol[i].operation = combList[i].operation;
+    }
 
   sol[length].operation = NOOP; /* End marker */
 }
@@ -157,19 +157,19 @@ int calculate(Comb *comb)
 
 {
   switch (comb->operation)
-  {
-    case ADD:
-      return comb->operand1 + comb->operand2;
-    case SUB:
-      return comb->operand1 - comb->operand2;
-    case MUL:
-      return comb->operand1 * comb->operand2;
-    case DIV:
-      return comb->operand1 / comb->operand2;
+    {
+      case ADD:
+        return comb->operand1 + comb->operand2;
+      case SUB:
+        return comb->operand1 - comb->operand2;
+      case MUL:
+        return comb->operand1 * comb->operand2;
+      case DIV:
+        return comb->operand1 / comb->operand2;
 
-    default:
-      return 0;
-  }
+      default:
+        return 0;
+    }
 }
 
 /************************* OUTPUT STUFF *************************/
@@ -179,42 +179,42 @@ void printSolution(Comb *combList, int length)
   int i;
 
   for (i = 0; i < length; i++)
-  {
-    printf("%d", combList[i].operand1);
-
-    switch (combList[i].operation)
     {
-      case NOOP:
-        printf(" ");
-        break;
-      case ADD:
-        printf("+");
-        break;
-      case SUB:
-        printf("-");
-        break;
-      case MUL:
-        printf("*");
-        break;
-      case DIV:
-        printf(":");
-        break;
+      printf("%d", combList[i].operand1);
 
-      default:
-        printf(" d%d ", combList[i].operation);
-    }
+      switch (combList[i].operation)
+        {
+          case NOOP:
+            printf(" ");
+            break;
+          case ADD:
+            printf("+");
+            break;
+          case SUB:
+            printf("-");
+            break;
+          case MUL:
+            printf("*");
+            break;
+          case DIV:
+            printf(":");
+            break;
 
-    printf("%d=%d", combList[i].operand2, calculate(&combList[i]));
+          default:
+            printf(" d%d ", combList[i].operation);
+        }
 
-    if (i < length - 1)
-    {
-      printf("; ");
+      printf("%d=%d", combList[i].operand2, calculate(&combList[i]));
+
+      if (i < length - 1)
+        {
+          printf("; ");
+        }
+      else
+        {
+          printf(".\n");
+        }
     }
-    else
-    {
-      printf(".\n");
-    }
-  }
 
   printf("\n");
 }
@@ -224,14 +224,14 @@ void printList(int *list, int length, int mask)
   int i;
 
   for (i = 0; i < length; i++)
-  {
-    if ((1 << i) & mask)
     {
-      continue;
-    }
+      if ((1 << i) & mask)
+        {
+          continue;
+        }
 
-    printf("%d ", list[i]);
-  }
+      printf("%d ", list[i]);
+    }
 
   printf("\n");
 }
@@ -246,108 +246,108 @@ void recSearch(int searchDepth, int usedMask)
 */
 
 {
-  int currOp;   /* current operation under consideration */
-  int newMask;  /* or'ed with old mask to mark used numbers from work list */
+  int currOp; /* current operation under consideration */
+  int newMask; /* or'ed with old mask to mark used numbers from work list */
   int operand1; /* offset of operand 1 of combination within work list */
   int operand2; /* offset of operand 2 of combination within work list */
 
   if (stopSearch)
-  {
-    return; /* unroll recursion when solution is found */
-  }
+    {
+      return; /* unroll recursion when solution is found */
+    }
 
   nbNodes++; /* Statistics */
 
   if (searchDepth == dmax)
-  {
-    /* check whether last number generated is nearer to t than best */
-    if (abs(workList[listLength + searchDepth - 1] - goal) < abs(best - goal))
     {
-      /* if so, save solution */
-      best = workList[listLength + searchDepth - 1];
-      bestDepth = searchDepth;
-      saveSolution(solution, combList, searchDepth);
+      /* check whether last number generated is nearer to t than best */
+      if (abs(workList[listLength + searchDepth - 1] - goal) < abs(best - goal))
+        {
+          /* if so, save solution */
+          best = workList[listLength + searchDepth - 1];
+          bestDepth = searchDepth;
+          saveSolution(solution, combList, searchDepth);
 
-      if (best == goal)
-      {
-        printSolution(combList, searchDepth);
-        stopSearch = 1;
-      }
+          if (best == goal)
+            {
+              printSolution(combList, searchDepth);
+              stopSearch = 1;
+            }
+        }
     }
-  }
 
   else
-  {
-    int working1, working2; /* hold values of numbers considered
-                               for combination */
-    int temp;               /* for swapping */
-
-    /* iterate over all four operators {+, -, *, /} */
-    for (currOp = ADD; currOp <= DIV; currOp++)
     {
-      for (operand1 = 0; operand1 < listLength + searchDepth; operand1++)
-      {
-        /* do not use already used numbers */
-        if ((1 << operand1) & usedMask)
+      int working1, working2; /* hold values of numbers considered
+                               for combination */
+      int temp; /* for swapping */
+
+      /* iterate over all four operators {+, -, *, /} */
+      for (currOp = ADD; currOp <= DIV; currOp++)
         {
-          continue;
-        }
+          for (operand1 = 0; operand1 < listLength + searchDepth; operand1++)
+            {
+              /* do not use already used numbers */
+              if ((1 << operand1) & usedMask)
+                {
+                  continue;
+                }
 
-        for (operand2 = 0; operand2 < operand1; operand2++)
-        {
-          if ((1 << operand2) & usedMask)
-          {
-            continue;
-          }
+              for (operand2 = 0; operand2 < operand1; operand2++)
+                {
+                  if ((1 << operand2) & usedMask)
+                    {
+                      continue;
+                    }
 
-          working1 = workList[operand1];
-          working2 = workList[operand2];
+                  working1 = workList[operand1];
+                  working2 = workList[operand2];
 
-          /* x * 1 = 1 * x = x; x / 1 = x */
-          if ((currOp == MUL || currOp == DIV) &&
-              (working1 == 1 || working2 == 1))
-          {
-            continue;
-          }
+                  /* x * 1 = 1 * x = x; x / 1 = x */
+                  if ((currOp == MUL || currOp == DIV) &&
+                      (working1 == 1 || working2 == 1))
+                    {
+                      continue;
+                    }
 
-          /* could arise from combination a - a for some a */
-          if (working1 == 0 || working2 == 0)
-          {
-            continue;
-          }
+                  /* could arise from combination a - a for some a */
+                  if (working1 == 0 || working2 == 0)
+                    {
+                      continue;
+                    }
 
-          /* make dure operand2 divides operand1 */
-          if (currOp == DIV && (working1 % working2))
-          {
-            continue;
-          }
+                  /* make dure operand2 divides operand1 */
+                  if (currOp == DIV && (working1 % working2))
+                    {
+                      continue;
+                    }
 
-          /* make sure operand1 >= operand2 for subtraction and
+                  /* make sure operand1 >= operand2 for subtraction and
              division */
-          if ((currOp == DIV || currOp == SUB) && (working1 < working2))
-          {
-            temp = working1;
-            working1 = working2;
-            working2 = temp;
-          }
+                  if ((currOp == DIV || currOp == SUB) && (working1 < working2))
+                    {
+                      temp = working1;
+                      working1 = working2;
+                      working2 = temp;
+                    }
 
-          /* mark operands used */
-          newMask = usedMask | (1 << operand1) | (1 << operand2);
+                  /* mark operands used */
+                  newMask = usedMask | (1 << operand1) | (1 << operand2);
 
-          /* save current combination */
-          combList[searchDepth].operand1 = working1;
-          combList[searchDepth].operand2 = working2;
-          combList[searchDepth].operation = currOp;
+                  /* save current combination */
+                  combList[searchDepth].operand1 = working1;
+                  combList[searchDepth].operand2 = working2;
+                  combList[searchDepth].operation = currOp;
 
-          workList[listLength + searchDepth] =
-              calculate(&combList[searchDepth]);
+                  workList[listLength + searchDepth] =
+                      calculate(&combList[searchDepth]);
 
-          /* search deeper */
-          recSearch(searchDepth + 1, newMask);
+                  /* search deeper */
+                  recSearch(searchDepth + 1, newMask);
+                }
+            }
         }
-      }
     }
-  }
 }
 
 void doSearch(void)
@@ -359,34 +359,34 @@ void doSearch(void)
   int i;
 
   for (i = 0; i < listLength; i++)
-  {
-    if (abs(workList[i] - goal) < abs(best - goal))
     {
-      best = workList[i];
+      if (abs(workList[i] - goal) < abs(best - goal))
+        {
+          best = workList[i];
+        }
     }
-  }
 
   if (best == goal)
-  {
-    printf(".\n");
-    return;
-  }
+    {
+      printf(".\n");
+      return;
+    }
 
   for (dmax = 1; dmax < listLength; dmax++)
-  {
-    recSearch(0, 0);
-
-    if (stopSearch)
     {
-      break;
+      recSearch(0, 0);
+
+      if (stopSearch)
+        {
+          break;
+        }
     }
-  }
 
   /* If no exact solution was found */
   if (stopSearch == 0)
-  {
-    printSolution(solution, bestDepth);
-  }
+    {
+      printSolution(solution, bestDepth);
+    }
 }
 
 int getInput(void)
@@ -400,16 +400,16 @@ int getInput(void)
   nums[3] = 1412;
 
   while ((c = getchar()) != '\n' && c != EOF)
-  {
-    ungetc(c, stdin);
-    fscanf(stdin, "%d", &nums[i]);
-    i++;
-  }
+    {
+      ungetc(c, stdin);
+      fscanf(stdin, "%d", &nums[i]);
+      i++;
+    }
 
   if (i == 0)
-  {
-    i = 4;
-  }
+    {
+      i = 4;
+    }
 
   listLength = i - 1;
   goal = nums[listLength];
@@ -437,8 +437,8 @@ void search(void)
 int main(int argc, char *argv[])
 {
   if (getInput())
-  {
-    search();
-  }
+    {
+      search();
+    }
   return 0;
 }

@@ -22,16 +22,16 @@ void MultMatrixMatrix(Matrix *A, Matrix *B, Matrix *C)
 {
   int i = 0, j = 0, k = 0;
   for (i = 0; i < 4; i++)
-  {
-    for (j = 0; j < 4; j++)
     {
-      (*C)[i][j] = 0;
-      for (k = 0; k < 4; k++)
-      {
-        (*C)[i][j] += (*A)[i][k] * (*B)[k][j];
-      }
+      for (j = 0; j < 4; j++)
+        {
+          (*C)[i][j] = 0;
+          for (k = 0; k < 4; k++)
+            {
+              (*C)[i][j] += (*A)[i][k] * (*B)[k][j];
+            }
+        }
     }
-  }
 }
 
 HPoint MultMatrixHPoint(Matrix *mat,
@@ -53,17 +53,17 @@ Matrix *CopyMatrix(Matrix *Mat)
   int i, j;
   Matrix *Res = NULL;
   if (Mat != NULL)
-  {
-    Res = malloc(sizeof(Matrix));
-    for (i = 0; i < 4; i++)
     {
-      for (j = 0; j < 4; j++)
-      {
-        /*printf("Copying Mat[%i][%i] = %.2f\n",i,j,(*Mat)[i][j]);*/
-        (*Res)[i][j] = (*Mat)[i][j];
-      }
+      Res = malloc(sizeof(Matrix));
+      for (i = 0; i < 4; i++)
+        {
+          for (j = 0; j < 4; j++)
+            {
+              /*printf("Copying Mat[%i][%i] = %.2f\n",i,j,(*Mat)[i][j]);*/
+              (*Res)[i][j] = (*Mat)[i][j];
+            }
+        }
     }
-  }
   return Res;
 }
 Matrix *IdentMatrix(void)
@@ -113,20 +113,20 @@ Matrix *RotateMatrix(double rx, double ry, double rz)
   RMatZ = IdentMatrix();
   RMatXY = IdentMatrix();
   RMatXYZ = IdentMatrix();
-  (*RMatX)[1][1] = cosrx;  /*   1    0    0   0 */
+  (*RMatX)[1][1] = cosrx; /*   1    0    0   0 */
   (*RMatX)[1][2] = -sinrx; /*   0   cos -sin  0 */
-  (*RMatX)[2][1] = sinrx;  /*   0   sin  cos  0 */
-  (*RMatX)[2][2] = cosrx;  /*   0    0    0   1 */
+  (*RMatX)[2][1] = sinrx; /*   0   sin  cos  0 */
+  (*RMatX)[2][2] = cosrx; /*   0    0    0   1 */
 
-  (*RMatY)[0][0] = cosry;  /*  cos   0   sin  0 */
-  (*RMatY)[0][2] = sinry;  /*   0    1    0   0 */
+  (*RMatY)[0][0] = cosry; /*  cos   0   sin  0 */
+  (*RMatY)[0][2] = sinry; /*   0    1    0   0 */
   (*RMatY)[2][0] = -sinry; /* -sin   0   cos  0 */
-  (*RMatY)[2][2] = cosry;  /*   0    0    0   1 */
+  (*RMatY)[2][2] = cosry; /*   0    0    0   1 */
 
-  (*RMatZ)[0][0] = cosrz;  /*  cos -sin   0   0 */
+  (*RMatZ)[0][0] = cosrz; /*  cos -sin   0   0 */
   (*RMatZ)[0][1] = -sinrz; /*  sin  cos   0   0 */
-  (*RMatZ)[1][0] = sinrz;  /*   0    0    1   0 */
-  (*RMatZ)[1][1] = cosrz;  /*   0    0    0   1 */
+  (*RMatZ)[1][0] = sinrz; /*   0    0    1   0 */
+  (*RMatZ)[1][1] = cosrz; /*   0    0    0   1 */
   MultMatrixMatrix(RMatX, RMatY, RMatXY);
   MultMatrixMatrix(RMatXY, RMatZ, RMatXYZ);
   return RMatXYZ;

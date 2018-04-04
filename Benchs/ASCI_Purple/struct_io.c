@@ -63,12 +63,12 @@ int hypre_PrintBoxArrayData(FILE *file, hypre_BoxArray *box_array,
     hypre_BoxLoop1For(loopi, loopj, loopk, datai)
     {
       for (j = 0; j < num_values; j++)
-      {
-        fprintf(file, "%d: (%d, %d, %d; %d) %e\n", i,
-                hypre_IndexX(start) + loopi, hypre_IndexY(start) + loopj,
-                hypre_IndexZ(start) + loopk, j,
-                data[datai + j * data_box_volume]);
-      }
+        {
+          fprintf(file, "%d: (%d, %d, %d; %d) %e\n", i,
+                  hypre_IndexX(start) + loopi, hypre_IndexY(start) + loopj,
+                  hypre_IndexZ(start) + loopk, j,
+                  data[datai + j * data_box_volume]);
+        }
     }
     hypre_BoxLoop1End(datai);
 
@@ -123,10 +123,10 @@ int hypre_ReadBoxArrayData(FILE *file, hypre_BoxArray *box_array,
     hypre_BoxLoop1For(loopi, loopj, loopk, datai)
     {
       for (j = 0; j < num_values; j++)
-      {
-        fscanf(file, "%d: (%d, %d, %d; %d) %le\n", &idummy, &idummy, &idummy,
-               &idummy, &idummy, &data[datai + j * data_box_volume]);
-      }
+        {
+          fscanf(file, "%d: (%d, %d, %d; %d) %le\n", &idummy, &idummy, &idummy,
+                 &idummy, &idummy, &data[datai + j * data_box_volume]);
+        }
     }
     hypre_BoxLoop1End(datai);
 

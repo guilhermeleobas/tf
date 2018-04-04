@@ -10,9 +10,9 @@ pset minterms(T) pcover T;
 
   size = 1;
   for (var = 0; var < cube.num_vars; var++)
-  {
-    size *= cube.part_size[var];
-  }
+    {
+      size *= cube.part_size[var];
+    }
   Gminterm = set_new(size);
 
   foreach_set(T, last, Gcube) explode(cube.num_vars - 1, 0);
@@ -24,33 +24,33 @@ void explode(var, z) int var, z;
 {
   int i, last = cube.last_part[var];
   for (i = cube.first_part[var], z *= cube.part_size[var]; i <= last; i++, z++)
-  {
-    if (is_in_set(Gcube, i))
     {
-      if (var == 0)
-      {
-        set_insert(Gminterm, z);
-      }
-      else
-      {
-        explode(var - 1, z);
-      }
+      if (is_in_set(Gcube, i))
+        {
+          if (var == 0)
+            {
+              set_insert(Gminterm, z);
+            }
+          else
+            {
+              explode(var - 1, z);
+            }
+        }
     }
-  }
 }
 
 static int mapindex[16][16] = {
-    0,   1,   3,   2,   16,  17,  19,  18,  80,  81,  83,  82,  64,
-    65,  67,  66,  4,   5,   7,   6,   20,  21,  23,  22,  84,  85,
-    87,  86,  68,  69,  71,  70,  12,  13,  15,  14,  28,  29,  31,
-    30,  92,  93,  95,  94,  76,  77,  79,  78,  8,   9,   11,  10,
-    24,  25,  27,  26,  88,  89,  91,  90,  72,  73,  75,  74,
+    0, 1, 3, 2, 16, 17, 19, 18, 80, 81, 83, 82, 64,
+    65, 67, 66, 4, 5, 7, 6, 20, 21, 23, 22, 84, 85,
+    87, 86, 68, 69, 71, 70, 12, 13, 15, 14, 28, 29, 31,
+    30, 92, 93, 95, 94, 76, 77, 79, 78, 8, 9, 11, 10,
+    24, 25, 27, 26, 88, 89, 91, 90, 72, 73, 75, 74,
 
-    32,  33,  35,  34,  48,  49,  51,  50,  112, 113, 115, 114, 96,
-    97,  99,  98,  36,  37,  39,  38,  52,  53,  55,  54,  116, 117,
-    119, 118, 100, 101, 103, 102, 44,  45,  47,  46,  60,  61,  63,
-    62,  124, 125, 127, 126, 108, 109, 111, 110, 40,  41,  43,  42,
-    56,  57,  59,  58,  120, 121, 123, 122, 104, 105, 107, 106,
+    32, 33, 35, 34, 48, 49, 51, 50, 112, 113, 115, 114, 96,
+    97, 99, 98, 36, 37, 39, 38, 52, 53, 55, 54, 116, 117,
+    119, 118, 100, 101, 103, 102, 44, 45, 47, 46, 60, 61, 63,
+    62, 124, 125, 127, 126, 108, 109, 111, 110, 40, 41, 43, 42,
+    56, 57, 59, 58, 120, 121, 123, 122, 104, 105, 107, 106,
 
     160, 161, 163, 162, 176, 177, 179, 178, 240, 241, 243, 242, 224,
     225, 227, 226, 164, 165, 167, 166, 180, 181, 183, 182, 244, 245,
@@ -78,51 +78,51 @@ void map(T) pcover T;
   numout = cube.part_size[cube.num_vars - 1];
 
   for (outnum = 0; outnum < numout; outnum++)
-  {
-    output_offset = outnum * largest_input_ind;
-    printf("\n\nOutput space # %d\n", outnum);
-    for (l = 0; l <= MAX(cube.num_binary_vars - 8, 0); l++)
     {
-      other_input_offset = l * 256;
-      for (k = 0; k < 16; k++)
-      {
-        some_output = FALSE;
-        for (j = 0; j < 16; j++)
+      output_offset = outnum * largest_input_ind;
+      printf("\n\nOutput space # %d\n", outnum);
+      for (l = 0; l <= MAX(cube.num_binary_vars - 8, 0); l++)
         {
-          ind = mapindex[k][j] + other_input_offset;
-          if (ind < largest_input_ind)
-          {
-            c = is_in_set(m, ind + output_offset) ? '1' : '.';
-            putchar(c);
-            some_output = TRUE;
-          }
-          if ((j + 1) % 4 == 0)
-          {
-            putchar(' ');
-          }
-          if ((j + 1) % 8 == 0)
-          {
-            printf("  ");
-          }
+          other_input_offset = l * 256;
+          for (k = 0; k < 16; k++)
+            {
+              some_output = FALSE;
+              for (j = 0; j < 16; j++)
+                {
+                  ind = mapindex[k][j] + other_input_offset;
+                  if (ind < largest_input_ind)
+                    {
+                      c = is_in_set(m, ind + output_offset) ? '1' : '.';
+                      putchar(c);
+                      some_output = TRUE;
+                    }
+                  if ((j + 1) % 4 == 0)
+                    {
+                      putchar(' ');
+                    }
+                  if ((j + 1) % 8 == 0)
+                    {
+                      printf("  ");
+                    }
+                }
+              if (some_output)
+                {
+                  putchar('\n');
+                }
+              if ((k + 1) % 4 == 0)
+                {
+                  if (k != 15 && mapindex[k + 1][0] >= largest_input_ind)
+                    {
+                      break;
+                    }
+                  putchar('\n');
+                }
+              if ((k + 1) % 8 == 0)
+                {
+                  putchar('\n');
+                }
+            }
         }
-        if (some_output)
-        {
-          putchar('\n');
-        }
-        if ((k + 1) % 4 == 0)
-        {
-          if (k != 15 && mapindex[k + 1][0] >= largest_input_ind)
-          {
-            break;
-          }
-          putchar('\n');
-        }
-        if ((k + 1) % 8 == 0)
-        {
-          putchar('\n');
-        }
-      }
     }
-  }
   set_free(m);
 }

@@ -9,33 +9,33 @@ void error(char *m) /*   generates all error messages */
   printf("\nERROR: line %d: %s \n", lineno, m);
 
   if (lookahead == DONE)
-  {
-    return;
-  }
+    {
+      return;
+    }
 
   printf("Skipping: ");
   while ((lookahead != ';') && (lookahead != EOF))
-  {
-    lookahead = getc(stdin);
-    if (lookahead == '\n')
     {
-      ++lineno;
+      lookahead = getc(stdin);
+      if (lookahead == '\n')
+        {
+          ++lineno;
+        }
+      if (lookahead != EOF)
+        {
+          printf("%c", lookahead);
+        }
     }
-    if (lookahead != EOF)
-    {
-      printf("%c", lookahead);
-    }
-  }
 
   if (lookahead == EOF)
-  {
-    lookahead = DONE;
-    return;
-  }
+    {
+      lookahead = DONE;
+      return;
+    }
   else
-  {
-    match(';');
-  }
+    {
+      match(';');
+    }
 
   printf("\n continuing parsing...\n");
   return;

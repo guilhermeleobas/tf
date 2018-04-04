@@ -127,11 +127,11 @@
 /* #define ROPT */
 
 double nulltime, TimeArray[3]; /* Variables needed for 'dtime()'.     */
-double TLimit;                 /* Threshold to determine Number of    */
-                               /* Loops to run. Fixed at 15.0 seconds.*/
+double TLimit; /* Threshold to determine Number of    */
+/* Loops to run. Fixed at 15.0 seconds.*/
 
 double T[36]; /* Global Array used to hold timing    */
-              /* results and other information.      */
+/* results and other information.      */
 
 double sa, sb, sc, sd, one, two, three;
 double four, five, piref, piprg;
@@ -236,22 +236,22 @@ int main()
   A3 = -A3;
   A5 = -A5;
   x = piref / (three * (double)m); /*********************/
-  s = 0.0;                         /*  Loop 5.          */
-  v = 0.0;                         /*********************/
+  s = 0.0; /*  Loop 5.          */
+  v = 0.0; /*********************/
 
   for (i = 1; i <= m - 1; i++)
-  {
-    u = (double)i * x;
-    w = u * u;
-    s = s + w * (w * (w * (w * (w * (B6 * w + B5) + B4) + B3) + B2) + B1) + one;
-  }
+    {
+      u = (double)i * x;
+      w = u * u;
+      s = s + w * (w * (w * (w * (w * (B6 * w + B5) + B4) + B3) + B2) + B1) + one;
+    }
 
   u = piref / three;
   w = u * u;
   sa = w * (w * (w * (w * (w * (B6 * w + B5) + B4) + B3) + B2) + B1) + one;
 
   sa = x * (sa + one + two * s) / two; /* Module 4 Result */
-  u = piref / three;                   /*******************/
+  u = piref / three; /*******************/
   w = u * u;
   sb = u * ((((((A6 * w + A5) * w + A4) * w + A3) * w + A2) * w + A1) * w + A0);
   sc = sa - sb;

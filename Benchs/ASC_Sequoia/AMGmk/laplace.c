@@ -64,50 +64,50 @@ hypre_CSRMatrix *GenerateSeqLaplacian(int nx,
   sol_data = hypre_CTAlloc(double, grid_size);
 
   for (i = 0; i < grid_size; i++)
-  {
-    x_data[i] = 0.0;
-    sol_data[i] = 0.0;
-    rhs_data[i] = 1.0;
-  }
+    {
+      x_data[i] = 0.0;
+      sol_data[i] = 0.0;
+      rhs_data[i] = 1.0;
+    }
 
   cnt = 1;
   A_i[0] = 0;
   for (iz = 0; iz < nz; iz++)
-  {
-    for (iy = 0; iy < ny; iy++)
     {
-      for (ix = 0; ix < nx; ix++)
-      {
-        A_i[cnt] = A_i[cnt - 1];
-        A_i[cnt]++;
-        if (iz)
+      for (iy = 0; iy < ny; iy++)
         {
-          A_i[cnt]++;
+          for (ix = 0; ix < nx; ix++)
+            {
+              A_i[cnt] = A_i[cnt - 1];
+              A_i[cnt]++;
+              if (iz)
+                {
+                  A_i[cnt]++;
+                }
+              if (iy)
+                {
+                  A_i[cnt]++;
+                }
+              if (ix)
+                {
+                  A_i[cnt]++;
+                }
+              if (ix + 1 < nx)
+                {
+                  A_i[cnt]++;
+                }
+              if (iy + 1 < ny)
+                {
+                  A_i[cnt]++;
+                }
+              if (iz + 1 < nz)
+                {
+                  A_i[cnt]++;
+                }
+              cnt++;
+            }
         }
-        if (iy)
-        {
-          A_i[cnt]++;
-        }
-        if (ix)
-        {
-          A_i[cnt]++;
-        }
-        if (ix + 1 < nx)
-        {
-          A_i[cnt]++;
-        }
-        if (iy + 1 < ny)
-        {
-          A_i[cnt]++;
-        }
-        if (iz + 1 < nz)
-        {
-          A_i[cnt]++;
-        }
-        cnt++;
-      }
     }
-  }
 
   A_j = hypre_CTAlloc(int, A_i[grid_size]);
   A_data = hypre_CTAlloc(double, A_i[grid_size]);
@@ -115,47 +115,47 @@ hypre_CSRMatrix *GenerateSeqLaplacian(int nx,
   row_index = 0;
   cnt = 0;
   for (iz = 0; iz < nz; iz++)
-  {
-    for (iy = 0; iy < ny; iy++)
     {
-      for (ix = 0; ix < nx; ix++)
-      {
-        A_j[cnt] = row_index;
-        A_data[cnt++] = value[0];
-        if (iz)
+      for (iy = 0; iy < ny; iy++)
         {
-          A_j[cnt] = row_index - nx * ny;
-          A_data[cnt++] = value[3];
+          for (ix = 0; ix < nx; ix++)
+            {
+              A_j[cnt] = row_index;
+              A_data[cnt++] = value[0];
+              if (iz)
+                {
+                  A_j[cnt] = row_index - nx * ny;
+                  A_data[cnt++] = value[3];
+                }
+              if (iy)
+                {
+                  A_j[cnt] = row_index - nx;
+                  A_data[cnt++] = value[2];
+                }
+              if (ix)
+                {
+                  A_j[cnt] = row_index - 1;
+                  A_data[cnt++] = value[1];
+                }
+              if (ix + 1 < nx)
+                {
+                  A_j[cnt] = row_index + 1;
+                  A_data[cnt++] = value[1];
+                }
+              if (iy + 1 < ny)
+                {
+                  A_j[cnt] = row_index + nx;
+                  A_data[cnt++] = value[2];
+                }
+              if (iz + 1 < nz)
+                {
+                  A_j[cnt] = row_index + nx * ny;
+                  A_data[cnt++] = value[3];
+                }
+              row_index++;
+            }
         }
-        if (iy)
-        {
-          A_j[cnt] = row_index - nx;
-          A_data[cnt++] = value[2];
-        }
-        if (ix)
-        {
-          A_j[cnt] = row_index - 1;
-          A_data[cnt++] = value[1];
-        }
-        if (ix + 1 < nx)
-        {
-          A_j[cnt] = row_index + 1;
-          A_data[cnt++] = value[1];
-        }
-        if (iy + 1 < ny)
-        {
-          A_j[cnt] = row_index + nx;
-          A_data[cnt++] = value[2];
-        }
-        if (iz + 1 < nz)
-        {
-          A_j[cnt] = row_index + nx * ny;
-          A_data[cnt++] = value[3];
-        }
-        row_index++;
-      }
     }
-  }
 
   A = hypre_CSRMatrixCreate(grid_size, grid_size, A_i[grid_size]);
 
@@ -166,12 +166,12 @@ hypre_CSRMatrix *GenerateSeqLaplacian(int nx,
   hypre_VectorData(x) = x_data;
 
   for (i = 0; i < grid_size; i++)
-  {
-    for (j = A_i[i]; j < A_i[i + 1]; j++)
     {
-      sol_data[i] += A_data[j];
+      for (j = A_i[i]; j < A_i[i + 1]; j++)
+        {
+          sol_data[i] += A_data[j];
+        }
     }
-  }
 
   sol = hypre_SeqVectorCreate(grid_size);
   hypre_VectorData(sol) = sol_data;

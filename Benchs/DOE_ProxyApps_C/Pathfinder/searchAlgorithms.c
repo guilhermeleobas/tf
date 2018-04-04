@@ -74,9 +74,9 @@ void doMultiSearches(Configuration *config)
   result = NodePtrVec_new(64); /* 64 is an arbitrary size */
 
   for (i = 0; config->signatures[i] != NULL; ++i)
-  {
-    signature = config->signatures[i];
-    /* Debug --* /
+    {
+      signature = config->signatures[i];
+      /* Debug --* /
     printf ("\n\nSignature (");
     for ( k = 0; signature[k] != NULL; ++k )
     {
@@ -88,23 +88,23 @@ void doMultiSearches(Configuration *config)
             printf("):\n");
     }
     / *-- End Debug */
-    // printf("Signature %d:\n", i);
-    for (j = 0; config->graphs[j] != NULL; ++j)
-    {
-      graph = config->graphs[j];
-      result->contentSize = 0; /* clear last search's result */
-      // printf("\t checking file %s... ", graph->fileName);
-      fflush(stdout);
-      success = findLabelPath(graph, signature, result,
-                              config->searchOptions->searchType);
-      if (success)
-      {
-      }  // printf("Found!\n");
-      else
-      {
-      }  // printf("Not found. Bummer.\n");
+      // printf("Signature %d:\n", i);
+      for (j = 0; config->graphs[j] != NULL; ++j)
+        {
+          graph = config->graphs[j];
+          result->contentSize = 0; /* clear last search's result */
+          // printf("\t checking file %s... ", graph->fileName);
+          fflush(stdout);
+          success = findLabelPath(graph, signature, result,
+                                  config->searchOptions->searchType);
+          if (success)
+            {
+            }  // printf("Found!\n");
+          else
+            {
+            }  // printf("Not found. Bummer.\n");
+        }
     }
-  }
 
   tock = currentTime();
   sec = tock - tick;
@@ -159,17 +159,17 @@ bool findNextLabel(Node *node, Signature labels, NodePtrVec *result,
 
   /* A little basic error checking */
   if (!node || !labels || !result || !visited)
-  {
-    return (false);
-  }
+    {
+      return (false);
+    }
 
   /* If this node is already in the vector, we have found a loop. return false.
    */
 
   if (Bitfield_nodeVisited(visited, node))
-  {
-    return (false);
-  }
+    {
+      return (false);
+    }
 
   /* put this node on the result vector to show that we've been here */
   NodePtrVec_push(result, node);
@@ -186,50 +186,50 @@ bool findNextLabel(Node *node, Signature labels, NodePtrVec *result,
    */
 
   for (edge = node->edges; edge != NULL; edge = edge->nextEdge)
-  {
-    // string based:
-    if (edge->targetNode->label &&
-        strcmp(edge->targetNode->label, labels[0]) == 0)
-    // index based: if ( edge->targetNode->labelIdx == labelIdxs[0] )
     {
-      if (labels[1] != NULL) /* more steps in the signature */
-      {
-        nextLegResult = NodePtrVec_new(
-            50); /* arbitrary size, malloc success checked in recursion */
-        nextLegVisited = Bitfield_new(visited->bitsNeeded);
-
-        success = findNextLabel(edge->targetNode, &labels[1], nextLegResult,
-                                nextLegVisited);
-        /* NodePtrVec_delete( nextLegVisited ); */
-        Bitfield_delete(nextLegVisited);
-        if (success)
+      // string based:
+      if (edge->targetNode->label &&
+          strcmp(edge->targetNode->label, labels[0]) == 0)
+        // index based: if ( edge->targetNode->labelIdx == labelIdxs[0] )
         {
-          NodePtrVec_appendVectors(result, nextLegResult, true);
-          NodePtrVec_delete(nextLegResult);
-          return (true);
+          if (labels[1] != NULL) /* more steps in the signature */
+            {
+              nextLegResult = NodePtrVec_new(
+                  50); /* arbitrary size, malloc success checked in recursion */
+              nextLegVisited = Bitfield_new(visited->bitsNeeded);
+
+              success = findNextLabel(edge->targetNode, &labels[1], nextLegResult,
+                                      nextLegVisited);
+              /* NodePtrVec_delete( nextLegVisited ); */
+              Bitfield_delete(nextLegVisited);
+              if (success)
+                {
+                  NodePtrVec_appendVectors(result, nextLegResult, true);
+                  NodePtrVec_delete(nextLegResult);
+                  return (true);
+                }
+            }
+          else /* We have exhausted the signature - ultimate victory! */
+            {
+              /* Register this edge node as being the final node */
+              NodePtrVec_push(result, edge->targetNode);
+              return (true);
+            }
         }
-      }
-      else /* We have exhausted the signature - ultimate victory! */
-      {
-        /* Register this edge node as being the final node */
-        NodePtrVec_push(result, edge->targetNode);
-        return (true);
-      }
     }
-  }
 
   /* IF we made it here, we need to continue through the tree, seeing if any of
    * our
    * edge nodes have a connection to a labeled node.
    */
   for (edge = node->edges; edge != NULL; edge = edge->nextEdge)
-  {
-    success = findNextLabel(edge->targetNode, labels, result, visited);
-    if (success)
     {
-      return (true); /* this edge has a path to the ultimate signature path */
+      success = findNextLabel(edge->targetNode, labels, result, visited);
+      if (success)
+        {
+          return (true); /* this edge has a path to the ultimate signature path */
+        }
     }
-  }
 
   /* and, if we make it here, we have failed. */
   NodePtrVec_pop(result); /* take current node off the result vector */
@@ -240,13 +240,13 @@ bool findNextLabel(Node *node, Signature labels, NodePtrVec *result,
 static void logStats(NodePtrVec *result)
 {
   if (!result)
-  {
-    return;
-  }
+    {
+      return;
+    }
   if (!globalStats)
-  {
-    globalStats = Stats_new();
-  }
+    {
+      globalStats = Stats_new();
+    }
   Stats_logPath(globalStats, result);
 }
 
@@ -255,24 +255,24 @@ static void printStats()
   int i;
 
   if (globalStats)
-  {
-    Stats_calculate(globalStats);
-
-    printf(
-        "\nThis graph has %f average nodes between labels.\nStandard "
-        "deviation: %f, total paths: %d\n\n",
-        globalStats->averageLength, globalStats->standardDeviation,
-        globalStats->pathLengths->size);
-    printf("\tShortest Path: %d, Longest Path: %d\n", globalStats->minLength,
-           globalStats->maxLength);
-    for (i = globalStats->minLength; i <= globalStats->maxLength; ++i)
     {
-      if (globalStats->histogram[i] != 0)
-      {
-        printf("\tlength %d appeared %d times\n", i, globalStats->histogram[i]);
-      }
+      Stats_calculate(globalStats);
+
+      printf(
+          "\nThis graph has %f average nodes between labels.\nStandard "
+          "deviation: %f, total paths: %d\n\n",
+          globalStats->averageLength, globalStats->standardDeviation,
+          globalStats->pathLengths->size);
+      printf("\tShortest Path: %d, Longest Path: %d\n", globalStats->minLength,
+             globalStats->maxLength);
+      for (i = globalStats->minLength; i <= globalStats->maxLength; ++i)
+        {
+          if (globalStats->histogram[i] != 0)
+            {
+              printf("\tlength %d appeared %d times\n", i, globalStats->histogram[i]);
+            }
+        }
     }
-  }
 }
 
 /* A method to custom-store our results */
@@ -286,17 +286,17 @@ static void logResult(NodeVecVec *storage, NodePtrVec *result,
 {
   NodePtrVec *tips = NodePtrVec_new(2);
   if (!storage || !result || !tips)
-  {
-    return;
-  }
+    {
+      return;
+    }
 
   /* We log the stats here, because the storage method below may not hold
    * the entire path.
    */
   if (!options->multiThreaded && options->doStatistics)
-  { /* statistics are not thread-safe yet */
-    logStats(result);
-  }
+    { /* statistics are not thread-safe yet */
+      logStats(result);
+    }
 
   /* Ultimately we may want to log more than the ends... */
   /* Future: if ( options->buildType == endNodesOnly ) { */
@@ -304,10 +304,10 @@ static void logResult(NodeVecVec *storage, NodePtrVec *result,
   NodePtrVec_push(tips, result->vector[result->contentSize - 1]);
   if (!NodeVecVec_insert(storage,
                          tips)) /* makes a copy of tips, so we need to... */
-  {
-    printf("CrashAndBURN!!!\n\n");
-    fflush(stdout);
-  }
+    {
+      printf("CrashAndBURN!!!\n\n");
+      fflush(stdout);
+    }
   NodePtrVec_delete(tips); /* ... free the mallocs! */
 }
 
@@ -328,9 +328,9 @@ void findAndRecordAllPaths(Node *node, Signature labels, int *labelIdxs,
 
   /* A little basic error checking */
   if (!node || !labels || !labelIdxs || !result || !visited)
-  {
-    return;
-  }
+    {
+      return;
+    }
 
   /* If this node is already in the vector, we have found a loop. return false.
    */
@@ -341,9 +341,9 @@ void findAndRecordAllPaths(Node *node, Signature labels, int *labelIdxs,
           NodePtrVec_push( visited, node );
   */
   if (Bitfield_nodeVisited(visited, node))
-  {
-    return;
-  }
+    {
+      return;
+    }
 
   /* put this node on the result vector to show that we've been here */
   NodePtrVec_push(result, node);
@@ -360,44 +360,44 @@ void findAndRecordAllPaths(Node *node, Signature labels, int *labelIdxs,
    */
 
   for (edge = node->edges; edge != NULL; edge = edge->nextEdge)
-  {
-    // string based:
-    if (edge->targetNode->label &&
-        strcmp(edge->targetNode->label, labels[0]) == 0)
-    // index based: if ( edge->targetNode->labelIdx == labelIdxs[0] )
     {
-      // strcmp based:
-      if (labels[1] != NULL) /* more steps in the signature */
-      // index based: if ( labelIdxs[1] != -1 ) /* more steps in the signature
-      // */
-      {
-        nextLegVisited = Bitfield_new(visited->bitsNeeded);
-        findAndRecordAllPaths(edge->targetNode, &labels[1], &labelIdxs[1],
-                              result, nextLegVisited, storage, options);
-        Bitfield_delete(nextLegVisited);
-      }
-      else /* We have exhausted the signature - ultimate victory! */
-      {
-        /* Register this edge node as being the final node */
-        // printf ("\tFound!\n");
-        NodePtrVec_push(result, edge->targetNode);
-        Bitfield_nodeVisited(visited,
-                             edge->targetNode); /* Mark it as visited */
-        logResult(storage, result, options);  // <<<--- here's where I record it
-        NodePtrVec_pop(result);
-      }
+      // string based:
+      if (edge->targetNode->label &&
+          strcmp(edge->targetNode->label, labels[0]) == 0)
+        // index based: if ( edge->targetNode->labelIdx == labelIdxs[0] )
+        {
+          // strcmp based:
+          if (labels[1] != NULL) /* more steps in the signature */
+            // index based: if ( labelIdxs[1] != -1 ) /* more steps in the signature
+            // */
+            {
+              nextLegVisited = Bitfield_new(visited->bitsNeeded);
+              findAndRecordAllPaths(edge->targetNode, &labels[1], &labelIdxs[1],
+                                    result, nextLegVisited, storage, options);
+              Bitfield_delete(nextLegVisited);
+            }
+          else /* We have exhausted the signature - ultimate victory! */
+            {
+              /* Register this edge node as being the final node */
+              // printf ("\tFound!\n");
+              NodePtrVec_push(result, edge->targetNode);
+              Bitfield_nodeVisited(visited,
+                                   edge->targetNode); /* Mark it as visited */
+              logResult(storage, result, options);  // <<<--- here's where I record it
+              NodePtrVec_pop(result);
+            }
+        }
     }
-  }
 
   /* IF we made it here, we need to continue through the tree, seeing if any of
    * our
    * edge nodes have a connection to a labeled node.
    */
   for (edge = node->edges; edge != NULL; edge = edge->nextEdge)
-  {
-    findAndRecordAllPaths(edge->targetNode, labels, labelIdxs, result, visited,
-                          storage, options);
-  }
+    {
+      findAndRecordAllPaths(edge->targetNode, labels, labelIdxs, result, visited,
+                            storage, options);
+    }
 
   NodePtrVec_pop(result); /* take current node off the result vector */
   return;
@@ -429,9 +429,9 @@ bool findLabelPath(Graph *graph, Signature labels, NodePtrVec *result,
 
   /* some basic error checking */
   if (!graph || !labels || !labels[0] || !labels[1] || !result || !visited)
-  {
-    return (false);
-  }
+    {
+      return (false);
+    }
 
   /* Un-comment to short-circuit searches for non-represented signatures. -->* /
   if ( !SystemCallMap_signatureRepresented( graph->systemCallMap, labels ) )
@@ -445,9 +445,9 @@ bool findLabelPath(Graph *graph, Signature labels, NodePtrVec *result,
   startNodes = SystemCallMap_findLabeledNodes(graph->systemCallMap, labels[0]);
 
   if (!startNodes)
-  {
-    return (false);
-  }
+    {
+      return (false);
+    }
 
   /* So, if we've made it this far, we have a valid start label.  Now, we need
    * to
@@ -456,29 +456,29 @@ bool findLabelPath(Graph *graph, Signature labels, NodePtrVec *result,
    */
 
   for (i = 0; i < startNodes->contentSize && !found; ++i)
-  {
-    if (searchType == diagramSearch)
     {
-      SearchDiagram *element =
-          SearchDiagram_findNode(graph->searchDiagram, startNodes->vector[i]);
-      if (element)
-      {
-        found = SearchDiagram_findSignatureAlongEdges(
-            element->node, element->edgeReferenceArray, &labels[1], result,
-            visited);
-      }
-    }
-    else
-    {
-      found = findNextLabel(startNodes->vector[i], &labels[1], result, visited);
-    }
-    Bitfield_clear(visited);
+      if (searchType == diagramSearch)
+        {
+          SearchDiagram *element =
+              SearchDiagram_findNode(graph->searchDiagram, startNodes->vector[i]);
+          if (element)
+            {
+              found = SearchDiagram_findSignatureAlongEdges(
+                  element->node, element->edgeReferenceArray, &labels[1], result,
+                  visited);
+            }
+        }
+      else
+        {
+          found = findNextLabel(startNodes->vector[i], &labels[1], result, visited);
+        }
+      Bitfield_clear(visited);
 
-    if (!found && result->contentSize != 0)
-    { /* If it's not found the result SHOULD be empty, however... */
-      result->contentSize = 0; /* effectively clear the result NodePtrVec */
+      if (!found && result->contentSize != 0)
+        { /* If it's not found the result SHOULD be empty, however... */
+          result->contentSize = 0; /* effectively clear the result NodePtrVec */
+        }
     }
-  }
 
   /* NodePtrVec_delete( visited ); */
   Bitfield_delete(visited);
@@ -512,47 +512,49 @@ int findAllPossibleLegs(Graph *graph, SearchType searchType)
 //#pragma omp parallel for private(i,j) default(none)
 #ifdef USE_OMP
 #pragma omp parallel for private(i, j) shared(graph) reduction( \
-    + : found) reduction(+ : searches)
+    +                                                           \
+    : found) reduction(+                                        \
+                       : searches)
 #pragma omp collapse(2)
 #endif
     for (i = 0; i < graph->systemCallMap->contentSize; ++i)
-    {
-      for (j = 0; j < graph->systemCallMap->contentSize; ++j)
       {
-        ++searches;
-        char *fullSignature[3] = {NULL, NULL, NULL};
-        int fullIntSignature[3] = {0, 0, -1};
-        fullSignature[0] = graph->systemCallMap->vector[i]->label;
-        fullSignature[1] = graph->systemCallMap->vector[j]->label;
-        fullIntSignature[0] = i;
-        fullIntSignature[1] = j;
-        // NodePtrVec *result = NodePtrVec_new(25);
+        for (j = 0; j < graph->systemCallMap->contentSize; ++j)
+          {
+            ++searches;
+            char *fullSignature[3] = {NULL, NULL, NULL};
+            int fullIntSignature[3] = {0, 0, -1};
+            fullSignature[0] = graph->systemCallMap->vector[i]->label;
+            fullSignature[1] = graph->systemCallMap->vector[j]->label;
+            fullIntSignature[0] = i;
+            fullIntSignature[1] = j;
+            // NodePtrVec *result = NodePtrVec_new(25);
 
-        /* findLabelPath does the findNextLabel in the above loops */
-        //#pragma omp task shared(graph, fullSignature, found)
-        {
-          NodePtrVec *result = NodePtrVec_new(25);
-          if (findLabelPath(graph, fullSignature, result, searchType))
-          {
-            //                        printStack(result);
-            // logStats(result);
-            ++found;
+            /* findLabelPath does the findNextLabel in the above loops */
+            //#pragma omp task shared(graph, fullSignature, found)
+            {
+              NodePtrVec *result = NodePtrVec_new(25);
+              if (findLabelPath(graph, fullSignature, result, searchType))
+                {
+                  //                        printStack(result);
+                  // logStats(result);
+                  ++found;
+                }
+              else
+                {
+                  //                        printf ( "\n\tPath does not exist %s --/
+                  //                        /-> %s. %d steps.\n", fullSignature[0],
+                  //                                 fullSignature[1],
+                  //                                 result->contentSize );
+                }
+              if (result)
+                {
+                  NodePtrVec_delete(result);
+                }
+            }
           }
-          else
-          {
-            //                        printf ( "\n\tPath does not exist %s --/
-            //                        /-> %s. %d steps.\n", fullSignature[0],
-            //                                 fullSignature[1],
-            //                                 result->contentSize );
-          }
-          if (result)
-          {
-            NodePtrVec_delete(result);
-          }
-        }
+        //#pragma omp taskwait
       }
-      //#pragma omp taskwait
-    }
   }
 
   tock = currentTime();
@@ -596,9 +598,9 @@ int findAndLogAllPossibleLegs(Graph *graph, SearchOptions *options)
 
   /* A little bit of error checking */
   if (!graph)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
 
   tick = currentTime();
   fprintf(stdout, "Immediately before parallel\n");
@@ -606,7 +608,9 @@ int findAndLogAllPossibleLegs(Graph *graph, SearchOptions *options)
 #ifdef USE_OMP
 #pragma omp parallel private(i, j, k) shared( \
     graph, maxThreads, lastingResults)        \
-        reduction(+ : found) reduction(+ : searches)
+    reduction(+                               \
+              : found) reduction(+            \
+                                 : searches)
 #endif
   {
 #ifdef USE_OMP
@@ -656,38 +660,38 @@ int findAndLogAllPossibleLegs(Graph *graph, SearchOptions *options)
 #pragma omp collapse(2)
 #endif
     for (i = 0; i < graph->systemCallMap->contentSize; ++i)
-    {
-      for (j = 0; j < graph->systemCallMap->contentSize; ++j)
       {
-        ++searches;
-        for (k = 0; k < graph->systemCallMap->vector[i]->nodes->contentSize;
-             ++k)
-        {
-          char *fullSignature[3] = {NULL, NULL, NULL};
-          int fullIntSignature[3] = {0, 0, -1};
-          fullSignature[0] = graph->systemCallMap->vector[i]->label;
-          fullSignature[1] = graph->systemCallMap->vector[j]->label;
-          fullIntSignature[0] = i;
-          fullIntSignature[1] = j;
-          NodePtrVec *result = NodePtrVec_new(16);
-          Bitfield *visited = Bitfield_new(graph->totalNodes);
-          /* debug ---> * /
+        for (j = 0; j < graph->systemCallMap->contentSize; ++j)
+          {
+            ++searches;
+            for (k = 0; k < graph->systemCallMap->vector[i]->nodes->contentSize;
+                 ++k)
+              {
+                char *fullSignature[3] = {NULL, NULL, NULL};
+                int fullIntSignature[3] = {0, 0, -1};
+                fullSignature[0] = graph->systemCallMap->vector[i]->label;
+                fullSignature[1] = graph->systemCallMap->vector[j]->label;
+                fullIntSignature[0] = i;
+                fullIntSignature[1] = j;
+                NodePtrVec *result = NodePtrVec_new(16);
+                Bitfield *visited = Bitfield_new(graph->totalNodes);
+                /* debug ---> * /
           printf( "Searching for %s(%d) ~~~> %s\n", fullSignature[0],
                   graph->systemCallMap->vector[i]->nodes->vector[k]->id,
                   fullSignature[1]);
           / * <-- debug */
-          findAndRecordAllPaths(
-              graph->systemCallMap->vector[i]->nodes->vector[k],
-              &fullSignature[1], &fullIntSignature[1], result, visited,
-              myResults, options);
-          Bitfield_delete(visited);
-          if (result)
-          {
-            NodePtrVec_delete(result);
-          }
-        }  // end of for (k)... fork? heh.
-      }    // end of for (j)
-    }      // end of for (i)
+                findAndRecordAllPaths(
+                    graph->systemCallMap->vector[i]->nodes->vector[k],
+                    &fullSignature[1], &fullIntSignature[1], result, visited,
+                    myResults, options);
+                Bitfield_delete(visited);
+                if (result)
+                  {
+                    NodePtrVec_delete(result);
+                  }
+              }  // end of for (k)... fork? heh.
+          }  // end of for (j)
+      }  // end of for (i)
 
     found = myResults->contentSize;
   }
@@ -727,15 +731,15 @@ int findAndLogAllPossibleLegs(Graph *graph, SearchOptions *options)
    * minimal graph possible.
    */
   if (options->writeOutputFile && options->outputFile)
-  {
-    optimizedGraph = buildGraphFromPaths(lastingResults, options->buildType);
-    exportGraph(optimizedGraph, options->outputFile);
-  }
+    {
+      optimizedGraph = buildGraphFromPaths(lastingResults, options->buildType);
+      exportGraph(optimizedGraph, options->outputFile);
+    }
 
   if (options->doStatistics && !options->multiThreaded)
-  {
-    printStats();
-  }
+    {
+      printStats();
+    }
 
   return (found);
 }

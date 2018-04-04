@@ -46,10 +46,10 @@ int main(int argc, const char *argv[])
   printf("\nSequoia Benchmark Version 1.0\n\n");
 
   if (argc != 2)
-  {
-    printf("Usage: %s <input>\n", argv[0]);
-    return 1;
-  }
+    {
+      printf("Usage: %s <input>\n", argv[0]);
+      return 1;
+    }
   //
   readInput(argv[1]);
 
@@ -61,15 +61,15 @@ int main(int argc, const char *argv[])
   init(domain_ptr, rblk_ptr, x, b);
 
   for (i = 0; i < noIter; ++i)
-  {
-    rmatmult3(domain_ptr, rblk_ptr, x, b);
-  }
+    {
+      rmatmult3(domain_ptr, rblk_ptr, x, b);
+    }
 
   printf("***** results \n");
   for (i = 0; i < i_ub; i += i_ub / 5)
-  {
-    printf("i = %10d      b[i] = %e \n", i, b[i]);
-  }
+    {
+      printf("i = %10d      b[i] = %e \n", i, b[i]);
+    }
 
   return (0);
 }

@@ -25,14 +25,14 @@ init_umul_table()
   unsigned int* p = &umul_table[0][0];
 
   for (i = 0; i < 513; i++)
-  {
-    n = 0;
-    for (j = 0; j < 256; j++)
     {
-      *p++ = n;
-      n += i;
+      n = 0;
+      for (j = 0; j < 256; j++)
+        {
+          *p++ = n;
+          n += i;
+        }
     }
-  }
 }
 
 #define umul(x9, x15) \
@@ -70,10 +70,10 @@ init_umul_table()
 
 static void Calculation_of_the_LTP_parameters P4(
     (d, dp, bc_out, Nc_out), register word* d, /* [0..39]	IN	*/
-    register word* dp,                         /* [-120..-1]	IN	*/
-    word* bc_out,                              /* 		OUT	*/
-    word* Nc_out                               /* 		OUT	*/
-    )
+    register word* dp, /* [-120..-1]	IN	*/
+    word* bc_out, /* 		OUT	*/
+    word* Nc_out /* 		OUT	*/
+)
 {
   register int k, lambda;
   word Nc, bc;
@@ -88,34 +88,34 @@ static void Calculation_of_the_LTP_parameters P4(
   dmax = 0;
 
   for (k = 0; k <= 39; k++)
-  {
-    temp = d[k];
-    temp = GSM_ABS(temp);
-    if (temp > dmax)
     {
-      dmax = temp;
+      temp = d[k];
+      temp = GSM_ABS(temp);
+      if (temp > dmax)
+        {
+          dmax = temp;
+        }
     }
-  }
 
   temp = 0;
   if (dmax == 0)
-  {
-    scal = 0;
-  }
+    {
+      scal = 0;
+    }
   else
-  {
-    assert(dmax > 0);
-    temp = gsm_norm((longword)dmax << 16);
-  }
+    {
+      assert(dmax > 0);
+      temp = gsm_norm((longword)dmax << 16);
+    }
 
   if (temp > 6)
-  {
-    scal = 0;
-  }
+    {
+      scal = 0;
+    }
   else
-  {
-    scal = 6 - temp;
-  }
+    {
+      scal = 6 - temp;
+    }
 
   assert(scal >= 0);
 
@@ -123,9 +123,9 @@ static void Calculation_of_the_LTP_parameters P4(
    */
 
   for (k = 0; k <= 39; k++)
-  {
-    wt[k] = SASR(d[k], scal);
-  }
+    {
+      wt[k] = SASR(d[k], scal);
+    }
 
   /* Search for the maximum cross-correlation and coding of the LTP lag
    */
@@ -133,7 +133,7 @@ static void Calculation_of_the_LTP_parameters P4(
   Nc = 40; /* index for the maximum cross-correlation */
 
   for (lambda = 40; lambda <= 120; lambda++)
-  {
+    {
 #undef STEP
 #ifdef USE_TABLE_MUL
 #define STEP(k) (table_mul(wt[k], dp[k - lambda]))
@@ -141,55 +141,55 @@ static void Calculation_of_the_LTP_parameters P4(
 #define STEP(k) (wt[k] * dp[k - lambda])
 #endif
 
-    register longword L_result;
+      register longword L_result;
 
-    L_result = STEP(0);
-    L_result += STEP(1);
-    L_result += STEP(2);
-    L_result += STEP(3);
-    L_result += STEP(4);
-    L_result += STEP(5);
-    L_result += STEP(6);
-    L_result += STEP(7);
-    L_result += STEP(8);
-    L_result += STEP(9);
-    L_result += STEP(10);
-    L_result += STEP(11);
-    L_result += STEP(12);
-    L_result += STEP(13);
-    L_result += STEP(14);
-    L_result += STEP(15);
-    L_result += STEP(16);
-    L_result += STEP(17);
-    L_result += STEP(18);
-    L_result += STEP(19);
-    L_result += STEP(20);
-    L_result += STEP(21);
-    L_result += STEP(22);
-    L_result += STEP(23);
-    L_result += STEP(24);
-    L_result += STEP(25);
-    L_result += STEP(26);
-    L_result += STEP(27);
-    L_result += STEP(28);
-    L_result += STEP(29);
-    L_result += STEP(30);
-    L_result += STEP(31);
-    L_result += STEP(32);
-    L_result += STEP(33);
-    L_result += STEP(34);
-    L_result += STEP(35);
-    L_result += STEP(36);
-    L_result += STEP(37);
-    L_result += STEP(38);
-    L_result += STEP(39);
+      L_result = STEP(0);
+      L_result += STEP(1);
+      L_result += STEP(2);
+      L_result += STEP(3);
+      L_result += STEP(4);
+      L_result += STEP(5);
+      L_result += STEP(6);
+      L_result += STEP(7);
+      L_result += STEP(8);
+      L_result += STEP(9);
+      L_result += STEP(10);
+      L_result += STEP(11);
+      L_result += STEP(12);
+      L_result += STEP(13);
+      L_result += STEP(14);
+      L_result += STEP(15);
+      L_result += STEP(16);
+      L_result += STEP(17);
+      L_result += STEP(18);
+      L_result += STEP(19);
+      L_result += STEP(20);
+      L_result += STEP(21);
+      L_result += STEP(22);
+      L_result += STEP(23);
+      L_result += STEP(24);
+      L_result += STEP(25);
+      L_result += STEP(26);
+      L_result += STEP(27);
+      L_result += STEP(28);
+      L_result += STEP(29);
+      L_result += STEP(30);
+      L_result += STEP(31);
+      L_result += STEP(32);
+      L_result += STEP(33);
+      L_result += STEP(34);
+      L_result += STEP(35);
+      L_result += STEP(36);
+      L_result += STEP(37);
+      L_result += STEP(38);
+      L_result += STEP(39);
 
-    if (L_result > L_max)
-    {
-      Nc = lambda;
-      L_max = L_result;
+      if (L_result > L_max)
+        {
+          Nc = lambda;
+          L_max = L_result;
+        }
     }
-  }
 
   *Nc_out = Nc;
 
@@ -207,27 +207,27 @@ static void Calculation_of_the_LTP_parameters P4(
    */
   L_power = 0;
   for (k = 0; k <= 39; k++)
-  {
-    register longword L_temp;
+    {
+      register longword L_temp;
 
-    L_temp = SASR(dp[k - Nc], 3);
-    L_power += L_temp * L_temp;
-  }
+      L_temp = SASR(dp[k - Nc], 3);
+      L_power += L_temp * L_temp;
+    }
   L_power <<= 1; /* from L_MULT */
 
   /*  Normalization of L_max and L_power
    */
 
   if (L_max <= 0)
-  {
-    *bc_out = 0;
-    return;
-  }
+    {
+      *bc_out = 0;
+      return;
+    }
   if (L_max >= L_power)
-  {
-    *bc_out = 3;
-    return;
-  }
+    {
+      *bc_out = 3;
+      return;
+    }
 
   temp = gsm_norm(L_power);
 
@@ -241,23 +241,23 @@ static void Calculation_of_the_LTP_parameters P4(
    *  quantization of the LTP gain b to get the coded version bc.
    */
   for (bc = 0; bc <= 2; bc++)
-  {
-    if (R <= gsm_mult(S, gsm_DLB[bc]))
     {
-      break;
+      if (R <= gsm_mult(S, gsm_DLB[bc]))
+        {
+          break;
+        }
     }
-  }
   *bc_out = bc;
 }
 
 #else /* USE_FLOAT_MUL */
 
 static void Calculation_of_the_LTP_parameters P4(
-    (d, dp, bc_out, Nc_out), register word *d, /* [0..39]	IN	*/
-    register word *dp,                         /* [-120..-1]	IN	*/
-    word *bc_out,                              /* 		OUT	*/
-    word *Nc_out                               /* 		OUT	*/
-    )
+    (d, dp, bc_out, Nc_out), register word* d, /* [0..39]	IN	*/
+    register word* dp, /* [-120..-1]	IN	*/
+    word* bc_out, /* 		OUT	*/
+    word* Nc_out /* 		OUT	*/
+)
 {
   register int k, lambda;
   word Nc, bc;
@@ -274,20 +274,20 @@ static void Calculation_of_the_LTP_parameters P4(
   dmax = 0;
 
   for (k = 0; k <= 39; k++)
-  {
-    temp = d[k];
-    temp = GSM_ABS(temp);
-    if (temp > dmax) dmax = temp;
-  }
+    {
+      temp = d[k];
+      temp = GSM_ABS(temp);
+      if (temp > dmax) dmax = temp;
+    }
 
   temp = 0;
   if (dmax == 0)
     scal = 0;
   else
-  {
-    assert(dmax > 0);
-    temp = gsm_norm((longword)dmax << 16);
-  }
+    {
+      assert(dmax > 0);
+      temp = gsm_norm((longword)dmax << 16);
+    }
 
   if (temp > 6)
     scal = 0;
@@ -308,17 +308,17 @@ static void Calculation_of_the_LTP_parameters P4(
   Nc = 40; /* index for the maximum cross-correlation */
 
   for (lambda = 40; lambda <= 120; lambda += 9)
-  {
-    /*  Calculate L_result for l = lambda .. lambda + 9.
+    {
+      /*  Calculate L_result for l = lambda .. lambda + 9.
      */
-    register float *lp = dp_float - lambda;
+      register float* lp = dp_float - lambda;
 
-    register float W;
-    register float a = lp[-8], b = lp[-7], c = lp[-6], d = lp[-5], e = lp[-4],
-                   f = lp[-3], g = lp[-2], h = lp[-1];
-    register float E;
-    register float S0 = 0, S1 = 0, S2 = 0, S3 = 0, S4 = 0, S5 = 0, S6 = 0,
-                   S7 = 0, S8 = 0;
+      register float W;
+      register float a = lp[-8], b = lp[-7], c = lp[-6], d = lp[-5], e = lp[-4],
+                     f = lp[-3], g = lp[-2], h = lp[-1];
+      register float E;
+      register float S0 = 0, S1 = 0, S2 = 0, S3 = 0, S4 = 0, S5 = 0, S6 = 0,
+                     S7 = 0, S8 = 0;
 
 #undef STEP
 #define STEP(K, a, b, c, d, e, f, g, h) \
@@ -352,97 +352,97 @@ static void Calculation_of_the_LTP_parameters P4(
 #define STEP_G(K) STEP(K, g, h, a, b, c, d, e, f)
 #define STEP_H(K) STEP(K, h, a, b, c, d, e, f, g)
 
-    STEP_A(0);
-    STEP_B(1);
-    STEP_C(2);
-    STEP_D(3);
-    STEP_E(4);
-    STEP_F(5);
-    STEP_G(6);
-    STEP_H(7);
+      STEP_A(0);
+      STEP_B(1);
+      STEP_C(2);
+      STEP_D(3);
+      STEP_E(4);
+      STEP_F(5);
+      STEP_G(6);
+      STEP_H(7);
 
-    STEP_A(8);
-    STEP_B(9);
-    STEP_C(10);
-    STEP_D(11);
-    STEP_E(12);
-    STEP_F(13);
-    STEP_G(14);
-    STEP_H(15);
+      STEP_A(8);
+      STEP_B(9);
+      STEP_C(10);
+      STEP_D(11);
+      STEP_E(12);
+      STEP_F(13);
+      STEP_G(14);
+      STEP_H(15);
 
-    STEP_A(16);
-    STEP_B(17);
-    STEP_C(18);
-    STEP_D(19);
-    STEP_E(20);
-    STEP_F(21);
-    STEP_G(22);
-    STEP_H(23);
+      STEP_A(16);
+      STEP_B(17);
+      STEP_C(18);
+      STEP_D(19);
+      STEP_E(20);
+      STEP_F(21);
+      STEP_G(22);
+      STEP_H(23);
 
-    STEP_A(24);
-    STEP_B(25);
-    STEP_C(26);
-    STEP_D(27);
-    STEP_E(28);
-    STEP_F(29);
-    STEP_G(30);
-    STEP_H(31);
+      STEP_A(24);
+      STEP_B(25);
+      STEP_C(26);
+      STEP_D(27);
+      STEP_E(28);
+      STEP_F(29);
+      STEP_G(30);
+      STEP_H(31);
 
-    STEP_A(32);
-    STEP_B(33);
-    STEP_C(34);
-    STEP_D(35);
-    STEP_E(36);
-    STEP_F(37);
-    STEP_G(38);
-    STEP_H(39);
+      STEP_A(32);
+      STEP_B(33);
+      STEP_C(34);
+      STEP_D(35);
+      STEP_E(36);
+      STEP_F(37);
+      STEP_G(38);
+      STEP_H(39);
 
-    if (S0 > L_max)
-    {
-      L_max = S0;
-      Nc = lambda;
+      if (S0 > L_max)
+        {
+          L_max = S0;
+          Nc = lambda;
+        }
+      if (S1 > L_max)
+        {
+          L_max = S1;
+          Nc = lambda + 1;
+        }
+      if (S2 > L_max)
+        {
+          L_max = S2;
+          Nc = lambda + 2;
+        }
+      if (S3 > L_max)
+        {
+          L_max = S3;
+          Nc = lambda + 3;
+        }
+      if (S4 > L_max)
+        {
+          L_max = S4;
+          Nc = lambda + 4;
+        }
+      if (S5 > L_max)
+        {
+          L_max = S5;
+          Nc = lambda + 5;
+        }
+      if (S6 > L_max)
+        {
+          L_max = S6;
+          Nc = lambda + 6;
+        }
+      if (S7 > L_max)
+        {
+          L_max = S7;
+          Nc = lambda + 7;
+        }
+      if (S8 > L_max)
+        {
+          L_max = S8;
+          Nc = lambda + 8;
+        }
     }
-    if (S1 > L_max)
-    {
-      L_max = S1;
-      Nc = lambda + 1;
-    }
-    if (S2 > L_max)
-    {
-      L_max = S2;
-      Nc = lambda + 2;
-    }
-    if (S3 > L_max)
-    {
-      L_max = S3;
-      Nc = lambda + 3;
-    }
-    if (S4 > L_max)
-    {
-      L_max = S4;
-      Nc = lambda + 4;
-    }
-    if (S5 > L_max)
-    {
-      L_max = S5;
-      Nc = lambda + 5;
-    }
-    if (S6 > L_max)
-    {
-      L_max = S6;
-      Nc = lambda + 6;
-    }
-    if (S7 > L_max)
-    {
-      L_max = S7;
-      Nc = lambda + 7;
-    }
-    if (S8 > L_max)
-    {
-      L_max = S8;
-      Nc = lambda + 8;
-    }
-  }
   *Nc_out = Nc;
 
   L_max <<= 1;
@@ -459,27 +459,27 @@ static void Calculation_of_the_LTP_parameters P4(
    */
   L_power = 0;
   for (k = 0; k <= 39; k++)
-  {
-    register longword L_temp;
+    {
+      register longword L_temp;
 
-    L_temp = SASR(dp[k - Nc], 3);
-    L_power += L_temp * L_temp;
-  }
+      L_temp = SASR(dp[k - Nc], 3);
+      L_power += L_temp * L_temp;
+    }
   L_power <<= 1; /* from L_MULT */
 
   /*  Normalization of L_max and L_power
    */
 
   if (L_max <= 0)
-  {
-    *bc_out = 0;
-    return;
-  }
+    {
+      *bc_out = 0;
+      return;
+    }
   if (L_max >= L_power)
-  {
-    *bc_out = 3;
-    return;
-  }
+    {
+      *bc_out = 3;
+      return;
+    }
 
   temp = gsm_norm(L_power);
 
@@ -500,11 +500,11 @@ static void Calculation_of_the_LTP_parameters P4(
 #ifdef FAST
 
 static void Fast_Calculation_of_the_LTP_parameters P4(
-    (d, dp, bc_out, Nc_out), register word *d, /* [0..39]	IN	*/
-    register word *dp,                         /* [-120..-1]	IN	*/
-    word *bc_out,                              /* 		OUT	*/
-    word *Nc_out                               /* 		OUT	*/
-    )
+    (d, dp, bc_out, Nc_out), register word* d, /* [0..39]	IN	*/
+    register word* dp, /* [-120..-1]	IN	*/
+    word* bc_out, /* 		OUT	*/
+    word* Nc_out /* 		OUT	*/
+)
 {
   register int k, lambda;
   word Nc, bc;
@@ -523,17 +523,17 @@ static void Fast_Calculation_of_the_LTP_parameters P4(
   Nc = 40; /* index for the maximum cross-correlation */
 
   for (lambda = 40; lambda <= 120; lambda += 9)
-  {
-    /*  Calculate L_result for l = lambda .. lambda + 9.
+    {
+      /*  Calculate L_result for l = lambda .. lambda + 9.
      */
-    register float *lp = dp_float - lambda;
+      register float* lp = dp_float - lambda;
 
-    register float W;
-    register float a = lp[-8], b = lp[-7], c = lp[-6], d = lp[-5], e = lp[-4],
-                   f = lp[-3], g = lp[-2], h = lp[-1];
-    register float E;
-    register float S0 = 0, S1 = 0, S2 = 0, S3 = 0, S4 = 0, S5 = 0, S6 = 0,
-                   S7 = 0, S8 = 0;
+      register float W;
+      register float a = lp[-8], b = lp[-7], c = lp[-6], d = lp[-5], e = lp[-4],
+                     f = lp[-3], g = lp[-2], h = lp[-1];
+      register float E;
+      register float S0 = 0, S1 = 0, S2 = 0, S3 = 0, S4 = 0, S5 = 0, S6 = 0,
+                     S7 = 0, S8 = 0;
 
 #undef STEP
 #define STEP(K, a, b, c, d, e, f, g, h) \
@@ -567,104 +567,104 @@ static void Fast_Calculation_of_the_LTP_parameters P4(
 #define STEP_G(K) STEP(K, g, h, a, b, c, d, e, f)
 #define STEP_H(K) STEP(K, h, a, b, c, d, e, f, g)
 
-    STEP_A(0);
-    STEP_B(1);
-    STEP_C(2);
-    STEP_D(3);
-    STEP_E(4);
-    STEP_F(5);
-    STEP_G(6);
-    STEP_H(7);
+      STEP_A(0);
+      STEP_B(1);
+      STEP_C(2);
+      STEP_D(3);
+      STEP_E(4);
+      STEP_F(5);
+      STEP_G(6);
+      STEP_H(7);
 
-    STEP_A(8);
-    STEP_B(9);
-    STEP_C(10);
-    STEP_D(11);
-    STEP_E(12);
-    STEP_F(13);
-    STEP_G(14);
-    STEP_H(15);
+      STEP_A(8);
+      STEP_B(9);
+      STEP_C(10);
+      STEP_D(11);
+      STEP_E(12);
+      STEP_F(13);
+      STEP_G(14);
+      STEP_H(15);
 
-    STEP_A(16);
-    STEP_B(17);
-    STEP_C(18);
-    STEP_D(19);
-    STEP_E(20);
-    STEP_F(21);
-    STEP_G(22);
-    STEP_H(23);
+      STEP_A(16);
+      STEP_B(17);
+      STEP_C(18);
+      STEP_D(19);
+      STEP_E(20);
+      STEP_F(21);
+      STEP_G(22);
+      STEP_H(23);
 
-    STEP_A(24);
-    STEP_B(25);
-    STEP_C(26);
-    STEP_D(27);
-    STEP_E(28);
-    STEP_F(29);
-    STEP_G(30);
-    STEP_H(31);
+      STEP_A(24);
+      STEP_B(25);
+      STEP_C(26);
+      STEP_D(27);
+      STEP_E(28);
+      STEP_F(29);
+      STEP_G(30);
+      STEP_H(31);
 
-    STEP_A(32);
-    STEP_B(33);
-    STEP_C(34);
-    STEP_D(35);
-    STEP_E(36);
-    STEP_F(37);
-    STEP_G(38);
-    STEP_H(39);
+      STEP_A(32);
+      STEP_B(33);
+      STEP_C(34);
+      STEP_D(35);
+      STEP_E(36);
+      STEP_F(37);
+      STEP_G(38);
+      STEP_H(39);
 
-    if (S0 > L_max)
-    {
-      L_max = S0;
-      Nc = lambda;
+      if (S0 > L_max)
+        {
+          L_max = S0;
+          Nc = lambda;
+        }
+      if (S1 > L_max)
+        {
+          L_max = S1;
+          Nc = lambda + 1;
+        }
+      if (S2 > L_max)
+        {
+          L_max = S2;
+          Nc = lambda + 2;
+        }
+      if (S3 > L_max)
+        {
+          L_max = S3;
+          Nc = lambda + 3;
+        }
+      if (S4 > L_max)
+        {
+          L_max = S4;
+          Nc = lambda + 4;
+        }
+      if (S5 > L_max)
+        {
+          L_max = S5;
+          Nc = lambda + 5;
+        }
+      if (S6 > L_max)
+        {
+          L_max = S6;
+          Nc = lambda + 6;
+        }
+      if (S7 > L_max)
+        {
+          L_max = S7;
+          Nc = lambda + 7;
+        }
+      if (S8 > L_max)
+        {
+          L_max = S8;
+          Nc = lambda + 8;
+        }
     }
-    if (S1 > L_max)
-    {
-      L_max = S1;
-      Nc = lambda + 1;
-    }
-    if (S2 > L_max)
-    {
-      L_max = S2;
-      Nc = lambda + 2;
-    }
-    if (S3 > L_max)
-    {
-      L_max = S3;
-      Nc = lambda + 3;
-    }
-    if (S4 > L_max)
-    {
-      L_max = S4;
-      Nc = lambda + 4;
-    }
-    if (S5 > L_max)
-    {
-      L_max = S5;
-      Nc = lambda + 5;
-    }
-    if (S6 > L_max)
-    {
-      L_max = S6;
-      Nc = lambda + 6;
-    }
-    if (S7 > L_max)
-    {
-      L_max = S7;
-      Nc = lambda + 7;
-    }
-    if (S8 > L_max)
-    {
-      L_max = S8;
-      Nc = lambda + 8;
-    }
-  }
   *Nc_out = Nc;
 
   if (L_max <= 0.)
-  {
-    *bc_out = 0;
-    return;
-  }
+    {
+      *bc_out = 0;
+      return;
+    }
 
   /*  Compute the power of the reconstructed short term residual
    *  signal dp[..]
@@ -672,16 +672,16 @@ static void Fast_Calculation_of_the_LTP_parameters P4(
   dp_float -= Nc;
   L_power = 0;
   for (k = 0; k < 40; ++k)
-  {
-    register float f = dp_float[k];
-    L_power += f * f;
-  }
+    {
+      register float f = dp_float[k];
+      L_power += f * f;
+    }
 
   if (L_max >= L_power)
-  {
-    *bc_out = 3;
-    return;
-  }
+    {
+      *bc_out = 3;
+      return;
+    }
 
   /*  Coding of the LTP gain
    *  Table 4.3a must be used to obtain the level DLB[i] for the
@@ -700,13 +700,13 @@ static void Fast_Calculation_of_the_LTP_parameters P4(
 
 static void Long_term_analysis_filtering P6(
     (bc, Nc, dp, d, dpp, e),
-    word bc,            /* 					IN  */
-    word Nc,            /* 					IN  */
-    register word* dp,  /* previous d	[-120..-1]		IN  */
-    register word* d,   /* d		[0..39]			IN  */
+    word bc, /* 					IN  */
+    word Nc, /* 					IN  */
+    register word* dp, /* previous d	[-120..-1]		IN  */
+    register word* d, /* d		[0..39]			IN  */
     register word* dpp, /* estimate	[0..39]			OUT */
-    register word* e    /* long term res. signal [0..39]	OUT */
-    )
+    register word* e /* long term res. signal [0..39]	OUT */
+)
 /*
  *  In this part, we have to decode the bc parameter to compute
  *  the samples of the estimate dpp[0..39].  The decoding of bc needs the
@@ -718,28 +718,28 @@ static void Long_term_analysis_filtering P6(
   register longword ltmp;
 
 #undef STEP
-#define STEP(BP)                         \
-  for (k = 0; k <= 39; k++)              \
-  {                                      \
-    dpp[k] = GSM_MULT_R(BP, dp[k - Nc]); \
-    e[k] = GSM_SUB(d[k], dpp[k]);        \
-  }
+#define STEP(BP)                           \
+  for (k = 0; k <= 39; k++)                \
+    {                                      \
+      dpp[k] = GSM_MULT_R(BP, dp[k - Nc]); \
+      e[k] = GSM_SUB(d[k], dpp[k]);        \
+    }
 
   switch (bc)
-  {
-    case 0:
-      STEP(3277);
-      break;
-    case 1:
-      STEP(11469);
-      break;
-    case 2:
-      STEP(21299);
-      break;
-    case 3:
-      STEP(32767);
-      break;
-  }
+    {
+      case 0:
+        STEP(3277);
+        break;
+      case 1:
+        STEP(11469);
+        break;
+      case 2:
+        STEP(21299);
+        break;
+      case 3:
+        STEP(32767);
+        break;
+    }
 }
 
 void Gsm_Long_Term_Predictor P7(
@@ -747,14 +747,14 @@ void Gsm_Long_Term_Predictor P7(
 
     struct gsm_state* S,
 
-    word* d,  /* [0..39]   residual signal	IN	*/
+    word* d, /* [0..39]   residual signal	IN	*/
     word* dp, /* [-120..-1] d'		IN	*/
 
-    word* e,   /* [0..39] 			OUT	*/
+    word* e, /* [0..39] 			OUT	*/
     word* dpp, /* [0..39] 			OUT	*/
-    word* Nc,  /* correlation lag		OUT	*/
-    word* bc   /* gain factor			OUT	*/
-    )
+    word* Nc, /* correlation lag		OUT	*/
+    word* bc /* gain factor			OUT	*/
+)
 {
   assert(d);
   assert(dp);
@@ -778,8 +778,8 @@ void Gsm_Long_Term_Synthesis_Filtering P5(
     (S, Ncr, bcr, erp, drp), struct gsm_state* S,
 
     word Ncr, word bcr, register word* erp, /* [0..39]		  IN */
-    register word* drp                      /* [-120..-1] IN, [0..40] OUT */
-    )
+    register word* drp /* [-120..-1] IN, [0..40] OUT */
+)
 /*
  *  This procedure uses the bcr and Ncr parameter to realize the
  *  long term synthesis filtering.  The decoding of bcr needs
@@ -806,10 +806,10 @@ void Gsm_Long_Term_Synthesis_Filtering P5(
   assert(brp != MIN_WORD);
 
   for (k = 0; k <= 39; k++)
-  {
-    drpp = GSM_MULT_R(brp, drp[k - Nr]);
-    drp[k] = GSM_ADD(erp[k], drpp);
-  }
+    {
+      drpp = GSM_MULT_R(brp, drp[k - Nr]);
+      drp[k] = GSM_ADD(erp[k], drpp);
+    }
 
   /*
    *  Update of the reconstructed short term residual signal
@@ -817,7 +817,7 @@ void Gsm_Long_Term_Synthesis_Filtering P5(
    */
 
   for (k = 0; k <= 119; k++)
-  {
-    drp[-120 + k] = drp[-80 + k];
-  }
+    {
+      drp[-120 + k] = drp[-80 + k];
+    }
 }

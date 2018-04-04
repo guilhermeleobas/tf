@@ -27,10 +27,10 @@ int hypre_Log2(int p)
 
   e = 0;
   while (p > 1)
-  {
-    e += 1;
-    p /= 2;
-  }
+    {
+      e += 1;
+      p /= 2;
+    }
 
   return e;
 }

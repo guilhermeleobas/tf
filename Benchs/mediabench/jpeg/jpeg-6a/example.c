@@ -56,8 +56,8 @@
  */
 
 extern JSAMPLE* image_buffer; /* Points to large array of R,G,B-order data */
-extern int image_height;      /* Number of rows in image */
-extern int image_width;       /* Number of columns in image */
+extern int image_height; /* Number of rows in image */
+extern int image_width; /* Number of columns in image */
 
 /*
  * Sample routine for JPEG compression.  We assume that the target file name
@@ -84,9 +84,9 @@ write_JPEG_file(char* filename, int quality)
    */
   struct jpeg_error_mgr jerr;
   /* More stuff */
-  FILE* outfile;           /* target file */
+  FILE* outfile; /* target file */
   JSAMPROW row_pointer[1]; /* pointer to JSAMPLE row[s] */
-  int row_stride;          /* physical row width in image buffer */
+  int row_stride; /* physical row width in image buffer */
 
   /* Step 1: allocate and initialize JPEG compression object */
 
@@ -108,10 +108,10 @@ write_JPEG_file(char* filename, int quality)
    * requires it in order to write binary files.
    */
   if ((outfile = fopen(filename, "wb")) == NULL)
-  {
-    fprintf(stderr, "can't open %s\n", filename);
-    exit(1);
-  }
+    {
+      fprintf(stderr, "can't open %s\n", filename);
+      exit(1);
+    }
   jpeg_stdio_dest(&cinfo, outfile);
 
   /* Step 3: set parameters for compression */
@@ -121,7 +121,7 @@ write_JPEG_file(char* filename, int quality)
    */
   cinfo.image_width = image_width; /* image width and height, in pixels */
   cinfo.image_height = image_height;
-  cinfo.input_components = 3;     /* # of color components per pixel */
+  cinfo.input_components = 3; /* # of color components per pixel */
   cinfo.in_color_space = JCS_RGB; /* colorspace of input image */
   /* Now use the library's routine to set default compression parameters.
    * (You must set at least cinfo.in_color_space before calling this,
@@ -151,14 +151,14 @@ write_JPEG_file(char* filename, int quality)
   row_stride = image_width * 3; /* JSAMPLEs per row in image_buffer */
 
   while (cinfo.next_scanline < cinfo.image_height)
-  {
-    /* jpeg_write_scanlines expects an array of pointers to scanlines.
+    {
+      /* jpeg_write_scanlines expects an array of pointers to scanlines.
      * Here the array is only one element long, but you could pass
      * more than one scanline at a time if that's more convenient.
      */
-    row_pointer[0] = &image_buffer[cinfo.next_scanline * row_stride];
-    (void)jpeg_write_scanlines(&cinfo, row_pointer, 1);
-  }
+      row_pointer[0] = &image_buffer[cinfo.next_scanline * row_stride];
+      (void)jpeg_write_scanlines(&cinfo, row_pointer, 1);
+    }
 
   /* Step 6: Finish compression */
 
@@ -286,9 +286,9 @@ read_JPEG_file(char* filename)
    */
   struct my_error_mgr jerr;
   /* More stuff */
-  FILE* infile;      /* source file */
+  FILE* infile; /* source file */
   JSAMPARRAY buffer; /* Output row buffer */
-  int row_stride;    /* physical row width in output buffer */
+  int row_stride; /* physical row width in output buffer */
 
   /* In this example we want to open the input file before doing anything else,
    * so that the setjmp() error recovery below can assume the file is open.
@@ -297,10 +297,10 @@ read_JPEG_file(char* filename)
    */
 
   if ((infile = fopen(filename, "rb")) == NULL)
-  {
-    fprintf(stderr, "can't open %s\n", filename);
-    return 0;
-  }
+    {
+      fprintf(stderr, "can't open %s\n", filename);
+      return 0;
+    }
 
   /* Step 1: allocate and initialize JPEG decompression object */
 
@@ -309,14 +309,14 @@ read_JPEG_file(char* filename)
   jerr.pub.error_exit = my_error_exit;
   /* Establish the setjmp return context for my_error_exit to use. */
   if (setjmp(jerr.setjmp_buffer))
-  {
-    /* If we get here, the JPEG code has signaled an error.
+    {
+      /* If we get here, the JPEG code has signaled an error.
      * We need to clean up the JPEG object, close the input file, and return.
      */
-    jpeg_destroy_decompress(&cinfo);
-    fclose(infile);
-    return 0;
-  }
+      jpeg_destroy_decompress(&cinfo);
+      fclose(infile);
+      return 0;
+    }
   /* Now we can initialize the JPEG decompression object. */
   jpeg_create_decompress(&cinfo);
 
@@ -365,15 +365,15 @@ read_JPEG_file(char* filename)
    * loop counter, so that we don't have to keep track ourselves.
    */
   while (cinfo.output_scanline < cinfo.output_height)
-  {
-    /* jpeg_read_scanlines expects an array of pointers to scanlines.
+    {
+      /* jpeg_read_scanlines expects an array of pointers to scanlines.
      * Here the array is only one element long, but you could ask for
      * more than one scanline at a time if that's more convenient.
      */
-    (void)jpeg_read_scanlines(&cinfo, buffer, 1);
-    /* Assume put_scanline_someplace wants a pointer and sample count. */
-    put_scanline_someplace(buffer[0], row_stride);
-  }
+      (void)jpeg_read_scanlines(&cinfo, buffer, 1);
+      /* Assume put_scanline_someplace wants a pointer and sample count. */
+      put_scanline_someplace(buffer[0], row_stride);
+    }
 
   /* Step 7: Finish decompression */
 

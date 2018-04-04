@@ -38,13 +38,13 @@ unsigned int depth;
   /* If this is an archive member reference, use just the
      archive member name to search for implicit rules.  */
   if (ar_name(file->name))
-  {
-    DEBUGPR("Looking for archive-member implicit rule for `%s'.\n");
-    if (pattern_search(file, 1, depth, 0))
     {
-      return 1;
+      DEBUGPR("Looking for archive-member implicit rule for `%s'.\n");
+      if (pattern_search(file, 1, depth, 0))
+        {
+          return 1;
+        }
     }
-  }
 #endif
 
   return pattern_search(file, 0, depth, 0);
@@ -52,11 +52,11 @@ unsigned int depth;
 
 #define DEBUGP2(msg, a1, a2) \
   if (debug_flag)            \
-  {                          \
-    print_spaces(depth);     \
-    printf(msg, a1, a2);     \
-    fflush(stdout);          \
-  }                          \
+    {                        \
+      print_spaces(depth);   \
+      printf(msg, a1, a2);   \
+      fflush(stdout);        \
+    }                        \
   else
 
 /* Search the pattern rules for a rule with an existing dependency to make
@@ -146,358 +146,358 @@ unsigned int recursions;
 
 #ifndef NO_ARCHIVES
   if (archive || ar_name(filename))
-  {
-    lastslash = 0;
-  }
-  else
-#endif
-  {
-    /* Set LASTSLASH to point at the last slash in FILENAME
-       but not counting any slash at the end.  (foo/bar/ counts as
-       bar/ in directory foo/, not empty in directory foo/bar/.)  */
-    lastslash = rindex(filename, '/');
-    if (lastslash != 0 && lastslash[1] == '\0')
     {
       lastslash = 0;
     }
-  }
+  else
+#endif
+    {
+      /* Set LASTSLASH to point at the last slash in FILENAME
+       but not counting any slash at the end.  (foo/bar/ counts as
+       bar/ in directory foo/, not empty in directory foo/bar/.)  */
+      lastslash = rindex(filename, '/');
+      if (lastslash != 0 && lastslash[1] == '\0')
+        {
+          lastslash = 0;
+        }
+    }
 
   /* First see which pattern rules match this target
      and may be considered.  Put them in TRYRULES.  */
 
   nrules = 0;
   for (rule = pattern_rules; rule != 0; rule = rule->next)
-  {
-    int specific_rule_may_have_matched = 0;
-    int check_lastslash;
+    {
+      int specific_rule_may_have_matched = 0;
+      int check_lastslash;
 
-    /* If the pattern rule has deps but no commands, ignore it.
+      /* If the pattern rule has deps but no commands, ignore it.
        Users cancel built-in rules by redefining them without commands.  */
-    if (rule->deps != 0 && rule->cmds == 0)
-    {
-      continue;
-    }
+      if (rule->deps != 0 && rule->cmds == 0)
+        {
+          continue;
+        }
 
-    /* If this rule is in use by a parent pattern_search,
+      /* If this rule is in use by a parent pattern_search,
        don't use it here.  */
-    if (rule->in_use)
-    {
-      DEBUGP2("Avoiding implicit rule recursion.\n", 0, 0);
-      continue;
-    }
+      if (rule->in_use)
+        {
+          DEBUGP2("Avoiding implicit rule recursion.\n", 0, 0);
+          continue;
+        }
 
-    for (i = 0; rule->targets[i] != 0; ++i)
-    {
-      char *target = rule->targets[i];
-      char *suffix = rule->suffixes[i];
+      for (i = 0; rule->targets[i] != 0; ++i)
+        {
+          char *target = rule->targets[i];
+          char *suffix = rule->suffixes[i];
 
-      /* Rules that can match any filename and are not terminal
+          /* Rules that can match any filename and are not terminal
          are ignored if we're recursing, so that they cannot be
          intermediate files.  */
-      if (recursions > 0 && target[1] == '\0' && !rule->terminal)
-      {
-        continue;
-      }
+          if (recursions > 0 && target[1] == '\0' && !rule->terminal)
+            {
+              continue;
+            }
 
-      if (rule->lens[i] > namelen)
-      {
-        /* It can't possibly match.  */
-        continue;
-      }
+          if (rule->lens[i] > namelen)
+            {
+              /* It can't possibly match.  */
+              continue;
+            }
 
-      /* From the lengths of the filename and the pattern parts,
+          /* From the lengths of the filename and the pattern parts,
          find the stem: the part of the filename that matches the %.  */
-      stem = filename + (suffix - target - 1);
-      stemlen = namelen - rule->lens[i] + 1;
+          stem = filename + (suffix - target - 1);
+          stemlen = namelen - rule->lens[i] + 1;
 
-      /* Set CHECK_LASTSLASH if FILENAME contains a directory
+          /* Set CHECK_LASTSLASH if FILENAME contains a directory
          prefix and the target pattern does not contain a slash.  */
 
-      check_lastslash = lastslash != 0 && index(target, '/') == 0;
-      if (check_lastslash)
-      {
-        /* In that case, don't include the
+          check_lastslash = lastslash != 0 && index(target, '/') == 0;
+          if (check_lastslash)
+            {
+              /* In that case, don't include the
            directory prefix in STEM here.  */
-        unsigned int difference = lastslash - filename + 1;
-        if (difference > stemlen)
-        {
-          continue;
-        }
-        stemlen -= difference;
-        stem += difference;
-      }
+              unsigned int difference = lastslash - filename + 1;
+              if (difference > stemlen)
+                {
+                  continue;
+                }
+              stemlen -= difference;
+              stem += difference;
+            }
 
-      /* Check that the rule pattern matches the text before the stem.  */
-      if (check_lastslash)
-      {
-        if (stem > (lastslash + 1) &&
-            strncmp(target, lastslash + 1, stem - lastslash - 1))
-        {
-          continue;
-        }
-      }
-      else if (stem > filename && strncmp(target, filename, stem - filename))
-      {
-        continue;
-      }
+          /* Check that the rule pattern matches the text before the stem.  */
+          if (check_lastslash)
+            {
+              if (stem > (lastslash + 1) &&
+                  strncmp(target, lastslash + 1, stem - lastslash - 1))
+                {
+                  continue;
+                }
+            }
+          else if (stem > filename && strncmp(target, filename, stem - filename))
+            {
+              continue;
+            }
 
-      /* Check that the rule pattern matches the text after the stem.
+          /* Check that the rule pattern matches the text after the stem.
          We could test simply use streq, but this way we compare the
          first two characters immediately.  This saves time in the very
          common case where the first character matches because it is a
          period.  */
-      if (*suffix != stem[stemlen] ||
-          (*suffix != '\0' && !streq(&suffix[1], &stem[stemlen + 1])))
-      {
-        continue;
-      }
+          if (*suffix != stem[stemlen] ||
+              (*suffix != '\0' && !streq(&suffix[1], &stem[stemlen + 1])))
+            {
+              continue;
+            }
 
-      /* Record if we match a rule that not all filenames will match.  */
-      if (target[1] != '\0')
-      {
-        specific_rule_may_have_matched = 1;
-      }
+          /* Record if we match a rule that not all filenames will match.  */
+          if (target[1] != '\0')
+            {
+              specific_rule_may_have_matched = 1;
+            }
 
-      /* We have a matching target.  Don't search for any more.  */
-      break;
-    }
+          /* We have a matching target.  Don't search for any more.  */
+          break;
+        }
 
-    /* None of the targets matched.  */
-    if (rule->targets[i] == 0)
-    {
-      continue;
-    }
+      /* None of the targets matched.  */
+      if (rule->targets[i] == 0)
+        {
+          continue;
+        }
 
-    specific_rule_matched |= specific_rule_may_have_matched;
+      specific_rule_matched |= specific_rule_may_have_matched;
 
-    /* A rule with no dependencies and no commands exists solely to set
+      /* A rule with no dependencies and no commands exists solely to set
        specific_rule_matched when it matches.  Don't try to use it.  */
-    if (rule->deps == 0 && rule->cmds == 0)
-    {
-      continue;
-    }
+      if (rule->deps == 0 && rule->cmds == 0)
+        {
+          continue;
+        }
 
-    /* Record this rule in TRYRULES and the index
+      /* Record this rule in TRYRULES and the index
        of the (first) matching target in MATCHES.  */
-    tryrules[nrules] = rule;
-    matches[nrules] = i;
-    checked_lastslash[nrules] = check_lastslash;
-    ++nrules;
-  }
+      tryrules[nrules] = rule;
+      matches[nrules] = i;
+      checked_lastslash[nrules] = check_lastslash;
+      ++nrules;
+    }
 
   /* If we have found a matching rule that won't match all filenames,
      retroactively reject any "terminal" rules that do always match.  */
   if (specific_rule_matched)
-  {
-    for (i = 0; i < nrules; ++i)
     {
-      if (!tryrules[i]->terminal)
-      {
-        register unsigned int j;
-        for (j = 0; tryrules[i]->targets[j] != 0; ++j)
+      for (i = 0; i < nrules; ++i)
         {
-          if (tryrules[i]->targets[j][1] == '\0')
-          {
-            break;
-          }
+          if (!tryrules[i]->terminal)
+            {
+              register unsigned int j;
+              for (j = 0; tryrules[i]->targets[j] != 0; ++j)
+                {
+                  if (tryrules[i]->targets[j][1] == '\0')
+                    {
+                      break;
+                    }
+                }
+              if (tryrules[i]->targets[j] != 0)
+                {
+                  tryrules[i] = 0;
+                }
+            }
         }
-        if (tryrules[i]->targets[j] != 0)
-        {
-          tryrules[i] = 0;
-        }
-      }
     }
-  }
 
   /* Try each rule once without intermediate files, then once with them.  */
   for (intermed_ok = 0; intermed_ok == !!intermed_ok; ++intermed_ok)
-  {
-    /* Try each pattern rule till we find one that applies.
+    {
+      /* Try each pattern rule till we find one that applies.
        If it does, copy the names of its dependencies (as substituted)
        and store them in FOUND_FILES.  DEPS_FOUND is the number of them.  */
 
-    for (i = 0; i < nrules; i++)
-    {
-      int check_lastslash;
+      for (i = 0; i < nrules; i++)
+        {
+          int check_lastslash;
 
-      rule = tryrules[i];
+          rule = tryrules[i];
 
-      /* RULE is nil when we discover that a rule,
+          /* RULE is nil when we discover that a rule,
          already placed in TRYRULES, should not be applied.  */
-      if (rule == 0)
-      {
-        continue;
-      }
+          if (rule == 0)
+            {
+              continue;
+            }
 
-      /* Reject any terminal rules if we're
+          /* Reject any terminal rules if we're
          looking to make intermediate files.  */
-      if (intermed_ok && rule->terminal)
-      {
-        continue;
-      }
+          if (intermed_ok && rule->terminal)
+            {
+              continue;
+            }
 
-      /* Mark this rule as in use so a recursive
+          /* Mark this rule as in use so a recursive
          pattern_search won't try to use it.  */
-      rule->in_use = 1;
+          rule->in_use = 1;
 
-      /* From the lengths of the filename and the matching pattern parts,
+          /* From the lengths of the filename and the matching pattern parts,
          find the stem: the part of the filename that matches the %.  */
-      stem = filename +
-             (rule->suffixes[matches[i]] - rule->targets[matches[i]]) - 1;
-      stemlen = namelen - rule->lens[matches[i]] + 1;
-      check_lastslash =
-          (lastslash != 0 && index(rule->targets[matches[i]], '/') == 0);
-      if (check_lastslash)
-      {
-        stem += lastslash - filename + 1;
-        stemlen -= (lastslash - filename) + 1;
-      }
-
-      DEBUGP2("Trying pattern rule with stem `%.*s'.\n", stemlen, stem);
-
-      /* Try each dependency; see if it "exists".  */
-
-      deps_found = 0;
-      for (dep = rule->deps; dep != 0; dep = dep->next)
-      {
-        /* If the dependency name has a %, substitute the stem.  */
-        p = index(dep_name(dep), '%');
-        if (p != 0)
-        {
-          register unsigned int i;
+          stem = filename +
+                 (rule->suffixes[matches[i]] - rule->targets[matches[i]]) - 1;
+          stemlen = namelen - rule->lens[matches[i]] + 1;
+          check_lastslash =
+              (lastslash != 0 && index(rule->targets[matches[i]], '/') == 0);
           if (check_lastslash)
-          {
-            i = lastslash - filename + 1;
-            bcopy(filename, depname, i);
-          }
-          else
-          {
-            i = 0;
-          }
-          bcopy(dep_name(dep), depname + i, p - dep_name(dep));
-          i += p - dep_name(dep);
-          bcopy(stem, depname + i, stemlen);
-          i += stemlen;
-          strcpy(depname + i, p + 1);
-          p = depname;
-        }
-        else
-        {
-          p = dep_name(dep);
-        }
+            {
+              stem += lastslash - filename + 1;
+              stemlen -= (lastslash - filename) + 1;
+            }
 
-        /* P is now the actual dependency name as substituted.  */
+          DEBUGP2("Trying pattern rule with stem `%.*s'.\n", stemlen, stem);
 
-        if (file_impossible_p(p))
-        {
-          /* If this dependency has already been ruled
+          /* Try each dependency; see if it "exists".  */
+
+          deps_found = 0;
+          for (dep = rule->deps; dep != 0; dep = dep->next)
+            {
+              /* If the dependency name has a %, substitute the stem.  */
+              p = index(dep_name(dep), '%');
+              if (p != 0)
+                {
+                  register unsigned int i;
+                  if (check_lastslash)
+                    {
+                      i = lastslash - filename + 1;
+                      bcopy(filename, depname, i);
+                    }
+                  else
+                    {
+                      i = 0;
+                    }
+                  bcopy(dep_name(dep), depname + i, p - dep_name(dep));
+                  i += p - dep_name(dep);
+                  bcopy(stem, depname + i, stemlen);
+                  i += stemlen;
+                  strcpy(depname + i, p + 1);
+                  p = depname;
+                }
+              else
+                {
+                  p = dep_name(dep);
+                }
+
+              /* P is now the actual dependency name as substituted.  */
+
+              if (file_impossible_p(p))
+                {
+                  /* If this dependency has already been ruled
              "impossible", then the rule fails and don't
              bother trying it on the second pass either
              since we know that will fail too.  */
-          DEBUGP2("Rejecting impossible %s dependent `%s'.\n",
-                  p == depname ? "implicit" : "rule", p);
-          tryrules[i] = 0;
-          break;
-        }
+                  DEBUGP2("Rejecting impossible %s dependent `%s'.\n",
+                          p == depname ? "implicit" : "rule", p);
+                  tryrules[i] = 0;
+                  break;
+                }
 
-        intermediate_files[deps_found] = 0;
+              intermediate_files[deps_found] = 0;
 
-        DEBUGP2("Trying %s dependency `%s'.\n",
-                p == depname ? "implicit" : "rule", p);
-        if ((!rule->subdir && lookup_file(p) != 0) || file_exists_p(p))
-        {
-          found_files[deps_found++] = savestring(p, strlen(p));
-          continue;
-        }
-        /* This code, given FILENAME = "lib/foo.o", dependency name
+              DEBUGP2("Trying %s dependency `%s'.\n",
+                      p == depname ? "implicit" : "rule", p);
+              if ((!rule->subdir && lookup_file(p) != 0) || file_exists_p(p))
+                {
+                  found_files[deps_found++] = savestring(p, strlen(p));
+                  continue;
+                }
+              /* This code, given FILENAME = "lib/foo.o", dependency name
            "lib/foo.c", and VPATH=src, searches for "src/lib/foo.c".  */
-        if (vpath_search(&p))
-        {
-          DEBUGP2("Found dependent as `%s'.\n", p, 0);
-          found_files[deps_found++] = p;
-          continue;
-        }
+              if (vpath_search(&p))
+                {
+                  DEBUGP2("Found dependent as `%s'.\n", p, 0);
+                  found_files[deps_found++] = p;
+                  continue;
+                }
 
-        /* We could not find the file in any place we should look.
+              /* We could not find the file in any place we should look.
            Try to make this dependency as an intermediate file,
            but only on the second pass.  */
 
-        if (intermed_ok)
-        {
-          if (intermediate_file == 0)
-          {
-            intermediate_file = (struct file *)alloca(sizeof(struct file));
-          }
+              if (intermed_ok)
+                {
+                  if (intermediate_file == 0)
+                    {
+                      intermediate_file = (struct file *)alloca(sizeof(struct file));
+                    }
 
-          DEBUGP2("Looking for a rule with intermediate file `%s'.\n", p, 0);
+                  DEBUGP2("Looking for a rule with intermediate file `%s'.\n", p, 0);
 
-          bzero((char *)intermediate_file, sizeof(struct file));
-          intermediate_file->name = p;
-          if (pattern_search(intermediate_file, 0, depth + 1, recursions + 1))
-          {
-            p = savestring(p, strlen(p));
-            intermediate_patterns[deps_found] = intermediate_file->name;
-            found_files[deps_found] = p;
-            intermediate_file->name = p;
-            intermediate_files[deps_found] = intermediate_file;
-            intermediate_file = 0;
-            ++deps_found;
-            continue;
-          }
+                  bzero((char *)intermediate_file, sizeof(struct file));
+                  intermediate_file->name = p;
+                  if (pattern_search(intermediate_file, 0, depth + 1, recursions + 1))
+                    {
+                      p = savestring(p, strlen(p));
+                      intermediate_patterns[deps_found] = intermediate_file->name;
+                      found_files[deps_found] = p;
+                      intermediate_file->name = p;
+                      intermediate_files[deps_found] = intermediate_file;
+                      intermediate_file = 0;
+                      ++deps_found;
+                      continue;
+                    }
 
-          /* If we have tried to find P as an intermediate
+                  /* If we have tried to find P as an intermediate
              file and failed, mark that name as impossible
              so we won't go through the search again later.  */
-          file_impossible(p);
-        }
+                  file_impossible(p);
+                }
 
-        /* A dependency of this rule does not exist.
+              /* A dependency of this rule does not exist.
            Therefore, this rule fails.  */
-        break;
-      }
+              break;
+            }
 
-      /* This rule is no longer `in use' for recursive searches.  */
-      rule->in_use = 0;
+          /* This rule is no longer `in use' for recursive searches.  */
+          rule->in_use = 0;
 
-      if (dep != 0)
-      {
-        /* This pattern rule does not apply.
+          if (dep != 0)
+            {
+              /* This pattern rule does not apply.
            If some of its dependencies succeeded,
            free the data structure describing them.  */
-        while (deps_found-- > 0)
-        {
-          register struct file *f = intermediate_files[deps_found];
-          free(found_files[deps_found]);
-          if (f != 0 &&
-              (f->stem < f->name || f->stem > f->name + strlen(f->name)))
-          {
-            free(f->stem);
-          }
+              while (deps_found-- > 0)
+                {
+                  register struct file *f = intermediate_files[deps_found];
+                  free(found_files[deps_found]);
+                  if (f != 0 &&
+                      (f->stem < f->name || f->stem > f->name + strlen(f->name)))
+                    {
+                      free(f->stem);
+                    }
+                }
+            }
+          else
+            {
+              /* This pattern rule does apply.  Stop looking for one.  */
+              break;
+            }
         }
-      }
-      else
-      {
-        /* This pattern rule does apply.  Stop looking for one.  */
-        break;
-      }
-    }
 
-    /* If we found an applicable rule without
+      /* If we found an applicable rule without
        intermediate files, don't try with them.  */
-    if (i < nrules)
-    {
-      break;
-    }
+      if (i < nrules)
+        {
+          break;
+        }
 
-    rule = 0;
-  }
+      rule = 0;
+    }
 
   /* RULE is nil if the loop went all the way
      through the list and everything failed.  */
   if (rule == 0)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
 
   foundrule = i;
 
@@ -505,95 +505,95 @@ unsigned int recursions;
      FILENAME in FILE->name for use in upper levels.  */
 
   if (recursions > 0)
-  {
-    /* Kludge-o-matic */
-    file->name = rule->targets[matches[foundrule]];
-  }
+    {
+      /* Kludge-o-matic */
+      file->name = rule->targets[matches[foundrule]];
+    }
 
   /* FOUND_FILES lists the dependencies for the rule we found.
      This includes the intermediate files, if any.
      Convert them into entries on the deps-chain of FILE.  */
 
   while (deps_found-- > 0)
-  {
-    register char *s;
-
-    if (intermediate_files[deps_found] != 0)
     {
-      /* If we need to use an intermediate file,
+      register char *s;
+
+      if (intermediate_files[deps_found] != 0)
+        {
+          /* If we need to use an intermediate file,
          make sure it is entered as a target, with the info that was
          found for it in the recursive pattern_search call.
          We know that the intermediate file did not already exist as
          a target; therefore we can assume that the deps and cmds
          of F below are null before we change them.  */
 
-      struct file *imf = intermediate_files[deps_found];
-      register struct file *f = enter_file(imf->name);
-      f->deps = imf->deps;
-      f->cmds = imf->cmds;
-      f->stem = imf->stem;
-      imf = lookup_file(intermediate_patterns[deps_found]);
-      if (imf != 0 && imf->precious)
-      {
-        f->precious = 1;
-      }
-      f->intermediate = 1;
-      f->tried_implicit = 1;
-      for (dep = f->deps; dep != 0; dep = dep->next)
-      {
-        dep->file = enter_file(dep->name);
-        dep->name = 0;
-        dep->file->tried_implicit |= dep->changed;
-      }
-      num_intermediates++;
-    }
+          struct file *imf = intermediate_files[deps_found];
+          register struct file *f = enter_file(imf->name);
+          f->deps = imf->deps;
+          f->cmds = imf->cmds;
+          f->stem = imf->stem;
+          imf = lookup_file(intermediate_patterns[deps_found]);
+          if (imf != 0 && imf->precious)
+            {
+              f->precious = 1;
+            }
+          f->intermediate = 1;
+          f->tried_implicit = 1;
+          for (dep = f->deps; dep != 0; dep = dep->next)
+            {
+              dep->file = enter_file(dep->name);
+              dep->name = 0;
+              dep->file->tried_implicit |= dep->changed;
+            }
+          num_intermediates++;
+        }
 
-    dep = (struct dep *)xmalloc(sizeof(struct dep));
-    s = found_files[deps_found];
-    if (recursions == 0)
-    {
-      dep->name = 0;
-      dep->file = enter_file(s);
-    }
-    else
-    {
-      dep->name = s;
-      dep->file = 0;
-      dep->changed = 0;
-    }
-    if (intermediate_files[deps_found] == 0 && tryrules[foundrule]->terminal)
-    {
-      /* If the file actually existed (was not an intermediate file),
+      dep = (struct dep *)xmalloc(sizeof(struct dep));
+      s = found_files[deps_found];
+      if (recursions == 0)
+        {
+          dep->name = 0;
+          dep->file = enter_file(s);
+        }
+      else
+        {
+          dep->name = s;
+          dep->file = 0;
+          dep->changed = 0;
+        }
+      if (intermediate_files[deps_found] == 0 && tryrules[foundrule]->terminal)
+        {
+          /* If the file actually existed (was not an intermediate file),
          and the rule that found it was a terminal one, then we want
          to mark the found file so that it will not have implicit rule
          search done for it.  If we are not entering a `struct file' for
          it now, we indicate this with the `changed' flag.  */
-      if (dep->file == 0)
-      {
-        dep->changed = 1;
-      }
-      else
-      {
-        dep->file->tried_implicit = 1;
-      }
+          if (dep->file == 0)
+            {
+              dep->changed = 1;
+            }
+          else
+            {
+              dep->file->tried_implicit = 1;
+            }
+        }
+      dep->next = file->deps;
+      file->deps = dep;
     }
-    dep->next = file->deps;
-    file->deps = dep;
-  }
 
   uniquize_deps(file->deps);
 
   if (!checked_lastslash[foundrule])
-  {
-    file->stem = stem[stemlen] == '\0' ? stem : savestring(stem, stemlen);
-  }
+    {
+      file->stem = stem[stemlen] == '\0' ? stem : savestring(stem, stemlen);
+    }
   else
-  {
-    file->stem = (char *)xmalloc(((lastslash + 1) - filename) + stemlen + 1);
-    bcopy(filename, file->stem, (lastslash + 1) - filename);
-    bcopy(stem, file->stem + ((lastslash + 1) - filename), stemlen);
-    file->stem[((lastslash + 1) - filename) + stemlen] = '\0';
-  }
+    {
+      file->stem = (char *)xmalloc(((lastslash + 1) - filename) + stemlen + 1);
+      bcopy(filename, file->stem, (lastslash + 1) - filename);
+      bcopy(stem, file->stem + ((lastslash + 1) - filename), stemlen);
+      file->stem[((lastslash + 1) - filename) + stemlen] = '\0';
+    }
 
   file->cmds = rule->cmds;
 
@@ -602,25 +602,25 @@ unsigned int recursions;
 
   /* If there was only one target, there is nothing to do.  */
   if (rule->targets[1] != 0)
-  {
-    for (i = 0; rule->targets[i] != 0; ++i)
     {
-      if (i != matches[foundrule])
-      {
-        struct dep *new = (struct dep *)xmalloc(sizeof(struct dep));
-        new->name = p = (char *)xmalloc(rule->lens[i] + stemlen + 1);
-        bcopy(rule->targets[i], p, rule->suffixes[i] - rule->targets[i] - 1);
-        p += rule->suffixes[i] - rule->targets[i] - 1;
-        bcopy(stem, p, stemlen);
-        p += stemlen;
-        bcopy(rule->suffixes[i], p,
-              rule->lens[i] - (rule->suffixes[i] - rule->targets[i] - 1) + 1);
-        new->file = enter_file(new->name);
-        new->next = file->also_make;
-        file->also_make = new;
-      }
+      for (i = 0; rule->targets[i] != 0; ++i)
+        {
+          if (i != matches[foundrule])
+            {
+              struct dep *new = (struct dep *)xmalloc(sizeof(struct dep));
+              new->name = p = (char *)xmalloc(rule->lens[i] + stemlen + 1);
+              bcopy(rule->targets[i], p, rule->suffixes[i] - rule->targets[i] - 1);
+              p += rule->suffixes[i] - rule->targets[i] - 1;
+              bcopy(stem, p, stemlen);
+              p += stemlen;
+              bcopy(rule->suffixes[i], p,
+                    rule->lens[i] - (rule->suffixes[i] - rule->targets[i] - 1) + 1);
+              new->file = enter_file(new->name);
+              new->next = file->also_make;
+              file->also_make = new;
+            }
+        }
     }
-  }
 
   return 1;
 }

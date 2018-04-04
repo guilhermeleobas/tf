@@ -79,13 +79,13 @@ Graph *Graph_new()
   Graph *graph = NULL;
   graph = malloc(sizeof(Graph));
   if (graph)
-  {
-    /* The malloc worked! */
-    graph->fileName = NULL;
-    graph->totalNodes = 0;
-    graph->outerNodes = NULL;
-    graph->searchDiagram = NULL;
-  }
+    {
+      /* The malloc worked! */
+      graph->fileName = NULL;
+      graph->totalNodes = 0;
+      graph->outerNodes = NULL;
+      graph->searchDiagram = NULL;
+    }
 
   return (graph);
 }
@@ -95,41 +95,41 @@ void Graph_delete(Graph *trash)
 {
   SearchDiagram *element;
   if (trash)
-  {
-    free(trash->fileName);
-    NodeList_clear(trash->outerNodes, true);
-    if (trash->searchDiagram)
     {
-      for (element = trash->searchDiagram; element->node != NULL; ++element)
-      {
-        free(element->edgeReferenceArray);
-      }
-      free(trash->searchDiagram);
+      free(trash->fileName);
+      NodeList_clear(trash->outerNodes, true);
+      if (trash->searchDiagram)
+        {
+          for (element = trash->searchDiagram; element->node != NULL; ++element)
+            {
+              free(element->edgeReferenceArray);
+            }
+          free(trash->searchDiagram);
+        }
+      free(trash);
     }
-    free(trash);
-  }
 }
 
 bool Graph_addOuterNode(Graph *graph, Node *newOuterNode)
 {
   /* a little basic error checking */
   if (!graph || !newOuterNode)
-  {
-    return (false);
-  }
+    {
+      return (false);
+    }
 
   /* Is this the first outer node? */
   if (graph->outerNodes ==
       NULL) /* Allocates singletonGraph if it's not there */
-  {
-    graph->outerNodes = NodeList_new();
-    if (!graph->outerNodes)
     {
-      return (false); /* the malloc failed */
+      graph->outerNodes = NodeList_new();
+      if (!graph->outerNodes)
+        {
+          return (false); /* the malloc failed */
+        }
+      graph->outerNodes->node = newOuterNode;
+      return (true);
     }
-    graph->outerNodes->node = newOuterNode;
-    return (true);
-  }
 
   /* Otherwise, insert the new node at the tail of the singleton graph */
   return (NodeList_insertBack(graph->outerNodes, newOuterNode));
@@ -147,21 +147,21 @@ Node *Graph_findNode(Graph *graph, int id, bool deep)
   Node *node;
 
   for (nodes = graph->outerNodes; nodes != NULL; nodes = nodes->nextNode)
-  {
-    if (nodes->node->id == id)
     {
-      return (nodes->node);
+      if (nodes->node->id == id)
+        {
+          return (nodes->node);
+        }
+      /* If that wasn't the node, and we're going deep, see if it's there. */
+      if (deep)
+        {
+          node = Graph_findContainedNode(nodes->node, id);
+          if (node)
+            {
+              return (node);
+            }
+        }
     }
-    /* If that wasn't the node, and we're going deep, see if it's there. */
-    if (deep)
-    {
-      node = Graph_findContainedNode(nodes->node, id);
-      if (node)
-      {
-        return (node);
-      }
-    }
-  }
 
   return (NULL);
 }
@@ -177,12 +177,12 @@ Node *Graph_findContainedNode(Node *node, int id)
   NodeList *nodes;
 
   for (nodes = node->interiorNodes; nodes != NULL; nodes = nodes->nextNode)
-  {
-    if (nodes->node->id == id)
     {
-      return (nodes->node);
+      if (nodes->node->id == id)
+        {
+          return (nodes->node);
+        }
     }
-  }
 
   return (NULL);
 }

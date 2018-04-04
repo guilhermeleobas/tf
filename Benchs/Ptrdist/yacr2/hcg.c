@@ -60,51 +60,51 @@ void BuildHCG(void)
    * Build HCG one net at a time.
    */
   for (net = 1; net <= channelNets; net++)
-  {
-    first = FIRST[net];
-    last = LAST[net];
-    constraint = 0;
-    HCG[net].netsHook = storageHCG;
-    for (which = 1; which <= channelNets; which++)
     {
-      if (((FIRST[which] < first) && (LAST[which] < first)) ||
-          ((FIRST[which] > last) && (LAST[which] > last)))
-      {
-        /*
+      first = FIRST[net];
+      last = LAST[net];
+      constraint = 0;
+      HCG[net].netsHook = storageHCG;
+      for (which = 1; which <= channelNets; which++)
+        {
+          if (((FIRST[which] < first) && (LAST[which] < first)) ||
+              ((FIRST[which] > last) && (LAST[which] > last)))
+            {
+              /*
          * No constraint.
          */
-      }
-      else
-      {
-        /*
+            }
+          else
+            {
+              /*
          * No constraint should ever already exist.
          * Because there is only one first and last
          * for each net, the same constraint could
          * never be added twice.
          */
-        add = TRUE;
-        for (check = 0; check < constraint; check++)
-        {
-          if (HCG[net].netsHook[check] == which)
-          {
-            add = FALSE;
-            break;
-          }
-        }
-        assert(add);
+              add = TRUE;
+              for (check = 0; check < constraint; check++)
+                {
+                  if (HCG[net].netsHook[check] == which)
+                    {
+                      add = FALSE;
+                      break;
+                    }
+                }
+              assert(add);
 
-        /*
+              /*
          * Add constraint.
          */
-        assert(storageLimitHCG > 0);
-        HCG[net].netsHook[constraint] = which;
-        storageHCG++;
-        storageLimitHCG--;
-        constraint++;
-      }
+              assert(storageLimitHCG > 0);
+              HCG[net].netsHook[constraint] = which;
+              storageHCG++;
+              storageLimitHCG--;
+              constraint++;
+            }
+        }
+      HCG[net].nets = constraint;
     }
-    HCG[net].nets = constraint;
-  }
 }
 
 void DFSClearHCG(nodeHCGType *HCG)
@@ -112,9 +112,9 @@ void DFSClearHCG(nodeHCGType *HCG)
   ulong net;
 
   for (net = 1; net <= channelNets; net++)
-  {
-    HCG[net].netsReached = FALSE;
-  }
+    {
+      HCG[net].netsReached = FALSE;
+    }
 }
 
 void DumpHCG(nodeHCGType *HCG)
@@ -123,14 +123,14 @@ void DumpHCG(nodeHCGType *HCG)
   ulong which;
 
   for (net = 1; net <= channelNets; net++)
-  {
-    printf("[%lu]\n", net);
-    for (which = 0; which < HCG[net].nets; which++)
     {
-      printf("%lu ", HCG[net].netsHook[which]);
+      printf("[%lu]\n", net);
+      for (which = 0; which < HCG[net].nets; which++)
+        {
+          printf("%lu ", HCG[net].netsHook[which]);
+        }
+      printf("\n\n");
     }
-    printf("\n\n");
-  }
 }
 
 void NoHCV(nodeHCGType *HCG, ulong select, ulong *netsAssign,
@@ -142,44 +142,44 @@ void NoHCV(nodeHCGType *HCG, ulong select, ulong *netsAssign,
   ulong ok;
 
   for (track = 1; track <= channelTracks; track++)
-  {
-    /*
+    {
+      /*
      * For each track, check to see if any nets assigned
      * to it would be an HCV for the selected net.
      */
-    ok = TRUE;
-    for (net = 1; net <= channelNets; net++)
-    {
-      if (netsAssign[net] == track)
-      {
-        /*
+      ok = TRUE;
+      for (net = 1; net <= channelNets; net++)
+        {
+          if (netsAssign[net] == track)
+            {
+              /*
          * Net assigned to track.
          */
-        for (which = 0; which < HCG[select].nets; which++)
-        {
-          if (HCG[select].netsHook[which] == net)
-          {
-            /*
+              for (which = 0; which < HCG[select].nets; which++)
+                {
+                  if (HCG[select].netsHook[which] == net)
+                    {
+                      /*
              * HCV.
              */
-            ok = FALSE;
-            break;
-          }
-        }
+                      ok = FALSE;
+                      break;
+                    }
+                }
 
-        /*
+              /*
          * Is net an HCV?
          */
-        if (!ok)
-        {
-          break;
+              if (!ok)
+                {
+                  break;
+                }
+            }
         }
-      }
-    }
 
-    /*
+      /*
      * Is this track ok (no HCV's)?
      */
-    tracksNoHCV[track] = ok;
-  }
+      tracksNoHCV[track] = ok;
+    }
 }

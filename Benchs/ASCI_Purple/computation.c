@@ -99,20 +99,20 @@ int hypre_CreateComputeInfo(
 
   stencil_shape = hypre_StructStencilShape(stencil);
   for (s = 0; s < hypre_StructStencilSize(stencil); s++)
-  {
-    for (d = 0; d < 3; d++)
     {
-      i = hypre_IndexD(stencil_shape[s], d);
-      if (i < 0)
-      {
-        border[d][0] = hypre_max(border[d][0], -i);
-      }
-      else if (i > 0)
-      {
-        border[d][1] = hypre_max(border[d][1], i);
-      }
+      for (d = 0; d < 3; d++)
+        {
+          i = hypre_IndexD(stencil_shape[s], d);
+          if (i < 0)
+            {
+              border[d][0] = hypre_max(border[d][0], -i);
+            }
+          else if (i > 0)
+            {
+              border[d][1] = hypre_max(border[d][1], i);
+            }
+        }
     }
-  }
 
   /*------------------------------------------------------
    * Set up the dependent boxes
@@ -129,24 +129,24 @@ int hypre_CreateComputeInfo(
     hypre_CopyBox(hypre_BoxArrayBox(boxes, i), rembox);
     cbox_array_size = 0;
     for (d = 0; d < 3; d++)
-    {
-      if ((hypre_BoxVolume(rembox)) && (border[d][0]))
       {
-        cbox = hypre_BoxArrayBox(cbox_array, cbox_array_size);
-        hypre_CopyBox(rembox, cbox);
-        hypre_BoxIMaxD(cbox, d) = hypre_BoxIMinD(cbox, d) + border[d][0] - 1;
-        hypre_BoxIMinD(rembox, d) = hypre_BoxIMinD(cbox, d) + border[d][0];
-        cbox_array_size++;
+        if ((hypre_BoxVolume(rembox)) && (border[d][0]))
+          {
+            cbox = hypre_BoxArrayBox(cbox_array, cbox_array_size);
+            hypre_CopyBox(rembox, cbox);
+            hypre_BoxIMaxD(cbox, d) = hypre_BoxIMinD(cbox, d) + border[d][0] - 1;
+            hypre_BoxIMinD(rembox, d) = hypre_BoxIMinD(cbox, d) + border[d][0];
+            cbox_array_size++;
+          }
+        if ((hypre_BoxVolume(rembox)) && (border[d][1]))
+          {
+            cbox = hypre_BoxArrayBox(cbox_array, cbox_array_size);
+            hypre_CopyBox(rembox, cbox);
+            hypre_BoxIMinD(cbox, d) = hypre_BoxIMaxD(cbox, d) - border[d][1] + 1;
+            hypre_BoxIMaxD(rembox, d) = hypre_BoxIMaxD(cbox, d) - border[d][1];
+            cbox_array_size++;
+          }
       }
-      if ((hypre_BoxVolume(rembox)) && (border[d][1]))
-      {
-        cbox = hypre_BoxArrayBox(cbox_array, cbox_array_size);
-        hypre_CopyBox(rembox, cbox);
-        hypre_BoxIMinD(cbox, d) = hypre_BoxIMaxD(cbox, d) - border[d][1] + 1;
-        hypre_BoxIMaxD(rembox, d) = hypre_BoxIMaxD(cbox, d) - border[d][1];
-        cbox_array_size++;
-      }
-    }
     hypre_BoxArraySetSize(cbox_array, cbox_array_size);
   }
   hypre_BoxDestroy(rembox);
@@ -165,16 +165,16 @@ int hypre_CreateComputeInfo(
     hypre_CopyBox(hypre_BoxArrayBox(boxes, i), cbox);
 
     for (d = 0; d < 3; d++)
-    {
-      if ((border[d][0]))
       {
-        hypre_BoxIMinD(cbox, d) += border[d][0];
+        if ((border[d][0]))
+          {
+            hypre_BoxIMinD(cbox, d) += border[d][0];
+          }
+        if ((border[d][1]))
+          {
+            hypre_BoxIMaxD(cbox, d) -= border[d][1];
+          }
       }
-      if ((border[d][1]))
-      {
-        hypre_BoxIMaxD(cbox, d) -= border[d][1];
-      }
-    }
   }
 
 #else
@@ -310,16 +310,16 @@ int hypre_ComputePkgDestroy(hypre_ComputePkg *compute_pkg)
   int ierr = 0;
 
   if (compute_pkg)
-  {
-    hypre_CommPkgDestroy(hypre_ComputePkgCommPkg(compute_pkg));
+    {
+      hypre_CommPkgDestroy(hypre_ComputePkgCommPkg(compute_pkg));
 
-    hypre_BoxArrayArrayDestroy(hypre_ComputePkgIndtBoxes(compute_pkg));
-    hypre_BoxArrayArrayDestroy(hypre_ComputePkgDeptBoxes(compute_pkg));
+      hypre_BoxArrayArrayDestroy(hypre_ComputePkgIndtBoxes(compute_pkg));
+      hypre_BoxArrayArrayDestroy(hypre_ComputePkgDeptBoxes(compute_pkg));
 
-    hypre_StructGridDestroy(hypre_ComputePkgGrid(compute_pkg));
+      hypre_StructGridDestroy(hypre_ComputePkgGrid(compute_pkg));
 
-    hypre_TFree(compute_pkg);
-  }
+      hypre_TFree(compute_pkg);
+    }
 
   return ierr;
 }

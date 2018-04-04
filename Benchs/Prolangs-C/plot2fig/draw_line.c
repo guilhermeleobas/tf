@@ -47,9 +47,9 @@ extern void *realloc();
 int draw_line(void)
 {
   if (PointsInLine > 1)
-  {
-    printf(" 9999 9999\n");
-    PointsInLine = 0;
-  }
+    {
+      printf(" 9999 9999\n");
+      PointsInLine = 0;
+    }
   return 0;
 }

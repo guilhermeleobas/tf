@@ -60,9 +60,9 @@ int zindex(register ref *op)
   ref *opn;
   check_type(*op, t_integer);
   if ((ulong)op->value.intval >= op - osbot)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   opn = op + ~(int)op->value.intval;
   s_store_i(op, opn);
   return 0;
@@ -78,26 +78,26 @@ int zroll(register ref *op)
   check_type(*op1, t_integer);
   check_type(*op, t_integer);
   if ((ulong)op1->value.intval > op1 - osbot)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   count = op1->value.intval;
   if (count == 0)
-  {
-    pop(2);
-    return 0;
-  } /* no action */
+    {
+      pop(2);
+      return 0;
+    } /* no action */
   mod = op->value.intval % count;
   pop(2); /* we're OK now */
   op -= 2;
   if (mod < 0)
-  { /* can't assume % means mod! */
-    mod += count;
-  }
+    { /* can't assume % means mod! */
+      mod += count;
+    }
   else if (mod == 0)
-  {
-    return 0; /* no action */
-  }
+    {
+      return 0; /* no action */
+    }
   /* Rotate the elements in chains separated by mod elements. */
   /* The number of chains is gcd(count,mod): rather than compute */
   /* this, we simply proceed until we have moved count elements. */
@@ -105,22 +105,22 @@ int zroll(register ref *op)
   /* specifies it, we have to complement mod first. */
   mod = count - mod;
   istart = 0; /* first element of chain */
-  n = count;  /* # of elements left to move */
+  n = count; /* # of elements left to move */
   base = op - count + 1;
   while (n)
-  {
-    ref save;
-    int i = istart;
-    int inext;
-    save = base[istart]; /* no auto init for structures! */
-    while (n--, (inext = (i + mod) % count) != istart)
     {
-      base[i] = base[inext];
-      i = inext;
+      ref save;
+      int i = istart;
+      int inext;
+      save = base[istart]; /* no auto init for structures! */
+      while (n--, (inext = (i + mod) % count) != istart)
+        {
+          base[i] = base[inext];
+          i = inext;
+        }
+      base[i] = save;
+      istart++;
     }
-    base[i] = save;
-    istart++;
-  }
   return 0;
 }
 
@@ -145,14 +145,14 @@ int zcount(register ref *op)
 int zcleartomark(register ref *op)
 {
   while (op >= osbot)
-  {
-    if (r_type(op) == t_mark)
     {
-      osp = op - 1;
-      return 0;
+      if (r_type(op) == t_mark)
+        {
+          osp = op - 1;
+          return 0;
+        }
+      op--;
     }
-    op--;
-  }
   return e_unmatchedmark;
 }
 
@@ -161,15 +161,15 @@ int zcounttomark(register ref *op)
 {
   register ref *mp = op;
   while (mp >= osbot)
-  {
-    if (r_type(mp) == t_mark)
     {
-      push(1);
-      make_int(op, op - mp - 1);
-      return 0;
+      if (r_type(mp) == t_mark)
+        {
+          push(1);
+          make_int(op, op - mp - 1);
+          return 0;
+        }
+      mp--;
     }
-    mp--;
-  }
   return e_unmatchedmark;
 }
 
@@ -178,10 +178,6 @@ int zcounttomark(register ref *op)
 void zstack_op_init()
 {
   static op_def my_defs[] = {
-      {"0clear", zclear_stack}, {"0cleartomark", zcleartomark},
-      {"0count", zcount},       {"0counttomark", zcounttomark},
-      {"1dup", zdup},           {"2exch", zexch},
-      {"2index", zindex},       {"1pop", zpop},
-      {"2roll", zroll},         op_def_end};
+      {"0clear", zclear_stack}, {"0cleartomark", zcleartomark}, {"0count", zcount}, {"0counttomark", zcounttomark}, {"1dup", zdup}, {"2exch", zexch}, {"2index", zindex}, {"1pop", zpop}, {"2roll", zroll}, op_def_end};
   z_op_init(my_defs);
 }

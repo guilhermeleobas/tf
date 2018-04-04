@@ -24,10 +24,10 @@ static void generateRndSeq(char *seq, int len)
 static void vec_init(Fukusosuu *result, int nlen)
 {
   while (nlen--)
-  {
-    result->R = result->I = 0.0;
-    result++;
-  }
+    {
+      result->R = result->I = 0.0;
+      result++;
+    }
 }
 
 #if 0  // by D.Mathog
@@ -43,16 +43,16 @@ static void seq_vec_2(Fukusosuu *result, double *score, double incr, char *seq)
 {
   static int n;
   for (; *seq; result++)
-  {
-    n = amino_n[(int)*seq++];
-    if (n < 20 && n >= 0)
     {
-      result->R += incr * score[n];
-    }
+      n = amino_n[(int)*seq++];
+      if (n < 20 && n >= 0)
+        {
+          result->R += incr * score[n];
+        }
 #if 0
 		fprintf( stderr, "n=%d, score=%f, inc=%f R=%f\n",n,  score[n], incr * score[n], result->R );
 #endif
-  }
+    }
 }
 
 static void seq_vec_3(Fukusosuu **result, double incr, char *seq)
@@ -60,13 +60,13 @@ static void seq_vec_3(Fukusosuu **result, double incr, char *seq)
   int i;
   int n;
   for (i = 0; *seq; i++)
-  {
-    n = amino_n[(int)*seq++];
-    if (n < n20or4or2 && n >= 0)
     {
-      result[n][i].R += incr;
+      n = amino_n[(int)*seq++];
+      if (n < n20or4or2 && n >= 0)
+        {
+          result[n][i].R += incr;
+        }
     }
-  }
 }
 
 static void seq_vec_5(Fukusosuu *result, double *score1, double *score2,
@@ -74,43 +74,43 @@ static void seq_vec_5(Fukusosuu *result, double *score1, double *score2,
 {
   int n;
   for (; *seq; result++)
-  {
-    n = amino_n[(int)*seq++];
-    if (n > 20)
     {
-      continue;
-    }
-    result->R += incr * score1[n];
-    result->I += incr * score2[n];
+      n = amino_n[(int)*seq++];
+      if (n > 20)
+        {
+          continue;
+        }
+      result->R += incr * score1[n];
+      result->I += incr * score2[n];
 #if 0
 		fprintf( stderr, "n=%d, score=%f, inc=%f R=%f\n",n,  score[n], incr * score[n], result->R );
 #endif
-  }
+    }
 }
 
 static void seq_vec_4(Fukusosuu *result, double incr, char *seq)
 {
   char s;
   for (; *seq; result++)
-  {
-    s = *seq++;
-    if (s == 'a')
     {
-      result->R += incr;
+      s = *seq++;
+      if (s == 'a')
+        {
+          result->R += incr;
+        }
+      else if (s == 't')
+        {
+          result->R -= incr;
+        }
+      else if (s == 'g')
+        {
+          result->I += incr;
+        }
+      else if (s == 'c')
+        {
+          result->I -= incr;
+        }
     }
-    else if (s == 't')
-    {
-      result->R -= incr;
-    }
-    else if (s == 'g')
-    {
-      result->I += incr;
-    }
-    else if (s == 'c')
-    {
-      result->I -= incr;
-    }
-  }
 }
 
 #if 0  // by D.Mathog
@@ -173,44 +173,44 @@ static void mymergesort(int first, int last, Segment **seg)
   static int allo = 0;
   static Segment **work = NULL;
   if (last > allo)
-  {
-    allo = last;
-    if (work)
     {
-      free(work);
+      allo = last;
+      if (work)
+        {
+          free(work);
+        }
+      work = (Segment **)calloc(allo / 2 + 1, sizeof(Segment *));
     }
-    work = (Segment **)calloc(allo / 2 + 1, sizeof(Segment *));
-  }
 
   if (first < last)
-  {
-    middle = (first + last) / 2;
-    mymergesort(first, middle, seg);
-    mymergesort(middle + 1, last, seg);
-    p = 0;
-    for (i = first; i <= middle; i++)
     {
-      work[p++] = seg[i];
+      middle = (first + last) / 2;
+      mymergesort(first, middle, seg);
+      mymergesort(middle + 1, last, seg);
+      p = 0;
+      for (i = first; i <= middle; i++)
+        {
+          work[p++] = seg[i];
+        }
+      i = middle + 1;
+      j = 0;
+      k = first;
+      while (i <= last && j < p)
+        {
+          if (work[j]->center <= seg[i]->center)
+            {
+              seg[k++] = work[j++];
+            }
+          else
+            {
+              seg[k++] = seg[i++];
+            }
+        }
+      while (j < p)
+        {
+          seg[k++] = work[j++];
+        }
     }
-    i = middle + 1;
-    j = 0;
-    k = first;
-    while (i <= last && j < p)
-    {
-      if (work[j]->center <= seg[i]->center)
-      {
-        seg[k++] = work[j++];
-      }
-      else
-      {
-        seg[k++] = seg[i++];
-      }
-    }
-    while (j < p)
-    {
-      seg[k++] = work[j++];
-    }
-  }
 }
 
 double Fgetlag(char **seq1, char **seq2, double *eff1, double *eff2, int clus1,
@@ -260,9 +260,9 @@ double Fgetlag(char **seq1, char **seq2, double *eff1, double *eff2, int clus1,
 
   nlen = 1;
   while (nlentmp >= nlen)
-  {
-    nlen <<= 1;
-  }
+    {
+      nlen <<= 1;
+    }
 #if 0
 	fprintf( stderr, "###   nlen    = %d\n", nlen );
 #endif
@@ -276,87 +276,87 @@ double Fgetlag(char **seq1, char **seq2, double *eff1, double *eff2, int clus1,
 #endif
 
   if (!localalloclen)
-  {
-    kouho = AllocateIntVec(NKOUHO);
-    cut1 = AllocateIntVec(MAXSEG);
-    cut2 = AllocateIntVec(MAXSEG);
-    tmpptr1 = AllocateCharMtx(njob, 0);
-    tmpptr2 = AllocateCharMtx(njob, 0);
-    result1 = AllocateCharMtx(njob, alloclen);
-    result2 = AllocateCharMtx(njob, alloclen);
-    tmpres1 = AllocateCharMtx(njob, alloclen);
-    tmpres2 = AllocateCharMtx(njob, alloclen);
-    //		crossscore = AllocateDoubleMtx( MAXSEG, MAXSEG );
-    segment = (Segment *)calloc(MAXSEG, sizeof(Segment));
-    segment1 = (Segment *)calloc(MAXSEG, sizeof(Segment));
-    segment2 = (Segment *)calloc(MAXSEG, sizeof(Segment));
-    sortedseg1 = (Segment **)calloc(MAXSEG, sizeof(Segment *));
-    sortedseg2 = (Segment **)calloc(MAXSEG, sizeof(Segment *));
-    if (!(segment && segment1 && segment2 && sortedseg1 && sortedseg2))
     {
-      ErrorExit("Allocation error\n");
-    }
+      kouho = AllocateIntVec(NKOUHO);
+      cut1 = AllocateIntVec(MAXSEG);
+      cut2 = AllocateIntVec(MAXSEG);
+      tmpptr1 = AllocateCharMtx(njob, 0);
+      tmpptr2 = AllocateCharMtx(njob, 0);
+      result1 = AllocateCharMtx(njob, alloclen);
+      result2 = AllocateCharMtx(njob, alloclen);
+      tmpres1 = AllocateCharMtx(njob, alloclen);
+      tmpres2 = AllocateCharMtx(njob, alloclen);
+      //		crossscore = AllocateDoubleMtx( MAXSEG, MAXSEG );
+      segment = (Segment *)calloc(MAXSEG, sizeof(Segment));
+      segment1 = (Segment *)calloc(MAXSEG, sizeof(Segment));
+      segment2 = (Segment *)calloc(MAXSEG, sizeof(Segment));
+      sortedseg1 = (Segment **)calloc(MAXSEG, sizeof(Segment *));
+      sortedseg2 = (Segment **)calloc(MAXSEG, sizeof(Segment *));
+      if (!(segment && segment1 && segment2 && sortedseg1 && sortedseg2))
+        {
+          ErrorExit("Allocation error\n");
+        }
 
-    if (scoremtx == -1)
-    {
-      n20or4or2 = 4;
+      if (scoremtx == -1)
+        {
+          n20or4or2 = 4;
+        }
+      else if (fftscore == 1)
+        {
+          n20or4or2 = 2;
+        }
+      else
+        {
+          n20or4or2 = 20;
+        }
     }
-    else if (fftscore == 1)
-    {
-      n20or4or2 = 2;
-    }
-    else
-    {
-      n20or4or2 = 20;
-    }
-  }
   if (localalloclen < nlen)
-  {
-    if (localalloclen)
     {
+      if (localalloclen)
+        {
 #if 1
-      FreeFukusosuuMtx(seqVector1);
-      FreeFukusosuuMtx(seqVector2);
-      FreeFukusosuuVec(naisekiNoWa);
-      FreeFukusosuuMtx(naiseki);
-      FreeDoubleVec(soukan);
-      FreeCharMtx(tmpseq1);
-      FreeCharMtx(tmpseq2);
+          FreeFukusosuuMtx(seqVector1);
+          FreeFukusosuuMtx(seqVector2);
+          FreeFukusosuuVec(naisekiNoWa);
+          FreeFukusosuuMtx(naiseki);
+          FreeDoubleVec(soukan);
+          FreeCharMtx(tmpseq1);
+          FreeCharMtx(tmpseq2);
 #endif
 #if RND
-      FreeCharMtx(rndseq1);
-      FreeCharMtx(rndseq2);
+          FreeCharMtx(rndseq1);
+          FreeCharMtx(rndseq2);
 #endif
-    }
+        }
 
-    tmpseq1 = AllocateCharMtx(njob, nlen);
-    tmpseq2 = AllocateCharMtx(njob, nlen);
-    naisekiNoWa = AllocateFukusosuuVec(nlen);
-    naiseki = AllocateFukusosuuMtx(n20or4or2, nlen);
-    seqVector1 = AllocateFukusosuuMtx(n20or4or2 + 1, nlen + 1);
-    seqVector2 = AllocateFukusosuuMtx(n20or4or2 + 1, nlen + 1);
-    soukan = AllocateDoubleVec(nlen + 1);
+      tmpseq1 = AllocateCharMtx(njob, nlen);
+      tmpseq2 = AllocateCharMtx(njob, nlen);
+      naisekiNoWa = AllocateFukusosuuVec(nlen);
+      naiseki = AllocateFukusosuuMtx(n20or4or2, nlen);
+      seqVector1 = AllocateFukusosuuMtx(n20or4or2 + 1, nlen + 1);
+      seqVector2 = AllocateFukusosuuMtx(n20or4or2 + 1, nlen + 1);
+      soukan = AllocateDoubleVec(nlen + 1);
 
 #if RND
-    rndseq1 = AllocateCharMtx(njob, nlen);
-    rndseq2 = AllocateCharMtx(njob, nlen);
-    for (i = 0; i < njob; i++)
-    {
-      generateRndSeq(rndseq1[i], nlen);
-      generateRndSeq(rndseq2[i], nlen);
-    }
+      rndseq1 = AllocateCharMtx(njob, nlen);
+      rndseq2 = AllocateCharMtx(njob, nlen);
+      for (i = 0; i < njob; i++)
+        {
+          generateRndSeq(rndseq1[i], nlen);
+          generateRndSeq(rndseq2[i], nlen);
+        }
 #endif
-    localalloclen = nlen;
-  }
+      localalloclen = nlen;
+    }
 
   for (j = 0; j < clus1; j++)
-  {
-    strcpy(tmpseq1[j], seq1[j]);
-  }
+    {
+      strcpy(tmpseq1[j], seq1[j]);
+    }
   for (j = 0; j < clus2; j++)
-  {
-    strcpy(tmpseq2[j], seq2[j]);
-  }
+    {
+      strcpy(tmpseq2[j], seq2[j]);
+    }
 
 #if 0
 fftfp = fopen( "input_of_Falign", "w" );
@@ -372,39 +372,39 @@ system( "less input_of_Falign < /dev/tty > /dev/tty" );
 #endif
 
   if (fftkeika)
-  {
-    fprintf(stderr, " FFT ... ");
-  }
+    {
+      fprintf(stderr, " FFT ... ");
+    }
 
   for (j = 0; j < n20or4or2; j++)
-  {
-    vec_init(seqVector1[j], nlen);
-  }
-  if (fftscore && scoremtx != -1)
-  {
-    for (i = 0; i < clus1; i++)
     {
-      seq_vec_2(seqVector1[0], polarity, eff1[i], tmpseq1[i]);
-      seq_vec_2(seqVector1[1], volume, eff1[i], tmpseq1[i]);
+      vec_init(seqVector1[j], nlen);
     }
-  }
+  if (fftscore && scoremtx != -1)
+    {
+      for (i = 0; i < clus1; i++)
+        {
+          seq_vec_2(seqVector1[0], polarity, eff1[i], tmpseq1[i]);
+          seq_vec_2(seqVector1[1], volume, eff1[i], tmpseq1[i]);
+        }
+    }
   else
-  {
+    {
 #if 0
 		for( i=0; i<clus1; i++ ) for( j=0; j<n20or4or2; j++ ) 
 			seq_vec( seqVector1[j], amino[j], eff1[i], tmpseq1[i] );
 #else
-    for (i = 0; i < clus1; i++)
-    {
-      seq_vec_3(seqVector1, eff1[i], tmpseq1[i]);
-    }
+      for (i = 0; i < clus1; i++)
+        {
+          seq_vec_3(seqVector1, eff1[i], tmpseq1[i]);
+        }
 #endif
-  }
+    }
 #if RND
   for (i = 0; i < clus1; i++)
-  {
-    vec_init2(seqVector1, rndseq1[i], eff1[i], len1, nlen);
-  }
+    {
+      vec_init2(seqVector1, rndseq1[i], eff1[i], len1, nlen);
+    }
 #endif
 #if 0
 fftfp = fopen( "seqVec", "w" );
@@ -421,34 +421,34 @@ system( "less seqVec < /dev/tty > /dev/tty" );
 #endif
 
   for (j = 0; j < n20or4or2; j++)
-  {
-    vec_init(seqVector2[j], nlen);
-  }
-  if (fftscore && scoremtx != -1)
-  {
-    for (i = 0; i < clus2; i++)
     {
-      seq_vec_2(seqVector2[0], polarity, eff2[i], tmpseq2[i]);
-      seq_vec_2(seqVector2[1], volume, eff2[i], tmpseq2[i]);
+      vec_init(seqVector2[j], nlen);
     }
-  }
+  if (fftscore && scoremtx != -1)
+    {
+      for (i = 0; i < clus2; i++)
+        {
+          seq_vec_2(seqVector2[0], polarity, eff2[i], tmpseq2[i]);
+          seq_vec_2(seqVector2[1], volume, eff2[i], tmpseq2[i]);
+        }
+    }
   else
-  {
+    {
 #if 0
 		for( i=0; i<clus2; i++ ) for( j=0; j<n20or4or2; j++ ) 
 			seq_vec( seqVector2[j], amino[j], eff2[i], tmpseq2[i] );
 #else
-    for (i = 0; i < clus2; i++)
-    {
-      seq_vec_3(seqVector2, eff2[i], tmpseq2[i]);
-    }
+      for (i = 0; i < clus2; i++)
+        {
+          seq_vec_3(seqVector2, eff2[i], tmpseq2[i]);
+        }
 #endif
-  }
+    }
 #if RND
   for (i = 0; i < clus2; i++)
-  {
-    vec_init2(seqVector2, rndseq2[i], eff2[i], len2, nlen);
-  }
+    {
+      vec_init2(seqVector2, rndseq2[i], eff2[i], len2, nlen);
+    }
 #endif
 
 #if 0
@@ -465,10 +465,10 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 #endif
 
   for (j = 0; j < n20or4or2; j++)
-  {
-    fft(nlen, seqVector2[j], (j == 0));
-    fft(nlen, seqVector1[j], 0);
-  }
+    {
+      fft(nlen, seqVector2[j], (j == 0));
+      fft(nlen, seqVector1[j], 0);
+    }
 #if 0
 fftfp = fopen( "seqVec2", "w" );
 fprintf( fftfp, "#after fft\n" );
@@ -483,22 +483,22 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 #endif
 
   for (k = 0; k < n20or4or2; k++)
-  {
-    for (l = 0; l < nlen; l++)
     {
-      calcNaiseki(naiseki[k] + l, seqVector1[k] + l, seqVector2[k] + l);
+      for (l = 0; l < nlen; l++)
+        {
+          calcNaiseki(naiseki[k] + l, seqVector1[k] + l, seqVector2[k] + l);
+        }
     }
-  }
   for (l = 0; l < nlen; l++)
-  {
-    naisekiNoWa[l].R = 0.0;
-    naisekiNoWa[l].I = 0.0;
-    for (k = 0; k < n20or4or2; k++)
     {
-      naisekiNoWa[l].R += naiseki[k][l].R;
-      naisekiNoWa[l].I += naiseki[k][l].I;
+      naisekiNoWa[l].R = 0.0;
+      naisekiNoWa[l].I = 0.0;
+      for (k = 0; k < n20or4or2; k++)
+        {
+          naisekiNoWa[l].R += naiseki[k][l].R;
+          naisekiNoWa[l].I += naiseki[k][l].I;
+        }
     }
-  }
 
 #if 0
 fftfp = fopen( "naisekiNoWa", "w" );
@@ -512,13 +512,13 @@ system( "less naisekiNoWa < /dev/tty > /dev/tty " );
   fft(-nlen, naisekiNoWa, 0);
 
   for (m = 0; m <= nlen2; m++)
-  {
-    soukan[m] = naisekiNoWa[nlen2 - m].R;
-  }
+    {
+      soukan[m] = naisekiNoWa[nlen2 - m].R;
+    }
   for (m = nlen2 + 1; m < nlen; m++)
-  {
-    soukan[m] = naisekiNoWa[nlen + nlen2 - m].R;
-  }
+    {
+      soukan[m] = naisekiNoWa[nlen + nlen2 - m].R;
+    }
 
 #if 0
 fftfp = fopen( "naisekiNoWa", "w" );
@@ -567,77 +567,77 @@ system( "/usr/bin/gnuplot list.plot" );
 #endif
 
   for (k = 0; k < NKOUHO; k++)
-  {
-    lag = kouho[k];
-    zurasu2(lag, clus1, clus2, seq1, seq2, tmpptr1, tmpptr2);
+    {
+      lag = kouho[k];
+      zurasu2(lag, clus1, clus2, seq1, seq2, tmpptr1, tmpptr2);
 #if CAND
-    fftfp = fopen("cand", "a");
-    fprintf(fftfp, ">Candidate No.%d lag = %d\n", k + 1, lag);
-    fprintf(fftfp, "%s\n", tmpptr1[0]);
-    fprintf(fftfp, ">Candidate No.%d lag = %d\n", k + 1, lag);
-    fprintf(fftfp, "%s\n", tmpptr2[0]);
-    fprintf(fftfp, ">\n", k + 1, lag);
-    fclose(fftfp);
+      fftfp = fopen("cand", "a");
+      fprintf(fftfp, ">Candidate No.%d lag = %d\n", k + 1, lag);
+      fprintf(fftfp, "%s\n", tmpptr1[0]);
+      fprintf(fftfp, ">Candidate No.%d lag = %d\n", k + 1, lag);
+      fprintf(fftfp, "%s\n", tmpptr2[0]);
+      fprintf(fftfp, ">\n", k + 1, lag);
+      fclose(fftfp);
 #endif
-    tmpint = alignableReagion(clus1, clus2, tmpptr1, tmpptr2, eff1, eff2,
-                              segment + count);
+      tmpint = alignableReagion(clus1, clus2, tmpptr1, tmpptr2, eff1, eff2,
+                                segment + count);
 
-    if (count + tmpint > MAXSEG - 3)
-    {
-      ErrorExit("TOO MANY SEGMENTS.\n");
-    }
+      if (count + tmpint > MAXSEG - 3)
+        {
+          ErrorExit("TOO MANY SEGMENTS.\n");
+        }
 
-    if (tmpint == 0)
-    {
-      break;  // 060430 iinoka ?
-    }
-    while (tmpint-- > 0)
-    {
-      if (lag > 0)
-      {
-        segment1[count].start = segment[count].start;
-        segment1[count].end = segment[count].end;
-        segment1[count].center = segment[count].center;
-        segment1[count].score = segment[count].score;
+      if (tmpint == 0)
+        {
+          break;  // 060430 iinoka ?
+        }
+      while (tmpint-- > 0)
+        {
+          if (lag > 0)
+            {
+              segment1[count].start = segment[count].start;
+              segment1[count].end = segment[count].end;
+              segment1[count].center = segment[count].center;
+              segment1[count].score = segment[count].score;
 
-        segment2[count].start = segment[count].start + lag;
-        segment2[count].end = segment[count].end + lag;
-        segment2[count].center = segment[count].center + lag;
-        segment2[count].score = segment[count].score;
-      }
-      else
-      {
-        segment1[count].start = segment[count].start - lag;
-        segment1[count].end = segment[count].end - lag;
-        segment1[count].center = segment[count].center - lag;
-        segment1[count].score = segment[count].score;
+              segment2[count].start = segment[count].start + lag;
+              segment2[count].end = segment[count].end + lag;
+              segment2[count].center = segment[count].center + lag;
+              segment2[count].score = segment[count].score;
+            }
+          else
+            {
+              segment1[count].start = segment[count].start - lag;
+              segment1[count].end = segment[count].end - lag;
+              segment1[count].center = segment[count].center - lag;
+              segment1[count].score = segment[count].score;
 
-        segment2[count].start = segment[count].start;
-        segment2[count].end = segment[count].end;
-        segment2[count].center = segment[count].center;
-        segment2[count].score = segment[count].score;
-      }
+              segment2[count].start = segment[count].start;
+              segment2[count].end = segment[count].end;
+              segment2[count].center = segment[count].center;
+              segment2[count].score = segment[count].score;
+            }
 #if 0
 			fprintf( stderr, "Goukaku=%dko\n", tmpint ); 
 			fprintf( stderr, "in 1 %d\n", segment1[count].center );
 			fprintf( stderr, "in 2 %d\n", segment2[count].center );
 #endif
-      segment1[count].pair = &segment2[count];
-      segment2[count].pair = &segment1[count];
-      count++;
+          segment1[count].pair = &segment2[count];
+          segment2[count].pair = &segment1[count];
+          count++;
 #if 0
 			fprintf( stderr, "count=%d\n", count );
 #endif
+        }
     }
-  }
 
 #if 1
   fprintf(stderr, "done. (%d anchors)\r", count);
 #endif
   if (!count && fftNoAnchStop)
-  {
-    ErrorExit("Cannot detect anchor!");
-  }
+    {
+      ErrorExit("Cannot detect anchor!");
+    }
 #if 0
 	fprintf( stdout, "RESULT before sort:\n" );
 	for( l=0; l<count+1; l++ )
@@ -652,52 +652,52 @@ system( "/usr/bin/gnuplot list.plot" );
   fprintf(stderr, "Aligning anchors ... ");
 #endif
   for (i = 0; i < count; i++)
-  {
-    sortedseg1[i] = &segment1[i];
-    sortedseg2[i] = &segment2[i];
-  }
+    {
+      sortedseg1[i] = &segment1[i];
+      sortedseg2[i] = &segment2[i];
+    }
 
   {
     mymergesort(0, count - 1, sortedseg1);
     mymergesort(0, count - 1, sortedseg2);
     for (i = 0; i < count; i++)
-    {
-      sortedseg1[i]->number = i;
-    }
+      {
+        sortedseg1[i]->number = i;
+      }
     for (i = 0; i < count; i++)
-    {
-      sortedseg2[i]->number = i;
-    }
+      {
+        sortedseg2[i]->number = i;
+      }
 
     if (crossscoresize < count + 2)
-    {
-      crossscoresize = count + 2;
-      fprintf(stderr,
-              "################################################################"
-              "################################################################"
-              "####allocating crossscore, size = %d\n",
-              crossscoresize);
-      if (crossscore)
       {
-        FreeDoubleMtx(crossscore);
+        crossscoresize = count + 2;
+        fprintf(stderr,
+                "################################################################"
+                "################################################################"
+                "####allocating crossscore, size = %d\n",
+                crossscoresize);
+        if (crossscore)
+          {
+            FreeDoubleMtx(crossscore);
+          }
+        crossscore = AllocateDoubleMtx(crossscoresize, crossscoresize);
       }
-      crossscore = AllocateDoubleMtx(crossscoresize, crossscoresize);
-    }
 
     for (i = 0; i < count + 2; i++)
-    {
-      for (j = 0; j < count + 2; j++)
       {
-        crossscore[i][j] = 0.0;
+        for (j = 0; j < count + 2; j++)
+          {
+            crossscore[i][j] = 0.0;
+          }
       }
-    }
     for (i = 0; i < count; i++)
-    {
-      crossscore[segment1[i].number + 1][segment1[i].pair->number + 1] =
-          segment1[i].score;
-      cut1[i + 1] = sortedseg1[i]->center;
-      cut2[i + 1] = sortedseg2[i]->center;
-    }
+      {
+        crossscore[segment1[i].number + 1][segment1[i].pair->number + 1] =
+            segment1[i].score;
+        cut1[i + 1] = sortedseg1[i]->center;
+        cut2[i + 1] = sortedseg2[i]->center;
+      }
 
 #if DEBUG
     fprintf(stderr, "AFTER SORT\n");
@@ -717,21 +717,21 @@ system( "/usr/bin/gnuplot list.plot" );
     blockAlign2(cut1, cut2, sortedseg1, sortedseg2, crossscore, &count);
   }
   if (fftkeika)
-  {
-    if (count0 > count)
     {
-      fprintf(stderr, "REPEAT!? \n");
-      if (fftRepeatStop)
-      {
-        exit(1);
-      }
-    }
+      if (count0 > count)
+        {
+          fprintf(stderr, "REPEAT!? \n");
+          if (fftRepeatStop)
+            {
+              exit(1);
+            }
+        }
 #if KEIKA
-    else
-      fprintf(stderr, "done\n");
-    fprintf(stderr, "done. (%d anchors)\n", count);
+      else
+        fprintf(stderr, "done\n");
+      fprintf(stderr, "done. (%d anchors)\n", count);
 #endif
-  }
+    }
 
 #if 0
 	fftfp = fopen( "fft", "a" );
@@ -761,94 +761,94 @@ system( "/usr/bin/gnuplot list.plot" );
 
   totallen = 0;
   for (j = 0; j < clus1; j++)
-  {
-    result1[j][0] = 0;
-  }
+    {
+      result1[j][0] = 0;
+    }
   for (j = 0; j < clus2; j++)
-  {
-    result2[j][0] = 0;
-  }
+    {
+      result2[j][0] = 0;
+    }
   for (i = 0; i < count - 1; i++)
-  {
+    {
 #if DEBUG
-    fprintf(stderr, "DP %03d / %03d %4d to ", i + 1, count - 1, totallen);
+      fprintf(stderr, "DP %03d / %03d %4d to ", i + 1, count - 1, totallen);
 #else
 #if KEIKA
-    fprintf(stderr, "DP %03d / %03d\r", i + 1, count - 1);
+      fprintf(stderr, "DP %03d / %03d\r", i + 1, count - 1);
 #endif
 #endif
-    for (j = 0; j < clus1; j++)
-    {
-      strncpy(tmpres1[j], seq1[j] + cut1[i], cut1[i + 1] - cut1[i]);
-      tmpres1[j][cut1[i + 1] - cut1[i]] = 0;
-    }
-    for (j = 0; j < clus2; j++)
-    {
-      strncpy(tmpres2[j], seq2[j] + cut2[i], cut2[i + 1] - cut2[i]);
-      tmpres2[j][cut2[i + 1] - cut2[i]] = 0;
-    }
-    switch (alg)
-    {
-      case ('a'):
-        Aalign(tmpres1, tmpres2, eff1, eff2, clus1, clus2, alloclen);
-        break;
-      case ('M'):
-        MSalignmm(tmpres1, tmpres2, eff1, eff2, clus1, clus2, alloclen, NULL,
-                  NULL, NULL, NULL);
-        break;
-      case ('A'):
-        if (clus1 == 1 && clus2 == 1)
+      for (j = 0; j < clus1; j++)
         {
-          G__align11(tmpres1, tmpres2, alloclen);
+          strncpy(tmpres1[j], seq1[j] + cut1[i], cut1[i + 1] - cut1[i]);
+          tmpres1[j][cut1[i + 1] - cut1[i]] = 0;
         }
-        else
+      for (j = 0; j < clus2; j++)
         {
-          A__align(tmpres1, tmpres2, eff1, eff2, clus1, clus2, alloclen, NULL,
-                   &dumfl, NULL, NULL, NULL, NULL);
+          strncpy(tmpres2[j], seq2[j] + cut2[i], cut2[i + 1] - cut2[i]);
+          tmpres2[j][cut2[i + 1] - cut2[i]] = 0;
         }
-        break;
-      case ('H'):
-        if (clus1 == 1 && clus2 == 1)
+      switch (alg)
         {
-          G__align11(tmpres1, tmpres2, alloclen);
+          case ('a'):
+            Aalign(tmpres1, tmpres2, eff1, eff2, clus1, clus2, alloclen);
+            break;
+          case ('M'):
+            MSalignmm(tmpres1, tmpres2, eff1, eff2, clus1, clus2, alloclen, NULL,
+                      NULL, NULL, NULL);
+            break;
+          case ('A'):
+            if (clus1 == 1 && clus2 == 1)
+              {
+                G__align11(tmpres1, tmpres2, alloclen);
+              }
+            else
+              {
+                A__align(tmpres1, tmpres2, eff1, eff2, clus1, clus2, alloclen, NULL,
+                         &dumfl, NULL, NULL, NULL, NULL);
+              }
+            break;
+          case ('H'):
+            if (clus1 == 1 && clus2 == 1)
+              {
+                G__align11(tmpres1, tmpres2, alloclen);
+              }
+            else
+              {
+                H__align(tmpres1, tmpres2, eff1, eff2, clus1, clus2, alloclen, NULL,
+                         &dumfl, NULL, NULL, NULL, NULL);
+              }
+            break;
+          case ('Q'):
+            if (clus1 == 1 && clus2 == 1)
+              {
+                G__align11(tmpres1, tmpres2, alloclen);
+              }
+            else
+              {
+                Q__align(tmpres1, tmpres2, eff1, eff2, clus1, clus2, alloclen, NULL,
+                         &dumfl, NULL, NULL, NULL, NULL);
+              }
+            break;
+          default:
+            fprintf(stderr, "alg = %c\n", alg);
+            ErrorExit("ERROR IN SOURCE FILE Falign.c");
+            break;
         }
-        else
-        {
-          H__align(tmpres1, tmpres2, eff1, eff2, clus1, clus2, alloclen, NULL,
-                   &dumfl, NULL, NULL, NULL, NULL);
-        }
-        break;
-      case ('Q'):
-        if (clus1 == 1 && clus2 == 1)
-        {
-          G__align11(tmpres1, tmpres2, alloclen);
-        }
-        else
-        {
-          Q__align(tmpres1, tmpres2, eff1, eff2, clus1, clus2, alloclen, NULL,
-                   &dumfl, NULL, NULL, NULL, NULL);
-        }
-        break;
-      default:
-        fprintf(stderr, "alg = %c\n", alg);
-        ErrorExit("ERROR IN SOURCE FILE Falign.c");
-        break;
-    }
 
-    nlen = strlen(tmpres1[0]);
-    if (totallen + nlen > alloclen)
-    {
-      ErrorExit("LENGTH OVER in Falign\n ");
-    }
-    for (j = 0; j < clus1; j++)
-    {
-      strcat(result1[j], tmpres1[j]);
-    }
-    for (j = 0; j < clus2; j++)
-    {
-      strcat(result2[j], tmpres2[j]);
-    }
-    totallen += nlen;
+      nlen = strlen(tmpres1[0]);
+      if (totallen + nlen > alloclen)
+        {
+          ErrorExit("LENGTH OVER in Falign\n ");
+        }
+      for (j = 0; j < clus1; j++)
+        {
+          strcat(result1[j], tmpres1[j]);
+        }
+      for (j = 0; j < clus2; j++)
+        {
+          strcat(result2[j], tmpres2[j]);
+        }
+      totallen += nlen;
 #if 0
 		fprintf( stderr, "%4d\r", totallen );
 		fprintf( stderr, "\n\n" );
@@ -862,19 +862,19 @@ system( "/usr/bin/gnuplot list.plot" );
 			fprintf( stderr, "%s\n", tmpres2[j] );
 		}
 #endif
-  }
+    }
 #if KEIKA
   fprintf(stderr, "DP ... done   \n");
 #endif
 
   for (j = 0; j < clus1; j++)
-  {
-    strcpy(seq1[j], result1[j]);
-  }
+    {
+      strcpy(seq1[j], result1[j]);
+    }
   for (j = 0; j < clus2; j++)
-  {
-    strcpy(seq2[j], result2[j]);
-  }
+    {
+      strcpy(seq2[j], result2[j]);
+    }
 #if 0
 	for( j=0; j<clus1; j++ ) 
 	{
@@ -938,9 +938,9 @@ float Falign(char **seq1, char **seq2, double *eff1, double *eff2, int clus1,
 
   nlen = 1;
   while (nlentmp >= nlen)
-  {
-    nlen <<= 1;
-  }
+    {
+      nlen <<= 1;
+    }
 #if 0
 	fprintf( stderr, "###   nlen    = %d\n", nlen );
 #endif
@@ -954,108 +954,108 @@ float Falign(char **seq1, char **seq2, double *eff1, double *eff2, int clus1,
 #endif
 
   if (prevalloclen != alloclen)  // Falign_noudp mo kaeru
-  {
-    if (prevalloclen)
     {
-      FreeCharMtx(result1);
-      FreeCharMtx(result2);
-      FreeCharMtx(tmpres1);
-      FreeCharMtx(tmpres2);
+      if (prevalloclen)
+        {
+          FreeCharMtx(result1);
+          FreeCharMtx(result2);
+          FreeCharMtx(tmpres1);
+          FreeCharMtx(tmpres2);
+        }
+      //		fprintf( stderr, "\n\n\nreallocating ...\n" );
+      result1 = AllocateCharMtx(njob, alloclen);
+      result2 = AllocateCharMtx(njob, alloclen);
+      tmpres1 = AllocateCharMtx(njob, alloclen);
+      tmpres2 = AllocateCharMtx(njob, alloclen);
+      prevalloclen = alloclen;
     }
-    //		fprintf( stderr, "\n\n\nreallocating ...\n" );
-    result1 = AllocateCharMtx(njob, alloclen);
-    result2 = AllocateCharMtx(njob, alloclen);
-    tmpres1 = AllocateCharMtx(njob, alloclen);
-    tmpres2 = AllocateCharMtx(njob, alloclen);
-    prevalloclen = alloclen;
-  }
   if (!localalloclen)
-  {
-    sgap1 = AllocateCharVec(njob);
-    egap1 = AllocateCharVec(njob);
-    sgap2 = AllocateCharVec(njob);
-    egap2 = AllocateCharVec(njob);
-    kouho = AllocateIntVec(NKOUHO);
-    cut1 = AllocateIntVec(MAXSEG);
-    cut2 = AllocateIntVec(MAXSEG);
-    tmpptr1 = AllocateCharMtx(njob, 0);
-    tmpptr2 = AllocateCharMtx(njob, 0);
-    //		crossscore = AllocateDoubleMtx( MAXSEG, MAXSEG );
-    segment = (Segment *)calloc(MAXSEG, sizeof(Segment));
-    segment1 = (Segment *)calloc(MAXSEG, sizeof(Segment));
-    segment2 = (Segment *)calloc(MAXSEG, sizeof(Segment));
-    sortedseg1 = (Segment **)calloc(MAXSEG, sizeof(Segment *));
-    sortedseg2 = (Segment **)calloc(MAXSEG, sizeof(Segment *));
-    if (!(segment && segment1 && segment2 && sortedseg1 && sortedseg2))
     {
-      ErrorExit("Allocation error\n");
-    }
+      sgap1 = AllocateCharVec(njob);
+      egap1 = AllocateCharVec(njob);
+      sgap2 = AllocateCharVec(njob);
+      egap2 = AllocateCharVec(njob);
+      kouho = AllocateIntVec(NKOUHO);
+      cut1 = AllocateIntVec(MAXSEG);
+      cut2 = AllocateIntVec(MAXSEG);
+      tmpptr1 = AllocateCharMtx(njob, 0);
+      tmpptr2 = AllocateCharMtx(njob, 0);
+      //		crossscore = AllocateDoubleMtx( MAXSEG, MAXSEG );
+      segment = (Segment *)calloc(MAXSEG, sizeof(Segment));
+      segment1 = (Segment *)calloc(MAXSEG, sizeof(Segment));
+      segment2 = (Segment *)calloc(MAXSEG, sizeof(Segment));
+      sortedseg1 = (Segment **)calloc(MAXSEG, sizeof(Segment *));
+      sortedseg2 = (Segment **)calloc(MAXSEG, sizeof(Segment *));
+      if (!(segment && segment1 && segment2 && sortedseg1 && sortedseg2))
+        {
+          ErrorExit("Allocation error\n");
+        }
 
-    if (scoremtx == -1)
-    {
-      n20or4or2 = 1;
+      if (scoremtx == -1)
+        {
+          n20or4or2 = 1;
+        }
+      else if (fftscore)
+        {
+          n20or4or2 = 1;
+        }
+      else
+        {
+          n20or4or2 = 20;
+        }
     }
-    else if (fftscore)
-    {
-      n20or4or2 = 1;
-    }
-    else
-    {
-      n20or4or2 = 20;
-    }
-  }
   if (localalloclen < nlen)
-  {
-    if (localalloclen)
     {
+      if (localalloclen)
+        {
 #if 1
-      if (!kobetsubunkatsu)
-      {
-        FreeFukusosuuMtx(seqVector1);
-        FreeFukusosuuMtx(seqVector2);
-        FreeFukusosuuVec(naisekiNoWa);
-        FreeFukusosuuMtx(naiseki);
-        FreeDoubleVec(soukan);
-      }
-      FreeCharMtx(tmpseq1);
-      FreeCharMtx(tmpseq2);
+          if (!kobetsubunkatsu)
+            {
+              FreeFukusosuuMtx(seqVector1);
+              FreeFukusosuuMtx(seqVector2);
+              FreeFukusosuuVec(naisekiNoWa);
+              FreeFukusosuuMtx(naiseki);
+              FreeDoubleVec(soukan);
+            }
+          FreeCharMtx(tmpseq1);
+          FreeCharMtx(tmpseq2);
 #endif
 #if RND
-      FreeCharMtx(rndseq1);
-      FreeCharMtx(rndseq2);
+          FreeCharMtx(rndseq1);
+          FreeCharMtx(rndseq2);
 #endif
-    }
+        }
 
-    tmpseq1 = AllocateCharMtx(njob, nlen);
-    tmpseq2 = AllocateCharMtx(njob, nlen);
-    if (!kobetsubunkatsu)
-    {
-      naisekiNoWa = AllocateFukusosuuVec(nlen);
-      naiseki = AllocateFukusosuuMtx(n20or4or2, nlen);
-      seqVector1 = AllocateFukusosuuMtx(n20or4or2 + 1, nlen + 1);
-      seqVector2 = AllocateFukusosuuMtx(n20or4or2 + 1, nlen + 1);
-      soukan = AllocateDoubleVec(nlen + 1);
-    }
+      tmpseq1 = AllocateCharMtx(njob, nlen);
+      tmpseq2 = AllocateCharMtx(njob, nlen);
+      if (!kobetsubunkatsu)
+        {
+          naisekiNoWa = AllocateFukusosuuVec(nlen);
+          naiseki = AllocateFukusosuuMtx(n20or4or2, nlen);
+          seqVector1 = AllocateFukusosuuMtx(n20or4or2 + 1, nlen + 1);
+          seqVector2 = AllocateFukusosuuMtx(n20or4or2 + 1, nlen + 1);
+          soukan = AllocateDoubleVec(nlen + 1);
+        }
 #if RND
-    rndseq1 = AllocateCharMtx(njob, nlen);
-    rndseq2 = AllocateCharMtx(njob, nlen);
-    for (i = 0; i < njob; i++)
-    {
-      generateRndSeq(rndseq1[i], nlen);
-      generateRndSeq(rndseq2[i], nlen);
-    }
+      rndseq1 = AllocateCharMtx(njob, nlen);
+      rndseq2 = AllocateCharMtx(njob, nlen);
+      for (i = 0; i < njob; i++)
+        {
+          generateRndSeq(rndseq1[i], nlen);
+          generateRndSeq(rndseq2[i], nlen);
+        }
 #endif
-    localalloclen = nlen;
-  }
+      localalloclen = nlen;
+    }
 
   for (j = 0; j < clus1; j++)
-  {
-    strcpy(tmpseq1[j], seq1[j]);
-  }
+    {
+      strcpy(tmpseq1[j], seq1[j]);
+    }
   for (j = 0; j < clus2; j++)
-  {
-    strcpy(tmpseq2[j], seq2[j]);
-  }
+    {
+      strcpy(tmpseq2[j], seq2[j]);
+    }
 
 #if 0
 fftfp = fopen( "input_of_Falign", "w" );
@@ -1070,45 +1070,45 @@ fclose( fftfp );
 system( "less input_of_Falign < /dev/tty > /dev/tty" );
 #endif
   if (!kobetsubunkatsu)
-  {
-    if (fftkeika)
     {
-      fprintf(stderr, " FFT ... ");
-    }
+      if (fftkeika)
+        {
+          fprintf(stderr, " FFT ... ");
+        }
 
-    for (j = 0; j < n20or4or2; j++)
-    {
-      vec_init(seqVector1[j], nlen);
-    }
-    if (fftscore && scoremtx != -1)
-    {
-      for (i = 0; i < clus1; i++)
-      {
+      for (j = 0; j < n20or4or2; j++)
+        {
+          vec_init(seqVector1[j], nlen);
+        }
+      if (fftscore && scoremtx != -1)
+        {
+          for (i = 0; i < clus1; i++)
+            {
 #if 1
-        seq_vec_5(seqVector1[0], polarity, volume, eff1[i], tmpseq1[i]);
+              seq_vec_5(seqVector1[0], polarity, volume, eff1[i], tmpseq1[i]);
 #else
-        seq_vec_2(seqVector1[0], polarity, eff1[i], tmpseq1[i]);
-        seq_vec_2(seqVector1[1], volume, eff1[i], tmpseq1[i]);
+              seq_vec_2(seqVector1[0], polarity, eff1[i], tmpseq1[i]);
+              seq_vec_2(seqVector1[1], volume, eff1[i], tmpseq1[i]);
 #endif
-      }
-    }
-    else
-    {
+            }
+        }
+      else
+        {
 #if 0
 			for( i=0; i<clus1; i++ ) for( j=0; j<n20or4or2; j++ ) 
 				seq_vec( seqVector1[j], amino[j], eff1[i], tmpseq1[i] );
 #else
-      for (i = 0; i < clus1; i++)
-      {
-        seq_vec_3(seqVector1, eff1[i], tmpseq1[i]);
-      }
+          for (i = 0; i < clus1; i++)
+            {
+              seq_vec_3(seqVector1, eff1[i], tmpseq1[i]);
+            }
 #endif
-    }
+        }
 #if RND
-    for (i = 0; i < clus1; i++)
-    {
-      vec_init2(seqVector1, rndseq1[i], eff1[i], len1, nlen);
-    }
+      for (i = 0; i < clus1; i++)
+        {
+          vec_init2(seqVector1, rndseq1[i], eff1[i], len1, nlen);
+        }
 #endif
 #if 0
 fftfp = fopen( "seqVec", "w" );
@@ -1124,39 +1124,39 @@ fclose( fftfp );
 system( "less seqVec < /dev/tty > /dev/tty" );
 #endif
 
-    for (j = 0; j < n20or4or2; j++)
-    {
-      vec_init(seqVector2[j], nlen);
-    }
-    if (fftscore && scoremtx != -1)
-    {
-      for (i = 0; i < clus2; i++)
-      {
+      for (j = 0; j < n20or4or2; j++)
+        {
+          vec_init(seqVector2[j], nlen);
+        }
+      if (fftscore && scoremtx != -1)
+        {
+          for (i = 0; i < clus2; i++)
+            {
 #if 1
-        seq_vec_5(seqVector2[0], polarity, volume, eff2[i], tmpseq2[i]);
+              seq_vec_5(seqVector2[0], polarity, volume, eff2[i], tmpseq2[i]);
 #else
-        seq_vec_2(seqVector2[0], polarity, eff2[i], tmpseq2[i]);
-        seq_vec_2(seqVector2[1], volume, eff2[i], tmpseq2[i]);
+              seq_vec_2(seqVector2[0], polarity, eff2[i], tmpseq2[i]);
+              seq_vec_2(seqVector2[1], volume, eff2[i], tmpseq2[i]);
 #endif
-      }
-    }
-    else
-    {
+            }
+        }
+      else
+        {
 #if 0
 			for( i=0; i<clus2; i++ ) for( j=0; j<n20or4or2; j++ ) 
 				seq_vec( seqVector2[j], amino[j], eff2[i], tmpseq2[i] );
 #else
-      for (i = 0; i < clus2; i++)
-      {
-        seq_vec_3(seqVector2, eff2[i], tmpseq2[i]);
-      }
+          for (i = 0; i < clus2; i++)
+            {
+              seq_vec_3(seqVector2, eff2[i], tmpseq2[i]);
+            }
 #endif
-    }
+        }
 #if RND
-    for (i = 0; i < clus2; i++)
-    {
-      vec_init2(seqVector2, rndseq2[i], eff2[i], len2, nlen);
-    }
+      for (i = 0; i < clus2; i++)
+        {
+          vec_init2(seqVector2, rndseq2[i], eff2[i], len2, nlen);
+        }
 #endif
 
 #if 0
@@ -1172,11 +1172,11 @@ fclose( fftfp );
 system( "less seqVec2 < /dev/tty > /dev/tty" );
 #endif
 
-    for (j = 0; j < n20or4or2; j++)
-    {
-      fft(nlen, seqVector2[j], (j == 0));
-      fft(nlen, seqVector1[j], 0);
-    }
+      for (j = 0; j < n20or4or2; j++)
+        {
+          fft(nlen, seqVector2[j], (j == 0));
+          fft(nlen, seqVector1[j], 0);
+        }
 #if 0
 fftfp = fopen( "seqVec2", "w" );
 fprintf( fftfp, "#after fft\n" );
@@ -1190,23 +1190,23 @@ fclose( fftfp );
 system( "less seqVec2 < /dev/tty > /dev/tty" );
 #endif
 
-    for (k = 0; k < n20or4or2; k++)
-    {
-      for (l = 0; l < nlen; l++)
-      {
-        calcNaiseki(naiseki[k] + l, seqVector1[k] + l, seqVector2[k] + l);
-      }
-    }
-    for (l = 0; l < nlen; l++)
-    {
-      naisekiNoWa[l].R = 0.0;
-      naisekiNoWa[l].I = 0.0;
       for (k = 0; k < n20or4or2; k++)
-      {
-        naisekiNoWa[l].R += naiseki[k][l].R;
-        naisekiNoWa[l].I += naiseki[k][l].I;
-      }
-    }
+        {
+          for (l = 0; l < nlen; l++)
+            {
+              calcNaiseki(naiseki[k] + l, seqVector1[k] + l, seqVector2[k] + l);
+            }
+        }
+      for (l = 0; l < nlen; l++)
+        {
+          naisekiNoWa[l].R = 0.0;
+          naisekiNoWa[l].I = 0.0;
+          for (k = 0; k < n20or4or2; k++)
+            {
+              naisekiNoWa[l].R += naiseki[k][l].R;
+              naisekiNoWa[l].I += naiseki[k][l].I;
+            }
+        }
 
 #if 0
 	fftfp = fopen( "naisekiNoWa", "w" );
@@ -1217,16 +1217,16 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 	system( "less naisekiNoWa < /dev/tty > /dev/tty " );
 #endif
 
-    fft(-nlen, naisekiNoWa, 0);
+      fft(-nlen, naisekiNoWa, 0);
 
-    for (m = 0; m <= nlen2; m++)
-    {
-      soukan[m] = naisekiNoWa[nlen2 - m].R;
-    }
-    for (m = nlen2 + 1; m < nlen; m++)
-    {
-      soukan[m] = naisekiNoWa[nlen + nlen2 - m].R;
-    }
+      for (m = 0; m <= nlen2; m++)
+        {
+          soukan[m] = naisekiNoWa[nlen2 - m].R;
+        }
+      for (m = nlen2 + 1; m < nlen; m++)
+        {
+          soukan[m] = naisekiNoWa[nlen + nlen2 - m].R;
+        }
 
 #if 0
 	fftfp = fopen( "naisekiNoWa", "w" );
@@ -1251,7 +1251,7 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 #endif
 #endif
 
-    getKouho(kouho, NKOUHO, soukan, nlen);
+      getKouho(kouho, NKOUHO, soukan, nlen);
 
 #if 0
 		for( i=0; i<NKOUHO; i++ )
@@ -1259,7 +1259,7 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 			fprintf( stderr, "kouho[%d] = %d\n", i, kouho[i] );
 		}
 #endif
-  }
+    }
 
 #if KEIKA
   fprintf(stderr, "Searching anchors ... ");
@@ -1272,50 +1272,50 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
   fclose(fftfp);
 #endif
   if (kobetsubunkatsu)
-  {
-    maxk = 1;
-    kouho[0] = 0;
-  }
+    {
+      maxk = 1;
+      kouho[0] = 0;
+    }
   else
-  {
-    maxk = NKOUHO;
-  }
+    {
+      maxk = NKOUHO;
+    }
 
   for (k = 0; k < maxk; k++)
-  {
-    lag = kouho[k];
-    if (lag <= -len1 || len2 <= lag)
     {
-      continue;
-    }
-    zurasu2(lag, clus1, clus2, seq1, seq2, tmpptr1, tmpptr2);
+      lag = kouho[k];
+      if (lag <= -len1 || len2 <= lag)
+        {
+          continue;
+        }
+      zurasu2(lag, clus1, clus2, seq1, seq2, tmpptr1, tmpptr2);
 #if CAND
-    fftfp = fopen("cand", "a");
-    fprintf(fftfp, ">Candidate No.%d lag = %d\n", k + 1, lag);
-    fprintf(fftfp, "%s\n", tmpptr1[0]);
-    fprintf(fftfp, ">Candidate No.%d lag = %d\n", k + 1, lag);
-    fprintf(fftfp, "%s\n", tmpptr2[0]);
-    fprintf(fftfp, ">\n", k + 1, lag);
-    fclose(fftfp);
+      fftfp = fopen("cand", "a");
+      fprintf(fftfp, ">Candidate No.%d lag = %d\n", k + 1, lag);
+      fprintf(fftfp, "%s\n", tmpptr1[0]);
+      fprintf(fftfp, ">Candidate No.%d lag = %d\n", k + 1, lag);
+      fprintf(fftfp, "%s\n", tmpptr2[0]);
+      fprintf(fftfp, ">\n", k + 1, lag);
+      fclose(fftfp);
 #endif
 
-    //		fprintf( stderr, "lag = %d\n", lag );
-    tmpint = alignableReagion(clus1, clus2, tmpptr1, tmpptr2, eff1, eff2,
-                              segment + count);
+      //		fprintf( stderr, "lag = %d\n", lag );
+      tmpint = alignableReagion(clus1, clus2, tmpptr1, tmpptr2, eff1, eff2,
+                                segment + count);
 
-    //		if( lag == -50 ) exit( 1 );
+      //		if( lag == -50 ) exit( 1 );
 
-    if (count + tmpint > MAXSEG - 3)
-    {
-      ErrorExit("TOO MANY SEGMENTS.\n");
-    }
+      if (count + tmpint > MAXSEG - 3)
+        {
+          ErrorExit("TOO MANY SEGMENTS.\n");
+        }
 
-    if (tmpint == 0)
-    {
-      break;  // 060430 iinoka ?
-    }
-    while (tmpint-- > 0)
-    {
+      if (tmpint == 0)
+        {
+          break;  // 060430 iinoka ?
+        }
+      while (tmpint-- > 0)
+        {
 #if 0
 			if( segment[count].end - segment[count].start < fftWinSize )
 			{
@@ -1323,47 +1323,47 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 				continue;
 			}
 #endif
-      if (lag > 0)
-      {
-        segment1[count].start = segment[count].start;
-        segment1[count].end = segment[count].end;
-        segment1[count].center = segment[count].center;
-        segment1[count].score = segment[count].score;
+          if (lag > 0)
+            {
+              segment1[count].start = segment[count].start;
+              segment1[count].end = segment[count].end;
+              segment1[count].center = segment[count].center;
+              segment1[count].score = segment[count].score;
 
-        segment2[count].start = segment[count].start + lag;
-        segment2[count].end = segment[count].end + lag;
-        segment2[count].center = segment[count].center + lag;
-        segment2[count].score = segment[count].score;
-      }
-      else
-      {
-        segment1[count].start = segment[count].start - lag;
-        segment1[count].end = segment[count].end - lag;
-        segment1[count].center = segment[count].center - lag;
-        segment1[count].score = segment[count].score;
+              segment2[count].start = segment[count].start + lag;
+              segment2[count].end = segment[count].end + lag;
+              segment2[count].center = segment[count].center + lag;
+              segment2[count].score = segment[count].score;
+            }
+          else
+            {
+              segment1[count].start = segment[count].start - lag;
+              segment1[count].end = segment[count].end - lag;
+              segment1[count].center = segment[count].center - lag;
+              segment1[count].score = segment[count].score;
 
-        segment2[count].start = segment[count].start;
-        segment2[count].end = segment[count].end;
-        segment2[count].center = segment[count].center;
-        segment2[count].score = segment[count].score;
-      }
+              segment2[count].start = segment[count].start;
+              segment2[count].end = segment[count].end;
+              segment2[count].center = segment[count].center;
+              segment2[count].score = segment[count].score;
+            }
 #if 0
 			fprintf( stderr, "in 1 %d\n", segment1[count].center );
 			fprintf( stderr, "in 2 %d\n", segment2[count].center );
 #endif
-      segment1[count].pair = &segment2[count];
-      segment2[count].pair = &segment1[count];
-      count++;
+          segment1[count].pair = &segment2[count];
+          segment2[count].pair = &segment1[count];
+          count++;
+        }
     }
-  }
 #if 0
 	if( !kobetsubunkatsu && fftkeika )
 		fprintf( stderr, "%d anchors found\r", count );
 #endif
   if (!count && fftNoAnchStop)
-  {
-    ErrorExit("Cannot detect anchor!");
-  }
+    {
+      ErrorExit("Cannot detect anchor!");
+    }
 #if 0
 	fprintf( stderr, "RESULT before sort:\n" );
 	for( l=0; l<count+1; l++ )
@@ -1378,10 +1378,10 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
   fprintf(stderr, "Aligning anchors ... ");
 #endif
   for (i = 0; i < count; i++)
-  {
-    sortedseg1[i] = &segment1[i];
-    sortedseg2[i] = &segment2[i];
-  }
+    {
+      sortedseg1[i] = &segment1[i];
+      sortedseg2[i] = &segment2[i];
+    }
 #if 0
 	tmpsort( count, sortedseg1 ); 
 	tmpsort( count, sortedseg2 ); 
@@ -1392,59 +1392,59 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
   mymergesort(0, count - 1, sortedseg2);
 #endif
   for (i = 0; i < count; i++)
-  {
-    sortedseg1[i]->number = i;
-  }
+    {
+      sortedseg1[i]->number = i;
+    }
   for (i = 0; i < count; i++)
-  {
-    sortedseg2[i]->number = i;
-  }
+    {
+      sortedseg2[i]->number = i;
+    }
 
   if (kobetsubunkatsu)
-  {
-    for (i = 0; i < count; i++)
     {
-      cut1[i + 1] = sortedseg1[i]->center;
-      cut2[i + 1] = sortedseg2[i]->center;
+      for (i = 0; i < count; i++)
+        {
+          cut1[i + 1] = sortedseg1[i]->center;
+          cut2[i + 1] = sortedseg2[i]->center;
+        }
+      cut1[0] = 0;
+      cut2[0] = 0;
+      cut1[count + 1] = len1;
+      cut2[count + 1] = len2;
+      count += 2;
     }
-    cut1[0] = 0;
-    cut2[0] = 0;
-    cut1[count + 1] = len1;
-    cut2[count + 1] = len2;
-    count += 2;
-  }
   else
-  {
-    if (crossscoresize < count + 2)
     {
-      crossscoresize = count + 2;
+      if (crossscoresize < count + 2)
+        {
+          crossscoresize = count + 2;
 #if 1
-      if (fftkeika)
-      {
-        fprintf(stderr, "######allocating crossscore, size = %d\n",
-                crossscoresize);
-      }
+          if (fftkeika)
+            {
+              fprintf(stderr, "######allocating crossscore, size = %d\n",
+                      crossscoresize);
+            }
 #endif
-      if (crossscore)
-      {
-        FreeDoubleMtx(crossscore);
-      }
-      crossscore = AllocateDoubleMtx(crossscoresize, crossscoresize);
-    }
-    for (i = 0; i < count + 2; i++)
-    {
-      for (j = 0; j < count + 2; j++)
-      {
-        crossscore[i][j] = 0.0;
-      }
-    }
-    for (i = 0; i < count; i++)
-    {
-      crossscore[segment1[i].number + 1][segment1[i].pair->number + 1] =
-          segment1[i].score;
-      cut1[i + 1] = sortedseg1[i]->center;
-      cut2[i + 1] = sortedseg2[i]->center;
-    }
+          if (crossscore)
+            {
+              FreeDoubleMtx(crossscore);
+            }
+          crossscore = AllocateDoubleMtx(crossscoresize, crossscoresize);
+        }
+      for (i = 0; i < count + 2; i++)
+        {
+          for (j = 0; j < count + 2; j++)
+            {
+              crossscore[i][j] = 0.0;
+            }
+        }
+      for (i = 0; i < count; i++)
+        {
+          crossscore[segment1[i].number + 1][segment1[i].pair->number + 1] =
+              segment1[i].score;
+          cut1[i + 1] = sortedseg1[i]->center;
+          cut2[i + 1] = sortedseg2[i]->center;
+        }
 
 #if 0
 		fprintf( stderr, "AFTER SORT\n" );
@@ -1458,44 +1458,44 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 		}
 #endif
 
-    crossscore[0][0] = 10000000.0;
-    cut1[0] = 0;
-    cut2[0] = 0;
-    crossscore[count + 1][count + 1] = 10000000.0;
-    cut1[count + 1] = len1;
-    cut2[count + 1] = len2;
-    count += 2;
-    count0 = count;
+      crossscore[0][0] = 10000000.0;
+      cut1[0] = 0;
+      cut2[0] = 0;
+      crossscore[count + 1][count + 1] = 10000000.0;
+      cut1[count + 1] = len1;
+      cut2[count + 1] = len2;
+      count += 2;
+      count0 = count;
 
-    blockAlign2(cut1, cut2, sortedseg1, sortedseg2, crossscore, &count);
+      blockAlign2(cut1, cut2, sortedseg1, sortedseg2, crossscore, &count);
 
-    //		if( count-count0 )
-    //			fprintf( stderr, "%d unused anchors\n", count0-count );
+      //		if( count-count0 )
+      //			fprintf( stderr, "%d unused anchors\n", count0-count );
 
-    if (!kobetsubunkatsu && fftkeika)
-    {
-      fprintf(stderr, "%d anchors found\n", count);
-    }
-    if (fftkeika)
-    {
-      if (count0 > count)
-      {
+      if (!kobetsubunkatsu && fftkeika)
+        {
+          fprintf(stderr, "%d anchors found\n", count);
+        }
+      if (fftkeika)
+        {
+          if (count0 > count)
+            {
 #if 0
 				fprintf( stderr, "\7 REPEAT!? \n" );
 #else
-        fprintf(stderr, "REPEAT!? \n");
+              fprintf(stderr, "REPEAT!? \n");
 #endif
-        if (fftRepeatStop)
-        {
-          exit(1);
-        }
-      }
+              if (fftRepeatStop)
+                {
+                  exit(1);
+                }
+            }
 #if KEIKA
-      else
-        fprintf(stderr, "done\n");
+          else
+            fprintf(stderr, "done\n");
 #endif
+        }
     }
-  }
 
 #if 0
 	fftfp = fopen( "fft", "a" );
@@ -1523,53 +1523,53 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 
   totallen = 0;
   for (j = 0; j < clus1; j++)
-  {
-    result1[j][0] = 0;
-  }
+    {
+      result1[j][0] = 0;
+    }
   for (j = 0; j < clus2; j++)
-  {
-    result2[j][0] = 0;
-  }
+    {
+      result2[j][0] = 0;
+    }
   totalscore = 0.0;
   *fftlog = -1;
   for (i = 0; i < count - 1; i++)
-  {
-    *fftlog += 1;
+    {
+      *fftlog += 1;
 
-    if (cut1[i])  // chuui
-    {
-      //			getkyokaigap( sgap1, tmpres1, nlen-1, clus1 );
-      //			getkyokaigap( sgap2, tmpres2, nlen-1, clus2 );
-      getkyokaigap(sgap1, tmpres1, nlen - 1, clus1);
-      getkyokaigap(sgap2, tmpres2, nlen - 1, clus2);
-    }
-    else
-    {
-      for (j = 0; j < clus1; j++)
-      {
-        sgap1[j] = 'o';
-      }
-      for (j = 0; j < clus2; j++)
-      {
-        sgap2[j] = 'o';
-      }
-    }
-    if (cut1[i + 1] != len1)  // chuui
-    {
-      getkyokaigap(egap1, seq1, cut1[i + 1], clus1);
-      getkyokaigap(egap2, seq2, cut2[i + 1], clus2);
-    }
-    else
-    {
-      for (j = 0; j < clus1; j++)
-      {
-        egap1[j] = 'o';
-      }
-      for (j = 0; j < clus2; j++)
-      {
-        egap2[j] = 'o';
-      }
-    }
+      if (cut1[i])  // chuui
+        {
+          //			getkyokaigap( sgap1, tmpres1, nlen-1, clus1 );
+          //			getkyokaigap( sgap2, tmpres2, nlen-1, clus2 );
+          getkyokaigap(sgap1, tmpres1, nlen - 1, clus1);
+          getkyokaigap(sgap2, tmpres2, nlen - 1, clus2);
+        }
+      else
+        {
+          for (j = 0; j < clus1; j++)
+            {
+              sgap1[j] = 'o';
+            }
+          for (j = 0; j < clus2; j++)
+            {
+              sgap2[j] = 'o';
+            }
+        }
+      if (cut1[i + 1] != len1)  // chuui
+        {
+          getkyokaigap(egap1, seq1, cut1[i + 1], clus1);
+          getkyokaigap(egap2, seq2, cut2[i + 1], clus2);
+        }
+      else
+        {
+          for (j = 0; j < clus1; j++)
+            {
+              egap1[j] = 'o';
+            }
+          for (j = 0; j < clus2; j++)
+            {
+              egap2[j] = 'o';
+            }
+        }
 #if 0
 		{
 			fprintf( stderr, "kyokkaigap1(%d)=", cut1[i]-1 );
@@ -1598,38 +1598,38 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 #endif
 
 #if DEBUG
-    fprintf(stderr, "DP %03d / %03d %4d to ", i + 1, count - 1, totallen);
+      fprintf(stderr, "DP %03d / %03d %4d to ", i + 1, count - 1, totallen);
 #else
 #if KEIKA
-    fprintf(stderr, "DP %03d / %03d\r", i + 1, count - 1);
+      fprintf(stderr, "DP %03d / %03d\r", i + 1, count - 1);
 #endif
 #endif
-    for (j = 0; j < clus1; j++)
-    {
-      strncpy(tmpres1[j], seq1[j] + cut1[i], cut1[i + 1] - cut1[i]);
-      tmpres1[j][cut1[i + 1] - cut1[i]] = 0;
-    }
-    if (kobetsubunkatsu && fftkeika)
-    {
-      commongappick(clus1, tmpres1);  // dvtditr に呼ばれたとき fftkeika=1
-    }
-    //		if( kobetsubunkatsu ) commongappick( clus1, tmpres1 );
-    for (j = 0; j < clus2; j++)
-    {
-      strncpy(tmpres2[j], seq2[j] + cut2[i], cut2[i + 1] - cut2[i]);
-      tmpres2[j][cut2[i + 1] - cut2[i]] = 0;
-    }
-    if (kobetsubunkatsu && fftkeika)
-    {
-      commongappick(clus2, tmpres2);  // dvtditr に呼ばれたとき fftkeika=1
-    }
-    //		if( kobetsubunkatsu ) commongappick( clus2, tmpres2 );
+      for (j = 0; j < clus1; j++)
+        {
+          strncpy(tmpres1[j], seq1[j] + cut1[i], cut1[i + 1] - cut1[i]);
+          tmpres1[j][cut1[i + 1] - cut1[i]] = 0;
+        }
+      if (kobetsubunkatsu && fftkeika)
+        {
+          commongappick(clus1, tmpres1);  // dvtditr に呼ばれたとき fftkeika=1
+        }
+      //		if( kobetsubunkatsu ) commongappick( clus1, tmpres1 );
+      for (j = 0; j < clus2; j++)
+        {
+          strncpy(tmpres2[j], seq2[j] + cut2[i], cut2[i + 1] - cut2[i]);
+          tmpres2[j][cut2[i + 1] - cut2[i]] = 0;
+        }
+      if (kobetsubunkatsu && fftkeika)
+        {
+          commongappick(clus2, tmpres2);  // dvtditr に呼ばれたとき fftkeika=1
+        }
+      //		if( kobetsubunkatsu ) commongappick( clus2, tmpres2 );
 
-    if (constraint)
-    {
-      fprintf(stderr, "Not supported\n");
-      exit(1);
-    }
+      if (constraint)
+        {
+          fprintf(stderr, "Not supported\n");
+          exit(1);
+        }
 #if 0
 		fprintf( stderr, "i=%d, before alignment", i );
 		fprintf( stderr, "%4d\n", totallen );
@@ -1659,74 +1659,74 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 		}
 		fflush( stdout );
 #endif
-    switch (alg)
-    {
-      case ('a'):
-        totalscore +=
-            Aalign(tmpres1, tmpres2, eff1, eff2, clus1, clus2, alloclen);
-        break;
-      case ('M'):
-        totalscore += MSalignmm(tmpres1, tmpres2, eff1, eff2, clus1, clus2,
-                                alloclen, sgap1, sgap2, egap1, egap2);
-        break;
-      case ('A'):
-        if (clus1 == 1 && clus2 == 1)
+      switch (alg)
         {
-          totalscore += G__align11(tmpres1, tmpres2, alloclen);
+          case ('a'):
+            totalscore +=
+                Aalign(tmpres1, tmpres2, eff1, eff2, clus1, clus2, alloclen);
+            break;
+          case ('M'):
+            totalscore += MSalignmm(tmpres1, tmpres2, eff1, eff2, clus1, clus2,
+                                    alloclen, sgap1, sgap2, egap1, egap2);
+            break;
+          case ('A'):
+            if (clus1 == 1 && clus2 == 1)
+              {
+                totalscore += G__align11(tmpres1, tmpres2, alloclen);
+              }
+            else
+              {
+                totalscore +=
+                    A__align(tmpres1, tmpres2, eff1, eff2, clus1, clus2, alloclen,
+                             NULL, &dumfl, sgap1, sgap2, egap1, egap2);
+              }
+            break;
+          case ('H'):
+            if (clus1 == 1 && clus2 == 1)
+              {
+                totalscore += G__align11(tmpres1, tmpres2, alloclen);
+              }
+            else
+              {
+                totalscore +=
+                    H__align(tmpres1, tmpres2, eff1, eff2, clus1, clus2, alloclen,
+                             NULL, &dumfl, sgap1, sgap2, egap1, egap2);
+              }
+            break;
+          case ('Q'):
+            if (clus1 == 1 && clus2 == 1)
+              {
+                totalscore += G__align11(tmpres1, tmpres2, alloclen);
+              }
+            else
+              {
+                totalscore +=
+                    Q__align(tmpres1, tmpres2, eff1, eff2, clus1, clus2, alloclen,
+                             NULL, &dumfl, sgap1, sgap2, egap1, egap2);
+              }
+            break;
+          default:
+            fprintf(stderr, "alg = %c\n", alg);
+            ErrorExit("ERROR IN SOURCE FILE Falign.c");
+            break;
         }
-        else
-        {
-          totalscore +=
-              A__align(tmpres1, tmpres2, eff1, eff2, clus1, clus2, alloclen,
-                       NULL, &dumfl, sgap1, sgap2, egap1, egap2);
-        }
-        break;
-      case ('H'):
-        if (clus1 == 1 && clus2 == 1)
-        {
-          totalscore += G__align11(tmpres1, tmpres2, alloclen);
-        }
-        else
-        {
-          totalscore +=
-              H__align(tmpres1, tmpres2, eff1, eff2, clus1, clus2, alloclen,
-                       NULL, &dumfl, sgap1, sgap2, egap1, egap2);
-        }
-        break;
-      case ('Q'):
-        if (clus1 == 1 && clus2 == 1)
-        {
-          totalscore += G__align11(tmpres1, tmpres2, alloclen);
-        }
-        else
-        {
-          totalscore +=
-              Q__align(tmpres1, tmpres2, eff1, eff2, clus1, clus2, alloclen,
-                       NULL, &dumfl, sgap1, sgap2, egap1, egap2);
-        }
-        break;
-      default:
-        fprintf(stderr, "alg = %c\n", alg);
-        ErrorExit("ERROR IN SOURCE FILE Falign.c");
-        break;
-    }
 
-    nlen = strlen(tmpres1[0]);
-    if (totallen + nlen > alloclen)
-    {
-      fprintf(stderr, "totallen=%d +  nlen=%d > alloclen = %d\n", totallen,
-              nlen, alloclen);
-      ErrorExit("LENGTH OVER in Falign\n ");
-    }
-    for (j = 0; j < clus1; j++)
-    {
-      strcat(result1[j], tmpres1[j]);
-    }
-    for (j = 0; j < clus2; j++)
-    {
-      strcat(result2[j], tmpres2[j]);
-    }
-    totallen += nlen;
+      nlen = strlen(tmpres1[0]);
+      if (totallen + nlen > alloclen)
+        {
+          fprintf(stderr, "totallen=%d +  nlen=%d > alloclen = %d\n", totallen,
+                  nlen, alloclen);
+          ErrorExit("LENGTH OVER in Falign\n ");
+        }
+      for (j = 0; j < clus1; j++)
+        {
+          strcat(result1[j], tmpres1[j]);
+        }
+      for (j = 0; j < clus2; j++)
+        {
+          strcat(result2[j], tmpres2[j]);
+        }
+      totallen += nlen;
 #if 0
 		fprintf( stderr, "i=%d", i );
 		fprintf( stderr, "%4d\n", totallen );
@@ -1741,19 +1741,19 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 			fprintf( stderr, "%s\n", tmpres2[j] );
 		}
 #endif
-  }
+    }
 #if KEIKA
   fprintf(stderr, "DP ... done   \n");
 #endif
 
   for (j = 0; j < clus1; j++)
-  {
-    strcpy(seq1[j], result1[j]);
-  }
+    {
+      strcpy(seq1[j], result1[j]);
+    }
   for (j = 0; j < clus2; j++)
-  {
-    strcpy(seq2[j], result2[j]);
-  }
+    {
+      strcpy(seq2[j], result2[j]);
+    }
 #if 0
 	for( j=0; j<clus1; j++ ) 
 	{
@@ -1818,9 +1818,9 @@ float Falign_noudp(char **seq1, char **seq2, double *eff1, double *eff2,
 
   nlen = 1;
   while (nlentmp >= nlen)
-  {
-    nlen <<= 1;
-  }
+    {
+      nlen <<= 1;
+    }
 #if 0
 	fprintf( stderr, "###   nlen    = %d\n", nlen );
 #endif
@@ -1834,108 +1834,108 @@ float Falign_noudp(char **seq1, char **seq2, double *eff1, double *eff2,
 #endif
 
   if (prevalloclen != alloclen)  // Falign_noudp mo kaeru
-  {
-    if (prevalloclen)
     {
-      FreeCharMtx(result1);
-      FreeCharMtx(result2);
-      FreeCharMtx(tmpres1);
-      FreeCharMtx(tmpres2);
+      if (prevalloclen)
+        {
+          FreeCharMtx(result1);
+          FreeCharMtx(result2);
+          FreeCharMtx(tmpres1);
+          FreeCharMtx(tmpres2);
+        }
+      //		fprintf( stderr, "\n\n\nreallocating ...\n" );
+      result1 = AllocateCharMtx(njob, alloclen);
+      result2 = AllocateCharMtx(njob, alloclen);
+      tmpres1 = AllocateCharMtx(njob, alloclen);
+      tmpres2 = AllocateCharMtx(njob, alloclen);
+      prevalloclen = alloclen;
     }
-    //		fprintf( stderr, "\n\n\nreallocating ...\n" );
-    result1 = AllocateCharMtx(njob, alloclen);
-    result2 = AllocateCharMtx(njob, alloclen);
-    tmpres1 = AllocateCharMtx(njob, alloclen);
-    tmpres2 = AllocateCharMtx(njob, alloclen);
-    prevalloclen = alloclen;
-  }
 
   if (!localalloclen)
-  {
-    sgap1 = AllocateCharVec(njob);
-    egap1 = AllocateCharVec(njob);
-    sgap2 = AllocateCharVec(njob);
-    egap2 = AllocateCharVec(njob);
-    kouho = AllocateIntVec(NKOUHO_LONG);
-    cut1 = AllocateIntVec(MAXSEG);
-    cut2 = AllocateIntVec(MAXSEG);
-    tmpptr1 = AllocateCharMtx(njob, 0);
-    tmpptr2 = AllocateCharMtx(njob, 0);
-    segment = (Segment *)calloc(MAXSEG, sizeof(Segment));
-    segment1 = (Segment *)calloc(MAXSEG, sizeof(Segment));
-    segment2 = (Segment *)calloc(MAXSEG, sizeof(Segment));
-    sortedseg1 = (Segment **)calloc(MAXSEG, sizeof(Segment *));
-    sortedseg2 = (Segment **)calloc(MAXSEG, sizeof(Segment *));
-    if (!(segment && segment1 && segment2 && sortedseg1 && sortedseg2))
     {
-      ErrorExit("Allocation error\n");
-    }
+      sgap1 = AllocateCharVec(njob);
+      egap1 = AllocateCharVec(njob);
+      sgap2 = AllocateCharVec(njob);
+      egap2 = AllocateCharVec(njob);
+      kouho = AllocateIntVec(NKOUHO_LONG);
+      cut1 = AllocateIntVec(MAXSEG);
+      cut2 = AllocateIntVec(MAXSEG);
+      tmpptr1 = AllocateCharMtx(njob, 0);
+      tmpptr2 = AllocateCharMtx(njob, 0);
+      segment = (Segment *)calloc(MAXSEG, sizeof(Segment));
+      segment1 = (Segment *)calloc(MAXSEG, sizeof(Segment));
+      segment2 = (Segment *)calloc(MAXSEG, sizeof(Segment));
+      sortedseg1 = (Segment **)calloc(MAXSEG, sizeof(Segment *));
+      sortedseg2 = (Segment **)calloc(MAXSEG, sizeof(Segment *));
+      if (!(segment && segment1 && segment2 && sortedseg1 && sortedseg2))
+        {
+          ErrorExit("Allocation error\n");
+        }
 
-    if (scoremtx == -1)
-    {
-      n20or4or2 = 1;
+      if (scoremtx == -1)
+        {
+          n20or4or2 = 1;
+        }
+      else if (fftscore)
+        {
+          n20or4or2 = 1;
+        }
+      else
+        {
+          n20or4or2 = 20;
+        }
     }
-    else if (fftscore)
-    {
-      n20or4or2 = 1;
-    }
-    else
-    {
-      n20or4or2 = 20;
-    }
-  }
   if (localalloclen < nlen)
-  {
-    if (localalloclen)
     {
+      if (localalloclen)
+        {
 #if 1
-      if (!kobetsubunkatsu)
-      {
-        FreeFukusosuuMtx(seqVector1);
-        FreeFukusosuuMtx(seqVector2);
-        FreeFukusosuuVec(naisekiNoWa);
-        FreeFukusosuuMtx(naiseki);
-        FreeDoubleVec(soukan);
-      }
-      FreeCharMtx(tmpseq1);
-      FreeCharMtx(tmpseq2);
+          if (!kobetsubunkatsu)
+            {
+              FreeFukusosuuMtx(seqVector1);
+              FreeFukusosuuMtx(seqVector2);
+              FreeFukusosuuVec(naisekiNoWa);
+              FreeFukusosuuMtx(naiseki);
+              FreeDoubleVec(soukan);
+            }
+          FreeCharMtx(tmpseq1);
+          FreeCharMtx(tmpseq2);
 #endif
 #if RND
-      FreeCharMtx(rndseq1);
-      FreeCharMtx(rndseq2);
+          FreeCharMtx(rndseq1);
+          FreeCharMtx(rndseq2);
 #endif
-    }
+        }
 
-    tmpseq1 = AllocateCharMtx(njob, nlen);
-    tmpseq2 = AllocateCharMtx(njob, nlen);
-    if (!kobetsubunkatsu)
-    {
-      naisekiNoWa = AllocateFukusosuuVec(nlen);
-      naiseki = AllocateFukusosuuMtx(n20or4or2, nlen);
-      seqVector1 = AllocateFukusosuuMtx(n20or4or2, nlen + 1);
-      seqVector2 = AllocateFukusosuuMtx(n20or4or2, nlen + 1);
-      soukan = AllocateDoubleVec(nlen + 1);
-    }
+      tmpseq1 = AllocateCharMtx(njob, nlen);
+      tmpseq2 = AllocateCharMtx(njob, nlen);
+      if (!kobetsubunkatsu)
+        {
+          naisekiNoWa = AllocateFukusosuuVec(nlen);
+          naiseki = AllocateFukusosuuMtx(n20or4or2, nlen);
+          seqVector1 = AllocateFukusosuuMtx(n20or4or2, nlen + 1);
+          seqVector2 = AllocateFukusosuuMtx(n20or4or2, nlen + 1);
+          soukan = AllocateDoubleVec(nlen + 1);
+        }
 #if RND
-    rndseq1 = AllocateCharMtx(njob, nlen);
-    rndseq2 = AllocateCharMtx(njob, nlen);
-    for (i = 0; i < njob; i++)
-    {
-      generateRndSeq(rndseq1[i], nlen);
-      generateRndSeq(rndseq2[i], nlen);
-    }
+      rndseq1 = AllocateCharMtx(njob, nlen);
+      rndseq2 = AllocateCharMtx(njob, nlen);
+      for (i = 0; i < njob; i++)
+        {
+          generateRndSeq(rndseq1[i], nlen);
+          generateRndSeq(rndseq2[i], nlen);
+        }
 #endif
-    localalloclen = nlen;
-  }
+      localalloclen = nlen;
+    }
 
   for (j = 0; j < clus1; j++)
-  {
-    strcpy(tmpseq1[j], seq1[j]);
-  }
+    {
+      strcpy(tmpseq1[j], seq1[j]);
+    }
   for (j = 0; j < clus2; j++)
-  {
-    strcpy(tmpseq2[j], seq2[j]);
-  }
+    {
+      strcpy(tmpseq2[j], seq2[j]);
+    }
 
 #if 0
 fftfp = fopen( "input_of_Falign", "w" );
@@ -1950,44 +1950,44 @@ fclose( fftfp );
 system( "less input_of_Falign < /dev/tty > /dev/tty" );
 #endif
   if (!kobetsubunkatsu)
-  {
-    fprintf(stderr, " FFT ... ");
+    {
+      fprintf(stderr, " FFT ... ");
 
-    for (j = 0; j < n20or4or2; j++)
-    {
-      vec_init(seqVector1[j], nlen);
-    }
-    if (scoremtx == -1)
-    {
-      for (i = 0; i < clus1; i++)
-      {
-        seq_vec_4(seqVector1[0], eff1[i], tmpseq1[i]);
-      }
-    }
-    else if (fftscore)
-    {
-      for (i = 0; i < clus1; i++)
-      {
+      for (j = 0; j < n20or4or2; j++)
+        {
+          vec_init(seqVector1[j], nlen);
+        }
+      if (scoremtx == -1)
+        {
+          for (i = 0; i < clus1; i++)
+            {
+              seq_vec_4(seqVector1[0], eff1[i], tmpseq1[i]);
+            }
+        }
+      else if (fftscore)
+        {
+          for (i = 0; i < clus1; i++)
+            {
 #if 0
 				seq_vec_2( seqVector1[0], polarity, eff1[i], tmpseq1[i] );
 				seq_vec_2( seqVector1[1], volume,   eff1[i], tmpseq1[i] );
 #else
-        seq_vec_5(seqVector1[0], polarity, volume, eff1[i], tmpseq1[i]);
+              seq_vec_5(seqVector1[0], polarity, volume, eff1[i], tmpseq1[i]);
 #endif
-      }
-    }
-    else
-    {
-      for (i = 0; i < clus1; i++)
-      {
-        seq_vec_3(seqVector1, eff1[i], tmpseq1[i]);
-      }
-    }
+            }
+        }
+      else
+        {
+          for (i = 0; i < clus1; i++)
+            {
+              seq_vec_3(seqVector1, eff1[i], tmpseq1[i]);
+            }
+        }
 #if RND
-    for (i = 0; i < clus1; i++)
-    {
-      vec_init2(seqVector1, rndseq1[i], eff1[i], len1, nlen);
-    }
+      for (i = 0; i < clus1; i++)
+        {
+          vec_init2(seqVector1, rndseq1[i], eff1[i], len1, nlen);
+        }
 #endif
 #if 0
 fftfp = fopen( "seqVec", "w" );
@@ -2003,41 +2003,41 @@ fclose( fftfp );
 system( "less seqVec < /dev/tty > /dev/tty" );
 #endif
 
-    for (j = 0; j < n20or4or2; j++)
-    {
-      vec_init(seqVector2[j], nlen);
-    }
-    if (scoremtx == -1)
-    {
-      for (i = 0; i < clus2; i++)
-      {
-        seq_vec_4(seqVector2[0], eff2[i], tmpseq2[i]);
-      }
-    }
-    else if (fftscore)
-    {
-      for (i = 0; i < clus2; i++)
-      {
+      for (j = 0; j < n20or4or2; j++)
+        {
+          vec_init(seqVector2[j], nlen);
+        }
+      if (scoremtx == -1)
+        {
+          for (i = 0; i < clus2; i++)
+            {
+              seq_vec_4(seqVector2[0], eff2[i], tmpseq2[i]);
+            }
+        }
+      else if (fftscore)
+        {
+          for (i = 0; i < clus2; i++)
+            {
 #if 0
 				seq_vec_2( seqVector2[0], polarity, eff2[i], tmpseq2[i] );
 				seq_vec_2( seqVector2[1], volume,   eff2[i], tmpseq2[i] );
 #else
-        seq_vec_5(seqVector2[0], polarity, volume, eff2[i], tmpseq2[i]);
+              seq_vec_5(seqVector2[0], polarity, volume, eff2[i], tmpseq2[i]);
 #endif
-      }
-    }
-    else
-    {
-      for (i = 0; i < clus2; i++)
-      {
-        seq_vec_3(seqVector2, eff2[i], tmpseq2[i]);
-      }
-    }
+            }
+        }
+      else
+        {
+          for (i = 0; i < clus2; i++)
+            {
+              seq_vec_3(seqVector2, eff2[i], tmpseq2[i]);
+            }
+        }
 #if RND
-    for (i = 0; i < clus2; i++)
-    {
-      vec_init2(seqVector2, rndseq2[i], eff2[i], len2, nlen);
-    }
+      for (i = 0; i < clus2; i++)
+        {
+          vec_init2(seqVector2, rndseq2[i], eff2[i], len2, nlen);
+        }
 #endif
 
 #if 0
@@ -2053,11 +2053,11 @@ fclose( fftfp );
 system( "less seqVec2 < /dev/tty > /dev/tty" );
 #endif
 
-    for (j = 0; j < n20or4or2; j++)
-    {
-      fft(nlen, seqVector2[j], (j == 0));
-      fft(nlen, seqVector1[j], 0);
-    }
+      for (j = 0; j < n20or4or2; j++)
+        {
+          fft(nlen, seqVector2[j], (j == 0));
+          fft(nlen, seqVector1[j], 0);
+        }
 #if 0
 fftfp = fopen( "seqVec2", "w" );
 fprintf( fftfp, "#after fft\n" );
@@ -2071,23 +2071,23 @@ fclose( fftfp );
 system( "less seqVec2 < /dev/tty > /dev/tty" );
 #endif
 
-    for (k = 0; k < n20or4or2; k++)
-    {
-      for (l = 0; l < nlen; l++)
-      {
-        calcNaiseki(naiseki[k] + l, seqVector1[k] + l, seqVector2[k] + l);
-      }
-    }
-    for (l = 0; l < nlen; l++)
-    {
-      naisekiNoWa[l].R = 0.0;
-      naisekiNoWa[l].I = 0.0;
       for (k = 0; k < n20or4or2; k++)
-      {
-        naisekiNoWa[l].R += naiseki[k][l].R;
-        naisekiNoWa[l].I += naiseki[k][l].I;
-      }
-    }
+        {
+          for (l = 0; l < nlen; l++)
+            {
+              calcNaiseki(naiseki[k] + l, seqVector1[k] + l, seqVector2[k] + l);
+            }
+        }
+      for (l = 0; l < nlen; l++)
+        {
+          naisekiNoWa[l].R = 0.0;
+          naisekiNoWa[l].I = 0.0;
+          for (k = 0; k < n20or4or2; k++)
+            {
+              naisekiNoWa[l].R += naiseki[k][l].R;
+              naisekiNoWa[l].I += naiseki[k][l].I;
+            }
+        }
 
 #if 0
 	fftfp = fopen( "naisekiNoWa", "w" );
@@ -2098,16 +2098,16 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 	system( "less naisekiNoWa < /dev/tty > /dev/tty " );
 #endif
 
-    fft(-nlen, naisekiNoWa, 0);
+      fft(-nlen, naisekiNoWa, 0);
 
-    for (m = 0; m <= nlen2; m++)
-    {
-      soukan[m] = naisekiNoWa[nlen2 - m].R;
-    }
-    for (m = nlen2 + 1; m < nlen; m++)
-    {
-      soukan[m] = naisekiNoWa[nlen + nlen2 - m].R;
-    }
+      for (m = 0; m <= nlen2; m++)
+        {
+          soukan[m] = naisekiNoWa[nlen2 - m].R;
+        }
+      for (m = nlen2 + 1; m < nlen; m++)
+        {
+          soukan[m] = naisekiNoWa[nlen + nlen2 - m].R;
+        }
 
 #if 0
 	fftfp = fopen( "naisekiNoWa", "w" );
@@ -2132,7 +2132,7 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 #endif
 #endif
 
-    nkouho = getKouho(kouho, NKOUHO_LONG, soukan, nlen);
+      nkouho = getKouho(kouho, NKOUHO_LONG, soukan, nlen);
 
 #if 0
 		for( i=0; i<nkouho; i++ )
@@ -2140,7 +2140,7 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 			fprintf( stderr, "kouho[%d] = %d\n", i, kouho[i] );
 		}
 #endif
-  }
+    }
 
 #if KEIKA
   fprintf(stderr, "Searching anchors ... ");
@@ -2153,53 +2153,53 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
   fclose(fftfp);
 #endif
   if (kobetsubunkatsu)
-  {
-    maxk = 1;
-    kouho[0] = 0;
-  }
+    {
+      maxk = 1;
+      kouho[0] = 0;
+    }
   else
-  {
-    maxk = nkouho;
-  }
+    {
+      maxk = nkouho;
+    }
 
   for (k = 0; k < maxk; k++)
-  {
-    lag = kouho[k];
-    if (lag <= -len1 || len2 <= lag)
     {
-      continue;
-    }
-    //		fprintf( stderr, "k=%d, lag=%d\n", k, lag );
-    zurasu2(lag, clus1, clus2, seq1, seq2, tmpptr1, tmpptr2);
+      lag = kouho[k];
+      if (lag <= -len1 || len2 <= lag)
+        {
+          continue;
+        }
+      //		fprintf( stderr, "k=%d, lag=%d\n", k, lag );
+      zurasu2(lag, clus1, clus2, seq1, seq2, tmpptr1, tmpptr2);
 #if CAND
-    fftfp = fopen("cand", "a");
-    fprintf(fftfp, ">Candidate No.%d lag = %d\n", k + 1, lag);
-    fprintf(fftfp, "%s\n", tmpptr1[0]);
-    fprintf(fftfp, ">Candidate No.%d lag = %d\n", k + 1, lag);
-    fprintf(fftfp, "%s\n", tmpptr2[0]);
-    fprintf(fftfp, ">\n", k + 1, lag);
-    fclose(fftfp);
+      fftfp = fopen("cand", "a");
+      fprintf(fftfp, ">Candidate No.%d lag = %d\n", k + 1, lag);
+      fprintf(fftfp, "%s\n", tmpptr1[0]);
+      fprintf(fftfp, ">Candidate No.%d lag = %d\n", k + 1, lag);
+      fprintf(fftfp, "%s\n", tmpptr2[0]);
+      fprintf(fftfp, ">\n", k + 1, lag);
+      fclose(fftfp);
 #endif
 
-    //		fprintf( stderr, "lag = %d\n", lag );
-    tmpint = alignableReagion(clus1, clus2, tmpptr1, tmpptr2, eff1, eff2,
-                              segment + count);
-    //		fprintf( stderr, "lag = %d, %d found\n", lag, tmpint );
+      //		fprintf( stderr, "lag = %d\n", lag );
+      tmpint = alignableReagion(clus1, clus2, tmpptr1, tmpptr2, eff1, eff2,
+                                segment + count);
+      //		fprintf( stderr, "lag = %d, %d found\n", lag, tmpint );
 
-    //		if( lag == -50 ) exit( 1 );
+      //		if( lag == -50 ) exit( 1 );
 
-    if (count + tmpint > MAXSEG - 3)
-    {
-      ErrorExit("TOO MANY SEGMENTS.\n");
-    }
+      if (count + tmpint > MAXSEG - 3)
+        {
+          ErrorExit("TOO MANY SEGMENTS.\n");
+        }
 
-    //		fprintf( stderr, "##### k=%d / %d\n", k, maxk );
-    if (tmpint == 0)
-    {
-      break;  // 060430 iinoka ?
-    }
-    while (tmpint-- > 0)
-    {
+      //		fprintf( stderr, "##### k=%d / %d\n", k, maxk );
+      if (tmpint == 0)
+        {
+          break;  // 060430 iinoka ?
+        }
+      while (tmpint-- > 0)
+        {
 #if 0
 			if( segment[count].end - segment[count].start < fftWinSize )
 			{
@@ -2207,54 +2207,54 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 				continue;
 			}
 #endif
-      if (lag > 0)
-      {
-        segment1[count].start = segment[count].start;
-        segment1[count].end = segment[count].end;
-        segment1[count].center = segment[count].center;
-        segment1[count].score = segment[count].score;
+          if (lag > 0)
+            {
+              segment1[count].start = segment[count].start;
+              segment1[count].end = segment[count].end;
+              segment1[count].center = segment[count].center;
+              segment1[count].score = segment[count].score;
 
-        segment2[count].start = segment[count].start + lag;
-        segment2[count].end = segment[count].end + lag;
-        segment2[count].center = segment[count].center + lag;
-        segment2[count].score = segment[count].score;
-      }
-      else
-      {
-        segment1[count].start = segment[count].start - lag;
-        segment1[count].end = segment[count].end - lag;
-        segment1[count].center = segment[count].center - lag;
-        segment1[count].score = segment[count].score;
+              segment2[count].start = segment[count].start + lag;
+              segment2[count].end = segment[count].end + lag;
+              segment2[count].center = segment[count].center + lag;
+              segment2[count].score = segment[count].score;
+            }
+          else
+            {
+              segment1[count].start = segment[count].start - lag;
+              segment1[count].end = segment[count].end - lag;
+              segment1[count].center = segment[count].center - lag;
+              segment1[count].score = segment[count].score;
 
-        segment2[count].start = segment[count].start;
-        segment2[count].end = segment[count].end;
-        segment2[count].center = segment[count].center;
-        segment2[count].score = segment[count].score;
-      }
+              segment2[count].start = segment[count].start;
+              segment2[count].end = segment[count].end;
+              segment2[count].center = segment[count].center;
+              segment2[count].score = segment[count].score;
+            }
 #if 0
 			fprintf( stderr, "##### k=%d / %d\n", k, maxk );
 			fprintf( stderr, "anchor %d, score = %f\n", count, segment1[count].score );
 			fprintf( stderr, "in 1 %d\n", segment1[count].center );
 			fprintf( stderr, "in 2 %d\n", segment2[count].center );
 #endif
-      segment1[count].pair = &segment2[count];
-      segment2[count].pair = &segment1[count];
-      count++;
+          segment1[count].pair = &segment2[count];
+          segment2[count].pair = &segment1[count];
+          count++;
 #if 0
 			fprintf( stderr, "count=%d\n", count );
 #endif
+        }
     }
-  }
 #if 1
   if (!kobetsubunkatsu)
-  {
-    fprintf(stderr, "done. (%d anchors) ", count);
-  }
+    {
+      fprintf(stderr, "done. (%d anchors) ", count);
+    }
 #endif
   if (!count && fftNoAnchStop)
-  {
-    ErrorExit("Cannot detect anchor!");
-  }
+    {
+      ErrorExit("Cannot detect anchor!");
+    }
 #if 0
 	fprintf( stderr, "RESULT before sort:\n" );
 	for( l=0; l<count+1; l++ )
@@ -2265,10 +2265,10 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 #endif
 
   for (i = 0; i < count; i++)
-  {
-    sortedseg1[i] = &segment1[i];
-    sortedseg2[i] = &segment2[i];
-  }
+    {
+      sortedseg1[i] = &segment1[i];
+      sortedseg2[i] = &segment2[i];
+    }
 #if 0
 	tmpsort( count, sortedseg1 ); 
 	tmpsort( count, sortedseg2 ); 
@@ -2279,69 +2279,69 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
   mymergesort(0, count - 1, sortedseg2);
 #endif
   for (i = 0; i < count; i++)
-  {
-    sortedseg1[i]->number = i;
-  }
+    {
+      sortedseg1[i]->number = i;
+    }
   for (i = 0; i < count; i++)
-  {
-    sortedseg2[i]->number = i;
-  }
+    {
+      sortedseg2[i]->number = i;
+    }
 
   if (kobetsubunkatsu)
-  {
-    for (i = 0; i < count; i++)
     {
-      cut1[i + 1] = sortedseg1[i]->center;
-      cut2[i + 1] = sortedseg2[i]->center;
-    }
-    cut1[0] = 0;
-    cut2[0] = 0;
-    cut1[count + 1] = len1;
-    cut2[count + 1] = len2;
-    count += 2;
-  }
-  else
-  {
-    cut1[0] = 0;
-    cut2[0] = 0;
-    count0 = 0;
-    for (i = 0; i < count; i++)
-    {
-      //			fprintf( stderr, "i=%d, %d-%d ?\n", i,
-      //sortedseg1[i]->center, sortedseg1[i]->pair->center );
-      if (sortedseg1[i]->center > cut1[count0] &&
-          sortedseg1[i]->pair->center > cut2[count0])
-      {
-        count0++;
-        cut1[count0] = sortedseg1[i]->center;
-        cut2[count0] = sortedseg1[i]->pair->center;
-      }
-      else
-      {
-        if (i && sortedseg1[i]->score > sortedseg1[i - 1]->score)
+      for (i = 0; i < count; i++)
         {
-          if (sortedseg1[i]->center > cut1[count0 - 1] &&
-              sortedseg1[i]->pair->center > cut2[count0 - 1])
-          {
-            cut1[count0] = sortedseg1[i]->center;
-            cut2[count0] = sortedseg1[i]->pair->center;
-          }
-          else
-          {
-            //						count0--;
-          }
+          cut1[i + 1] = sortedseg1[i]->center;
+          cut2[i + 1] = sortedseg2[i]->center;
         }
-      }
+      cut1[0] = 0;
+      cut2[0] = 0;
+      cut1[count + 1] = len1;
+      cut2[count + 1] = len2;
+      count += 2;
     }
-    //		if( count-count0 )
-    //			fprintf( stderr, "%d anchors unused\n", count-count0 );
-    cut1[count0 + 1] = len1;
-    cut2[count0 + 1] = len2;
-    count = count0 + 2;
-    count0 = count;
-  }
+  else
+    {
+      cut1[0] = 0;
+      cut2[0] = 0;
+      count0 = 0;
+      for (i = 0; i < count; i++)
+        {
+          //			fprintf( stderr, "i=%d, %d-%d ?\n", i,
+          //sortedseg1[i]->center, sortedseg1[i]->pair->center );
+          if (sortedseg1[i]->center > cut1[count0] &&
+              sortedseg1[i]->pair->center > cut2[count0])
+            {
+              count0++;
+              cut1[count0] = sortedseg1[i]->center;
+              cut2[count0] = sortedseg1[i]->pair->center;
+            }
+          else
+            {
+              if (i && sortedseg1[i]->score > sortedseg1[i - 1]->score)
+                {
+                  if (sortedseg1[i]->center > cut1[count0 - 1] &&
+                      sortedseg1[i]->pair->center > cut2[count0 - 1])
+                    {
+                      cut1[count0] = sortedseg1[i]->center;
+                      cut2[count0] = sortedseg1[i]->pair->center;
+                    }
+                  else
+                    {
+                      //						count0--;
+                    }
+                }
+            }
+        }
+      //		if( count-count0 )
+      //			fprintf( stderr, "%d anchors unused\n", count-count0 );
+      cut1[count0 + 1] = len1;
+      cut2[count0 + 1] = len2;
+      count = count0 + 2;
+      count0 = count;
+    }
 
-//	exit( 0 );
+    //	exit( 0 );
 
 #if 0
 	fftfp = fopen( "fft", "a" );
@@ -2369,93 +2369,93 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 
   totallen = 0;
   for (j = 0; j < clus1; j++)
-  {
-    result1[j][0] = 0;
-  }
+    {
+      result1[j][0] = 0;
+    }
   for (j = 0; j < clus2; j++)
-  {
-    result2[j][0] = 0;
-  }
+    {
+      result2[j][0] = 0;
+    }
   totalscore = 0.0;
   *fftlog = -1;
   for (i = 0; i < count - 1; i++)
-  {
-    *fftlog += 1;
+    {
+      *fftlog += 1;
 
-    if (cut1[i])
-    {
-      //			getkyokaigap( sgap1, seq1, cut1[i]-1, clus1 );
-      //			getkyokaigap( sgap2, seq2, cut2[i]-1, clus2 );
-      getkyokaigap(sgap1, tmpres1, nlen - 1, clus1);
-      getkyokaigap(sgap2, tmpres2, nlen - 1, clus2);
-    }
-    else
-    {
-      for (j = 0; j < clus1; j++)
-      {
-        sgap1[j] = 'o';
-      }
-      for (j = 0; j < clus2; j++)
-      {
-        sgap2[j] = 'o';
-      }
-    }
-    if (cut1[i + 1] != len1)
-    {
-      getkyokaigap(egap1, seq1, cut1[i + 1], clus1);
-      getkyokaigap(egap2, seq2, cut2[i + 1], clus2);
-    }
-    else
-    {
-      for (j = 0; j < clus1; j++)
-      {
-        egap1[j] = 'o';
-      }
-      for (j = 0; j < clus2; j++)
-      {
-        egap2[j] = 'o';
-      }
-    }
+      if (cut1[i])
+        {
+          //			getkyokaigap( sgap1, seq1, cut1[i]-1, clus1 );
+          //			getkyokaigap( sgap2, seq2, cut2[i]-1, clus2 );
+          getkyokaigap(sgap1, tmpres1, nlen - 1, clus1);
+          getkyokaigap(sgap2, tmpres2, nlen - 1, clus2);
+        }
+      else
+        {
+          for (j = 0; j < clus1; j++)
+            {
+              sgap1[j] = 'o';
+            }
+          for (j = 0; j < clus2; j++)
+            {
+              sgap2[j] = 'o';
+            }
+        }
+      if (cut1[i + 1] != len1)
+        {
+          getkyokaigap(egap1, seq1, cut1[i + 1], clus1);
+          getkyokaigap(egap2, seq2, cut2[i + 1], clus2);
+        }
+      else
+        {
+          for (j = 0; j < clus1; j++)
+            {
+              egap1[j] = 'o';
+            }
+          for (j = 0; j < clus2; j++)
+            {
+              egap2[j] = 'o';
+            }
+        }
 #if DEBUG
-    fprintf(stderr, "DP %03d / %03d %4d to ", i + 1, count - 1, totallen);
+      fprintf(stderr, "DP %03d / %03d %4d to ", i + 1, count - 1, totallen);
 #else
 #if 1
-    fprintf(stderr, "DP %05d / %05d \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b", i + 1,
-            count - 1);
+      fprintf(stderr, "DP %05d / %05d \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b", i + 1,
+              count - 1);
 #endif
 #endif
-    for (j = 0; j < clus1; j++)
-    {
-      strncpy(tmpres1[j], seq1[j] + cut1[i], cut1[i + 1] - cut1[i]);
-      tmpres1[j][cut1[i + 1] - cut1[i]] = 0;
-    }
-    if (kobetsubunkatsu && fftkeika)
-    {
-      commongappick(clus1, tmpres1);  // dvtditr に呼ばれたとき fftkeika=1
-    }
-    //		if( kobetsubunkatsu ) commongappick( clus1, tmpres1 );
-    for (j = 0; j < clus2; j++)
-    {
-      //			fprintf( stderr, "### cut2[i+1]-cut2[i] = %d\n",
-      //cut2[i+1]-cut2[i] );
-      if (cut2[i + 1] - cut2[i] <= 0)
-      {
-        fprintf(stderr, "### cut2[i+1]=%d, cut2[i]=%d\n", cut2[i + 1], cut2[i]);
-      }
-      strncpy(tmpres2[j], seq2[j] + cut2[i], cut2[i + 1] - cut2[i]);
-      tmpres2[j][cut2[i + 1] - cut2[i]] = 0;
-    }
-    if (kobetsubunkatsu && fftkeika)
-    {
-      commongappick(clus2, tmpres2);  // dvtditr に呼ばれたとき fftkeika=1
-    }
-    //		if( kobetsubunkatsu ) commongappick( clus2, tmpres2 );
+      for (j = 0; j < clus1; j++)
+        {
+          strncpy(tmpres1[j], seq1[j] + cut1[i], cut1[i + 1] - cut1[i]);
+          tmpres1[j][cut1[i + 1] - cut1[i]] = 0;
+        }
+      if (kobetsubunkatsu && fftkeika)
+        {
+          commongappick(clus1, tmpres1);  // dvtditr に呼ばれたとき fftkeika=1
+        }
+      //		if( kobetsubunkatsu ) commongappick( clus1, tmpres1 );
+      for (j = 0; j < clus2; j++)
+        {
+          //			fprintf( stderr, "### cut2[i+1]-cut2[i] = %d\n",
+          //cut2[i+1]-cut2[i] );
+          if (cut2[i + 1] - cut2[i] <= 0)
+            {
+              fprintf(stderr, "### cut2[i+1]=%d, cut2[i]=%d\n", cut2[i + 1], cut2[i]);
+            }
+          strncpy(tmpres2[j], seq2[j] + cut2[i], cut2[i + 1] - cut2[i]);
+          tmpres2[j][cut2[i + 1] - cut2[i]] = 0;
+        }
+      if (kobetsubunkatsu && fftkeika)
+        {
+          commongappick(clus2, tmpres2);  // dvtditr に呼ばれたとき fftkeika=1
+        }
+      //		if( kobetsubunkatsu ) commongappick( clus2, tmpres2 );
 
-    if (constraint)
-    {
-      fprintf(stderr, "Not supported\n");
-      exit(1);
-    }
+      if (constraint)
+        {
+          fprintf(stderr, "Not supported\n");
+          exit(1);
+        }
 #if 0
 		fprintf( stderr, "i=%d, before alignment", i );
 		fprintf( stderr, "%4d\n", totallen );
@@ -2485,34 +2485,34 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 		}
 		fflush( stdout );
 #endif
-    switch (alg)
-    {
-      case ('M'):
-        totalscore += MSalignmm(tmpres1, tmpres2, eff1, eff2, clus1, clus2,
-                                alloclen, sgap1, sgap2, egap1, egap2);
-        break;
-      default:
-        fprintf(stderr, "alg = %c\n", alg);
-        ErrorExit("ERROR IN SOURCE FILE Falign.c");
-        break;
-    }
+      switch (alg)
+        {
+          case ('M'):
+            totalscore += MSalignmm(tmpres1, tmpres2, eff1, eff2, clus1, clus2,
+                                    alloclen, sgap1, sgap2, egap1, egap2);
+            break;
+          default:
+            fprintf(stderr, "alg = %c\n", alg);
+            ErrorExit("ERROR IN SOURCE FILE Falign.c");
+            break;
+        }
 
-    nlen = strlen(tmpres1[0]);
-    if (totallen + nlen > alloclen)
-    {
-      fprintf(stderr, "totallen=%d +  nlen=%d > alloclen = %d\n", totallen,
-              nlen, alloclen);
-      ErrorExit("LENGTH OVER in Falign\n ");
-    }
-    for (j = 0; j < clus1; j++)
-    {
-      strcat(result1[j], tmpres1[j]);
-    }
-    for (j = 0; j < clus2; j++)
-    {
-      strcat(result2[j], tmpres2[j]);
-    }
-    totallen += nlen;
+      nlen = strlen(tmpres1[0]);
+      if (totallen + nlen > alloclen)
+        {
+          fprintf(stderr, "totallen=%d +  nlen=%d > alloclen = %d\n", totallen,
+                  nlen, alloclen);
+          ErrorExit("LENGTH OVER in Falign\n ");
+        }
+      for (j = 0; j < clus1; j++)
+        {
+          strcat(result1[j], tmpres1[j]);
+        }
+      for (j = 0; j < clus2; j++)
+        {
+          strcat(result2[j], tmpres2[j]);
+        }
+      totallen += nlen;
 #if 0
 		fprintf( stderr, "i=%d", i );
 		fprintf( stderr, "%4d\n", totallen );
@@ -2527,19 +2527,19 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 			fprintf( stderr, "%s\n", tmpres2[j] );
 		}
 #endif
-  }
+    }
 #if KEIKA
   fprintf(stderr, "DP ... done   \n");
 #endif
 
   for (j = 0; j < clus1; j++)
-  {
-    strcpy(seq1[j], result1[j]);
-  }
+    {
+      strcpy(seq1[j], result1[j]);
+    }
   for (j = 0; j < clus2; j++)
-  {
-    strcpy(seq2[j], result2[j]);
-  }
+    {
+      strcpy(seq2[j], result2[j]);
+    }
 #if 0
 	for( j=0; j<clus1; j++ ) 
 	{
@@ -2605,9 +2605,9 @@ float Falign_udpari_long(char **seq1, char **seq2, double *eff1, double *eff2,
 
   nlen = 1;
   while (nlentmp >= nlen)
-  {
-    nlen <<= 1;
-  }
+    {
+      nlen <<= 1;
+    }
 #if 0
 	fprintf( stderr, "###   nlen    = %d\n", nlen );
 #endif
@@ -2621,108 +2621,108 @@ float Falign_udpari_long(char **seq1, char **seq2, double *eff1, double *eff2,
 #endif
 
   if (prevalloclen != alloclen)  // Falign_noudp mo kaeru
-  {
-    if (prevalloclen)
     {
-      FreeCharMtx(result1);
-      FreeCharMtx(result2);
-      FreeCharMtx(tmpres1);
-      FreeCharMtx(tmpres2);
+      if (prevalloclen)
+        {
+          FreeCharMtx(result1);
+          FreeCharMtx(result2);
+          FreeCharMtx(tmpres1);
+          FreeCharMtx(tmpres2);
+        }
+      //		fprintf( stderr, "\n\n\nreallocating ...\n" );
+      result1 = AllocateCharMtx(njob, alloclen);
+      result2 = AllocateCharMtx(njob, alloclen);
+      tmpres1 = AllocateCharMtx(njob, alloclen);
+      tmpres2 = AllocateCharMtx(njob, alloclen);
+      prevalloclen = alloclen;
     }
-    //		fprintf( stderr, "\n\n\nreallocating ...\n" );
-    result1 = AllocateCharMtx(njob, alloclen);
-    result2 = AllocateCharMtx(njob, alloclen);
-    tmpres1 = AllocateCharMtx(njob, alloclen);
-    tmpres2 = AllocateCharMtx(njob, alloclen);
-    prevalloclen = alloclen;
-  }
 
   if (!localalloclen)
-  {
-    sgap1 = AllocateCharVec(njob);
-    egap1 = AllocateCharVec(njob);
-    sgap2 = AllocateCharVec(njob);
-    egap2 = AllocateCharVec(njob);
-    kouho = AllocateIntVec(NKOUHO_LONG);
-    cut1 = AllocateIntVec(MAXSEG);
-    cut2 = AllocateIntVec(MAXSEG);
-    tmpptr1 = AllocateCharMtx(njob, 0);
-    tmpptr2 = AllocateCharMtx(njob, 0);
-    segment = (Segment *)calloc(MAXSEG, sizeof(Segment));
-    segment1 = (Segment *)calloc(MAXSEG, sizeof(Segment));
-    segment2 = (Segment *)calloc(MAXSEG, sizeof(Segment));
-    sortedseg1 = (Segment **)calloc(MAXSEG, sizeof(Segment *));
-    sortedseg2 = (Segment **)calloc(MAXSEG, sizeof(Segment *));
-    if (!(segment && segment1 && segment2 && sortedseg1 && sortedseg2))
     {
-      ErrorExit("Allocation error\n");
-    }
+      sgap1 = AllocateCharVec(njob);
+      egap1 = AllocateCharVec(njob);
+      sgap2 = AllocateCharVec(njob);
+      egap2 = AllocateCharVec(njob);
+      kouho = AllocateIntVec(NKOUHO_LONG);
+      cut1 = AllocateIntVec(MAXSEG);
+      cut2 = AllocateIntVec(MAXSEG);
+      tmpptr1 = AllocateCharMtx(njob, 0);
+      tmpptr2 = AllocateCharMtx(njob, 0);
+      segment = (Segment *)calloc(MAXSEG, sizeof(Segment));
+      segment1 = (Segment *)calloc(MAXSEG, sizeof(Segment));
+      segment2 = (Segment *)calloc(MAXSEG, sizeof(Segment));
+      sortedseg1 = (Segment **)calloc(MAXSEG, sizeof(Segment *));
+      sortedseg2 = (Segment **)calloc(MAXSEG, sizeof(Segment *));
+      if (!(segment && segment1 && segment2 && sortedseg1 && sortedseg2))
+        {
+          ErrorExit("Allocation error\n");
+        }
 
-    if (scoremtx == -1)
-    {
-      n20or4or2 = 1;
+      if (scoremtx == -1)
+        {
+          n20or4or2 = 1;
+        }
+      else if (fftscore)
+        {
+          n20or4or2 = 1;
+        }
+      else
+        {
+          n20or4or2 = 20;
+        }
     }
-    else if (fftscore)
-    {
-      n20or4or2 = 1;
-    }
-    else
-    {
-      n20or4or2 = 20;
-    }
-  }
   if (localalloclen < nlen)
-  {
-    if (localalloclen)
     {
+      if (localalloclen)
+        {
 #if 1
-      if (!kobetsubunkatsu)
-      {
-        FreeFukusosuuMtx(seqVector1);
-        FreeFukusosuuMtx(seqVector2);
-        FreeFukusosuuVec(naisekiNoWa);
-        FreeFukusosuuMtx(naiseki);
-        FreeDoubleVec(soukan);
-      }
-      FreeCharMtx(tmpseq1);
-      FreeCharMtx(tmpseq2);
+          if (!kobetsubunkatsu)
+            {
+              FreeFukusosuuMtx(seqVector1);
+              FreeFukusosuuMtx(seqVector2);
+              FreeFukusosuuVec(naisekiNoWa);
+              FreeFukusosuuMtx(naiseki);
+              FreeDoubleVec(soukan);
+            }
+          FreeCharMtx(tmpseq1);
+          FreeCharMtx(tmpseq2);
 #endif
 #if RND
-      FreeCharMtx(rndseq1);
-      FreeCharMtx(rndseq2);
+          FreeCharMtx(rndseq1);
+          FreeCharMtx(rndseq2);
 #endif
-    }
+        }
 
-    tmpseq1 = AllocateCharMtx(njob, nlen);
-    tmpseq2 = AllocateCharMtx(njob, nlen);
-    if (!kobetsubunkatsu)
-    {
-      naisekiNoWa = AllocateFukusosuuVec(nlen);
-      naiseki = AllocateFukusosuuMtx(n20or4or2, nlen);
-      seqVector1 = AllocateFukusosuuMtx(n20or4or2, nlen + 1);
-      seqVector2 = AllocateFukusosuuMtx(n20or4or2, nlen + 1);
-      soukan = AllocateDoubleVec(nlen + 1);
-    }
+      tmpseq1 = AllocateCharMtx(njob, nlen);
+      tmpseq2 = AllocateCharMtx(njob, nlen);
+      if (!kobetsubunkatsu)
+        {
+          naisekiNoWa = AllocateFukusosuuVec(nlen);
+          naiseki = AllocateFukusosuuMtx(n20or4or2, nlen);
+          seqVector1 = AllocateFukusosuuMtx(n20or4or2, nlen + 1);
+          seqVector2 = AllocateFukusosuuMtx(n20or4or2, nlen + 1);
+          soukan = AllocateDoubleVec(nlen + 1);
+        }
 #if RND
-    rndseq1 = AllocateCharMtx(njob, nlen);
-    rndseq2 = AllocateCharMtx(njob, nlen);
-    for (i = 0; i < njob; i++)
-    {
-      generateRndSeq(rndseq1[i], nlen);
-      generateRndSeq(rndseq2[i], nlen);
-    }
+      rndseq1 = AllocateCharMtx(njob, nlen);
+      rndseq2 = AllocateCharMtx(njob, nlen);
+      for (i = 0; i < njob; i++)
+        {
+          generateRndSeq(rndseq1[i], nlen);
+          generateRndSeq(rndseq2[i], nlen);
+        }
 #endif
-    localalloclen = nlen;
-  }
+      localalloclen = nlen;
+    }
 
   for (j = 0; j < clus1; j++)
-  {
-    strcpy(tmpseq1[j], seq1[j]);
-  }
+    {
+      strcpy(tmpseq1[j], seq1[j]);
+    }
   for (j = 0; j < clus2; j++)
-  {
-    strcpy(tmpseq2[j], seq2[j]);
-  }
+    {
+      strcpy(tmpseq2[j], seq2[j]);
+    }
 
 #if 0
 fftfp = fopen( "input_of_Falign", "w" );
@@ -2737,44 +2737,44 @@ fclose( fftfp );
 system( "less input_of_Falign < /dev/tty > /dev/tty" );
 #endif
   if (!kobetsubunkatsu)
-  {
-    fprintf(stderr, " FFT ... ");
+    {
+      fprintf(stderr, " FFT ... ");
 
-    for (j = 0; j < n20or4or2; j++)
-    {
-      vec_init(seqVector1[j], nlen);
-    }
-    if (scoremtx == -1)
-    {
-      for (i = 0; i < clus1; i++)
-      {
-        seq_vec_4(seqVector1[0], eff1[i], tmpseq1[i]);
-      }
-    }
-    else if (fftscore)
-    {
-      for (i = 0; i < clus1; i++)
-      {
+      for (j = 0; j < n20or4or2; j++)
+        {
+          vec_init(seqVector1[j], nlen);
+        }
+      if (scoremtx == -1)
+        {
+          for (i = 0; i < clus1; i++)
+            {
+              seq_vec_4(seqVector1[0], eff1[i], tmpseq1[i]);
+            }
+        }
+      else if (fftscore)
+        {
+          for (i = 0; i < clus1; i++)
+            {
 #if 0
 				seq_vec_2( seqVector1[0], polarity, eff1[i], tmpseq1[i] );
 				seq_vec_2( seqVector1[1], volume,   eff1[i], tmpseq1[i] );
 #else
-        seq_vec_5(seqVector1[0], polarity, volume, eff1[i], tmpseq1[i]);
+              seq_vec_5(seqVector1[0], polarity, volume, eff1[i], tmpseq1[i]);
 #endif
-      }
-    }
-    else
-    {
-      for (i = 0; i < clus1; i++)
-      {
-        seq_vec_3(seqVector1, eff1[i], tmpseq1[i]);
-      }
-    }
+            }
+        }
+      else
+        {
+          for (i = 0; i < clus1; i++)
+            {
+              seq_vec_3(seqVector1, eff1[i], tmpseq1[i]);
+            }
+        }
 #if RND
-    for (i = 0; i < clus1; i++)
-    {
-      vec_init2(seqVector1, rndseq1[i], eff1[i], len1, nlen);
-    }
+      for (i = 0; i < clus1; i++)
+        {
+          vec_init2(seqVector1, rndseq1[i], eff1[i], len1, nlen);
+        }
 #endif
 #if 0
 fftfp = fopen( "seqVec", "w" );
@@ -2790,41 +2790,41 @@ fclose( fftfp );
 system( "less seqVec < /dev/tty > /dev/tty" );
 #endif
 
-    for (j = 0; j < n20or4or2; j++)
-    {
-      vec_init(seqVector2[j], nlen);
-    }
-    if (scoremtx == -1)
-    {
-      for (i = 0; i < clus2; i++)
-      {
-        seq_vec_4(seqVector2[0], eff2[i], tmpseq2[i]);
-      }
-    }
-    else if (fftscore)
-    {
-      for (i = 0; i < clus2; i++)
-      {
+      for (j = 0; j < n20or4or2; j++)
+        {
+          vec_init(seqVector2[j], nlen);
+        }
+      if (scoremtx == -1)
+        {
+          for (i = 0; i < clus2; i++)
+            {
+              seq_vec_4(seqVector2[0], eff2[i], tmpseq2[i]);
+            }
+        }
+      else if (fftscore)
+        {
+          for (i = 0; i < clus2; i++)
+            {
 #if 0
 				seq_vec_2( seqVector2[0], polarity, eff2[i], tmpseq2[i] );
 				seq_vec_2( seqVector2[1], volume,   eff2[i], tmpseq2[i] );
 #else
-        seq_vec_5(seqVector2[0], polarity, volume, eff2[i], tmpseq2[i]);
+              seq_vec_5(seqVector2[0], polarity, volume, eff2[i], tmpseq2[i]);
 #endif
-      }
-    }
-    else
-    {
-      for (i = 0; i < clus2; i++)
-      {
-        seq_vec_3(seqVector2, eff2[i], tmpseq2[i]);
-      }
-    }
+            }
+        }
+      else
+        {
+          for (i = 0; i < clus2; i++)
+            {
+              seq_vec_3(seqVector2, eff2[i], tmpseq2[i]);
+            }
+        }
 #if RND
-    for (i = 0; i < clus2; i++)
-    {
-      vec_init2(seqVector2, rndseq2[i], eff2[i], len2, nlen);
-    }
+      for (i = 0; i < clus2; i++)
+        {
+          vec_init2(seqVector2, rndseq2[i], eff2[i], len2, nlen);
+        }
 #endif
 
 #if 0
@@ -2840,11 +2840,11 @@ fclose( fftfp );
 system( "less seqVec2 < /dev/tty > /dev/tty" );
 #endif
 
-    for (j = 0; j < n20or4or2; j++)
-    {
-      fft(nlen, seqVector2[j], (j == 0));
-      fft(nlen, seqVector1[j], 0);
-    }
+      for (j = 0; j < n20or4or2; j++)
+        {
+          fft(nlen, seqVector2[j], (j == 0));
+          fft(nlen, seqVector1[j], 0);
+        }
 #if 0
 fftfp = fopen( "seqVec2", "w" );
 fprintf( fftfp, "#after fft\n" );
@@ -2858,23 +2858,23 @@ fclose( fftfp );
 system( "less seqVec2 < /dev/tty > /dev/tty" );
 #endif
 
-    for (k = 0; k < n20or4or2; k++)
-    {
-      for (l = 0; l < nlen; l++)
-      {
-        calcNaiseki(naiseki[k] + l, seqVector1[k] + l, seqVector2[k] + l);
-      }
-    }
-    for (l = 0; l < nlen; l++)
-    {
-      naisekiNoWa[l].R = 0.0;
-      naisekiNoWa[l].I = 0.0;
       for (k = 0; k < n20or4or2; k++)
-      {
-        naisekiNoWa[l].R += naiseki[k][l].R;
-        naisekiNoWa[l].I += naiseki[k][l].I;
-      }
-    }
+        {
+          for (l = 0; l < nlen; l++)
+            {
+              calcNaiseki(naiseki[k] + l, seqVector1[k] + l, seqVector2[k] + l);
+            }
+        }
+      for (l = 0; l < nlen; l++)
+        {
+          naisekiNoWa[l].R = 0.0;
+          naisekiNoWa[l].I = 0.0;
+          for (k = 0; k < n20or4or2; k++)
+            {
+              naisekiNoWa[l].R += naiseki[k][l].R;
+              naisekiNoWa[l].I += naiseki[k][l].I;
+            }
+        }
 
 #if 0
 	fftfp = fopen( "naisekiNoWa", "w" );
@@ -2885,16 +2885,16 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 	system( "less naisekiNoWa < /dev/tty > /dev/tty " );
 #endif
 
-    fft(-nlen, naisekiNoWa, 0);
+      fft(-nlen, naisekiNoWa, 0);
 
-    for (m = 0; m <= nlen2; m++)
-    {
-      soukan[m] = naisekiNoWa[nlen2 - m].R;
-    }
-    for (m = nlen2 + 1; m < nlen; m++)
-    {
-      soukan[m] = naisekiNoWa[nlen + nlen2 - m].R;
-    }
+      for (m = 0; m <= nlen2; m++)
+        {
+          soukan[m] = naisekiNoWa[nlen2 - m].R;
+        }
+      for (m = nlen2 + 1; m < nlen; m++)
+        {
+          soukan[m] = naisekiNoWa[nlen + nlen2 - m].R;
+        }
 
 #if 0
 	fftfp = fopen( "naisekiNoWa", "w" );
@@ -2919,7 +2919,7 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 #endif
 #endif
 
-    nkouho = getKouho(kouho, NKOUHO_LONG, soukan, nlen);
+      nkouho = getKouho(kouho, NKOUHO_LONG, soukan, nlen);
 
 #if 0
 		for( i=0; i<nkouho; i++ )
@@ -2927,7 +2927,7 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 			fprintf( stderr, "kouho[%d] = %d\n", i, kouho[i] );
 		}
 #endif
-  }
+    }
 
 #if KEIKA
   fprintf(stderr, "Searching anchors ... ");
@@ -2940,53 +2940,53 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
   fclose(fftfp);
 #endif
   if (kobetsubunkatsu)
-  {
-    maxk = 1;
-    kouho[0] = 0;
-  }
+    {
+      maxk = 1;
+      kouho[0] = 0;
+    }
   else
-  {
-    maxk = nkouho;
-  }
+    {
+      maxk = nkouho;
+    }
 
   for (k = 0; k < maxk; k++)
-  {
-    lag = kouho[k];
-    if (lag <= -len1 || len2 <= lag)
     {
-      continue;
-    }
-    //		fprintf( stderr, "k=%d, lag=%d\n", k, lag );
-    zurasu2(lag, clus1, clus2, seq1, seq2, tmpptr1, tmpptr2);
+      lag = kouho[k];
+      if (lag <= -len1 || len2 <= lag)
+        {
+          continue;
+        }
+      //		fprintf( stderr, "k=%d, lag=%d\n", k, lag );
+      zurasu2(lag, clus1, clus2, seq1, seq2, tmpptr1, tmpptr2);
 #if CAND
-    fftfp = fopen("cand", "a");
-    fprintf(fftfp, ">Candidate No.%d lag = %d\n", k + 1, lag);
-    fprintf(fftfp, "%s\n", tmpptr1[0]);
-    fprintf(fftfp, ">Candidate No.%d lag = %d\n", k + 1, lag);
-    fprintf(fftfp, "%s\n", tmpptr2[0]);
-    fprintf(fftfp, ">\n", k + 1, lag);
-    fclose(fftfp);
+      fftfp = fopen("cand", "a");
+      fprintf(fftfp, ">Candidate No.%d lag = %d\n", k + 1, lag);
+      fprintf(fftfp, "%s\n", tmpptr1[0]);
+      fprintf(fftfp, ">Candidate No.%d lag = %d\n", k + 1, lag);
+      fprintf(fftfp, "%s\n", tmpptr2[0]);
+      fprintf(fftfp, ">\n", k + 1, lag);
+      fclose(fftfp);
 #endif
 
-    //		fprintf( stderr, "lag = %d\n", lag );
-    tmpint = alignableReagion(clus1, clus2, tmpptr1, tmpptr2, eff1, eff2,
-                              segment + count);
-    //		fprintf( stderr, "lag = %d, %d found\n", lag, tmpint );
+      //		fprintf( stderr, "lag = %d\n", lag );
+      tmpint = alignableReagion(clus1, clus2, tmpptr1, tmpptr2, eff1, eff2,
+                                segment + count);
+      //		fprintf( stderr, "lag = %d, %d found\n", lag, tmpint );
 
-    //		if( lag == -50 ) exit( 1 );
+      //		if( lag == -50 ) exit( 1 );
 
-    if (count + tmpint > MAXSEG - 3)
-    {
-      ErrorExit("TOO MANY SEGMENTS.\n");
-    }
+      if (count + tmpint > MAXSEG - 3)
+        {
+          ErrorExit("TOO MANY SEGMENTS.\n");
+        }
 
-    //		fprintf( stderr, "##### k=%d / %d\n", k, maxk );
-    if (tmpint == 0)
-    {
-      break;  // 060430 iinoka ?
-    }
-    while (tmpint-- > 0)
-    {
+      //		fprintf( stderr, "##### k=%d / %d\n", k, maxk );
+      if (tmpint == 0)
+        {
+          break;  // 060430 iinoka ?
+        }
+      while (tmpint-- > 0)
+        {
 #if 0
 			if( segment[count].end - segment[count].start < fftWinSize )
 			{
@@ -2994,54 +2994,54 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 				continue;
 			}
 #endif
-      if (lag > 0)
-      {
-        segment1[count].start = segment[count].start;
-        segment1[count].end = segment[count].end;
-        segment1[count].center = segment[count].center;
-        segment1[count].score = segment[count].score;
+          if (lag > 0)
+            {
+              segment1[count].start = segment[count].start;
+              segment1[count].end = segment[count].end;
+              segment1[count].center = segment[count].center;
+              segment1[count].score = segment[count].score;
 
-        segment2[count].start = segment[count].start + lag;
-        segment2[count].end = segment[count].end + lag;
-        segment2[count].center = segment[count].center + lag;
-        segment2[count].score = segment[count].score;
-      }
-      else
-      {
-        segment1[count].start = segment[count].start - lag;
-        segment1[count].end = segment[count].end - lag;
-        segment1[count].center = segment[count].center - lag;
-        segment1[count].score = segment[count].score;
+              segment2[count].start = segment[count].start + lag;
+              segment2[count].end = segment[count].end + lag;
+              segment2[count].center = segment[count].center + lag;
+              segment2[count].score = segment[count].score;
+            }
+          else
+            {
+              segment1[count].start = segment[count].start - lag;
+              segment1[count].end = segment[count].end - lag;
+              segment1[count].center = segment[count].center - lag;
+              segment1[count].score = segment[count].score;
 
-        segment2[count].start = segment[count].start;
-        segment2[count].end = segment[count].end;
-        segment2[count].center = segment[count].center;
-        segment2[count].score = segment[count].score;
-      }
+              segment2[count].start = segment[count].start;
+              segment2[count].end = segment[count].end;
+              segment2[count].center = segment[count].center;
+              segment2[count].score = segment[count].score;
+            }
 #if 0
 			fprintf( stderr, "##### k=%d / %d\n", k, maxk );
 			fprintf( stderr, "anchor %d, score = %f\n", count, segment1[count].score );
 			fprintf( stderr, "in 1 %d\n", segment1[count].center );
 			fprintf( stderr, "in 2 %d\n", segment2[count].center );
 #endif
-      segment1[count].pair = &segment2[count];
-      segment2[count].pair = &segment1[count];
-      count++;
+          segment1[count].pair = &segment2[count];
+          segment2[count].pair = &segment1[count];
+          count++;
 #if 0
 			fprintf( stderr, "count=%d\n", count );
 #endif
+        }
     }
-  }
 #if 1
   if (!kobetsubunkatsu)
-  {
-    fprintf(stderr, "done. (%d anchors) ", count);
-  }
+    {
+      fprintf(stderr, "done. (%d anchors) ", count);
+    }
 #endif
   if (!count && fftNoAnchStop)
-  {
-    ErrorExit("Cannot detect anchor!");
-  }
+    {
+      ErrorExit("Cannot detect anchor!");
+    }
 #if 0
 	fprintf( stderr, "RESULT before sort:\n" );
 	for( l=0; l<count+1; l++ )
@@ -3052,10 +3052,10 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 #endif
 
   for (i = 0; i < count; i++)
-  {
-    sortedseg1[i] = &segment1[i];
-    sortedseg2[i] = &segment2[i];
-  }
+    {
+      sortedseg1[i] = &segment1[i];
+      sortedseg2[i] = &segment2[i];
+    }
 #if 0
 	tmpsort( count, sortedseg1 ); 
 	tmpsort( count, sortedseg2 ); 
@@ -3066,61 +3066,61 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
   mymergesort(0, count - 1, sortedseg2);
 #endif
   for (i = 0; i < count; i++)
-  {
-    sortedseg1[i]->number = i;
-  }
+    {
+      sortedseg1[i]->number = i;
+    }
   for (i = 0; i < count; i++)
-  {
-    sortedseg2[i]->number = i;
-  }
+    {
+      sortedseg2[i]->number = i;
+    }
 
   if (kobetsubunkatsu)
-  {
-    for (i = 0; i < count; i++)
     {
-      cut1[i + 1] = sortedseg1[i]->center;
-      cut2[i + 1] = sortedseg2[i]->center;
+      for (i = 0; i < count; i++)
+        {
+          cut1[i + 1] = sortedseg1[i]->center;
+          cut2[i + 1] = sortedseg2[i]->center;
+        }
+      cut1[0] = 0;
+      cut2[0] = 0;
+      cut1[count + 1] = len1;
+      cut2[count + 1] = len2;
+      count += 2;
     }
-    cut1[0] = 0;
-    cut2[0] = 0;
-    cut1[count + 1] = len1;
-    cut2[count + 1] = len2;
-    count += 2;
-  }
 #if 1
 
   else
-  {
-    if (crossscoresize < count + 2)
     {
-      crossscoresize = count + 2;
+      if (crossscoresize < count + 2)
+        {
+          crossscoresize = count + 2;
 #if 1
-      if (fftkeika)
-      {
-        fprintf(stderr, "######allocating crossscore, size = %d\n",
-                crossscoresize);
-      }
+          if (fftkeika)
+            {
+              fprintf(stderr, "######allocating crossscore, size = %d\n",
+                      crossscoresize);
+            }
 #endif
-      if (crossscore)
-      {
-        FreeDoubleMtx(crossscore);
-      }
-      crossscore = AllocateDoubleMtx(crossscoresize, crossscoresize);
-    }
-    for (i = 0; i < count + 2; i++)
-    {
-      for (j = 0; j < count + 2; j++)
-      {
-        crossscore[i][j] = 0.0;
-      }
-    }
-    for (i = 0; i < count; i++)
-    {
-      crossscore[segment1[i].number + 1][segment1[i].pair->number + 1] =
-          segment1[i].score;
-      cut1[i + 1] = sortedseg1[i]->center;
-      cut2[i + 1] = sortedseg2[i]->center;
-    }
+          if (crossscore)
+            {
+              FreeDoubleMtx(crossscore);
+            }
+          crossscore = AllocateDoubleMtx(crossscoresize, crossscoresize);
+        }
+      for (i = 0; i < count + 2; i++)
+        {
+          for (j = 0; j < count + 2; j++)
+            {
+              crossscore[i][j] = 0.0;
+            }
+        }
+      for (i = 0; i < count; i++)
+        {
+          crossscore[segment1[i].number + 1][segment1[i].pair->number + 1] =
+              segment1[i].score;
+          cut1[i + 1] = sortedseg1[i]->center;
+          cut2[i + 1] = sortedseg2[i]->center;
+        }
 
 #if 0
 		fprintf( stderr, "AFTER SORT\n" );
@@ -3134,90 +3134,90 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 		}
 #endif
 
-    crossscore[0][0] = 10000000.0;
-    cut1[0] = 0;
-    cut2[0] = 0;
-    crossscore[count + 1][count + 1] = 10000000.0;
-    cut1[count + 1] = len1;
-    cut2[count + 1] = len2;
-    count += 2;
-    count0 = count;
+      crossscore[0][0] = 10000000.0;
+      cut1[0] = 0;
+      cut2[0] = 0;
+      crossscore[count + 1][count + 1] = 10000000.0;
+      cut1[count + 1] = len1;
+      cut2[count + 1] = len2;
+      count += 2;
+      count0 = count;
 
-    //		fprintf( stderr, "\n\n\ncalling blockAlign2\n\n\n\n" );
-    blockAlign2(cut1, cut2, sortedseg1, sortedseg2, crossscore, &count);
+      //		fprintf( stderr, "\n\n\ncalling blockAlign2\n\n\n\n" );
+      blockAlign2(cut1, cut2, sortedseg1, sortedseg2, crossscore, &count);
 
-    //		if( count-count0 )
-    //			fprintf( stderr, "%d unused anchors\n", count0-count );
+      //		if( count-count0 )
+      //			fprintf( stderr, "%d unused anchors\n", count0-count );
 
-    if (!kobetsubunkatsu && fftkeika)
-    {
-      fprintf(stderr, "%d anchors found\n", count);
-    }
-    if (fftkeika)
-    {
-      if (count0 > count)
-      {
+      if (!kobetsubunkatsu && fftkeika)
+        {
+          fprintf(stderr, "%d anchors found\n", count);
+        }
+      if (fftkeika)
+        {
+          if (count0 > count)
+            {
 #if 0
 				fprintf( stderr, "\7 REPEAT!? \n" );
 #else
-        fprintf(stderr, "REPEAT!? \n");
+              fprintf(stderr, "REPEAT!? \n");
 #endif
-        if (fftRepeatStop)
-        {
-          exit(1);
-        }
-      }
+              if (fftRepeatStop)
+                {
+                  exit(1);
+                }
+            }
 #if KEIKA
-      else
-        fprintf(stderr, "done\n");
+          else
+            fprintf(stderr, "done\n");
 #endif
+        }
     }
-  }
 
 #else
   else
-  {
-    cut1[0] = 0;
-    cut2[0] = 0;
-    count0 = 0;
-    for (i = 0; i < count; i++)
     {
-      //			fprintf( stderr, "i=%d, %d-%d ?\n", i,
-      //sortedseg1[i]->center, sortedseg1[i]->pair->center );
-      if (sortedseg1[i]->center > cut1[count0] &&
-          sortedseg1[i]->pair->center > cut2[count0])
-      {
-        count0++;
-        cut1[count0] = sortedseg1[i]->center;
-        cut2[count0] = sortedseg1[i]->pair->center;
-      }
-      else
-      {
-        if (i && sortedseg1[i]->score > sortedseg1[i - 1]->score)
+      cut1[0] = 0;
+      cut2[0] = 0;
+      count0 = 0;
+      for (i = 0; i < count; i++)
         {
-          if (sortedseg1[i]->center > cut1[count0 - 1] &&
-              sortedseg1[i]->pair->center > cut2[count0 - 1])
-          {
-            cut1[count0] = sortedseg1[i]->center;
-            cut2[count0] = sortedseg1[i]->pair->center;
-          }
+          //			fprintf( stderr, "i=%d, %d-%d ?\n", i,
+          //sortedseg1[i]->center, sortedseg1[i]->pair->center );
+          if (sortedseg1[i]->center > cut1[count0] &&
+              sortedseg1[i]->pair->center > cut2[count0])
+            {
+              count0++;
+              cut1[count0] = sortedseg1[i]->center;
+              cut2[count0] = sortedseg1[i]->pair->center;
+            }
           else
-          {
-            //						count0--;
-          }
+            {
+              if (i && sortedseg1[i]->score > sortedseg1[i - 1]->score)
+                {
+                  if (sortedseg1[i]->center > cut1[count0 - 1] &&
+                      sortedseg1[i]->pair->center > cut2[count0 - 1])
+                    {
+                      cut1[count0] = sortedseg1[i]->center;
+                      cut2[count0] = sortedseg1[i]->pair->center;
+                    }
+                  else
+                    {
+                      //						count0--;
+                    }
+                }
+            }
         }
-      }
+      //		if( count-count0 )
+      //			fprintf( stderr, "%d anchors unused\n", count-count0 );
+      cut1[count0 + 1] = len1;
+      cut2[count0 + 1] = len2;
+      count = count0 + 2;
+      count0 = count;
     }
-    //		if( count-count0 )
-    //			fprintf( stderr, "%d anchors unused\n", count-count0 );
-    cut1[count0 + 1] = len1;
-    cut2[count0 + 1] = len2;
-    count = count0 + 2;
-    count0 = count;
-  }
 #endif
 
-//	exit( 0 );
+    //	exit( 0 );
 
 #if 0
 	fftfp = fopen( "fft", "a" );
@@ -3245,93 +3245,93 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 
   totallen = 0;
   for (j = 0; j < clus1; j++)
-  {
-    result1[j][0] = 0;
-  }
+    {
+      result1[j][0] = 0;
+    }
   for (j = 0; j < clus2; j++)
-  {
-    result2[j][0] = 0;
-  }
+    {
+      result2[j][0] = 0;
+    }
   totalscore = 0.0;
   *fftlog = -1;
   for (i = 0; i < count - 1; i++)
-  {
-    *fftlog += 1;
+    {
+      *fftlog += 1;
 
-    if (cut1[i])
-    {
-      //			getkyokaigap( sgap1, seq1, cut1[i]-1, clus1 );
-      //			getkyokaigap( sgap2, seq2, cut2[i]-1, clus2 );
-      getkyokaigap(sgap1, tmpres1, nlen - 1, clus1);
-      getkyokaigap(sgap2, tmpres2, nlen - 1, clus2);
-    }
-    else
-    {
-      for (j = 0; j < clus1; j++)
-      {
-        sgap1[j] = 'o';
-      }
-      for (j = 0; j < clus2; j++)
-      {
-        sgap2[j] = 'o';
-      }
-    }
-    if (cut1[i + 1] != len1)
-    {
-      getkyokaigap(egap1, seq1, cut1[i + 1], clus1);
-      getkyokaigap(egap2, seq2, cut2[i + 1], clus2);
-    }
-    else
-    {
-      for (j = 0; j < clus1; j++)
-      {
-        egap1[j] = 'o';
-      }
-      for (j = 0; j < clus2; j++)
-      {
-        egap2[j] = 'o';
-      }
-    }
+      if (cut1[i])
+        {
+          //			getkyokaigap( sgap1, seq1, cut1[i]-1, clus1 );
+          //			getkyokaigap( sgap2, seq2, cut2[i]-1, clus2 );
+          getkyokaigap(sgap1, tmpres1, nlen - 1, clus1);
+          getkyokaigap(sgap2, tmpres2, nlen - 1, clus2);
+        }
+      else
+        {
+          for (j = 0; j < clus1; j++)
+            {
+              sgap1[j] = 'o';
+            }
+          for (j = 0; j < clus2; j++)
+            {
+              sgap2[j] = 'o';
+            }
+        }
+      if (cut1[i + 1] != len1)
+        {
+          getkyokaigap(egap1, seq1, cut1[i + 1], clus1);
+          getkyokaigap(egap2, seq2, cut2[i + 1], clus2);
+        }
+      else
+        {
+          for (j = 0; j < clus1; j++)
+            {
+              egap1[j] = 'o';
+            }
+          for (j = 0; j < clus2; j++)
+            {
+              egap2[j] = 'o';
+            }
+        }
 #if DEBUG
-    fprintf(stderr, "DP %03d / %03d %4d to ", i + 1, count - 1, totallen);
+      fprintf(stderr, "DP %03d / %03d %4d to ", i + 1, count - 1, totallen);
 #else
 #if 1
-    fprintf(stderr, "DP %05d / %05d \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b", i + 1,
-            count - 1);
+      fprintf(stderr, "DP %05d / %05d \b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b", i + 1,
+              count - 1);
 #endif
 #endif
-    for (j = 0; j < clus1; j++)
-    {
-      strncpy(tmpres1[j], seq1[j] + cut1[i], cut1[i + 1] - cut1[i]);
-      tmpres1[j][cut1[i + 1] - cut1[i]] = 0;
-    }
-    if (kobetsubunkatsu && fftkeika)
-    {
-      commongappick(clus1, tmpres1);  // dvtditr に呼ばれたとき fftkeika=1
-    }
-    //		if( kobetsubunkatsu ) commongappick( clus1, tmpres1 );
-    for (j = 0; j < clus2; j++)
-    {
-      //			fprintf( stderr, "### cut2[i+1]-cut2[i] = %d\n",
-      //cut2[i+1]-cut2[i] );
-      if (cut2[i + 1] - cut2[i] <= 0)
-      {
-        fprintf(stderr, "### cut2[i+1]=%d, cut2[i]=%d\n", cut2[i + 1], cut2[i]);
-      }
-      strncpy(tmpres2[j], seq2[j] + cut2[i], cut2[i + 1] - cut2[i]);
-      tmpres2[j][cut2[i + 1] - cut2[i]] = 0;
-    }
-    if (kobetsubunkatsu && fftkeika)
-    {
-      commongappick(clus2, tmpres2);  // dvtditr に呼ばれたとき fftkeika=1
-    }
-    //		if( kobetsubunkatsu ) commongappick( clus2, tmpres2 );
+      for (j = 0; j < clus1; j++)
+        {
+          strncpy(tmpres1[j], seq1[j] + cut1[i], cut1[i + 1] - cut1[i]);
+          tmpres1[j][cut1[i + 1] - cut1[i]] = 0;
+        }
+      if (kobetsubunkatsu && fftkeika)
+        {
+          commongappick(clus1, tmpres1);  // dvtditr に呼ばれたとき fftkeika=1
+        }
+      //		if( kobetsubunkatsu ) commongappick( clus1, tmpres1 );
+      for (j = 0; j < clus2; j++)
+        {
+          //			fprintf( stderr, "### cut2[i+1]-cut2[i] = %d\n",
+          //cut2[i+1]-cut2[i] );
+          if (cut2[i + 1] - cut2[i] <= 0)
+            {
+              fprintf(stderr, "### cut2[i+1]=%d, cut2[i]=%d\n", cut2[i + 1], cut2[i]);
+            }
+          strncpy(tmpres2[j], seq2[j] + cut2[i], cut2[i + 1] - cut2[i]);
+          tmpres2[j][cut2[i + 1] - cut2[i]] = 0;
+        }
+      if (kobetsubunkatsu && fftkeika)
+        {
+          commongappick(clus2, tmpres2);  // dvtditr に呼ばれたとき fftkeika=1
+        }
+      //		if( kobetsubunkatsu ) commongappick( clus2, tmpres2 );
 
-    if (constraint)
-    {
-      fprintf(stderr, "Not supported\n");
-      exit(1);
-    }
+      if (constraint)
+        {
+          fprintf(stderr, "Not supported\n");
+          exit(1);
+        }
 #if 0
 		fprintf( stderr, "i=%d, before alignment", i );
 		fprintf( stderr, "%4d\n", totallen );
@@ -3361,34 +3361,34 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 		}
 		fflush( stdout );
 #endif
-    switch (alg)
-    {
-      case ('M'):
-        totalscore += MSalignmm(tmpres1, tmpres2, eff1, eff2, clus1, clus2,
-                                alloclen, sgap1, sgap2, egap1, egap2);
-        break;
-      default:
-        fprintf(stderr, "alg = %c\n", alg);
-        ErrorExit("ERROR IN SOURCE FILE Falign.c");
-        break;
-    }
+      switch (alg)
+        {
+          case ('M'):
+            totalscore += MSalignmm(tmpres1, tmpres2, eff1, eff2, clus1, clus2,
+                                    alloclen, sgap1, sgap2, egap1, egap2);
+            break;
+          default:
+            fprintf(stderr, "alg = %c\n", alg);
+            ErrorExit("ERROR IN SOURCE FILE Falign.c");
+            break;
+        }
 
-    nlen = strlen(tmpres1[0]);
-    if (totallen + nlen > alloclen)
-    {
-      fprintf(stderr, "totallen=%d +  nlen=%d > alloclen = %d\n", totallen,
-              nlen, alloclen);
-      ErrorExit("LENGTH OVER in Falign\n ");
-    }
-    for (j = 0; j < clus1; j++)
-    {
-      strcat(result1[j], tmpres1[j]);
-    }
-    for (j = 0; j < clus2; j++)
-    {
-      strcat(result2[j], tmpres2[j]);
-    }
-    totallen += nlen;
+      nlen = strlen(tmpres1[0]);
+      if (totallen + nlen > alloclen)
+        {
+          fprintf(stderr, "totallen=%d +  nlen=%d > alloclen = %d\n", totallen,
+                  nlen, alloclen);
+          ErrorExit("LENGTH OVER in Falign\n ");
+        }
+      for (j = 0; j < clus1; j++)
+        {
+          strcat(result1[j], tmpres1[j]);
+        }
+      for (j = 0; j < clus2; j++)
+        {
+          strcat(result2[j], tmpres2[j]);
+        }
+      totallen += nlen;
 #if 0
 		fprintf( stderr, "i=%d", i );
 		fprintf( stderr, "%4d\n", totallen );
@@ -3403,19 +3403,19 @@ system( "less seqVec2 < /dev/tty > /dev/tty" );
 			fprintf( stderr, "%s\n", tmpres2[j] );
 		}
 #endif
-  }
+    }
 #if KEIKA
   fprintf(stderr, "DP ... done   \n");
 #endif
 
   for (j = 0; j < clus1; j++)
-  {
-    strcpy(seq1[j], result1[j]);
-  }
+    {
+      strcpy(seq1[j], result1[j]);
+    }
   for (j = 0; j < clus2; j++)
-  {
-    strcpy(seq2[j], result2[j]);
-  }
+    {
+      strcpy(seq2[j], result2[j]);
+    }
 #if 0
 	for( j=0; j<clus1; j++ ) 
 	{

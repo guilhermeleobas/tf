@@ -22,10 +22,10 @@ static BlueReturn BlueRule(Vertex inserted, Vertex vlist)
   int count;
 
   if (!vlist)
-  {
-    retval.dist = 999999;
-    return retval;
-  }
+    {
+      retval.dist = 999999;
+      return retval;
+    }
 
   prev = vlist;
   retval.vert = vlist;
@@ -34,55 +34,55 @@ static BlueReturn BlueRule(Vertex inserted, Vertex vlist)
   dist = (int)HashLookup((unsigned int)inserted, hash);
   /*printf("Found %d at 0x%x for 0x%x\n",dist,inserted,vlist);*/
   if (dist)
-  {
-    if (dist < retval.dist)
     {
-      vlist->mindist = dist;
-      retval.dist = dist;
+      if (dist < retval.dist)
+        {
+          vlist->mindist = dist;
+          retval.dist = dist;
+        }
     }
-  }
   else
-  {
-    printf("Not found\n");
-  }
+    {
+      printf("Not found\n");
+    }
 
   count = 0;
   /* We are guaranteed that inserted is not first in list */
   for (tmp = vlist->next; tmp; prev = tmp, tmp = tmp->next)
-  {
-    count++;
-    if (tmp == inserted)
     {
-      Vertex next;
-
-      next = tmp->next;
-      prev->next = next;
-    }
-    else
-    {
-      hash = tmp->edgehash; /* <------  6% miss in tmp->edgehash */
-      dist2 = tmp->mindist;
-      dist = (int)HashLookup((unsigned int)inserted, hash);
-      /*printf("Found %d at 0x%x for 0x%x\n",dist,inserted,tmp);*/
-      if (dist)
-      {
-        if (dist < dist2)
+      count++;
+      if (tmp == inserted)
         {
-          tmp->mindist = dist;
-          dist2 = dist;
+          Vertex next;
+
+          next = tmp->next;
+          prev->next = next;
         }
-      }
       else
-      {
-        printf("Not found\n");
-      }
-      if (dist2 < retval.dist)
-      {
-        retval.vert = tmp;
-        retval.dist = dist2;
-      }
-    } /* else */
-  }   /* for */
+        {
+          hash = tmp->edgehash; /* <------  6% miss in tmp->edgehash */
+          dist2 = tmp->mindist;
+          dist = (int)HashLookup((unsigned int)inserted, hash);
+          /*printf("Found %d at 0x%x for 0x%x\n",dist,inserted,tmp);*/
+          if (dist)
+            {
+              if (dist < dist2)
+                {
+                  tmp->mindist = dist;
+                  dist2 = dist;
+                }
+            }
+          else
+            {
+              printf("Not found\n");
+            }
+          if (dist2 < retval.dist)
+            {
+              retval.vert = tmp;
+              retval.dist = dist2;
+            }
+        } /* else */
+    } /* for */
   /*printf("Count was %d\n",count);*/
   return retval;
 }
@@ -95,25 +95,25 @@ static BlueReturn Do_all_BlueRule(Vertex inserted, int nproc, int pn)
   BlueReturn retright;
 
   if (nproc > 1)
-  {
-    fcleft.value = Do_all_BlueRule(inserted, nproc / 2, pn + nproc / 2);
-    retright = Do_all_BlueRule(inserted, nproc / 2, pn);
+    {
+      fcleft.value = Do_all_BlueRule(inserted, nproc / 2, pn + nproc / 2);
+      retright = Do_all_BlueRule(inserted, nproc / 2, pn);
 
-    if (fcleft.value.dist < retright.dist)
-    {
-      retright.dist = fcleft.value.dist;
-      retright.vert = fcleft.value.vert;
+      if (fcleft.value.dist < retright.dist)
+        {
+          retright.dist = fcleft.value.dist;
+          retright.vert = fcleft.value.vert;
+        }
+      return retright;
     }
-    return retright;
-  }
   else
-  {
-    if (inserted == MyVertexList)
     {
-      MyVertexList = MyVertexList->next;
+      if (inserted == MyVertexList)
+        {
+          MyVertexList = MyVertexList->next;
+        }
+      return BlueRule(inserted, MyVertexList);
     }
-    return BlueRule(inserted, MyVertexList);
-  }
 }
 
 static int ComputeMst(Graph graph, int numproc, int numvert)
@@ -133,15 +133,15 @@ static int ComputeMst(Graph graph, int numproc, int numvert)
   /* Announce insertion and find next one */
   printf("Compute phase 2\n");
   while (numvert)
-  {
-    BlueReturn br;
+    {
+      BlueReturn br;
 
-    br = Do_all_BlueRule(inserted, numproc, 0);
-    inserted = br.vert;
-    dist = br.dist;
-    numvert--;
-    cost = cost + dist;
-  }
+      br = Do_all_BlueRule(inserted, numproc, 0);
+      inserted = br.vert;
+      dist = br.dist;
+      numvert--;
+      cost = cost + dist;
+    }
   return cost;
 }
 

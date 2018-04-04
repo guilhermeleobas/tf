@@ -32,14 +32,14 @@
 void charsequence_reset(charsequence *cs)
 {
   if (cs->buf != NULL)
-  {
-    free(cs->buf);
-  }
+    {
+      free(cs->buf);
+    }
   cs->buf = malloc(CHARSTREAM_STARTSIZE);
   if (cs->buf == NULL)
-  {
-    ERROR("OUT OF MEMORY");
-  }
+    {
+      ERROR("OUT OF MEMORY");
+    }
   cs->size = CHARSTREAM_STARTSIZE;
   cs->pos = 0;
 }
@@ -47,18 +47,18 @@ void charsequence_reset(charsequence *cs)
 void charsequence_push(charsequence *cs, char c)
 {
   if (cs->size == 0)
-  {
-    charsequence_reset(cs);
-  }
-  if (cs->pos == cs->size)
-  {
-    cs->size <<= 1;
-    cs->buf = realloc(cs->buf, cs->size);
-    if (cs->buf == NULL)
     {
-      ERROR("OUT OF MEMORY");
+      charsequence_reset(cs);
     }
-  }
+  if (cs->pos == cs->size)
+    {
+      cs->size <<= 1;
+      cs->buf = realloc(cs->buf, cs->size);
+      if (cs->buf == NULL)
+        {
+          ERROR("OUT OF MEMORY");
+        }
+    }
   cs->buf[cs->pos] = c;
   cs->pos++;
 }
@@ -66,9 +66,9 @@ void charsequence_push(charsequence *cs, char c)
 char charsequence_pop(charsequence *cs)
 {
   if (cs->pos == 0)
-  {
-    ERROR("ATTEMPTED POP ON EMPTY SEQUENCE");
-  }
+    {
+      ERROR("ATTEMPTED POP ON EMPTY SEQUENCE");
+    }
   return cs->buf[(cs->pos)--];
 }
 
@@ -77,9 +77,9 @@ char *charsequence_val(charsequence *cs)
   char *ret;
   ret = calloc(cs->pos + 1, sizeof(char));
   if (ret == NULL)
-  {
-    ERROR("OUT OF MEMORY"); /* check for allocation error */
-  }
+    {
+      ERROR("OUT OF MEMORY"); /* check for allocation error */
+    }
   strncpy(ret, cs->buf, cs->pos);
   return ret;
 }

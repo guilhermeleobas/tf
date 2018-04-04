@@ -68,9 +68,9 @@ typedef struct
   struct djpeg_dest_struct pub; /* public fields */
 
   /* Usually these two pointers point to the same place: */
-  char *iobuffer;             /* fwrite's I/O buffer */
-  JSAMPROW pixrow;            /* decompressor output buffer */
-  size_t buffer_width;        /* width of I/O buffer */
+  char *iobuffer; /* fwrite's I/O buffer */
+  JSAMPROW pixrow; /* decompressor output buffer */
+  size_t buffer_width; /* width of I/O buffer */
   JDIMENSION samples_per_row; /* JSAMPLEs per output row */
 } ppm_dest_struct;
 
@@ -110,9 +110,9 @@ copy_pixel_rows(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo,
   ptr = dest->pub.buffer[0];
   bufferptr = dest->iobuffer;
   for (col = dest->samples_per_row; col > 0; col--)
-  {
-    PUTPPMSAMPLE(bufferptr, GETJSAMPLE(*ptr++));
-  }
+    {
+      PUTPPMSAMPLE(bufferptr, GETJSAMPLE(*ptr++));
+    }
   (void)JFWRITE(dest->pub.output_file, dest->iobuffer, dest->buffer_width);
 }
 
@@ -137,12 +137,12 @@ put_demapped_rgb(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo,
   ptr = dest->pub.buffer[0];
   bufferptr = dest->iobuffer;
   for (col = cinfo->output_width; col > 0; col--)
-  {
-    pixval = GETJSAMPLE(*ptr++);
-    PUTPPMSAMPLE(bufferptr, GETJSAMPLE(color_map0[pixval]));
-    PUTPPMSAMPLE(bufferptr, GETJSAMPLE(color_map1[pixval]));
-    PUTPPMSAMPLE(bufferptr, GETJSAMPLE(color_map2[pixval]));
-  }
+    {
+      pixval = GETJSAMPLE(*ptr++);
+      PUTPPMSAMPLE(bufferptr, GETJSAMPLE(color_map0[pixval]));
+      PUTPPMSAMPLE(bufferptr, GETJSAMPLE(color_map1[pixval]));
+      PUTPPMSAMPLE(bufferptr, GETJSAMPLE(color_map2[pixval]));
+    }
   (void)JFWRITE(dest->pub.output_file, dest->iobuffer, dest->buffer_width);
 }
 
@@ -159,9 +159,9 @@ put_demapped_gray(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo,
   ptr = dest->pub.buffer[0];
   bufferptr = dest->iobuffer;
   for (col = cinfo->output_width; col > 0; col--)
-  {
-    PUTPPMSAMPLE(bufferptr, GETJSAMPLE(color_map[GETJSAMPLE(*ptr++)]));
-  }
+    {
+      PUTPPMSAMPLE(bufferptr, GETJSAMPLE(color_map[GETJSAMPLE(*ptr++)]));
+    }
   (void)JFWRITE(dest->pub.output_file, dest->iobuffer, dest->buffer_width);
 }
 
@@ -176,22 +176,22 @@ start_output_ppm(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo)
 
   /* Emit file header */
   switch (cinfo->out_color_space)
-  {
-    case JCS_GRAYSCALE:
-      /* emit header for raw PGM format */
-      fprintf(dest->pub.output_file, "P5\n%ld %ld\n%d\n",
-              (long)cinfo->output_width, (long)cinfo->output_height,
-              PPM_MAXVAL);
-      break;
-    case JCS_RGB:
-      /* emit header for raw PPM format */
-      fprintf(dest->pub.output_file, "P6\n%ld %ld\n%d\n",
-              (long)cinfo->output_width, (long)cinfo->output_height,
-              PPM_MAXVAL);
-      break;
-    default:
-      ERREXIT(cinfo, JERR_PPM_COLORSPACE);
-  }
+    {
+      case JCS_GRAYSCALE:
+        /* emit header for raw PGM format */
+        fprintf(dest->pub.output_file, "P5\n%ld %ld\n%d\n",
+                (long)cinfo->output_width, (long)cinfo->output_height,
+                PPM_MAXVAL);
+        break;
+      case JCS_RGB:
+        /* emit header for raw PPM format */
+        fprintf(dest->pub.output_file, "P6\n%ld %ld\n%d\n",
+                (long)cinfo->output_width, (long)cinfo->output_height,
+                PPM_MAXVAL);
+        break;
+      default:
+        ERREXIT(cinfo, JERR_PPM_COLORSPACE);
+    }
 }
 
 /*
@@ -204,9 +204,9 @@ finish_output_ppm(j_decompress_ptr cinfo, djpeg_dest_ptr dinfo)
   /* Make sure we wrote the output file OK */
   fflush(dinfo->output_file);
   if (ferror(dinfo->output_file))
-  {
-    ERREXIT(cinfo, JERR_FILE_WRITE);
-  }
+    {
+      ERREXIT(cinfo, JERR_FILE_WRITE);
+    }
 }
 
 /*
@@ -235,38 +235,38 @@ jinit_write_ppm(j_decompress_ptr cinfo)
 
   if (cinfo->quantize_colors || BITS_IN_JSAMPLE != 8 ||
       SIZEOF(JSAMPLE) != SIZEOF(char))
-  {
-    /* When quantizing, we need an output buffer for colormap indexes
+    {
+      /* When quantizing, we need an output buffer for colormap indexes
      * that's separate from the physical I/O buffer.  We also need a
      * separate buffer if pixel format translation must take place.
      */
-    dest->pub.buffer = (*cinfo->mem->alloc_sarray)(
-        (j_common_ptr)cinfo, JPOOL_IMAGE,
-        cinfo->output_width * cinfo->output_components, (JDIMENSION)1);
-    dest->pub.buffer_height = 1;
-    if (!cinfo->quantize_colors)
-    {
-      dest->pub.put_pixel_rows = copy_pixel_rows;
+      dest->pub.buffer = (*cinfo->mem->alloc_sarray)(
+          (j_common_ptr)cinfo, JPOOL_IMAGE,
+          cinfo->output_width * cinfo->output_components, (JDIMENSION)1);
+      dest->pub.buffer_height = 1;
+      if (!cinfo->quantize_colors)
+        {
+          dest->pub.put_pixel_rows = copy_pixel_rows;
+        }
+      else if (cinfo->out_color_space == JCS_GRAYSCALE)
+        {
+          dest->pub.put_pixel_rows = put_demapped_gray;
+        }
+      else
+        {
+          dest->pub.put_pixel_rows = put_demapped_rgb;
+        }
     }
-    else if (cinfo->out_color_space == JCS_GRAYSCALE)
-    {
-      dest->pub.put_pixel_rows = put_demapped_gray;
-    }
-    else
-    {
-      dest->pub.put_pixel_rows = put_demapped_rgb;
-    }
-  }
   else
-  {
-    /* We will fwrite() directly from decompressor output buffer. */
-    /* Synthesize a JSAMPARRAY pointer structure */
-    /* Cast here implies near->far pointer conversion on PCs */
-    dest->pixrow = (JSAMPROW)dest->iobuffer;
-    dest->pub.buffer = &dest->pixrow;
-    dest->pub.buffer_height = 1;
-    dest->pub.put_pixel_rows = put_pixel_rows;
-  }
+    {
+      /* We will fwrite() directly from decompressor output buffer. */
+      /* Synthesize a JSAMPARRAY pointer structure */
+      /* Cast here implies near->far pointer conversion on PCs */
+      dest->pixrow = (JSAMPROW)dest->iobuffer;
+      dest->pub.buffer = &dest->pixrow;
+      dest->pub.buffer_height = 1;
+      dest->pub.put_pixel_rows = put_pixel_rows;
+    }
 
   return (djpeg_dest_ptr)dest;
 }

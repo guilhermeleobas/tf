@@ -62,30 +62,30 @@ char *stcopyr(char *s, char *r)
   int sl;
 
   if (!s && r)
-  {
-    free(r);
-    string_count--;
-    return (NULL);
-  }
+    {
+      free(r);
+      string_count--;
+      return (NULL);
+    }
   else if (!s)
     return (NULL);
 
   sl = strlen(s) + 1;
 
   if (r)
-  {
-    if ((strlen(r) + 1) < sl)
     {
-      free(r);
-      r = (char *)malloc(sl);
+      if ((strlen(r) + 1) < sl)
+        {
+          free(r);
+          r = (char *)malloc(sl);
+        }
     }
-  }
   else
-  {
-    r = (char *)malloc(sl);
-    string_count++;
-    if (string_max < string_count) string_max = string_count;
-  }
+    {
+      r = (char *)malloc(sl);
+      string_count++;
+      if (string_max < string_count) string_max = string_count;
+    }
 
   return strcpy(r, s);
 }
@@ -100,8 +100,8 @@ char *stcopyr(char *s, char *r)
 void stfree(char *st)
 {
   if (st)
-  {
-    free(st);
-    string_count--;
-  }
+    {
+      free(st);
+      string_count--;
+    }
 }

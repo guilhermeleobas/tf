@@ -26,17 +26,17 @@ void gmain(void)
 
   sprintf(filename, "%s.debug", cktName);
   if ((fpdebug = fopen(filename, "w")) == (FILE *)NULL)
-  {
-    printf("can't open %s\n", filename);
-    exit(0);
-  }
+    {
+      printf("can't open %s\n", filename);
+      exit(0);
+    }
 
   sprintf(filename, "%s.geo", cktName);
   if ((fp = fopen(filename, "r")) == (FILE *)NULL)
-  {
-    fprintf(fpdebug, "Error: file: %s not present\n", filename);
-    exit(0);
-  }
+    {
+      fprintf(fpdebug, "Error: file: %s not present\n", filename);
+      exit(0);
+    }
 
   readgeo(fp);
   makelink();
@@ -46,27 +46,27 @@ void gmain(void)
   free(Vptrs);
   free(Hptrs);
   if (Vroot != (TNODEPTR)NULL)
-  {
-    for (;;)
     {
-      tpop(&Vroot, &tnode, &dummy1, &dummy2);
-      if (tnode == (TNODEPTR)NULL)
-      {
-        break;
-      }
+      for (;;)
+        {
+          tpop(&Vroot, &tnode, &dummy1, &dummy2);
+          if (tnode == (TNODEPTR)NULL)
+            {
+              break;
+            }
+        }
     }
-  }
   if (Hroot != (TNODEPTR)NULL)
-  {
-    for (;;)
     {
-      tpop(&Hroot, &tnode, &dummy1, &dummy2);
-      if (tnode == (TNODEPTR)NULL)
-      {
-        break;
-      }
+      for (;;)
+        {
+          tpop(&Hroot, &tnode, &dummy1, &dummy2);
+          if (tnode == (TNODEPTR)NULL)
+            {
+              break;
+            }
+        }
     }
-  }
 
   fulllink();
   findnodes();
@@ -85,160 +85,160 @@ void gmain(void)
 
   hrptr = HRlist;
   while (hrptr != (DLINK2PTR)NULL)
-  {
-    hr2ptr = hrptr->next;
-    free(hrptr);
-    hrptr = hr2ptr;
-  }
+    {
+      hr2ptr = hrptr->next;
+      free(hrptr);
+      hrptr = hr2ptr;
+    }
   hrptr = VRlist;
   while (hrptr != (DLINK2PTR)NULL)
-  {
-    hr2ptr = hrptr->next;
-    free(hrptr);
-    hrptr = hr2ptr;
-  }
+    {
+      hr2ptr = hrptr->next;
+      free(hrptr);
+      hrptr = hr2ptr;
+    }
 
   free(LEptrs);
   free(BEptrs);
   if (LEroot != (TNODEPTR)NULL)
-  {
-    for (;;)
     {
-      tpop(&LEroot, &tnode, &dummy1, &dummy2);
-      if (tnode == (TNODEPTR)NULL)
-      {
-        break;
-      }
+      for (;;)
+        {
+          tpop(&LEroot, &tnode, &dummy1, &dummy2);
+          if (tnode == (TNODEPTR)NULL)
+            {
+              break;
+            }
+        }
     }
-  }
   if (BEroot != (TNODEPTR)NULL)
-  {
-    for (;;)
     {
-      tpop(&BEroot, &tnode, &dummy1, &dummy2);
-      if (tnode == (TNODEPTR)NULL)
-      {
-        break;
-      }
+      for (;;)
+        {
+          tpop(&BEroot, &tnode, &dummy1, &dummy2);
+          if (tnode == (TNODEPTR)NULL)
+            {
+              break;
+            }
+        }
     }
-  }
 
   hptr = Hlist;
   while (hptr != (DLINK1PTR)NULL)
-  {
-    h2ptr = hptr->next;
-    free(hptr);
-    hptr = h2ptr;
-  }
+    {
+      h2ptr = hptr->next;
+      free(hptr);
+      hptr = h2ptr;
+    }
 
   hptr = Vlist;
   while (hptr != (DLINK1PTR)NULL)
-  {
-    h2ptr = hptr->next;
-    free(hptr);
-    hptr = h2ptr;
-  }
+    {
+      h2ptr = hptr->next;
+      free(hptr);
+      hptr = h2ptr;
+    }
 
   free(Vptrs);
   free(Hptrs);
   if (Vroot != (TNODEPTR)NULL)
-  {
-    for (;;)
     {
-      tpop(&Vroot, &tnode, &dummy1, &dummy2);
-      if (tnode == (TNODEPTR)NULL)
-      {
-        break;
-      }
+      for (;;)
+        {
+          tpop(&Vroot, &tnode, &dummy1, &dummy2);
+          if (tnode == (TNODEPTR)NULL)
+            {
+              break;
+            }
+        }
     }
-  }
   if (Hroot != (TNODEPTR)NULL)
-  {
-    for (;;)
     {
-      tpop(&Hroot, &tnode, &dummy1, &dummy2);
-      if (tnode == (TNODEPTR)NULL)
-      {
-        break;
-      }
+      for (;;)
+        {
+          tpop(&Hroot, &tnode, &dummy1, &dummy2);
+          if (tnode == (TNODEPTR)NULL)
+            {
+              break;
+            }
+        }
     }
-  }
 
   free(VDptrs);
   free(HRptrs);
   if (VDroot != (TNODEPTR)NULL)
-  {
-    for (;;)
     {
-      tpop(&VDroot, &tnode, &dummy1, &dummy2);
-      if (tnode == (TNODEPTR)NULL)
-      {
-        break;
-      }
+      for (;;)
+        {
+          tpop(&VDroot, &tnode, &dummy1, &dummy2);
+          if (tnode == (TNODEPTR)NULL)
+            {
+              break;
+            }
+        }
     }
-  }
   if (HRroot != (TNODEPTR)NULL)
-  {
-    for (;;)
     {
-      tpop(&HRroot, &tnode, &dummy1, &dummy2);
-      if (tnode == (TNODEPTR)NULL)
-      {
-        break;
-      }
+      for (;;)
+        {
+          tpop(&HRroot, &tnode, &dummy1, &dummy2);
+          if (tnode == (TNODEPTR)NULL)
+            {
+              break;
+            }
+        }
     }
-  }
 
   hptr = hFixedList;
   while (hptr != (DLINK1PTR)NULL)
-  {
-    h2ptr = hptr->next;
-    free(hptr);
-    hptr = h2ptr;
-  }
+    {
+      h2ptr = hptr->next;
+      free(hptr);
+      hptr = h2ptr;
+    }
   hptr = vFixedList;
   while (hptr != (DLINK1PTR)NULL)
-  {
-    h2ptr = hptr->next;
-    free(hptr);
-    hptr = h2ptr;
-  }
+    {
+      h2ptr = hptr->next;
+      free(hptr);
+      hptr = h2ptr;
+    }
 
   for (i = 0; i <= numberCells + 1; i++)
-  {
-    fptr = xNodules[i].outList;
-    while (fptr != (FLAREPTR)NULL)
     {
-      free(fptr->eindex);
-      f2ptr = fptr->next;
-      free(fptr);
-      fptr = f2ptr;
+      fptr = xNodules[i].outList;
+      while (fptr != (FLAREPTR)NULL)
+        {
+          free(fptr->eindex);
+          f2ptr = fptr->next;
+          free(fptr);
+          fptr = f2ptr;
+        }
+      fptr = xNodules[i].inList;
+      while (fptr != (FLAREPTR)NULL)
+        {
+          free(fptr->eindex);
+          f2ptr = fptr->next;
+          free(fptr);
+          fptr = f2ptr;
+        }
+      fptr = yNodules[i].outList;
+      while (fptr != (FLAREPTR)NULL)
+        {
+          free(fptr->eindex);
+          f2ptr = fptr->next;
+          free(fptr);
+          fptr = f2ptr;
+        }
+      fptr = yNodules[i].inList;
+      while (fptr != (FLAREPTR)NULL)
+        {
+          free(fptr->eindex);
+          f2ptr = fptr->next;
+          free(fptr);
+          fptr = f2ptr;
+        }
     }
-    fptr = xNodules[i].inList;
-    while (fptr != (FLAREPTR)NULL)
-    {
-      free(fptr->eindex);
-      f2ptr = fptr->next;
-      free(fptr);
-      fptr = f2ptr;
-    }
-    fptr = yNodules[i].outList;
-    while (fptr != (FLAREPTR)NULL)
-    {
-      free(fptr->eindex);
-      f2ptr = fptr->next;
-      free(fptr);
-      fptr = f2ptr;
-    }
-    fptr = yNodules[i].inList;
-    while (fptr != (FLAREPTR)NULL)
-    {
-      free(fptr->eindex);
-      f2ptr = fptr->next;
-      free(fptr);
-      fptr = f2ptr;
-    }
-  }
   free(xNodules);
   free(yNodules);
 

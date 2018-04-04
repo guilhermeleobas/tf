@@ -71,7 +71,7 @@ static const double sineps = 0.3977771559319137;
 static const double coseps = 0.9174820620691818;
 
 static const double amas[8] = {6023600.0, 408523.5, 328900.5, 3098710.0,
-                               1047.355,  3498.5,   22869.0,  19314.0};
+                               1047.355, 3498.5, 22869.0, 19314.0};
 
 // tables giving the mean keplerian elements, limited to t**2 terms:
 //        a       semi-major axis (au)
@@ -117,10 +117,7 @@ static const double pi[8][3] = {{77.45611904, 5719.11590, -4.83016},
                                 {48.12027554, 1050.71912, 27.39717}};
 
 static const double dinc[8][3] = {
-    {7.00498625, -214.25629, 0.28977}, {3.39466189, -30.84437, -11.67836},
-    {0, 469.97289, -3.35053},          {1.84972648, -293.31722, -8.11830},
-    {1.30326698, -71.55890, 11.95297}, {2.48887878, 91.85195, -17.66225},
-    {0.77319689, -60.72723, 1.25759},  {1.76995259, 8.12333, 0.08135}};
+    {7.00498625, -214.25629, 0.28977}, {3.39466189, -30.84437, -11.67836}, {0, 469.97289, -3.35053}, {1.84972648, -293.31722, -8.11830}, {1.30326698, -71.55890, 11.95297}, {2.48887878, 91.85195, -17.66225}, {0.77319689, -60.72723, 1.25759}, {1.76995259, 8.12333, 0.08135}};
 
 static const double omega[8][3] = {{48.33089304, -4515.21727, -31.79892},
                                    {76.67992019, -10008.48154, -51.32614},
@@ -223,9 +220,9 @@ double anpm(double a)
   double w = fmod(a, TWOPI);
 
   if (fabs(w) >= PI)
-  {
-    w = w - ((a < 0) ? -TWOPI : TWOPI);
-  }
+    {
+      w = w - ((a < 0) ? -TWOPI : TWOPI);
+    }
 
   return w;
 }
@@ -257,21 +254,21 @@ void planetpv(double epoch[2], int np, double pv[2][3])
   dmu = 0.35953620 * t;
 
   for (k = 0; k < 8; ++k)
-  {
-    arga = kp[np][k] * dmu;
-    argl = kq[np][k] * dmu;
-    da = da + (ca[np][k] * cos(arga) + sa[np][k] * sin(arga)) * 0.0000001;
-    dl = dl + (cl[np][k] * cos(argl) + sl[np][k] * sin(argl)) * 0.0000001;
-  }
+    {
+      arga = kp[np][k] * dmu;
+      argl = kq[np][k] * dmu;
+      da = da + (ca[np][k] * cos(arga) + sa[np][k] * sin(arga)) * 0.0000001;
+      dl = dl + (cl[np][k] * cos(argl) + sl[np][k] * sin(argl)) * 0.0000001;
+    }
 
   arga = kp[np][8] * dmu;
   da = da + t * (ca[np][8] * cos(arga) + sa[np][8] * sin(arga)) * 0.0000001;
 
   for (k = 8; k <= 9; ++k)
-  {
-    argl = kq[np][k] * dmu;
-    dl = dl + t * (cl[np][k] * cos(argl) + sl[np][k] * sin(argl)) * 0.0000001;
-  }
+    {
+      argl = kq[np][k] * dmu;
+      dl = dl + t * (cl[np][k] * cos(argl) + sl[np][k] * sin(argl)) * 0.0000001;
+    }
 
   dl = fmod(dl, TWOPI);
 
@@ -281,16 +278,16 @@ void planetpv(double epoch[2], int np, double pv[2][3])
   k = 0;
 
   while (1)
-  {
-    dae = (am - ae + de * sin(ae)) / (1.0 - de * cos(ae));
-    ae = ae + dae;
-    k = k + 1;
-
-    if ((k >= 10) || (fabs(dae) < 1e-12))
     {
-      break;
+      dae = (am - ae + de * sin(ae)) / (1.0 - de * cos(ae));
+      ae = ae + dae;
+      k = k + 1;
+
+      if ((k >= 10) || (fabs(dae) < 1e-12))
+        {
+          break;
+        }
     }
-  }
 
   // true anomaly.
   ae2 = ae / 2.0;
@@ -346,9 +343,9 @@ void radecdist(double state[2][3], double rdd[3])
   // RA
   rdd[0] = atan2(state[0][1], state[0][0]) * R2H;
   if (rdd[0] < 0.0)
-  {
-    rdd[0] += 24.0;
-  }
+    {
+      rdd[0] += 24.0;
+    }
 
   // Declination
   rdd[1] = asin(state[0][2] / rdd[2]) * R2D;
@@ -367,41 +364,41 @@ int main(int argc, char** argv)
 
   // do we have verbose output?
   if (argc > 1)
-  {
-    for (i = 1; i < argc; ++i)
     {
-      if (!strcmp(argv[1], "-ga"))
-      {
-        ga_testing = true;
-        break;
-      }
+      for (i = 1; i < argc; ++i)
+        {
+          if (!strcmp(argv[1], "-ga"))
+            {
+              ga_testing = true;
+              break;
+            }
+        }
     }
-  }
 
   // get starting time
 
   // main loop
   for (i = 0; i < TEST_LOOPS; ++i)
-  {
-    jd[0] = J2000;
-    jd[1] = 0.0;
-
-    for (n = 0; n < TEST_LENGTH; ++n)
     {
-      jd[0] += 1.0;
+      jd[0] = J2000;
+      jd[1] = 0.0;
 
-      for (p = 0; p < 8; ++p)
-      {
-        planetpv(jd, p, pv);
-        radecdist(pv, position[p]);
-      }
+      for (n = 0; n < TEST_LENGTH; ++n)
+        {
+          jd[0] += 1.0;
+
+          for (p = 0; p < 8; ++p)
+            {
+              planetpv(jd, p, pv);
+              radecdist(pv, position[p]);
+            }
+        }
     }
-  }
 
   for (p = 0; p < 8; ++p)
-  {
-    printf("%f %f %f\n", position[p][0], position[p][1], position[p][2]);
-  }
+    {
+      printf("%f %f %f\n", position[p][0], position[p][1], position[p][2]);
+    }
 
   // get final time
 

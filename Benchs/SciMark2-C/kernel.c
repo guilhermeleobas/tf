@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include "FFT.h"
 #include "LU.h"
-#include "LU.h"
 #include "MonteCarlo.h"
 #include "Random.h"
 #include "SOR.h"
@@ -28,21 +27,21 @@ double kernel_measureFFT(int N, double mintime, Random R)
   double result = 0.0;
 
   while (1)
-  {
-    Stopwatch_start(Q);
-    for (i = 0; i < cycles * 8; i++)
     {
-      FFT_transform(twoN, x); /* forward transform */
-      FFT_inverse(twoN, x);   /* backward transform */
-    }
-    Stopwatch_stop(Q);
-    if (cycles > CYCLES /*Stopwatch_read(Q) >= mintime*/)
-    {
-      break;
-    }
+      Stopwatch_start(Q);
+      for (i = 0; i < cycles * 8; i++)
+        {
+          FFT_transform(twoN, x); /* forward transform */
+          FFT_inverse(twoN, x); /* backward transform */
+        }
+      Stopwatch_stop(Q);
+      if (cycles > CYCLES /*Stopwatch_read(Q) >= mintime*/)
+        {
+          break;
+        }
 
-    cycles *= 2;
-  }
+      cycles *= 2;
+    }
   /* approx Mflops */
 
   result = FFT_num_flops(N) * cycles / Stopwatch_read(Q) * 1.0e-6;
@@ -59,18 +58,18 @@ double kernel_measureSOR(int N, double min_time, Random R)
   Stopwatch Q = new_Stopwatch();
   int cycles = 1;
   while (1)
-  {
-    Stopwatch_start(Q);
-    SOR_execute(N, N, 1.25, G, cycles * 16);
-    Stopwatch_stop(Q);
-
-    if (cycles > CYCLES /*Stopwatch_read(Q) >= mintime*/)
     {
-      break;
-    }
+      Stopwatch_start(Q);
+      SOR_execute(N, N, 1.25, G, cycles * 16);
+      Stopwatch_stop(Q);
 
-    cycles *= 2;
-  }
+      if (cycles > CYCLES /*Stopwatch_read(Q) >= mintime*/)
+        {
+          break;
+        }
+
+      cycles *= 2;
+    }
   /* approx Mflops */
 
   result = SOR_num_flops(N, N, cycles) / Stopwatch_read(Q) * 1.0e-6;
@@ -86,17 +85,17 @@ double kernel_measureMonteCarlo(double min_time, Random R)
 
   int cycles = 1;
   while (1)
-  {
-    Stopwatch_start(Q);
-    MonteCarlo_integrate(cycles * 65536);
-    Stopwatch_stop(Q);
-    if (cycles > CYCLES /*Stopwatch_read(Q) >= min_time*/)
     {
-      break;
-    }
+      Stopwatch_start(Q);
+      MonteCarlo_integrate(cycles * 65536);
+      Stopwatch_stop(Q);
+      if (cycles > CYCLES /*Stopwatch_read(Q) >= min_time*/)
+        {
+          break;
+        }
 
-    cycles *= 2;
-  }
+      cycles *= 2;
+    }
   /* approx Mflops */
   result = MonteCarlo_num_flops(cycles) / Stopwatch_read(Q) * 1.0e-6;
   Stopwatch_delete(Q);
@@ -136,7 +135,7 @@ double kernel_measureSparseMatMult(int N, int nz, double min_time, Random R)
         // the diagonal.
 #endif
 
-  int nr = nz / N;  /* average number of nonzeros per row  */
+  int nr = nz / N; /* average number of nonzeros per row  */
   int anz = nr * N; /* _actual_ number of nonzeros         */
 
   double *val = RandomVector(anz, R);
@@ -149,37 +148,37 @@ double kernel_measureSparseMatMult(int N, int nz, double min_time, Random R)
 
   row[0] = 0;
   for (r = 0; r < N; r++)
-  {
-    /* initialize elements for row r */
-
-    int rowr = row[r];
-    int step = r / nr;
-    int i = 0;
-
-    row[r + 1] = rowr + nr;
-    if (step < 1)
     {
-      step = 1; /* take at least unit steps */
-    }
+      /* initialize elements for row r */
 
-    for (i = 0; i < nr; i++)
-    {
-      col[rowr + i] = i * step;
+      int rowr = row[r];
+      int step = r / nr;
+      int i = 0;
+
+      row[r + 1] = rowr + nr;
+      if (step < 1)
+        {
+          step = 1; /* take at least unit steps */
+        }
+
+      for (i = 0; i < nr; i++)
+        {
+          col[rowr + i] = i * step;
+        }
     }
-  }
 
   while (1)
-  {
-    Stopwatch_start(Q);
-    SparseCompRow_matmult(N, y, val, row, col, x, cycles * 64);
-    Stopwatch_stop(Q);
-    if (cycles > CYCLES /*Stopwatch_read(Q) >= min_time*/)
     {
-      break;
-    }
+      Stopwatch_start(Q);
+      SparseCompRow_matmult(N, y, val, row, col, x, cycles * 64);
+      Stopwatch_stop(Q);
+      if (cycles > CYCLES /*Stopwatch_read(Q) >= min_time*/)
+        {
+          break;
+        }
 
-    cycles *= 2;
-  }
+      cycles *= 2;
+    }
   /* approx Mflops */
   result = SparseCompRow_num_flops(N, nz, cycles) / Stopwatch_read(Q) * 1.0e-6;
 
@@ -205,34 +204,34 @@ double kernel_measureLU(int N, double min_time, Random R)
   int cycles = 1;
 
   if ((A = RandomMatrix(N, N, R)) == NULL)
-  {
-    exit(1);
-  }
+    {
+      exit(1);
+    }
   if ((lu = new_Array2D_double(N, N)) == NULL)
-  {
-    exit(1);
-  }
+    {
+      exit(1);
+    }
   if ((pivot = (int *)malloc(N * sizeof(int))) == NULL)
-  {
-    exit(1);
-  }
+    {
+      exit(1);
+    }
 
   while (1)
-  {
-    Stopwatch_start(Q);
-    for (i = 0; i < cycles; i++)
     {
-      Array2D_double_copy(N, N, lu, A);
-      LU_factor(N, N, lu, pivot);
-    }
-    Stopwatch_stop(Q);
-    if (cycles > CYCLES /*Stopwatch_read(Q) >= min_time*/)
-    {
-      break;
-    }
+      Stopwatch_start(Q);
+      for (i = 0; i < cycles; i++)
+        {
+          Array2D_double_copy(N, N, lu, A);
+          LU_factor(N, N, lu, pivot);
+        }
+      Stopwatch_stop(Q);
+      if (cycles > CYCLES /*Stopwatch_read(Q) >= min_time*/)
+        {
+          break;
+        }
 
-    cycles *= 2;
-  }
+      cycles *= 2;
+    }
   /* approx Mflops */
   result = LU_num_flops(N) * cycles / Stopwatch_read(Q) * 1.0e-6;
 

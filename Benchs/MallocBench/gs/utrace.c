@@ -70,8 +70,8 @@ char *stack_next_frame(char *bp)
 {
   char *nbp = cstack_next_frame(bp);
   if (nbp < bp)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
   return nbp;
 }

@@ -32,28 +32,28 @@ Input set_default_input(void)
 {
   Input I;
 
-  I.x_assemblies = 17;         /* Number of assemblies in the x-axis
+  I.x_assemblies = 17; /* Number of assemblies in the x-axis
                                                           of the reactor */
-  I.y_assemblies = 17;         /* Number of assemblies in the y-axis
+  I.y_assemblies = 17; /* Number of assemblies in the y-axis
                                                               of the reactor */
-  I.cai = 27;                  // Number of coarse axial intervals
-  I.fai = 5;                   /* Number of fine axial intervals per coarse
+  I.cai = 27;  // Number of coarse axial intervals
+  I.fai = 5; /* Number of fine axial intervals per coarse
                                                               axial interval */
-  I.axial_exp = 2;             // Axial source expansion order
-  I.radial_ray_sep = 0.05;     // Radial ray separation
-  I.axial_z_sep = 0.25;        // Axial stacked z-ray separation
-  I.n_azimuthal = 64;          // Number of azimuthal angles (should be 32)
-  I.n_polar_angles = 10;       // Number of polar angles
-  I.n_egroups = 104;           // Number of energy groups
-  I.decompose = true;          /* Turn decomposition on/off (true = on,
+  I.axial_exp = 2;  // Axial source expansion order
+  I.radial_ray_sep = 0.05;  // Radial ray separation
+  I.axial_z_sep = 0.25;  // Axial stacked z-ray separation
+  I.n_azimuthal = 64;  // Number of azimuthal angles (should be 32)
+  I.n_polar_angles = 10;  // Number of polar angles
+  I.n_egroups = 104;  // Number of energy groups
+  I.decompose = true; /* Turn decomposition on/off (true = on,
                                                           flase = off) */
   I.decomp_assemblies_ax = 20; /* Number of subdomains per assembly
                                                               (axially) */
   I.segments_per_track = 120;  // Average number of segments per track (123)
-  I.assembly_width = 21.42;    // Width of an assembly - 1.26 x 17 cm
-  I.height = 400.0;            // Height of the reactor - 400 cm
-  I.precision = 0.01;          // precision for source convergence
-  I.mype = 0;                  // MPI Rank
+  I.assembly_width = 21.42;  // Width of an assembly - 1.26 x 17 cm
+  I.height = 400.0;  // Height of the reactor - 400 cm
+  I.precision = 0.01;  // precision for source convergence
+  I.mype = 0;  // MPI Rank
 
   // source regions per assembly (estimate)
   I.n_2D_source_regions_per_assembly = 5000;
@@ -74,28 +74,28 @@ Input set_default_input(void)
 // Changes defaults to small problem size
 void set_small_input(Input* I)
 {
-  I->x_assemblies = 15;     /* Number of assemblies in the x-axis
+  I->x_assemblies = 15; /* Number of assemblies in the x-axis
                                                             of the reactor */
-  I->y_assemblies = 15;     /* Number of assemblies in the y-axis
+  I->y_assemblies = 15; /* Number of assemblies in the y-axis
                                                             of the reactor */
-  I->cai = 5;               // Number of coarse axial intervals
-  I->fai = 3;               /* Number of fine axial intervals per
+  I->cai = 5;  // Number of coarse axial intervals
+  I->fai = 3; /* Number of fine axial intervals per
                                                                coarse axial interval */
-  I->axial_exp = 2;         // Axial source expansion order
+  I->axial_exp = 2;  // Axial source expansion order
   I->radial_ray_sep = 0.5;  // Radial ray separation
-  I->axial_z_sep = 0.2;     // Axial stacked z-ray separation
-  I->n_azimuthal = 5;       // Number of azimuthal angles
-  I->n_polar_angles = 5;    // Number of polar angles
-  I->n_egroups = 104;       // Number of energy groups
-  I->decompose = false;     /* Turn decomposition on/off (true = on,
+  I->axial_z_sep = 0.2;  // Axial stacked z-ray separation
+  I->n_azimuthal = 5;  // Number of azimuthal angles
+  I->n_polar_angles = 5;  // Number of polar angles
+  I->n_egroups = 104;  // Number of energy groups
+  I->decompose = false; /* Turn decomposition on/off (true = on,
                                                             flase = off) */
   I->decomp_assemblies_ax =
-      1;                          /* Number of sub-domains per assembly
+      1; /* Number of sub-domains per assembly
                                                                           (axially) */
-  I->segments_per_track = 120;    // Average number of segments per track
+  I->segments_per_track = 120;  // Average number of segments per track
   I->assembly_width = 1.26 * 17;  // Width of an assembly - 1.26 x 17 cm
-  I->height = 400.0;              // Height of the reactor - 400 cm
-  I->precision = 0.01;            // precision for source convergence
+  I->height = 400.0;  // Height of the reactor - 400 cm
+  I->precision = 0.01;  // precision for source convergence
 
   // source regions per assembly (estimate)
   I->n_2D_source_regions_per_assembly = 3000;
@@ -109,50 +109,50 @@ Params build_tracks(Input* input)
   Params params;
 
   if (I.mype == 0)
-  {
-    center_print("INITIALIZATION", 79);
-    border_print();
-    printf("Initializing 2D tracks...\n");
-  }
+    {
+      center_print("INITIALIZATION", 79);
+      border_print();
+      printf("Initializing 2D tracks...\n");
+    }
 
   if (I.load_tracks)
-  {
-    params.tracks_2D = load_OpenMOC_tracks(I.track_file, false, input, &nbytes);
-    I = *input;
-  }
+    {
+      params.tracks_2D = load_OpenMOC_tracks(I.track_file, false, input, &nbytes);
+      I = *input;
+    }
   else
-  {
-    params.tracks_2D = generate_2D_tracks(I, &nbytes);
-  }
+    {
+      params.tracks_2D = generate_2D_tracks(I, &nbytes);
+    }
 
   if (I.mype == 0)
-  {
+    {
 #ifdef PRINT_MEM_SIZES
-    printf("Memory allocated thus far (MB): %zu\n", nbytes / 1024 / 1014);
+      printf("Memory allocated thus far (MB): %zu\n", nbytes / 1024 / 1014);
 #endif
-    printf("Initializing 3D tracks...\n");
-  }
+      printf("Initializing 3D tracks...\n");
+    }
 
   params.tracks = generate_tracks(I, params.tracks_2D, &nbytes);
   params.polar_angles = generate_polar_angles(I);
 
   if (I.mype == 0)
-  {
+    {
 #ifdef PRINT_MEM_SIZES
-    printf("Memory allocated thus far (MB): %zu\n", nbytes / 1024 / 1014);
+      printf("Memory allocated thus far (MB): %zu\n", nbytes / 1024 / 1014);
 #endif
-    printf("Initializing flat source regions...\n");
-  }
+      printf("Initializing flat source regions...\n");
+    }
 
   params.sources = initialize_sources(I, &nbytes);
 
   if (I.mype == 0)
-  {
+    {
 #ifdef PRINT_MEM_SIZES
-    printf("Memory allocated thus far (MB): %zu\n", nbytes / 1024 / 1014);
+      printf("Memory allocated thus far (MB): %zu\n", nbytes / 1024 / 1014);
 #endif
-    border_print();
-  }
+      border_print();
+    }
 
   // initialize to zero leakage
   float* leakage = calloc(1, sizeof(float));

@@ -45,24 +45,24 @@ int main(int argc, char *argv[])
   Harmonic = zeta = poly = alt = Gregory = zero;
 
   for (k = 1; k <= n; k++)
-  {
-    twoThrd += pow(2.0 / 3.0, k - 1);
-    sqrts += 1.0 / sqrt(k);
-    k3 = k * k * k;
-    s = sin(k);
-    c = cos(k);
-    Flint += 1.0 / (k3 * s * s);
-    Cookson += 1.0 / (k3 * c * c);
-  }
+    {
+      twoThrd += pow(2.0 / 3.0, k - 1);
+      sqrts += 1.0 / sqrt(k);
+      k3 = k * k * k;
+      s = sin(k);
+      c = cos(k);
+      Flint += 1.0 / (k3 * s * s);
+      Cookson += 1.0 / (k3 * c * c);
+    }
 
   for (kv = init; *(double *)(&kv) <= n; kv += two)
-  {
-    poly += one / (kv * (kv + one));
-    Harmonic += one / kv;
-    zeta += one / (kv * kv);
-    alt += av / kv;
-    Gregory += av / (two * kv - one);
-  }
+    {
+      poly += one / (kv * (kv + one));
+      Harmonic += one / kv;
+      zeta += one / (kv * kv);
+      alt += av / kv;
+      Gregory += av / (two * kv - one);
+    }
 
 #define psum(name, num) printf("%.9f\t%s\n", num, name)
   psum("(2/3)^k", twoThrd);

@@ -15,11 +15,11 @@
  *	Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include <assert.h>         /* for assert()                   */
-#include <stdlib.h>         /* for NULL definition            */
+#include <assert.h> /* for assert()                   */
+#include <stdlib.h> /* for NULL definition            */
 #include "dataManagement.h" /* for primitive type definitions */
-#include "index.h"          /* for IndexEntry definition      */
-#include "indexKey.h"       /* for IndexKey definition        */
+#include "index.h" /* for IndexEntry definition      */
+#include "indexKey.h" /* for IndexKey definition        */
 
 /*
  *  Macro definitions for MAX and MIN for use of this file only.
@@ -60,7 +60,7 @@
 void keyUnion(IndexKey *A, /* first entry for key union    */
               IndexKey *B, /* second entry for key union   */
               IndexKey *U) /* union of entries A and B     */
-{                          /*  beginning of keyUnion() */
+{ /*  beginning of keyUnion() */
 
   assert(A);
   assert(B);
@@ -108,8 +108,8 @@ void keyUnion(IndexKey *A, /* first entry for key union    */
  */
 
 void keysUnion(IndexEntry *I, /*  list of index entries   */
-               IndexKey *U)   /*  union of entries of I   */
-{                             /*  beginning of keysUnion() */
+               IndexKey *U) /*  union of entries of I   */
+{ /*  beginning of keysUnion() */
 
   assert(I);
   assert(U);
@@ -121,14 +121,14 @@ void keysUnion(IndexEntry *I, /*  list of index entries   */
    */
   *U = I->key;
   for (I = I->next; I != NULL; I = I->next)
-  {
-    /*
+    {
+      /*
      *  Expand hyper-cube bounding "box" by determining union of key of
      *  current index entry with current index key.  This will always
      *  "expand" the box or leave it unaltered.
      */
-    keyUnion(&(I->key), U, U);
-  } /*  end of loop for I   */
+      keyUnion(&(I->key), U, U);
+    } /*  end of loop for I   */
 
   return;
 } /*  end of keysUnion()  */

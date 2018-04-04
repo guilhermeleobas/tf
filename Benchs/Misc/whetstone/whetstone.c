@@ -107,22 +107,22 @@ int main(int argc, char *argv[])
 
   II = 1; /* start at the first arg (temp use of II here) */
   while (II < argc)
-  {
-    if (strncmp(argv[II], "-c", 2) == 0 || argv[II][0] == 'c')
     {
-      continuous = 1;
+      if (strncmp(argv[II], "-c", 2) == 0 || argv[II][0] == 'c')
+        {
+          continuous = 1;
+        }
+      else if (atol(argv[II]) > 0)
+        {
+          loopstart = atol(argv[II]);
+        }
+      else
+        {
+          fprintf(stderr, USAGE);
+          return (1);
+        }
+      II++;
     }
-    else if (atol(argv[II]) > 0)
-    {
-      loopstart = atol(argv[II]);
-    }
-    else
-    {
-      fprintf(stderr, USAGE);
-      return (1);
-    }
-    II++;
-  }
 
 LCONT:
   /*
@@ -175,14 +175,15 @@ IILOOP:
   X4 = -1.0;
 
   for (I = 1; I <= N1; I++)
-  {
-    X1 = (X1 + X2 + X3 - X4) * T;
-    X2 = (X1 + X2 - X3 + X4) * T;
-    X3 = (X1 - X2 + X3 + X4) * T;
-    X4 = (-X1 + X2 + X3 + X4) * T;
-  }
+    {
+      X1 = (X1 + X2 + X3 - X4) * T;
+      X2 = (X1 + X2 - X3 + X4) * T;
+      X3 = (X1 - X2 + X3 + X4) * T;
+      X4 = (-X1 + X2 + X3 + X4) * T;
+    }
 #ifdef PRINTOUT
-  IF(JJ == II) POUT(N1, N1, N1, X1, X2, X3, X4);
+  IF(JJ == II)
+  POUT(N1, N1, N1, X1, X2, X3, X4);
 #endif
 
   /*
@@ -196,15 +197,16 @@ IILOOP:
   E1[4] = -1.0;
 
   for (I = 1; I <= N2; I++)
-  {
-    E1[1] = (E1[1] + E1[2] + E1[3] - E1[4]) * T;
-    E1[2] = (E1[1] + E1[2] - E1[3] + E1[4]) * T;
-    E1[3] = (E1[1] - E1[2] + E1[3] + E1[4]) * T;
-    E1[4] = (-E1[1] + E1[2] + E1[3] + E1[4]) * T;
-  }
+    {
+      E1[1] = (E1[1] + E1[2] + E1[3] - E1[4]) * T;
+      E1[2] = (E1[1] + E1[2] - E1[3] + E1[4]) * T;
+      E1[3] = (E1[1] - E1[2] + E1[3] + E1[4]) * T;
+      E1[4] = (-E1[1] + E1[2] + E1[3] + E1[4]) * T;
+    }
 
 #ifdef PRINTOUT
-  IF(JJ == II) POUT(N2, N3, N2, E1[1], E1[2], E1[3], E1[4]);
+  IF(JJ == II)
+  POUT(N2, N3, N2, E1[1], E1[2], E1[3], E1[4]);
 #endif
 
   /*
@@ -213,12 +215,13 @@ IILOOP:
   C
   */
   for (I = 1; I <= N3; I++)
-  {
-    PA(E1);
-  }
+    {
+      PA(E1);
+    }
 
 #ifdef PRINTOUT
-  IF(JJ == II) POUT(N3, N2, N2, E1[1], E1[2], E1[3], E1[4]);
+  IF(JJ == II)
+  POUT(N3, N2, N2, E1[1], E1[2], E1[3], E1[4]);
 #endif
 
   /*
@@ -228,37 +231,38 @@ IILOOP:
   */
   J = 1;
   for (I = 1; I <= N4; I++)
-  {
-    if (J == 1)
     {
-      J = 2;
-    }
-    else
-    {
-      J = 3;
-    }
+      if (J == 1)
+        {
+          J = 2;
+        }
+      else
+        {
+          J = 3;
+        }
 
-    if (J > 2)
-    {
-      J = 0;
-    }
-    else
-    {
-      J = 1;
-    }
+      if (J > 2)
+        {
+          J = 0;
+        }
+      else
+        {
+          J = 1;
+        }
 
-    if (J < 1)
-    {
-      J = 1;
+      if (J < 1)
+        {
+          J = 1;
+        }
+      else
+        {
+          J = 0;
+        }
     }
-    else
-    {
-      J = 0;
-    }
-  }
 
 #ifdef PRINTOUT
-  IF(JJ == II) POUT(N4, J, J, X1, X2, X3, X4);
+  IF(JJ == II)
+  POUT(N4, J, J, X1, X2, X3, X4);
 #endif
 
   /*
@@ -273,16 +277,17 @@ IILOOP:
   L = 3;
 
   for (I = 1; I <= N6; I++)
-  {
-    J = J * (K - J) * (L - K);
-    K = L * K - (L - J) * K;
-    L = (L - K) * (K + J);
-    E1[L - 1] = J + K + L;
-    E1[K - 1] = J * K * L;
-  }
+    {
+      J = J * (K - J) * (L - K);
+      K = L * K - (L - J) * K;
+      L = (L - K) * (K + J);
+      E1[L - 1] = J + K + L;
+      E1[K - 1] = J * K * L;
+    }
 
 #ifdef PRINTOUT
-  IF(JJ == II) POUT(N6, J, K, E1[1], E1[2], E1[3], E1[4]);
+  IF(JJ == II)
+  POUT(N6, J, K, E1[1], E1[2], E1[3], E1[4]);
 #endif
 
   /*
@@ -294,13 +299,14 @@ IILOOP:
   Y = 0.5;
 
   for (I = 1; I <= N7; I++)
-  {
-    X = T * DATAN(T2 * DSIN(X) * DCOS(X) / (DCOS(X + Y) + DCOS(X - Y) - 1.0));
-    Y = T * DATAN(T2 * DSIN(Y) * DCOS(Y) / (DCOS(X + Y) + DCOS(X - Y) - 1.0));
-  }
+    {
+      X = T * DATAN(T2 * DSIN(X) * DCOS(X) / (DCOS(X + Y) + DCOS(X - Y) - 1.0));
+      Y = T * DATAN(T2 * DSIN(Y) * DCOS(Y) / (DCOS(X + Y) + DCOS(X - Y) - 1.0));
+    }
 
 #ifdef PRINTOUT
-  IF(JJ == II) POUT(N7, J, K, X, X, Y, Y);
+  IF(JJ == II)
+  POUT(N7, J, K, X, X, Y, Y);
 #endif
 
   /*
@@ -313,12 +319,13 @@ IILOOP:
   Z = 1.0;
 
   for (I = 1; I <= N8; I++)
-  {
-    P3(X, Y, &Z);
-  }
+    {
+      P3(X, Y, &Z);
+    }
 
 #ifdef PRINTOUT
-  IF(JJ == II) POUT(N8, J, K, X, Y, Z, Z);
+  IF(JJ == II)
+  POUT(N8, J, K, X, Y, Z, Z);
 #endif
 
   /*
@@ -334,12 +341,13 @@ IILOOP:
   E1[3] = 3.0;
 
   for (I = 1; I <= N9; I++)
-  {
-    P0();
-  }
+    {
+      P0();
+    }
 
 #ifdef PRINTOUT
-  IF(JJ == II) POUT(N9, J, K, E1[1], E1[2], E1[3], E1[4]);
+  IF(JJ == II)
+  POUT(N9, J, K, E1[1], E1[2], E1[3], E1[4]);
 #endif
 
   /*
@@ -351,15 +359,16 @@ IILOOP:
   K = 3;
 
   for (I = 1; I <= N10; I++)
-  {
-    J = J + K;
-    K = J + K;
-    J = K - J;
-    K = K - J - J;
-  }
+    {
+      J = J + K;
+      K = J + K;
+      J = K - J;
+      K = K - J - J;
+    }
 
 #ifdef PRINTOUT
-  IF(JJ == II) POUT(N10, J, K, X1, X2, X3, X4);
+  IF(JJ == II)
+  POUT(N10, J, K, X1, X2, X3, X4);
 #endif
 
   /*
@@ -370,12 +379,13 @@ IILOOP:
   X = 0.75;
 
   for (I = 1; I <= N11; I++)
-  {
-    X = DSQRT(DEXP(DLOG(X) / T1));
-  }
+    {
+      X = DSQRT(DEXP(DLOG(X) / T1));
+    }
 
 #ifdef PRINTOUT
-  IF(JJ == II) POUT(N11, J, K, X, X, X, X);
+  IF(JJ == II)
+  POUT(N11, J, K, X, X, X, X);
 #endif
 
   /*
@@ -384,9 +394,9 @@ IILOOP:
   C
   */
   if (++JJ <= II)
-  {
-    goto IILOOP;
-  }
+    {
+      goto IILOOP;
+    }
 
   /*
   C
@@ -421,9 +431,9 @@ IILOOP:
 		printf("C Converted Double Precision Whetstones: %.1f KIPS\n", KIPS);
 #endif
   if (continuous)
-  {
-    goto LCONT;
-  }
+    {
+      goto LCONT;
+    }
 
   return (0);
 }
@@ -440,9 +450,9 @@ L10:
   J += 1;
 
   if (J < 6)
-  {
-    goto L10;
-  }
+    {
+      goto L10;
+    }
 }
 
 void P0(void)

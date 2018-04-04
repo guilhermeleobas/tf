@@ -30,12 +30,12 @@
  *              Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include "getInt.h"         /* for getInt() return codes      */
-#include <assert.h>         /* for assert()                   */
-#include <errno.h>          /* for extern errno definition    */
-#include <stdio.h>          /* for FILE definition            */
-#include <stdlib.h>         /* for NULL definition            */
-#include <string.h>         /* for strlen() definition        */
+#include "getInt.h" /* for getInt() return codes      */
+#include <assert.h> /* for assert()                   */
+#include <errno.h> /* for extern errno definition    */
+#include <stdio.h> /* for FILE definition            */
+#include <stdlib.h> /* for NULL definition            */
+#include <string.h> /* for strlen() definition        */
 #include "dataManagement.h" /* for primitive type definitions */
 
 extern int errno;
@@ -47,10 +47,10 @@ extern Char *getString(FILE *file);
 
 Int getInt(FILE *file, /*  FILE stream to read */
            Int *value) /*  value to output     */
-{                      /*  begin getInt()  */
-  Char *temp;          /* temporary string returned by getString()    */
-  Char *endptr;        /* residual from conversion from string to int */
-  Int returnCode;      /* return code for this routine                */
+{ /*  begin getInt()  */
+  Char *temp; /* temporary string returned by getString()    */
+  Char *endptr; /* residual from conversion from string to int */
+  Int returnCode; /* return code for this routine                */
 
   assert(file);
   assert(value);
@@ -64,39 +64,39 @@ Int getInt(FILE *file, /*  FILE stream to read */
    */
   temp = getString(file);
   if (temp != NULL)
-  {
-    /*
+    {
+      /*
      *  A valid string was read from the input and is reference by temp
      */
-    *value = strtol(temp, &endptr, 0);
-    if (*value == 0 && strlen(endptr) > 0 && errno == ERANGE)
+      *value = strtol(temp, &endptr, 0);
+      if (*value == 0 && strlen(endptr) > 0 && errno == ERANGE)
+        {
+          *value = MINIMUM_VALUE_OF_INT;
+          returnCode = GET_INT_BAD_CONVERSION;
+        } /*  end of strtol error check   */
+      else
+        {
+          if (*value < MINIMUM_VALUE_OF_INT)
+            {
+              *value = MINIMUM_VALUE_OF_INT;
+              returnCode = GET_INT_RANGE_EXCEEDED;
+            } /*  end of value < MINIMUM_VALUE_OF_INT   */
+          else if (*value > MAXIMUM_VALUE_OF_INT)
+            {
+              *value = MAXIMUM_VALUE_OF_INT;
+              returnCode = GET_INT_RANGE_EXCEEDED;
+            } /*  end of value > MAXIMUM_VALUE_OF_INT   */
+          else
+            {
+              returnCode = GET_INT_SUCCESS;
+            } /*  end of else - SUCCESS   */
+        } /*  end of else strtol did not error    */
+    } /*  end if temp != NULL */
+  else
     {
       *value = MINIMUM_VALUE_OF_INT;
-      returnCode = GET_INT_BAD_CONVERSION;
-    } /*  end of strtol error check   */
-    else
-    {
-      if (*value < MINIMUM_VALUE_OF_INT)
-      {
-        *value = MINIMUM_VALUE_OF_INT;
-        returnCode = GET_INT_RANGE_EXCEEDED;
-      } /*  end of value < MINIMUM_VALUE_OF_INT   */
-      else if (*value > MAXIMUM_VALUE_OF_INT)
-      {
-        *value = MAXIMUM_VALUE_OF_INT;
-        returnCode = GET_INT_RANGE_EXCEEDED;
-      } /*  end of value > MAXIMUM_VALUE_OF_INT   */
-      else
-      {
-        returnCode = GET_INT_SUCCESS;
-      } /*  end of else - SUCCESS   */
-    }   /*  end of else strtol did not error    */
-  }     /*  end if temp != NULL */
-  else
-  {
-    *value = MINIMUM_VALUE_OF_INT;
-    returnCode = GET_INT_EOI;
-  } /*  end if GET_STRING end-of-input */
+      returnCode = GET_INT_EOI;
+    } /*  end if GET_STRING end-of-input */
 
   return (returnCode);
 } /*  end of getInt() */

@@ -17,19 +17,19 @@ Stack Push(Stack *s, Re_node v)
 
   node = (Stack)new_node(node);
   if (s == NULL || node == NULL)
-  {
-    return NULL; /* can't allocate */
-  }
+    {
+      return NULL; /* can't allocate */
+    }
   node->next = *s;
   node->val = v;
   if (*s == NULL)
-  {
-    node->size = 1;
-  }
+    {
+      node->size = 1;
+    }
   else
-  {
-    node->size = (*s)->size + 1;
-  }
+    {
+      node->size = (*s)->size + 1;
+    }
   *s = node;
   return *s;
 }
@@ -40,41 +40,41 @@ Re_node Pop(Stack *s)
   Stack temp;
 
   if (s == NULL || *s == NULL)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
   else
-  {
-    temp = *s;
-    node = (*s)->val;
-    *s = (*s)->next;
-    free(temp);
-    return node;
-  }
+    {
+      temp = *s;
+      node = (*s)->val;
+      *s = (*s)->next;
+      free(temp);
+      return node;
+    }
 }
 
 Re_node Top(Stack s)
 {
   if (s == NULL)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
   else
-  {
-    return s->val;
-  }
+    {
+      return s->val;
+    }
 }
 
 int Size(Stack s)
 {
   if (s == NULL)
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
   else
-  {
-    return s->size;
-  }
+    {
+      return s->size;
+    }
 }
 
 /************************************************************************/
@@ -86,16 +86,16 @@ int Size(Stack s)
 int occurs_in(int n, Pset p)
 {
   while (p != NULL)
-  {
-    if (n == p->posnum)
     {
-      return 1;
+      if (n == p->posnum)
+        {
+          return 1;
+        }
+      else
+        {
+          p = p->nextpos;
+        }
     }
-    else
-    {
-      p = p->nextpos;
-    }
-  }
   return 0;
 }
 
@@ -108,35 +108,35 @@ Pset pset_union(Pset s1, Pset s2)
   hd = NULL;
   curr = NULL;
   while (s1 != NULL)
-  {
-    if (!occurs_in(s1->posnum, s2))
     {
-      new1 = (Pset)new_node(new1);
-      if (new1 == NULL)
-      {
-        return NULL;
-      }
-      new1->posnum = s1->posnum;
-      if (hd == NULL)
-      {
-        hd = new1;
-      }
-      else
-      {
-        curr->nextpos = new1;
-      }
+      if (!occurs_in(s1->posnum, s2))
+        {
+          new1 = (Pset)new_node(new1);
+          if (new1 == NULL)
+            {
+              return NULL;
+            }
+          new1->posnum = s1->posnum;
+          if (hd == NULL)
+            {
+              hd = new1;
+            }
+          else
+            {
+              curr->nextpos = new1;
+            }
+        }
+      curr = new1;
+      s1 = s1->nextpos;
     }
-    curr = new1;
-    s1 = s1->nextpos;
-  }
   if (hd == NULL)
-  {
-    hd = s2;
-  }
+    {
+      hd = s2;
+    }
   else
-  {
-    curr->nextpos = s2;
-  }
+    {
+      curr->nextpos = s2;
+    }
   return hd;
 }
 
@@ -149,9 +149,9 @@ Pset create_pos(int n)
 
   x = (Pset)new_node(x);
   if (x == NULL)
-  {
-    return NULL;
-  }
+    {
+      return NULL;
+    }
   x->posnum = n;
   x->nextpos = NULL;
   return x;
@@ -165,21 +165,21 @@ int subset_pset(Pset s1, Pset s2)
   int subs = 1;
 
   while (s1 != NULL && subs != 0)
-  {
-    subs = 0;
-    while (s2 != NULL && subs != 1)
     {
-      if (s1->posnum == s2->posnum)
-      {
-        subs = 1;
-      }
-      else
-      {
-        s2 = s2->nextpos;
-      }
+      subs = 0;
+      while (s2 != NULL && subs != 1)
+        {
+          if (s1->posnum == s2->posnum)
+            {
+              subs = 1;
+            }
+          else
+            {
+              s2 = s2->nextpos;
+            }
+        }
+      s1 = s1->nextpos;
     }
-    s1 = s1->nextpos;
-  }
   return subs;
 }
 

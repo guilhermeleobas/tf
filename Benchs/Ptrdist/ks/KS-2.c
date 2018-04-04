@@ -28,17 +28,17 @@ float CAiBj(ModuleRecPtr mrA, ModuleRecPtr mrB)
   /* mrA and mrB are both un-Swapped */
   for (netNode = modules[(*mrA).module]; netNode != NULL;
        netNode = (*netNode).next)
-  {
-    netCost = cost[(*netNode).net];
-    for (modNode = nets[(*netNode).net]; modNode != NULL;
-         modNode = (*modNode).next)
     {
-      if ((*modNode).module == module)
-      {
-        gain = gain + netCost;
-      }
+      netCost = cost[(*netNode).net];
+      for (modNode = nets[(*netNode).net]; modNode != NULL;
+           modNode = (*modNode).next)
+        {
+          if ((*modNode).module == module)
+            {
+              gain = gain + netCost;
+            }
+        }
     }
-  }
   return gain;
 }
 
@@ -47,43 +47,43 @@ void SwapNode(ModuleRecPtr maxPrev, ModuleRecPtr max, ModuleListPtr group,
               ModuleListPtr swapTo)
 {
   if (maxPrev == NULL)
-  { /* found at head of list */
-    if ((*group).head == (*group).tail)
-    { /* only one in the list */
-      (*group).head = NULL;
-      (*group).tail = NULL;
-      (*max).next = NULL;
+    { /* found at head of list */
+      if ((*group).head == (*group).tail)
+        { /* only one in the list */
+          (*group).head = NULL;
+          (*group).tail = NULL;
+          (*max).next = NULL;
+        }
+      else
+        {
+          (*group).head = (*max).next;
+          (*max).next = NULL;
+        }
     }
-    else
-    {
-      (*group).head = (*max).next;
-      (*max).next = NULL;
-    }
-  }
   else
-  { /* middle or end of list */
-    if ((*group).tail == max)
-    { /* end of list */
-      (*group).tail = maxPrev;
+    { /* middle or end of list */
+      if ((*group).tail == max)
+        { /* end of list */
+          (*group).tail = maxPrev;
+        }
+      (*maxPrev).next = (*max).next;
+      (*max).next = NULL;
     }
-    (*maxPrev).next = (*max).next;
-    (*max).next = NULL;
-  }
 
   /* put max on the tail of swapTo */
   if ((*swapTo).tail == NULL)
-  { /* empty */
+    { /* empty */
 #if 0
 	(*swapTo).head = (*swapTo).tail = max;
 #endif
-    (*swapTo).tail = max;
-    (*swapTo).head = max;
-  }
+      (*swapTo).tail = max;
+      (*swapTo).head = max;
+    }
   else
-  { /* end of list */
-    (*(*swapTo).tail).next = max;
-    (*swapTo).tail = max;
-  }
+    { /* end of list */
+      (*(*swapTo).tail).next = max;
+      (*swapTo).tail = max;
+    }
   (*max).next = NULL;
 }
 
@@ -95,23 +95,23 @@ void UpdateDs(ModuleRecPtr max, Groups group)
 
   /* for all nets this is connected to */
   for (net = modules[(*max).module]; net != NULL; net = (*net).next)
-  {
-    /* for a modules this net is connected to */
-    for (mod = nets[(*net).net]; mod != NULL; mod = (*mod).next)
     {
-      if (moduleToGroup[(*mod).module] < SwappedToA)
-      {
-        if (moduleToGroup[(*mod).module] == group)
+      /* for a modules this net is connected to */
+      for (mod = nets[(*net).net]; mod != NULL; mod = (*mod).next)
         {
-          D[(*mod).module] = D[(*mod).module] + cost[(*net).net];
+          if (moduleToGroup[(*mod).module] < SwappedToA)
+            {
+              if (moduleToGroup[(*mod).module] == group)
+                {
+                  D[(*mod).module] = D[(*mod).module] + cost[(*net).net];
+                }
+              else
+                {
+                  D[(*mod).module] = D[(*mod).module] - cost[(*net).net];
+                }
+            }
         }
-        else
-        {
-          D[(*mod).module] = D[(*mod).module] - cost[(*net).net];
-        }
-      }
     }
-  }
 }
 
 /* find the best swap available and do it */
@@ -125,25 +125,25 @@ float FindMaxGpAndSwap()
   maxA = maxPrevA = maxB = maxPrevB = NULL;
   for (mrA = groupA.head, mrPrevA = NULL; mrA != NULL;
        mrPrevA = mrA, mrA = (*mrA).next)
-  {
-    for (mrB = groupB.head, mrPrevB = NULL; mrB != NULL;
-         mrPrevB = mrB, mrB = (*mrB).next)
     {
+      for (mrB = groupB.head, mrPrevB = NULL; mrB != NULL;
+           mrPrevB = mrB, mrB = (*mrB).next)
+        {
 #ifdef KS_MODE
-      gp = D[(*mrA).module] + D[(*mrB).module] - CAiBj(mrA, mrB);
-#else  /* !KS_MODE */
-      gp = D[(*mrA).module] + D[(*mrB).module] - 2 * CAiBj(mrA, mrB);
+          gp = D[(*mrA).module] + D[(*mrB).module] - CAiBj(mrA, mrB);
+#else /* !KS_MODE */
+          gp = D[(*mrA).module] + D[(*mrB).module] - 2 * CAiBj(mrA, mrB);
 #endif /* !KS_MODE */
-      if (gp > gpMax)
-      {
-        gpMax = gp;
-        maxA = mrA;
-        maxPrevA = mrPrevA;
-        maxB = mrB;
-        maxPrevB = mrPrevB;
-      }
+          if (gp > gpMax)
+            {
+              gpMax = gp;
+              maxA = mrA;
+              maxPrevA = mrPrevA;
+              maxB = mrB;
+              maxPrevB = mrPrevB;
+            }
+        }
     }
-  }
 
   /* swap the nodes out, into the swap lists */
   assert(maxA != NULL);
@@ -176,13 +176,13 @@ float FindGMax(unsigned long *iMax)
   gMax = -9999999;
   *iMax = 0xffffffff;
   for (i = 0; i < numModules / 2; i++)
-  {
-    if (GP[i] > gMax)
     {
-      gMax = GP[i];
-      *iMax = i;
+      if (GP[i] > gMax)
+        {
+          gMax = GP[i];
+          *iMax = i;
+        }
     }
-  }
   return gMax;
 }
 
@@ -197,40 +197,40 @@ void SwapSubsetAndReset(unsigned long iMax)
       i = 0;
        i <= iMax;
        mrPrevA = mrA, mrA = (*mrA).next, mrPrevB = mrB, mrB = (*mrB).next, i++)
-  {
-    ;
-  }
+    {
+      ;
+    }
 
   /* must at least select one to swap, case where gMax is first */
   assert(mrPrevA != NULL && mrPrevB != NULL);
 
   if (mrA == NULL)
-  {
-    /* swap entire list */
-    groupA = swapToA;
-    groupB = swapToB;
-  }
+    {
+      /* swap entire list */
+      groupA = swapToA;
+      groupB = swapToB;
+    }
   else
-  {
-    /* splice the lists */
-    (*mrPrevA).next = mrB;
-    groupA.head = swapToA.head;
-    groupA.tail = swapToB.tail;
+    {
+      /* splice the lists */
+      (*mrPrevA).next = mrB;
+      groupA.head = swapToA.head;
+      groupA.tail = swapToB.tail;
 
-    (*mrPrevB).next = mrA;
-    groupB.head = swapToB.head;
-    groupB.tail = swapToA.tail;
-  }
+      (*mrPrevB).next = mrA;
+      groupB.head = swapToB.head;
+      groupB.tail = swapToA.tail;
+    }
 
   /* reset the inverse mappings */
   for (mrA = groupA.head; mrA != NULL; mrA = (*mrA).next)
-  {
-    moduleToGroup[(*mrA).module] = GroupA;
-  }
+    {
+      moduleToGroup[(*mrA).module] = GroupA;
+    }
   for (mrB = groupB.head; mrB != NULL; mrB = (*mrB).next)
-  {
-    moduleToGroup[(*mrB).module] = GroupB;
-  }
+    {
+      moduleToGroup[(*mrB).module] = GroupB;
+    }
 
   /* clear the swap lists */
   swapToA.head = swapToA.tail = NULL;
@@ -259,103 +259,103 @@ void PrintResults(int verbose)
 
   maxStat = -1;
   for (i = 0; i < 256; i++)
-  {
-    netStats[i].total = netStats[i].edgesCut = netStats[i].netsCut = 0;
-  }
+    {
+      netStats[i].total = netStats[i].edgesCut = netStats[i].netsCut = 0;
+    }
 
   /* partitions */
   if (verbose)
-  {
-    fprintf(stdout, "Group A:  \n");
-    for (mr = groupA.head; mr != NULL; mr = (*mr).next)
     {
-      fprintf(stdout, "%3lu ", (*mr).module + 1);
-    }
-    fprintf(stdout, "\n");
+      fprintf(stdout, "Group A:  \n");
+      for (mr = groupA.head; mr != NULL; mr = (*mr).next)
+        {
+          fprintf(stdout, "%3lu ", (*mr).module + 1);
+        }
+      fprintf(stdout, "\n");
 
-    fprintf(stdout, "Group B:  \n");
-    for (mr = groupB.head; mr != NULL; mr = (*mr).next)
-    {
-      fprintf(stdout, "%3lu ", (*mr).module + 1);
+      fprintf(stdout, "Group B:  \n");
+      for (mr = groupB.head; mr != NULL; mr = (*mr).next)
+        {
+          fprintf(stdout, "%3lu ", (*mr).module + 1);
+        }
+      fprintf(stdout, "\n");
     }
-    fprintf(stdout, "\n");
-  }
 
   /* total edge cuts */
   cuts = 0;
   for (mr = groupA.head; mr != NULL; mr = (*mr).next)
-  {
-    assert(moduleToGroup[(*mr).module] == GroupA);
-
-    /* for all nets on this module */
-    for (nn = modules[(*mr).module]; nn != NULL; nn = (*nn).next)
     {
-      netSz = 0;
-      for (mn = nets[(*nn).net]; mn != NULL; mn = (*mn).next)
-      {
-        netSz++;
-      }
-      assert(netSz >= 2);
+      assert(moduleToGroup[(*mr).module] == GroupA);
 
-      /* for all modules on this net */
-      for (mn = nets[(*nn).net]; mn != NULL; mn = (*mn).next)
-      {
-        /* only check nodes other than self, and not swapped */
-        if (moduleToGroup[(*mr).module] != moduleToGroup[(*mn).module])
+      /* for all nets on this module */
+      for (nn = modules[(*mr).module]; nn != NULL; nn = (*nn).next)
         {
-          if (verbose)
-          {
-            fprintf(stdout, "Conn %3lu - %3lu cut.\n", (*mr).module + 1,
-                    (*mn).module + 1);
-          }
-          netStats[netSz].edgesCut++;
-          cuts++;
+          netSz = 0;
+          for (mn = nets[(*nn).net]; mn != NULL; mn = (*mn).next)
+            {
+              netSz++;
+            }
+          assert(netSz >= 2);
+
+          /* for all modules on this net */
+          for (mn = nets[(*nn).net]; mn != NULL; mn = (*mn).next)
+            {
+              /* only check nodes other than self, and not swapped */
+              if (moduleToGroup[(*mr).module] != moduleToGroup[(*mn).module])
+                {
+                  if (verbose)
+                    {
+                      fprintf(stdout, "Conn %3lu - %3lu cut.\n", (*mr).module + 1,
+                              (*mn).module + 1);
+                    }
+                  netStats[netSz].edgesCut++;
+                  cuts++;
+                }
+            }
         }
-      }
     }
-  }
   fprintf(stdout, "Total edge cuts = %lu\n", cuts);
 
   /* total net cuts */
   cuts = 0;
   for (i = 0; i < numNets; i++)
-  {
-    netSz = 0;
-    for (mn = nets[i]; mn != NULL; mn = (*mn).next)
     {
-      netSz++;
-    }
-    assert(netSz >= 2);
-    netStats[netSz].total++;
-    if (netSz > maxStat)
-    {
-      maxStat = netSz;
-    }
-
-    for (grp = moduleToGroup[(*(nets[i])).module], mn = (*(nets[i])).next;
-         mn != NULL; mn = (*mn).next)
-    {
-      /* only check nodes other than self, and not swapped */
-      if (grp != moduleToGroup[(*mn).module])
-      {
-        if (verbose)
+      netSz = 0;
+      for (mn = nets[i]; mn != NULL; mn = (*mn).next)
         {
-          fprintf(stdout, "Net %3d cut.\n", i + 1);
+          netSz++;
         }
-        cuts++;
-        netStats[netSz].netsCut++;
-        break;
-      }
+      assert(netSz >= 2);
+      netStats[netSz].total++;
+      if (netSz > maxStat)
+        {
+          maxStat = netSz;
+        }
+
+      for (grp = moduleToGroup[(*(nets[i])).module], mn = (*(nets[i])).next;
+           mn != NULL; mn = (*mn).next)
+        {
+          /* only check nodes other than self, and not swapped */
+          if (grp != moduleToGroup[(*mn).module])
+            {
+              if (verbose)
+                {
+                  fprintf(stdout, "Net %3d cut.\n", i + 1);
+                }
+              cuts++;
+              netStats[netSz].netsCut++;
+              break;
+            }
+        }
     }
-  }
   fprintf(stdout, "Total net cuts  = %lu\n", cuts);
 
   for (i = 2; i <= maxStat; i++)
-  {
-    fprintf(stdout,
-            "sz:%5d     total:%5lu     edgesCut:%5lu     netsCuts:%5lu\n", i,
-            netStats[i].total, netStats[i].edgesCut, netStats[i].netsCut);
-  }
+    {
+      fprintf(stdout,
+              "sz:%5d     total:%5lu     edgesCut:%5lu     netsCuts:%5lu\n", i,
+              netStats[i].total, netStats[i].edgesCut, netStats[i].netsCut);
+    }
 }
 
 int main(int argc, char **argv)
@@ -367,11 +367,11 @@ int main(int argc, char **argv)
 
   /* parse argument */
   if (argc != 2)
-  {
-    fprintf(stderr, "Usage: KL <input_file>\n");
-    ;
-    exit(1);
-  }
+    {
+      fprintf(stderr, "Usage: KL <input_file>\n");
+      ;
+      exit(1);
+    }
 
   /* prepare the data structures */
   ReadNetList(argv[1]);
@@ -386,59 +386,60 @@ int main(int argc, char **argv)
 
   /* do until we don't make any progress */
   do
-  {
-#ifndef KS_MODE
-    /* compute the swap costs */
-    ComputeDs(&(groupA), GroupA, SwappedToA);
-    ComputeDs(&(groupB), GroupB, SwappedToB);
-#endif /* !KS_MODE */
-
-    /* for all pairs of nodes in A,B */
-    for (p = 0; p < numModules / 2; p++)
     {
-#ifdef KS_MODE
+#ifndef KS_MODE
       /* compute the swap costs */
       ComputeDs(&(groupA), GroupA, SwappedToA);
       ComputeDs(&(groupB), GroupB, SwappedToB);
+#endif /* !KS_MODE */
+
+      /* for all pairs of nodes in A,B */
+      for (p = 0; p < numModules / 2; p++)
+        {
+#ifdef KS_MODE
+          /* compute the swap costs */
+          ComputeDs(&(groupA), GroupA, SwappedToA);
+          ComputeDs(&(groupB), GroupB, SwappedToB);
 #endif /* KS_MODE */
 
-      /* find the max swap opportunity, and swap */
-      GP[p] = FindMaxGpAndSwap();
-    }
-    /* lists should both be empty now */
-    assert(groupA.head == NULL && groupA.tail == NULL);
-    assert(groupB.head == NULL && groupB.tail == NULL);
+          /* find the max swap opportunity, and swap */
+          GP[p] = FindMaxGpAndSwap();
+        }
+      /* lists should both be empty now */
+      assert(groupA.head == NULL && groupA.tail == NULL);
+      assert(groupB.head == NULL && groupB.tail == NULL);
 
-    gMax = FindGMax(&iMax);
+      gMax = FindGMax(&iMax);
 
-    /* debug/statistics */
-    if (lastGMax == gMax)
-    {
-      fprintf(stdout, "No progress: gMax = %f\n", gMax);
-    }
-    lastGMax = gMax;
-    fprintf(stdout, "gMax = %f, iMax = %lu\n", gMax, iMax);
+      /* debug/statistics */
+      if (lastGMax == gMax)
+        {
+          fprintf(stdout, "No progress: gMax = %f\n", gMax);
+        }
+      lastGMax = gMax;
+      fprintf(stdout, "gMax = %f, iMax = %lu\n", gMax, iMax);
 
-    if (gMax > 0.0)
-    {
-      SwapSubsetAndReset(iMax);
+      if (gMax > 0.0)
+        {
+          SwapSubsetAndReset(iMax);
+        }
+      PrintResults(0);
     }
-    PrintResults(0);
-  } while (gMax > 0.0); /* progress made? */
+  while (gMax > 0.0); /* progress made? */
 
   /* all swaps rejected */
   groupA = swapToB;
   for (mr = groupA.head; mr != NULL; mr = (*mr).next)
-  {
-    moduleToGroup[(*mr).module] = GroupA;
-  }
+    {
+      moduleToGroup[(*mr).module] = GroupA;
+    }
   groupB = swapToA;
   for (mr = groupB.head; mr != NULL; mr = (*mr).next)
-  {
-    moduleToGroup[(*mr).module] = GroupB;
-  }
+    {
+      moduleToGroup[(*mr).module] = GroupB;
+    }
 
-  ;
+    ;
 
   /* all done, show results */
   PrintResults(1);

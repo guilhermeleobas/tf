@@ -135,9 +135,22 @@ static uint32 LHs[16] = {0x00000000, 0x00000001, 0x00000100, 0x00000101,
                          0x01010000, 0x01010001, 0x01010100, 0x01010101};
 
 static uint32 RHs[16] = {
-    0x00000000, 0x01000000, 0x00010000, 0x01010000, 0x00000100, 0x01000100,
-    0x00010100, 0x01010100, 0x00000001, 0x01000001, 0x00010001, 0x01010001,
-    0x00000101, 0x01000101, 0x00010101, 0x01010101,
+    0x00000000,
+    0x01000000,
+    0x00010000,
+    0x01010000,
+    0x00000100,
+    0x01000100,
+    0x00010100,
+    0x01010100,
+    0x00000001,
+    0x01000001,
+    0x00010001,
+    0x01010001,
+    0x00000101,
+    0x01000101,
+    0x00010101,
+    0x01010101,
 };
 
 /* platform-independant 32-bit integer manipulation macros */
@@ -250,42 +263,42 @@ int des_main_ks(uint32 SK[32], uint8 key[8])
   /* calculate subkeys */
 
   for (i = 0; i < 16; i++)
-  {
-    if (i < 2 || i == 8 || i == 15)
     {
-      X = ((X << 1) | (X >> 27)) & 0x0FFFFFFF;
-      Y = ((Y << 1) | (Y >> 27)) & 0x0FFFFFFF;
-    }
-    else
-    {
-      X = ((X << 2) | (X >> 26)) & 0x0FFFFFFF;
-      Y = ((Y << 2) | (Y >> 26)) & 0x0FFFFFFF;
-    }
+      if (i < 2 || i == 8 || i == 15)
+        {
+          X = ((X << 1) | (X >> 27)) & 0x0FFFFFFF;
+          Y = ((Y << 1) | (Y >> 27)) & 0x0FFFFFFF;
+        }
+      else
+        {
+          X = ((X << 2) | (X >> 26)) & 0x0FFFFFFF;
+          Y = ((Y << 2) | (Y >> 26)) & 0x0FFFFFFF;
+        }
 
-    *SK++ = ((X << 4) & 0x24000000) | ((X << 28) & 0x10000000) |
-            ((X << 14) & 0x08000000) | ((X << 18) & 0x02080000) |
-            ((X << 6) & 0x01000000) | ((X << 9) & 0x00200000) |
-            ((X >> 1) & 0x00100000) | ((X << 10) & 0x00040000) |
-            ((X << 2) & 0x00020000) | ((X >> 10) & 0x00010000) |
-            ((Y >> 13) & 0x00002000) | ((Y >> 4) & 0x00001000) |
-            ((Y << 6) & 0x00000800) | ((Y >> 1) & 0x00000400) |
-            ((Y >> 14) & 0x00000200) | ((Y)&0x00000100) |
-            ((Y >> 5) & 0x00000020) | ((Y >> 10) & 0x00000010) |
-            ((Y >> 3) & 0x00000008) | ((Y >> 18) & 0x00000004) |
-            ((Y >> 26) & 0x00000002) | ((Y >> 24) & 0x00000001);
+      *SK++ = ((X << 4) & 0x24000000) | ((X << 28) & 0x10000000) |
+              ((X << 14) & 0x08000000) | ((X << 18) & 0x02080000) |
+              ((X << 6) & 0x01000000) | ((X << 9) & 0x00200000) |
+              ((X >> 1) & 0x00100000) | ((X << 10) & 0x00040000) |
+              ((X << 2) & 0x00020000) | ((X >> 10) & 0x00010000) |
+              ((Y >> 13) & 0x00002000) | ((Y >> 4) & 0x00001000) |
+              ((Y << 6) & 0x00000800) | ((Y >> 1) & 0x00000400) |
+              ((Y >> 14) & 0x00000200) | ((Y)&0x00000100) |
+              ((Y >> 5) & 0x00000020) | ((Y >> 10) & 0x00000010) |
+              ((Y >> 3) & 0x00000008) | ((Y >> 18) & 0x00000004) |
+              ((Y >> 26) & 0x00000002) | ((Y >> 24) & 0x00000001);
 
-    *SK++ = ((X << 15) & 0x20000000) | ((X << 17) & 0x10000000) |
-            ((X << 10) & 0x08000000) | ((X << 22) & 0x04000000) |
-            ((X >> 2) & 0x02000000) | ((X << 1) & 0x01000000) |
-            ((X << 16) & 0x00200000) | ((X << 11) & 0x00100000) |
-            ((X << 3) & 0x00080000) | ((X >> 6) & 0x00040000) |
-            ((X << 15) & 0x00020000) | ((X >> 4) & 0x00010000) |
-            ((Y >> 2) & 0x00002000) | ((Y << 8) & 0x00001000) |
-            ((Y >> 14) & 0x00000808) | ((Y >> 9) & 0x00000400) |
-            ((Y)&0x00000200) | ((Y << 7) & 0x00000100) |
-            ((Y >> 7) & 0x00000020) | ((Y >> 3) & 0x00000011) |
-            ((Y << 2) & 0x00000004) | ((Y >> 21) & 0x00000002);
-  }
+      *SK++ = ((X << 15) & 0x20000000) | ((X << 17) & 0x10000000) |
+              ((X << 10) & 0x08000000) | ((X << 22) & 0x04000000) |
+              ((X >> 2) & 0x02000000) | ((X << 1) & 0x01000000) |
+              ((X << 16) & 0x00200000) | ((X << 11) & 0x00100000) |
+              ((X << 3) & 0x00080000) | ((X >> 6) & 0x00040000) |
+              ((X << 15) & 0x00020000) | ((X >> 4) & 0x00010000) |
+              ((Y >> 2) & 0x00002000) | ((Y << 8) & 0x00001000) |
+              ((Y >> 14) & 0x00000808) | ((Y >> 9) & 0x00000400) |
+              ((Y)&0x00000200) | ((Y << 7) & 0x00000100) |
+              ((Y >> 7) & 0x00000020) | ((Y >> 3) & 0x00000011) |
+              ((Y << 2) & 0x00000004) | ((Y >> 21) & 0x00000002);
+    }
 
   return (0);
 }
@@ -301,10 +314,10 @@ int des_set_key(des_context *ctx, uint8 key[8])
   /* setup decryption subkeys */
 
   for (i = 0; i < 32; i += 2)
-  {
-    ctx->dsk[i] = ctx->esk[30 - i];
-    ctx->dsk[i + 1] = ctx->esk[31 - i];
-  }
+    {
+      ctx->dsk[i] = ctx->esk[30 - i];
+      ctx->dsk[i + 1] = ctx->esk[31 - i];
+    }
 
   return (0);
 }
@@ -363,19 +376,19 @@ int des3_set_2keys(des3_context *ctx, uint8 key1[8], uint8 key2[8])
   des_main_ks(ctx->dsk + 32, key2);
 
   for (i = 0; i < 32; i += 2)
-  {
-    ctx->dsk[i] = ctx->esk[30 - i];
-    ctx->dsk[i + 1] = ctx->esk[31 - i];
+    {
+      ctx->dsk[i] = ctx->esk[30 - i];
+      ctx->dsk[i + 1] = ctx->esk[31 - i];
 
-    ctx->esk[i + 32] = ctx->dsk[62 - i];
-    ctx->esk[i + 33] = ctx->dsk[63 - i];
+      ctx->esk[i + 32] = ctx->dsk[62 - i];
+      ctx->esk[i + 33] = ctx->dsk[63 - i];
 
-    ctx->esk[i + 64] = ctx->esk[i];
-    ctx->esk[i + 65] = ctx->esk[1 + i];
+      ctx->esk[i + 64] = ctx->esk[i];
+      ctx->esk[i + 65] = ctx->esk[1 + i];
 
-    ctx->dsk[i + 64] = ctx->dsk[i];
-    ctx->dsk[i + 65] = ctx->dsk[1 + i];
-  }
+      ctx->dsk[i + 64] = ctx->dsk[i];
+      ctx->dsk[i + 65] = ctx->dsk[1 + i];
+    }
 
   return (0);
 }
@@ -390,16 +403,16 @@ int des3_set_3keys(des3_context *ctx, uint8 key1[8], uint8 key2[8],
   des_main_ks(ctx->esk + 64, key3);
 
   for (i = 0; i < 32; i += 2)
-  {
-    ctx->dsk[i] = ctx->esk[94 - i];
-    ctx->dsk[i + 1] = ctx->esk[95 - i];
+    {
+      ctx->dsk[i] = ctx->esk[94 - i];
+      ctx->dsk[i + 1] = ctx->esk[95 - i];
 
-    ctx->esk[i + 32] = ctx->dsk[62 - i];
-    ctx->esk[i + 33] = ctx->dsk[63 - i];
+      ctx->esk[i + 32] = ctx->dsk[62 - i];
+      ctx->esk[i + 33] = ctx->dsk[63 - i];
 
-    ctx->dsk[i + 64] = ctx->esk[30 - i];
-    ctx->dsk[i + 65] = ctx->esk[31 - i];
-  }
+      ctx->dsk[i + 64] = ctx->esk[30 - i];
+      ctx->dsk[i + 65] = ctx->esk[31 - i];
+    }
 
   return (0);
 }
@@ -517,85 +530,85 @@ int main(int argc, char **argv)
   int delay;
   int NumDelay = 100;
   if (argc == 2)
-  {
-    NumDelay = atoi(argv[1]);
-  }
+    {
+      NumDelay = atoi(argv[1]);
+    }
 
   for (m = 0; m < 2; m++)
-  {
-    printf("\n Triple-DES Monte Carlo Test (ECB mode) - ");
-
-    if (m == 0)
     {
-      printf("encryption\n\n");
-    }
-    if (m == 1)
-    {
-      printf("decryption\n\n");
-    }
+      printf("\n Triple-DES Monte Carlo Test (ECB mode) - ");
 
-    for (n = 0; n < 3; n++)
-    {
-      printf(" Test %d, key size = %3d bits: ", n + 1, 64 + n * 64);
-
-      fflush(stdout);
-
-      for (delay = 0; delay < NumDelay; ++delay)
-      {
-        memcpy(buf, DES3_init, 8);
-
-        switch (n)
+      if (m == 0)
         {
-          case 0:
-            des_set_key(&ctx, DES3_keys[0]);
-            break;
-
-          case 1:
-            des3_set_2keys(&ctx3, DES3_keys[0], DES3_keys[1]);
-            break;
-
-          case 2:
-            des3_set_3keys(&ctx3, DES3_keys[0], DES3_keys[1], DES3_keys[2]);
-            break;
+          printf("encryption\n\n");
+        }
+      if (m == 1)
+        {
+          printf("decryption\n\n");
         }
 
-        for (i = 0; i < 10000; i++)
+      for (n = 0; n < 3; n++)
         {
-          if (n == 0)
-          {
-            if (m == 0)
-            {
-              des_encrypt(&ctx, buf, buf);
-            }
-            if (m == 1)
-            {
-              des_decrypt(&ctx, buf, buf);
-            }
-          }
-          else
-          {
-            if (m == 0)
-            {
-              des3_encrypt(&ctx3, buf, buf);
-            }
-            if (m == 1)
-            {
-              des3_decrypt(&ctx3, buf, buf);
-            }
-          }
-        }
+          printf(" Test %d, key size = %3d bits: ", n + 1, 64 + n * 64);
 
-        if ((m == 0 && memcmp(buf, DES3_enc_test[n], 8)) ||
-            (m == 1 && memcmp(buf, DES3_dec_test[n], 8)))
-        {
-          printf("failed!\n");
-          return (1);
-        }
-      }
+          fflush(stdout);
 
-      printf("passed.\n");
+          for (delay = 0; delay < NumDelay; ++delay)
+            {
+              memcpy(buf, DES3_init, 8);
+
+              switch (n)
+                {
+                  case 0:
+                    des_set_key(&ctx, DES3_keys[0]);
+                    break;
+
+                  case 1:
+                    des3_set_2keys(&ctx3, DES3_keys[0], DES3_keys[1]);
+                    break;
+
+                  case 2:
+                    des3_set_3keys(&ctx3, DES3_keys[0], DES3_keys[1], DES3_keys[2]);
+                    break;
+                }
+
+              for (i = 0; i < 10000; i++)
+                {
+                  if (n == 0)
+                    {
+                      if (m == 0)
+                        {
+                          des_encrypt(&ctx, buf, buf);
+                        }
+                      if (m == 1)
+                        {
+                          des_decrypt(&ctx, buf, buf);
+                        }
+                    }
+                  else
+                    {
+                      if (m == 0)
+                        {
+                          des3_encrypt(&ctx3, buf, buf);
+                        }
+                      if (m == 1)
+                        {
+                          des3_decrypt(&ctx3, buf, buf);
+                        }
+                    }
+                }
+
+              if ((m == 0 && memcmp(buf, DES3_enc_test[n], 8)) ||
+                  (m == 1 && memcmp(buf, DES3_dec_test[n], 8)))
+                {
+                  printf("failed!\n");
+                  return (1);
+                }
+            }
+
+          printf("passed.\n");
+        }
     }
-  }
 
   printf("\n");
 

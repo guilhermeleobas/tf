@@ -23,13 +23,13 @@ void setbit(char *set, int number, int value)
 {
   set += number / CHAR_BIT;
   if (value)
-  {
-    *set |= 1 << (number % CHAR_BIT); /* set bit  */
-  }
+    {
+      *set |= 1 << (number % CHAR_BIT); /* set bit  */
+    }
   else
-  {
-    *set &= ~(1 << (number % CHAR_BIT)); /* clear bit*/
-  }
+    {
+      *set &= ~(1 << (number % CHAR_BIT)); /* clear bit*/
+    }
 }
 
 void flipbit(char *set, int number)

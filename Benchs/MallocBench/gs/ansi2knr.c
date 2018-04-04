@@ -53,49 +53,49 @@ char *argv[];
   char buf[bufsize];
   char *line;
   switch (argc)
-  {
-    default:
-      printf("Usage: ansi2knr input_file [output_file]\n");
-      exit(0);
-    case 2:
-      out = stdout;
-      break;
-    case 3:
-      out = fopen(argv[2], "w");
-      if (out == NULL)
-      {
-        fprintf(stderr, "Cannot open %s\n", argv[2]);
-        exit(1);
-      }
-  }
+    {
+      default:
+        printf("Usage: ansi2knr input_file [output_file]\n");
+        exit(0);
+      case 2:
+        out = stdout;
+        break;
+      case 3:
+        out = fopen(argv[2], "w");
+        if (out == NULL)
+          {
+            fprintf(stderr, "Cannot open %s\n", argv[2]);
+            exit(1);
+          }
+    }
   in = fopen(argv[1], "r");
   if (in == NULL)
-  {
-    fprintf(stderr, "Cannot open %s\n", argv[1]);
-    exit(1);
-  }
+    {
+      fprintf(stderr, "Cannot open %s\n", argv[1]);
+      exit(1);
+    }
   fprintf(out, "#line 1 \"%s\"\n", argv[1]);
   line = buf;
   while (fgets(line, (unsigned)(buf + bufsize - line), in) != NULL)
-  {
-    switch (test1(buf))
     {
-      case 1: /* a function */
-        convert1(buf, out);
-        break;
-      case -1: /* maybe the start of a function */
-        line = buf + strlen(buf);
-        continue;
-      default: /* not a function */
-        fputs(buf, out);
-        break;
+      switch (test1(buf))
+        {
+          case 1: /* a function */
+            convert1(buf, out);
+            break;
+          case -1: /* maybe the start of a function */
+            line = buf + strlen(buf);
+            continue;
+          default: /* not a function */
+            fputs(buf, out);
+            break;
+        }
+      line = buf;
     }
-    line = buf;
-  }
   if (line != buf)
-  {
-    fputs(buf, out);
-  }
+    {
+      fputs(buf, out);
+    }
   fclose(out);
   fclose(in);
   return 0;
@@ -106,28 +106,28 @@ char *skipspace(p, dir) register char *p;
 register int dir; /* 1 for forward, -1 for backward */
 {
   for (;;)
-  {
-    while (isspace(*p))
     {
+      while (isspace(*p))
+        {
+          p += dir;
+        }
+      if (!(*p == '/' && p[dir] == '*'))
+        {
+          break;
+        }
+      p += dir;
+      p += dir;
+      while (!(*p == '*' && p[dir] == '/'))
+        {
+          if (*p == 0)
+            {
+              return p; /* multi-line comment?? */
+            }
+          p += dir;
+        }
+      p += dir;
       p += dir;
     }
-    if (!(*p == '/' && p[dir] == '*'))
-    {
-      break;
-    }
-    p += dir;
-    p += dir;
-    while (!(*p == '*' && p[dir] == '/'))
-    {
-      if (*p == 0)
-      {
-        return p; /* multi-line comment?? */
-      }
-      p += dir;
-    }
-    p += dir;
-    p += dir;
-  }
   return p;
 }
 
@@ -147,58 +147,58 @@ test1(buf) char *buf;
   char *endfn;
   int contin;
   if (!isalpha(*p))
-  {
-    return 0; /* no name at left margin */
-  }
+    {
+      return 0; /* no name at left margin */
+    }
   bend = skipspace(buf + strlen(buf) - 1, -1);
   switch (*bend)
-  {
-    case ')':
-      contin = 1;
-      break;
-    case '(':
-    case ',':
-      contin = -1;
-      break;
-    default:
-      return 0; /* not a function */
-  }
+    {
+      case ')':
+        contin = 1;
+        break;
+      case '(':
+      case ',':
+        contin = -1;
+        break;
+      default:
+        return 0; /* not a function */
+    }
   while (isidchar(*p))
-  {
-    p++;
-  }
+    {
+      p++;
+    }
   endfn = p;
   p = skipspace(p, 1);
   if (*p++ != '(')
-  {
-    return 0; /* not a function */
-  }
+    {
+      return 0; /* not a function */
+    }
   p = skipspace(p, 1);
   if (*p == ')')
-  {
-    return 0; /* no parameters */
-  }
+    {
+      return 0; /* no parameters */
+    }
   /* Check that the apparent function name isn't a keyword. */
   /* We only need to check for keywords that could be followed */
   /* by a left parenthesis (which, unfortunately, is most of them). */
   {
     static char *words[] = {
-        "asm",      "auto",   "case",     "char",   "const",
-        "double",   "extern", "float",    "for",    "if",
-        "int",      "long",   "register", "return", "short",
-        "signed",   "sizeof", "static",   "switch", "typedef",
-        "unsigned", "void",   "volatile", "while",  0};
+        "asm", "auto", "case", "char", "const",
+        "double", "extern", "float", "for", "if",
+        "int", "long", "register", "return", "short",
+        "signed", "sizeof", "static", "switch", "typedef",
+        "unsigned", "void", "volatile", "while", 0};
     char **key = words;
     char *kp;
     int len = endfn - buf;
     while ((kp = *key) != 0)
-    {
-      if (strlen(kp) == len && !strncmp(kp, buf, len))
       {
-        return 0; /* name is a keyword */
+        if (strlen(kp) == len && !strncmp(kp, buf, len))
+          {
+            return 0; /* name is a keyword */
+          }
+        key++;
       }
-      key++;
-    }
   }
   return contin;
 }
@@ -217,131 +217,132 @@ top:
   p = endfn;
   breaks = (char **)malloc(sizeof(char **) * num_breaks * 2);
   if (breaks == 0)
-  { /* Couldn't allocate break table, give up */
-    fprintf(stderr, "Unable to allocate break table!\n");
-    fputs(buf, out);
-    return -1;
-  }
+    { /* Couldn't allocate break table, give up */
+      fprintf(stderr, "Unable to allocate break table!\n");
+      fputs(buf, out);
+      return -1;
+    }
   btop = breaks + num_breaks * 2 - 2;
   bp = breaks;
   /* Parse the argument list */
   do
-  {
-    int level = 0;
-    char *end = NULL;
-    if (bp >= btop)
-    { /* Filled up break table. */
-      /* Allocate a bigger one and start over. */
-      free((char *)breaks);
-      num_breaks <<= 1;
-      goto top;
-    }
-    *bp++ = p;
-    /* Find the end of the argument */
-    for (; end == NULL; p++)
     {
-      switch (*p)
-      {
-        case ',':
-          if (!level)
-          {
-            end = p;
-          }
-          break;
-        case '(':
-          level++;
-          break;
-        case ')':
-          if (--level < 0)
-          {
-            end = p;
-          }
-          break;
-        case '/':
-          p = skipspace(p, 1) - 1;
-          break;
-        default:;
-      }
-    }
-    p--; /* back up over terminator */
-    /* Find the name being declared. */
-    /* This is complicated because of procedure and */
-    /* array modifiers. */
-    for (;;)
-    {
-      p = skipspace(p - 1, -1);
-      switch (*p)
-      {
-        case ']': /* skip array dimension(s) */
-        case ')': /* skip procedure args OR name */
+      int level = 0;
+      char *end = NULL;
+      if (bp >= btop)
+        { /* Filled up break table. */
+          /* Allocate a bigger one and start over. */
+          free((char *)breaks);
+          num_breaks <<= 1;
+          goto top;
+        }
+      *bp++ = p;
+      /* Find the end of the argument */
+      for (; end == NULL; p++)
         {
-          int level = 1;
-          while (level)
-          {
-            switch (*--p)
+          switch (*p)
             {
-              case ']':
-              case ')':
+              case ',':
+                if (!level)
+                  {
+                    end = p;
+                  }
+                break;
+              case '(':
                 level++;
                 break;
-              case '[':
-              case '(':
-                level--;
+              case ')':
+                if (--level < 0)
+                  {
+                    end = p;
+                  }
                 break;
               case '/':
-                p = skipspace(p, -1) + 1;
+                p = skipspace(p, 1) - 1;
                 break;
               default:;
             }
-          }
         }
-          if (*p == '(' && *skipspace(p + 1, 1) == '*')
-          { /* We found the name being declared */
-            while (!isalpha(*p))
+      p--; /* back up over terminator */
+      /* Find the name being declared. */
+      /* This is complicated because of procedure and */
+      /* array modifiers. */
+      for (;;)
+        {
+          p = skipspace(p - 1, -1);
+          switch (*p)
             {
-              p = skipspace(p, 1) + 1;
+              case ']': /* skip array dimension(s) */
+              case ')': /* skip procedure args OR name */
+                {
+                  int level = 1;
+                  while (level)
+                    {
+                      switch (*--p)
+                        {
+                          case ']':
+                          case ')':
+                            level++;
+                            break;
+                          case '[':
+                          case '(':
+                            level--;
+                            break;
+                          case '/':
+                            p = skipspace(p, -1) + 1;
+                            break;
+                          default:;
+                        }
+                    }
+                }
+                if (*p == '(' && *skipspace(p + 1, 1) == '*')
+                  { /* We found the name being declared */
+                    while (!isalpha(*p))
+                      {
+                        p = skipspace(p, 1) + 1;
+                      }
+                    goto found;
+                  }
+                break;
+              default:
+                goto found;
             }
-            goto found;
-          }
-          break;
-        default:
-          goto found;
-      }
+        }
+    found:
+      while (isidchar(*p))
+        {
+          p--;
+        }
+      *bp++ = p + 1;
+      p = end;
     }
-  found:
-    while (isidchar(*p))
-    {
-      p--;
-    }
-    *bp++ = p + 1;
-    p = end;
-  } while (*p++ == ',');
+  while (*p++ == ',');
   *bp = p;
   /* Put out the function name */
   p = buf;
   while (p != endfn)
-  {
-    putc(*p, out), p++;
-  }
-  /* Put out the declaration */
-  for (ap = breaks + 1; ap < bp; ap += 2)
-  {
-    p = *ap;
-    while (isidchar(*p))
     {
       putc(*p, out), p++;
     }
-    if (ap < bp - 1)
+  /* Put out the declaration */
+  for (ap = breaks + 1; ap < bp; ap += 2)
     {
-      fputs(", ", out);
+      p = *ap;
+      while (isidchar(*p))
+        {
+          putc(*p, out), p++;
+        }
+      if (ap < bp - 1)
+        {
+          fputs(", ", out);
+        }
     }
-  }
   fputs(")  ", out);
   /* Put out the argument declarations */
   for (ap = breaks + 2; ap <= bp; ap += 2)
-  {
-    (*ap)[-1] = ';';
-  }
+    {
+      (*ap)[-1] = ';';
+    }
   fputs(breaks[0], out);
   free((char *)breaks);
   return 0;

@@ -49,13 +49,13 @@ int zsqrt(register ref *op)
   float num;
   int code = num_params(op, 1, &num);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   if (num < 0.0)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   make_real(op, sqrt(num));
   return 0;
 }
@@ -66,9 +66,9 @@ int zarccos(register ref *op)
   float num, result;
   int code = num_params(op, 1, &num);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   result = acos(num) * radians_to_degrees;
   make_real(op, result);
   return 0;
@@ -80,9 +80,9 @@ int zarcsin(register ref *op)
   float num, result;
   int code = num_params(op, 1, &num);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   result = asin(num) * radians_to_degrees;
   make_real(op, result);
   return 0;
@@ -95,42 +95,43 @@ int zatan(register ref *op)
   float result;
   int code = num_params(op, 2, args);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   if (args[0] == 0) /* on X-axis, special case */
-  {
-    if (args[1] == 0)
     {
-      return e_undefinedresult;
+      if (args[1] == 0)
+        {
+          return e_undefinedresult;
+        }
+      result = (args[1] < 0 ? 180 : 0);
     }
-    result = (args[1] < 0 ? 180 : 0);
-  }
   else
-  {
-    result = atan2(args[0], args[1]) * radians_to_degrees;
-    /* Normalize quadrants by PostScript convention. */
-    /* The result of atan2 is in the range (-pi..pi) */
-    /* (we got rid of the endpoints above). */
-    if (result < 0)
     {
-      do
-      {
-        result += 180;
-      } while (result < 0);
+      result = atan2(args[0], args[1]) * radians_to_degrees;
+      /* Normalize quadrants by PostScript convention. */
+      /* The result of atan2 is in the range (-pi..pi) */
+      /* (we got rid of the endpoints above). */
+      if (result < 0)
+        {
+          do
+            {
+              result += 180;
+            }
+          while (result < 0);
+        }
+      else
+        {
+          while (result >= 180)
+            {
+              result -= 180;
+            }
+        }
+      if (args[0] < 0)
+        {
+          result += 180;
+        }
     }
-    else
-    {
-      while (result >= 180)
-      {
-        result -= 180;
-      }
-    }
-    if (args[0] < 0)
-    {
-      result += 180;
-    }
-  }
   make_real(op - 1, result);
   pop(1);
   return 0;
@@ -142,9 +143,9 @@ int zcos(register ref *op)
   float angle;
   int code = num_params(op, 1, &angle);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   make_real(op, cos(angle * degrees_to_radians));
   return 0;
 }
@@ -155,9 +156,9 @@ int zsin(register ref *op)
   float angle;
   int code = num_params(op, 1, &angle);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   make_real(op, sin(angle * degrees_to_radians));
   return 0;
 }
@@ -170,17 +171,17 @@ int zexp(register ref *op)
   double ipart;
   int code = num_params(op, 2, args);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   if (args[0] == 0.0 && args[1] == 0.0)
-  {
-    return e_undefinedresult;
-  }
+    {
+      return e_undefinedresult;
+    }
   if (args[0] < 0.0 && modf(args[1], &ipart) != 0.0)
-  {
-    return e_undefinedresult;
-  }
+    {
+      return e_undefinedresult;
+    }
   result = pow(args[0], args[1]);
   make_real(op - 1, result);
   pop(1);
@@ -193,13 +194,13 @@ int zln(register ref *op)
   float num;
   int code = num_params(op, 1, &num);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   if (num <= 0.0)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   make_real(op, log(num));
   return 0;
 }
@@ -210,13 +211,13 @@ int zlog(register ref *op)
   float num;
   int code = num_params(op, 1, &num);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   if (num <= 0.0)
-  {
-    return e_rangecheck;
-  }
+    {
+      return e_rangecheck;
+    }
   make_real(op, log10(num));
   return 0;
 }
@@ -263,9 +264,16 @@ void zmath_op_init()
   static op_def my_defs[] = {
       {"1arccos", zarccos}, /* extension */
       {"1arcsin", zarcsin}, /* extension */
-      {"2atan", zatan},     {"1cos", zcos}, {"2exp", zexp},
-      {"1ln", zln},         {"1log", zlog}, {"0rand", zrand},
-      {"0rrand", zrrand},   {"1sin", zsin}, {"1sqrt", zsqrt},
-      {"1srand", zsrand},   op_def_end};
+      {"2atan", zatan},
+      {"1cos", zcos},
+      {"2exp", zexp},
+      {"1ln", zln},
+      {"1log", zlog},
+      {"0rand", zrand},
+      {"0rrand", zrrand},
+      {"1sin", zsin},
+      {"1sqrt", zsqrt},
+      {"1srand", zsrand},
+      op_def_end};
   z_op_init(my_defs);
 }

@@ -28,13 +28,13 @@ enum pass_type
 char UPPER(CH) char CH; /* Character to convert to upper case (if needed). */
 {
   if ((CH >= 'a') && (CH <= 'z'))
-  {
-    return (CH - 'a' + 'A');
-  }
+    {
+      return (CH - 'a' + 'A');
+    }
   else
-  {
-    return CH;
-  }
+    {
+      return CH;
+    }
 }
 
 /* ------------------------------ IS_ALPHA_NUM ----------------------------- */
@@ -64,55 +64,55 @@ int eoln(CH) char CH; /* Character in question.                          */
 /* Return it in LABEL. Get it from INPUT starting from NEXT_CHAR.            */
 void GET_LABEL(LABEL, INPUT, NEXT_CHAR,
                PASS) char *LABEL; /* Where to put the label if found. */
-char *INPUT;         /* String to get the label from.                  */
+char *INPUT; /* String to get the label from.                  */
 enum pass_type PASS; /* pass1 = buffers error messages in ERROR_REC_BUF*/
-                     /* pass2 = don't buffer error messages.           */
-char **NEXT_CHAR;    /* where to start looking for the label in INPUT  */
+/* pass2 = don't buffer error messages.           */
+char **NEXT_CHAR; /* where to start looking for the label in INPUT  */
 {
   if ((UPPER(**NEXT_CHAR) >= 'A') && (UPPER(**NEXT_CHAR) <= 'Z'))
-  {
-    /* GET LABEL */
-    int LABEL_LEN = 1;
-    (*NEXT_CHAR)++;
-    while (IS_ALPHA_NUM(**NEXT_CHAR) && (!eoln(**NEXT_CHAR)))
     {
-      LABEL_LEN++;
+      /* GET LABEL */
+      int LABEL_LEN = 1;
       (*NEXT_CHAR)++;
-    };
-    if (LABEL_LEN > LABEL_SIZE_1)
-    {
-      if (PASS == pass1)
-      {
-        char TEMP;
-        char *ERROR_MSG;
+      while (IS_ALPHA_NUM(**NEXT_CHAR) && (!eoln(**NEXT_CHAR)))
+        {
+          LABEL_LEN++;
+          (*NEXT_CHAR)++;
+        };
+      if (LABEL_LEN > LABEL_SIZE_1)
+        {
+          if (PASS == pass1)
+            {
+              char TEMP;
+              char *ERROR_MSG;
 
-        TEMP = INPUT[LABEL_LEN];
-        INPUT[LABEL_LEN] = '\0';
+              TEMP = INPUT[LABEL_LEN];
+              INPUT[LABEL_LEN] = '\0';
 
-        ERROR_MSG = (char *)malloc(
-            (unsigned int)(80 + ((int)log10((double)LABEL_SIZE_1)) +
-                           strlen(INPUT)));
-        (void)sprintf(ERROR_MSG,
-                      "eERROR[1]: Label '%s' is too long (MAX %d characters).",
-                      INPUT, LABEL_SIZE_1);
-        ADD_TO_END_OF_BUFFER(&ERROR_REC_BUF, ERROR_MSG);
-        free(ERROR_MSG);
+              ERROR_MSG = (char *)malloc(
+                  (unsigned int)(80 + ((int)log10((double)LABEL_SIZE_1)) +
+                                 strlen(INPUT)));
+              (void)sprintf(ERROR_MSG,
+                            "eERROR[1]: Label '%s' is too long (MAX %d characters).",
+                            INPUT, LABEL_SIZE_1);
+              ADD_TO_END_OF_BUFFER(&ERROR_REC_BUF, ERROR_MSG);
+              free(ERROR_MSG);
 
-        INPUT[LABEL_LEN] = TEMP;
-      };
-      /* ------------------- truncate to 8 characters. */
-      LABEL_LEN = LABEL_SIZE_1;
-    };
-    (void)strncpy(LABEL, INPUT, LABEL_LEN);
-    LABEL[LABEL_LEN] = '\0';
-    /* End GET LABEL */
-  }
+              INPUT[LABEL_LEN] = TEMP;
+            };
+          /* ------------------- truncate to 8 characters. */
+          LABEL_LEN = LABEL_SIZE_1;
+        };
+      (void)strncpy(LABEL, INPUT, LABEL_LEN);
+      LABEL[LABEL_LEN] = '\0';
+      /* End GET LABEL */
+    }
   else
-  {
-    /* ---------- Object Starting at NEXT_CHAR can not possible be a label */
-    /*            Return the empty string ("") */
-    LABEL[0] = '\0';
-  }
+    {
+      /* ---------- Object Starting at NEXT_CHAR can not possible be a label */
+      /*            Return the empty string ("") */
+      LABEL[0] = '\0';
+    }
 }
 
 /* ------------------------- GET_OPCODE_STR -------------------------------- */
@@ -121,47 +121,47 @@ char **NEXT_CHAR;    /* where to start looking for the label in INPUT  */
 void GET_OPCODE_STR(
     OPCODE, NEXT_CHAR, PASS,
     STREAM) char *OPCODE; /* Where to put the opcode that was found.    */
-enum pass_type PASS;      /* pass1 = print error messages; pass2 = don't*/
-                          /* print error messages.                      */
-char **NEXT_CHAR;         /* Where to look for the OPERAND              */
-FILE *STREAM;             /* Stream to output error messages to.        */
+enum pass_type PASS; /* pass1 = print error messages; pass2 = don't*/
+/* print error messages.                      */
+char **NEXT_CHAR; /* Where to look for the OPERAND              */
+FILE *STREAM; /* Stream to output error messages to.        */
 {
   char *START_OF_OPCODE;
   START_OF_OPCODE = *NEXT_CHAR;
   if ((UPPER(**NEXT_CHAR) >= 'A') && (UPPER(**NEXT_CHAR) <= 'Z'))
-  {
-    int OP_LEN = 1;
-    (*NEXT_CHAR)++;
-    while (((UPPER(**NEXT_CHAR) >= 'A') && (UPPER(**NEXT_CHAR) <= 'Z')) &&
-           (!eoln(**NEXT_CHAR)))
     {
-      OP_LEN++;
+      int OP_LEN = 1;
       (*NEXT_CHAR)++;
-    };
-    if (OP_LEN > LABEL_SIZE_1)
-    {
-      /* -------------- (maybe) print error message, and truncate to 8
+      while (((UPPER(**NEXT_CHAR) >= 'A') && (UPPER(**NEXT_CHAR) <= 'Z')) &&
+             (!eoln(**NEXT_CHAR)))
+        {
+          OP_LEN++;
+          (*NEXT_CHAR)++;
+        };
+      if (OP_LEN > LABEL_SIZE_1)
+        {
+          /* -------------- (maybe) print error message, and truncate to 8
        * characters. */
-      if (PASS == pass1)
-      {
-        char TEMP;
-        TEMP = START_OF_OPCODE[OP_LEN];
-        START_OF_OPCODE[OP_LEN] = '\0';
-        (void)fprintf(STREAM,
-                      "eERROR[3]: OpCode field '%s' is too long. Truncating to "
-                      "%d charaters.\n",
-                      START_OF_OPCODE, LABEL_SIZE_1);
-        START_OF_OPCODE[OP_LEN] = TEMP;
-      };
-      OP_LEN = LABEL_SIZE_1;
-    };
-    (void)strncpy(OPCODE, START_OF_OPCODE, OP_LEN);
-    OPCODE[OP_LEN] = '\0';
-  }
+          if (PASS == pass1)
+            {
+              char TEMP;
+              TEMP = START_OF_OPCODE[OP_LEN];
+              START_OF_OPCODE[OP_LEN] = '\0';
+              (void)fprintf(STREAM,
+                            "eERROR[3]: OpCode field '%s' is too long. Truncating to "
+                            "%d charaters.\n",
+                            START_OF_OPCODE, LABEL_SIZE_1);
+              START_OF_OPCODE[OP_LEN] = TEMP;
+            };
+          OP_LEN = LABEL_SIZE_1;
+        };
+      (void)strncpy(OPCODE, START_OF_OPCODE, OP_LEN);
+      OPCODE[OP_LEN] = '\0';
+    }
   else
-  {
-    OPCODE[0] = 0;
-  }
+    {
+      OPCODE[0] = 0;
+    }
 }
 
 /* ---------------------------- SCAN_LINE ---------------------------------- */
@@ -172,94 +172,94 @@ void SCAN_LINE(LOCATION_COUNTER, INPUT_LINE, LABEL, EXTENDED, OPERATOR, REST,
                                                                     counter at
                                                                     start of
                                                                     line*/
-char **INPUT_LINE;   /* Where to return the source line         */
-char *LABEL;         /* Where to return the label if one exists */
-int *EXTENDED;       /* Boolean: Is there a '+' before the      */
-                     /*   operator. i.e. is this extended format*/
-char *OPERATOR;      /* Where to return the operator.           */
-char **REST;         /* Where to return everything after the    */
-                     /*   operator. Ignoring leading white-space*/
+char **INPUT_LINE; /* Where to return the source line         */
+char *LABEL; /* Where to return the label if one exists */
+int *EXTENDED; /* Boolean: Is there a '+' before the      */
+/*   operator. i.e. is this extended format*/
+char *OPERATOR; /* Where to return the operator.           */
+char **REST; /* Where to return everything after the    */
+/*   operator. Ignoring leading white-space*/
 enum pass_type PASS; /* pass1 = do print error messages and     */
-                     /*   source; pass2 = do not print error    */
-                     /*   messages.                             */
-FILE *STREAM;        /* Stream for outputing error messages and */
-                     /*   the source code                       */
-FILE *INPUT_STREAM;  /* Where to get the source line from       */
+/*   source; pass2 = do not print error    */
+/*   messages.                             */
+FILE *STREAM; /* Stream for outputing error messages and */
+/*   the source code                       */
+FILE *INPUT_STREAM; /* Where to get the source line from       */
 {
   char *CH;
 
   GET_LINE(INPUT_LINE, INPUT_STREAM);
   (*REST) = (*INPUT_LINE);
   if (PASS == pass1)
-  {
-    (void)fprintf(STREAM, "p%d %s\n", LOCATION_COUNTER, *REST);
-  }
+    {
+      (void)fprintf(STREAM, "p%d %s\n", LOCATION_COUNTER, *REST);
+    }
   CH = *REST;
   if (*CH != '.')
-  {
-    /* ---------------------- Not a comment line */
-    GET_LABEL(LABEL, *REST, &CH, PASS);
-    OUTPUT_BUFFER(&ERROR_REC_BUF, STREAM, 1);
-    /* ---------------------- Must be white space after a operator. */
-    if (!IS_BLANK_OR_TAB(*CH) && !eoln(*CH))
     {
-      if (PASS == pass1)
-      {
-        (void)fprintf(STREAM,
-                      "eERROR[2]: Illegal LABEL/OPCODE seperater('%c') "
-                      "expected <tab> or <blank>.\n",
-                      *CH);
-      }
-      CH++;
-    };
-    /* ---------------------- remove white space characters */
-    while (IS_BLANK_OR_TAB(*CH) && !eoln(*CH))
-    {
-      CH++;
-    }
+      /* ---------------------- Not a comment line */
+      GET_LABEL(LABEL, *REST, &CH, PASS);
+      OUTPUT_BUFFER(&ERROR_REC_BUF, STREAM, 1);
+      /* ---------------------- Must be white space after a operator. */
+      if (!IS_BLANK_OR_TAB(*CH) && !eoln(*CH))
+        {
+          if (PASS == pass1)
+            {
+              (void)fprintf(STREAM,
+                            "eERROR[2]: Illegal LABEL/OPCODE seperater('%c') "
+                            "expected <tab> or <blank>.\n",
+                            *CH);
+            }
+          CH++;
+        };
+      /* ---------------------- remove white space characters */
+      while (IS_BLANK_OR_TAB(*CH) && !eoln(*CH))
+        {
+          CH++;
+        }
 
-    if (*CH == '+')
-    {
-      CH++;
-      (*EXTENDED) = 1;
-    }
-    else
-    {
-      (*EXTENDED) = 0;
-    }
+      if (*CH == '+')
+        {
+          CH++;
+          (*EXTENDED) = 1;
+        }
+      else
+        {
+          (*EXTENDED) = 0;
+        }
 
-    GET_OPCODE_STR(OPERATOR, &CH, PASS, STREAM);
+      GET_OPCODE_STR(OPERATOR, &CH, PASS, STREAM);
 
-    if ((*EXTENDED == 1) && !strcmp(OPERATOR, "") && (PASS == pass1))
-    {
-      (void)fprintf(STREAM, "eERROR[5]: Expected an OPCODE after the '+'.\n");
+      if ((*EXTENDED == 1) && !strcmp(OPERATOR, "") && (PASS == pass1))
+        {
+          (void)fprintf(STREAM, "eERROR[5]: Expected an OPCODE after the '+'.\n");
+        }
+
+      /* ---------------------- Must be white space after a label. */
+      if (!IS_BLANK_OR_TAB(*CH) && !eoln(*CH))
+        {
+          if (PASS == pass1)
+            {
+              (void)fprintf(STREAM,
+                            "eERROR[4]: Illegal OPCODE/OPERANDS seperater('%c') "
+                            "expected TAB or BLANK.\n",
+                            *CH);
+            }
+          CH++;
+        };
+      /* ---------------------- remove white space characters */
+      while (IS_BLANK_OR_TAB(*CH) && !eoln(*CH))
+        {
+          CH++;
+        }
+
+      (*REST) = CH;
     }
-
-    /* ---------------------- Must be white space after a label. */
-    if (!IS_BLANK_OR_TAB(*CH) && !eoln(*CH))
-    {
-      if (PASS == pass1)
-      {
-        (void)fprintf(STREAM,
-                      "eERROR[4]: Illegal OPCODE/OPERANDS seperater('%c') "
-                      "expected TAB or BLANK.\n",
-                      *CH);
-      }
-      CH++;
-    };
-    /* ---------------------- remove white space characters */
-    while (IS_BLANK_OR_TAB(*CH) && !eoln(*CH))
-    {
-      CH++;
-    }
-
-    (*REST) = CH;
-  }
   else
-  {
-    /* ---------------------- comment line */
-    LABEL[0] = '\0';
-    (*EXTENDED) = 0;
-    OPERATOR[0] = '\0';
-  }
+    {
+      /* ---------------------- comment line */
+      LABEL[0] = '\0';
+      (*EXTENDED) = 0;
+      OPERATOR[0] = '\0';
+    }
 }

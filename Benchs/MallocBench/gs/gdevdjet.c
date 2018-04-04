@@ -35,7 +35,7 @@ copies.  */
 #define GS_PRN_DEVICE gs_deskjet_device
 #define DEVICE_NAME "deskjet"
 #endif
-#define PAGE_WIDTH_10THS 80   /* not quite a full page */
+#define PAGE_WIDTH_10THS 80 /* not quite a full page */
 #define PAGE_HEIGHT_10THS 105 /* ditto */
 /* Normally we set up at 300 DPI; however, on MS-DOS systems with */
 /* virtual memory disabled, we can't do more than 60 DPI */
@@ -66,9 +66,9 @@ int djet_output_page(gx_device *dev)
 {
   int code = gdev_prn_open_printer(dev);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
 
   /* print the accumulated page description */
   djet_print_page(prn_dev, prn_dev->file);
@@ -116,46 +116,46 @@ int djet_print_page(gx_device_printer *pdev, FILE *prn_stream)
     int line_size = mem_bytes_per_scan_line(&pdev->mem);
     int num_blank_lines = 0;
     for (lnum = 0; lnum < pdev->height; lnum++)
-    {
-      char *end_data = data + LINE_SIZE;
-      mem_copy_scan_lines(&pdev->mem, lnum, (byte *)data, line_size);
+      {
+        char *end_data = data + LINE_SIZE;
+        mem_copy_scan_lines(&pdev->mem, lnum, (byte *)data, line_size);
 /* Mask off 1-bits beyond LINE_WIDTH. */
 #if (LINE_WIDTH & 7)
-      end_data[-1] &= (byte)(0xff00 >> (LINE_WIDTH & 7));
+        end_data[-1] &= (byte)(0xff00 >> (LINE_WIDTH & 7));
 #endif
-      /* Remove trailing 0s. */
-      while (end_data > data && end_data[-1] == 0)
-      {
-        end_data--;
-      }
-      if (end_data == data)
-      { /* Blank line */
-        num_blank_lines++;
-      }
-      else
-      {
+        /* Remove trailing 0s. */
+        while (end_data > data && end_data[-1] == 0)
+          {
+            end_data--;
+          }
+        if (end_data == data)
+          { /* Blank line */
+            num_blank_lines++;
+          }
+        else
+          {
 #if LASER /* no compression */
-        char *out_data = data;
-        int out_count = end_data - data;
+            char *out_data = data;
+            int out_count = end_data - data;
 #else
-        char out_data[LINE_SIZE + LINE_SIZE / 127 + 1];
-        int out_count = compress_row(data, end_data, out_data);
+            char out_data[LINE_SIZE + LINE_SIZE / 127 + 1];
+            int out_count = compress_row(data, end_data, out_data);
 #endif
 
-        /* Skip blank lines if any */
-        if (num_blank_lines > 0)
-        { /* move down from current position */
-          escape_print_1("%c*p+%dY", num_blank_lines);
-          num_blank_lines = 0;
-        }
+            /* Skip blank lines if any */
+            if (num_blank_lines > 0)
+              { /* move down from current position */
+                escape_print_1("%c*p+%dY", num_blank_lines);
+                num_blank_lines = 0;
+              }
 
-        /* transfer raster graphics */
-        escape_print_1("%c*b%dW", out_count);
+            /* transfer raster graphics */
+            escape_print_1("%c*b%dW", out_count);
 
-        /* send the row */
-        fwrite(out_data, sizeof(char), out_count, prn_stream);
+            /* send the row */
+            fwrite(out_data, sizeof(char), out_count, prn_stream);
+          }
       }
-    }
   }
 
   /* end raster graphics */
@@ -180,67 +180,67 @@ int djet_print_page(gx_device_printer *pdev, FILE *prn_stream)
 int compress_row(char *row, char *end_row, char *compressed)
 {
   register char *i_exam = row; /* byte being examined in the row to compress */
-  char *stop_exam = end_row - 4;    /* stop scanning for similar bytes here */
+  char *stop_exam = end_row - 4; /* stop scanning for similar bytes here */
   register char *cptr = compressed; /* output pointer into compressed bytes */
 
   while (i_exam < end_row)
-  { /* Search ahead in the input looking for a run */
-    /* of at least 4 identical bytes. */
-    char *i_compr = i_exam;
-    char *i_next; /* end of run */
-    char byte_value;
-    while (i_exam <= stop_exam &&
-           ((byte_value = *i_exam) != i_exam[1] || byte_value != i_exam[2] ||
-            byte_value != i_exam[3]))
-    {
-      i_exam++;
-    }
+    { /* Search ahead in the input looking for a run */
+      /* of at least 4 identical bytes. */
+      char *i_compr = i_exam;
+      char *i_next; /* end of run */
+      char byte_value;
+      while (i_exam <= stop_exam &&
+             ((byte_value = *i_exam) != i_exam[1] || byte_value != i_exam[2] ||
+              byte_value != i_exam[3]))
+        {
+          i_exam++;
+        }
 
-    /* Find out how long the run is */
-    if (i_exam > stop_exam)
-    { /* no run */
-      i_next = i_exam = end_row;
-    }
-    else
-    {
-      i_next = i_exam + 4;
-      while (i_next < end_row && *i_next == byte_value)
-      {
-        i_next++;
-      }
-    }
+      /* Find out how long the run is */
+      if (i_exam > stop_exam)
+        { /* no run */
+          i_next = i_exam = end_row;
+        }
+      else
+        {
+          i_next = i_exam + 4;
+          while (i_next < end_row && *i_next == byte_value)
+            {
+              i_next++;
+            }
+        }
 
-    /* Now [i_compr..i_exam) should be encoded as dissimilar, */
-    /* and [i_exam..i_next) should be encoded as similar. */
-    /* Note that either of these ranges may be empty. */
+      /* Now [i_compr..i_exam) should be encoded as dissimilar, */
+      /* and [i_exam..i_next) should be encoded as similar. */
+      /* Note that either of these ranges may be empty. */
 
-    while (i_compr < i_exam)
-    { /* Encode up to 127 dissimilar bytes */
-      int count = i_exam - i_compr;
-      if (count > 127)
-      {
-        count = 127;
-      }
-      *cptr++ = count - 1;
-      while (count > 0)
-      {
-        *cptr++ = *i_compr++;
-        count--;
-      }
-    }
+      while (i_compr < i_exam)
+        { /* Encode up to 127 dissimilar bytes */
+          int count = i_exam - i_compr;
+          if (count > 127)
+            {
+              count = 127;
+            }
+          *cptr++ = count - 1;
+          while (count > 0)
+            {
+              *cptr++ = *i_compr++;
+              count--;
+            }
+        }
 
-    while (i_exam < i_next)
-    { /* Encode up to 127 similar bytes */
-      int count = i_next - i_exam;
-      if (count > 127)
-      {
-        count = 127;
-      }
-      *cptr++ = 1 - count;
-      *cptr++ = byte_value;
-      i_exam += count;
+      while (i_exam < i_next)
+        { /* Encode up to 127 similar bytes */
+          int count = i_next - i_exam;
+          if (count > 127)
+            {
+              count = 127;
+            }
+          *cptr++ = 1 - count;
+          *cptr++ = byte_value;
+          i_exam += count;
+        }
     }
-  }
   return (cptr - compressed);
 }
 

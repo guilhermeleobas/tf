@@ -22,22 +22,22 @@
 
 static void Decoding_of_the_coded_Log_Area_Ratios
 P2((LARc, LARpp), word* LARc, /* coded log area ratio	[0..7] 	IN	*/
-   word* LARpp)               /* out: decoded ..			*/
+   word* LARpp) /* out: decoded ..			*/
 {
   register word temp1 /* , temp2 */;
   register long ltmp; /* for GSM_ADD */
 
-/*  This procedure requires for efficient implementation
+  /*  This procedure requires for efficient implementation
  *  two tables.
  *
  *  INVA[1..8] = integer( (32768 * 8) / real_A[1..8])
  *  MIC[1..8]  = minimum value of the LARc[1..8]
  */
 
-/*  Compute the LARpp[1..8]
+  /*  Compute the LARpp[1..8]
  */
 
-/* 	for (i = 1; i <= 8; i++, B++, MIC++, INVA++, LARc++, LARpp++) {
+  /* 	for (i = 1; i <= 8; i++, B++, MIC++, INVA++, LARc++, LARpp++) {
  *
  *		temp1  = GSM_ADD( *LARc, *MIC ) << 10;
  *		temp2  = *B << 1;
@@ -96,10 +96,10 @@ static void Coefficients_0_12 P3((LARpp_j_1, LARpp_j, LARp),
   register longword ltmp;
 
   for (i = 1; i <= 8; i++, LARp++, LARpp_j_1++, LARpp_j++)
-  {
-    *LARp = GSM_ADD(SASR(*LARpp_j_1, 2), SASR(*LARpp_j, 2));
-    *LARp = GSM_ADD(*LARp, SASR(*LARpp_j_1, 1));
-  }
+    {
+      *LARp = GSM_ADD(SASR(*LARpp_j_1, 2), SASR(*LARpp_j, 2));
+      *LARp = GSM_ADD(*LARp, SASR(*LARpp_j_1, 1));
+    }
 }
 
 static void Coefficients_13_26 P3((LARpp_j_1, LARpp_j, LARp),
@@ -109,9 +109,9 @@ static void Coefficients_13_26 P3((LARpp_j_1, LARpp_j, LARp),
   register int i;
   register longword ltmp;
   for (i = 1; i <= 8; i++, LARpp_j_1++, LARpp_j++, LARp++)
-  {
-    *LARp = GSM_ADD(SASR(*LARpp_j_1, 1), SASR(*LARpp_j, 1));
-  }
+    {
+      *LARp = GSM_ADD(SASR(*LARpp_j_1, 1), SASR(*LARpp_j, 1));
+    }
 }
 
 static void Coefficients_27_39 P3((LARpp_j_1, LARpp_j, LARp),
@@ -122,10 +122,10 @@ static void Coefficients_27_39 P3((LARpp_j_1, LARpp_j, LARp),
   register longword ltmp;
 
   for (i = 1; i <= 8; i++, LARpp_j_1++, LARpp_j++, LARp++)
-  {
-    *LARp = GSM_ADD(SASR(*LARpp_j_1, 2), SASR(*LARpp_j, 2));
-    *LARp = GSM_ADD(*LARp, SASR(*LARpp_j, 1));
-  }
+    {
+      *LARp = GSM_ADD(SASR(*LARpp_j_1, 2), SASR(*LARpp_j, 2));
+      *LARp = GSM_ADD(*LARp, SASR(*LARpp_j, 1));
+    }
 }
 
 static void Coefficients_40_159 P2((LARpp_j, LARp), register word* LARpp_j,
@@ -134,15 +134,15 @@ static void Coefficients_40_159 P2((LARpp_j, LARp), register word* LARpp_j,
   register int i;
 
   for (i = 1; i <= 8; i++, LARp++, LARpp_j++)
-  {
-    *LARp = *LARpp_j;
-  }
+    {
+      *LARp = *LARpp_j;
+    }
 }
 
 /* 4.2.9.2 */
 
 static void LARp_to_rp P1((LARp), register word* LARp) /* [0..7] IN/OUT  */
-                                                       /*
+/*
                                                         *  The input of this procedure is the interpolated LARp[0..7] array.
                                                         *  The reflection coefficients, rp[i], are used in the analysis
                                                         *  filter and in the synthesis filter.
@@ -153,8 +153,8 @@ static void LARp_to_rp P1((LARp), register word* LARp) /* [0..7] IN/OUT  */
   register longword ltmp;
 
   for (i = 1; i <= 8; i++, LARp++)
-  {
-    /* temp = GSM_ABS( *LARp );
+    {
+      /* temp = GSM_ABS( *LARp );
      *
      * if (temp < 11059) temp <<= 1;
      * else if (temp < 20070) temp += 11059;
@@ -163,30 +163,30 @@ static void LARp_to_rp P1((LARp), register word* LARp) /* [0..7] IN/OUT  */
      * *LARp = *LARp < 0 ? -temp : temp;
      */
 
-    if (*LARp < 0)
-    {
-      temp = *LARp == MIN_WORD ? MAX_WORD : -(*LARp);
-      *LARp = -((temp < 11059) ? temp << 1
-                               : ((temp < 20070) ? temp + 11059
-                                                 : GSM_ADD(temp >> 2, 26112)));
+      if (*LARp < 0)
+        {
+          temp = *LARp == MIN_WORD ? MAX_WORD : -(*LARp);
+          *LARp = -((temp < 11059) ? temp << 1
+                                   : ((temp < 20070) ? temp + 11059
+                                                     : GSM_ADD(temp >> 2, 26112)));
+        }
+      else
+        {
+          temp = *LARp;
+          *LARp = (temp < 11059)
+                      ? temp << 1
+                      : ((temp < 20070) ? temp + 11059 : GSM_ADD(temp >> 2, 26112));
+        }
     }
-    else
-    {
-      temp = *LARp;
-      *LARp = (temp < 11059)
-                  ? temp << 1
-                  : ((temp < 20070) ? temp + 11059 : GSM_ADD(temp >> 2, 26112));
-    }
-  }
 }
 
 /* 4.2.10 */
 static void Short_term_analysis_filtering P4(
     (S, rp, k_n, s), struct gsm_state* S,
     register word* rp, /* [0..7]	IN	*/
-    register int k_n,  /*   k_end - k_start	*/
-    register word* s   /* [0..n-1]	IN/OUT	*/
-    )
+    register int k_n, /*   k_end - k_start	*/
+    register word* s /* [0..n-1]	IN/OUT	*/
+)
 /*
  *  This procedure computes the short term residual signal d[..] to be fed
  *  to the RPE-LTP loop from the s[..] signal and from the local rp[..]
@@ -204,25 +204,25 @@ static void Short_term_analysis_filtering P4(
   register longword ltmp;
 
   for (; k_n--; s++)
-  {
-    di = sav = *s;
+    {
+      di = sav = *s;
 
-    for (i = 0; i < 8; i++)
-    { /* YYY */
+      for (i = 0; i < 8; i++)
+        { /* YYY */
 
-      ui = u[i];
-      rpi = rp[i];
-      u[i] = sav;
+          ui = u[i];
+          rpi = rp[i];
+          u[i] = sav;
 
-      zzz = GSM_MULT_R(rpi, di);
-      sav = GSM_ADD(ui, zzz);
+          zzz = GSM_MULT_R(rpi, di);
+          sav = GSM_ADD(ui, zzz);
 
-      zzz = GSM_MULT_R(rpi, ui);
-      di = GSM_ADD(di, zzz);
+          zzz = GSM_MULT_R(rpi, ui);
+          di = GSM_ADD(di, zzz);
+        }
+
+      *s = di;
     }
-
-    *s = di;
-  }
 }
 
 #if defined(USE_FLOAT_MUL) && defined(FAST)
@@ -230,9 +230,9 @@ static void Short_term_analysis_filtering P4(
 static void Fast_Short_term_analysis_filtering P4(
     (S, rp, k_n, s), struct gsm_state* S,
     register word* rp, /* [0..7]	IN	*/
-    register int k_n,  /*   k_end - k_start	*/
-    register word* s   /* [0..n-1]	IN/OUT	*/
-    )
+    register int k_n, /*   k_end - k_start	*/
+    register word* s /* [0..n-1]	IN/OUT	*/
+)
 {
   register word* u = S->u;
   register int i;
@@ -243,25 +243,25 @@ static void Fast_Short_term_analysis_filtering P4(
   register float sav, di, temp;
 
   for (i = 0; i < 8; ++i)
-  {
-    uf[i] = u[i];
-    rpf[i] = rp[i] * scalef;
-  }
-  for (; k_n--; s++)
-  {
-    sav = di = *s;
-    for (i = 0; i < 8; ++i)
     {
-      register float rpfi = rpf[i];
-      register float ufi = uf[i];
-
-      uf[i] = sav;
-      temp = rpfi * di + ufi;
-      di += rpfi * ufi;
-      sav = temp;
+      uf[i] = u[i];
+      rpf[i] = rp[i] * scalef;
     }
-    *s = di;
-  }
+  for (; k_n--; s++)
+    {
+      sav = di = *s;
+      for (i = 0; i < 8; ++i)
+        {
+          register float rpfi = rpf[i];
+          register float ufi = uf[i];
+
+          uf[i] = sav;
+          temp = rpfi * di + ufi;
+          di += rpfi * ufi;
+          sav = temp;
+        }
+      *s = di;
+    }
   for (i = 0; i < 8; ++i) u[i] = uf[i];
 }
 #endif /* ! (defined (USE_FLOAT_MUL) && defined (FAST)) */
@@ -269,10 +269,10 @@ static void Fast_Short_term_analysis_filtering P4(
 static void Short_term_synthesis_filtering P5(
     (S, rrp, k, wt, sr), struct gsm_state* S,
     register word* rrp, /* [0..7]	IN	*/
-    register int k,     /* k_end - k_start	*/
-    register word* wt,  /* [0..k-1]	IN	*/
-    register word* sr   /* [0..k-1]	OUT	*/
-    )
+    register int k, /* k_end - k_start	*/
+    register word* wt, /* [0..k-1]	IN	*/
+    register word* sr /* [0..k-1]	OUT	*/
+)
 {
   register word* v = S->v;
   register int i;
@@ -280,31 +280,31 @@ static void Short_term_synthesis_filtering P5(
   register longword ltmp; /* for GSM_ADD  & GSM_SUB */
 
   while (k--)
-  {
-    sri = *wt++;
-    for (i = 8; i--;)
     {
-      /* sri = GSM_SUB( sri, gsm_mult_r( rrp[i], v[i] ) );
+      sri = *wt++;
+      for (i = 8; i--;)
+        {
+          /* sri = GSM_SUB( sri, gsm_mult_r( rrp[i], v[i] ) );
        */
-      tmp1 = rrp[i];
-      tmp2 = v[i];
-      tmp2 =
-          (tmp1 == MIN_WORD && tmp2 == MIN_WORD
-               ? MAX_WORD
-               : 0x0FFFF & (((longword)tmp1 * (longword)tmp2 + 16384) >> 15));
+          tmp1 = rrp[i];
+          tmp2 = v[i];
+          tmp2 =
+              (tmp1 == MIN_WORD && tmp2 == MIN_WORD
+                   ? MAX_WORD
+                   : 0x0FFFF & (((longword)tmp1 * (longword)tmp2 + 16384) >> 15));
 
-      sri = GSM_SUB(sri, tmp2);
+          sri = GSM_SUB(sri, tmp2);
 
-      /* v[i+1] = GSM_ADD( v[i], gsm_mult_r( rrp[i], sri ) );
+          /* v[i+1] = GSM_ADD( v[i], gsm_mult_r( rrp[i], sri ) );
        */
-      tmp1 = (tmp1 == MIN_WORD && sri == MIN_WORD
-                  ? MAX_WORD
-                  : 0x0FFFF & (((longword)tmp1 * (longword)sri + 16384) >> 15));
+          tmp1 = (tmp1 == MIN_WORD && sri == MIN_WORD
+                      ? MAX_WORD
+                      : 0x0FFFF & (((longword)tmp1 * (longword)sri + 16384) >> 15));
 
-      v[i + 1] = GSM_ADD(v[i], tmp1);
+          v[i + 1] = GSM_ADD(v[i], tmp1);
+        }
+      *sr++ = v[0] = sri;
     }
-    *sr++ = v[0] = sri;
-  }
 }
 
 #if defined(FAST) && defined(USE_FLOAT_MUL)
@@ -312,10 +312,10 @@ static void Short_term_synthesis_filtering P5(
 static void Fast_Short_term_synthesis_filtering P5(
     (S, rrp, k, wt, sr), struct gsm_state* S,
     register word* rrp, /* [0..7]	IN	*/
-    register int k,     /* k_end - k_start	*/
-    register word* wt,  /* [0..k-1]	IN	*/
-    register word* sr   /* [0..k-1]	OUT	*/
-    )
+    register int k, /* k_end - k_start	*/
+    register word* wt, /* [0..k-1]	IN	*/
+    register word* sr /* [0..k-1]	OUT	*/
+)
 {
   register word* v = S->v;
   register int i;
@@ -324,30 +324,30 @@ static void Fast_Short_term_synthesis_filtering P5(
   register float scalef = 3.0517578125e-5, temp;
 
   for (i = 0; i < 8; ++i)
-  {
-    va[i] = v[i];
-    rrpa[i] = (float)rrp[i] * scalef;
-  }
-  while (k--)
-  {
-    register float sri = *wt++;
-    for (i = 8; i--;)
     {
-      sri -= rrpa[i] * va[i];
-      if (sri < -32768.)
-        sri = -32768.;
-      else if (sri > 32767.)
-        sri = 32767.;
-
-      temp = va[i] + rrpa[i] * sri;
-      if (temp < -32768.)
-        temp = -32768.;
-      else if (temp > 32767.)
-        temp = 32767.;
-      va[i + 1] = temp;
+      va[i] = v[i];
+      rrpa[i] = (float)rrp[i] * scalef;
     }
-    *sr++ = va[0] = sri;
-  }
+  while (k--)
+    {
+      register float sri = *wt++;
+      for (i = 8; i--;)
+        {
+          sri -= rrpa[i] * va[i];
+          if (sri < -32768.)
+            sri = -32768.;
+          else if (sri > 32767.)
+            sri = 32767.;
+
+          temp = va[i] + rrpa[i] * sri;
+          if (temp < -32768.)
+            temp = -32768.;
+          else if (temp > 32767.)
+            temp = 32767.;
+          va[i + 1] = temp;
+        }
+      *sr++ = va[0] = sri;
+    }
   for (i = 0; i < 9; ++i) v[i] = va[i];
 }
 
@@ -359,8 +359,8 @@ void Gsm_Short_Term_Analysis_Filter P3(
     struct gsm_state* S,
 
     word* LARc, /* coded log area ratio [0..7]  IN	*/
-    word* s     /* signal [0..159]		IN/OUT	*/
-    )
+    word* s /* signal [0..159]		IN/OUT	*/
+)
 {
   word* LARpp_j = S->LARpp[S->j];
   word* LARpp_j_1 = S->LARpp[S->j ^= 1];
@@ -400,10 +400,10 @@ void Gsm_Short_Term_Synthesis_Filter P4(
     (S, LARcr, wt, s), struct gsm_state* S,
 
     word* LARcr, /* received log area ratios [0..7] IN  */
-    word* wt,    /* received d [0..159]		   IN  */
+    word* wt, /* received d [0..159]		   IN  */
 
     word* s /* signal   s [0..159]		  OUT  */
-    )
+)
 {
   word* LARpp_j = S->LARpp[S->j];
   word* LARpp_j_1 = S->LARpp[S->j ^= 1];

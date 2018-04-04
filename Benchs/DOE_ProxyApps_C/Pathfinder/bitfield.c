@@ -46,15 +46,15 @@ Bitfield *Bitfield_new(int bitsNeeded)
   int size = (bitsNeeded + 7) / 8; /* CHAR_BIT; */
   Bitfield *new = malloc(sizeof(Bitfield));
   if (!new)
-  {
-    return (NULL);
-  }
+    {
+      return (NULL);
+    }
   new->bitfield = calloc(size, sizeof(char));
   if (!new->bitfield)
-  {
-    free(new);
-    return (NULL);
-  }
+    {
+      free(new);
+      return (NULL);
+    }
 
   new->bitsNeeded = bitsNeeded;
   return new;
@@ -64,13 +64,13 @@ Bitfield *Bitfield_new(int bitsNeeded)
 void Bitfield_delete(Bitfield *this)
 {
   if (this)
-  {
-    if (this->bitfield)
     {
-      free(this->bitfield);
+      if (this->bitfield)
+        {
+          free(this->bitfield);
+        }
+      free(this);
     }
-    free(this);
-  }
 }
 
 /* Returns true if the specified node has been visited */
@@ -95,23 +95,23 @@ Bitfield *Bitfield_copy(Bitfield *from)
   int i;
 
   if (!from)
-  {
-    return (NULL);
-  }
+    {
+      return (NULL);
+    }
 
   Bitfield *new = Bitfield_new(from->bitsNeeded);
   if (new)
-  {
-    for (i = 0; i * 8 < from->bitsNeeded; ++i)
     {
-      new->bitfield[i] = from->bitfield[i];
+      for (i = 0; i * 8 < from->bitsNeeded; ++i)
+        {
+          new->bitfield[i] = from->bitfield[i];
+        }
+      return (new);
     }
-    return (new);
-  }
   else
-  {
-    return (NULL);
-  }
+    {
+      return (NULL);
+    }
 }
 
 void Bitfield_clear(Bitfield *this)

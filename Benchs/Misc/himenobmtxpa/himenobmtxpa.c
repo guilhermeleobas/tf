@@ -156,45 +156,45 @@ double mflops(int nn, double cpu, double flop)
 void set_param(int is[], char* size)
 {
   if (!strcmp(size, "XS") || !strcmp(size, "xs"))
-  {
-    is[0] = 32;
-    is[1] = 32;
-    is[2] = 64;
-    return;
-  }
+    {
+      is[0] = 32;
+      is[1] = 32;
+      is[2] = 64;
+      return;
+    }
   if (!strcmp(size, "S") || !strcmp(size, "s"))
-  {
-    is[0] = 64;
-    is[1] = 64;
-    is[2] = 128;
-    return;
-  }
+    {
+      is[0] = 64;
+      is[1] = 64;
+      is[2] = 128;
+      return;
+    }
   if (!strcmp(size, "M") || !strcmp(size, "m"))
-  {
-    is[0] = 128;
-    is[1] = 128;
-    is[2] = 256;
-    return;
-  }
+    {
+      is[0] = 128;
+      is[1] = 128;
+      is[2] = 256;
+      return;
+    }
   if (!strcmp(size, "L") || !strcmp(size, "l"))
-  {
-    is[0] = 256;
-    is[1] = 256;
-    is[2] = 512;
-    return;
-  }
+    {
+      is[0] = 256;
+      is[1] = 256;
+      is[2] = 512;
+      return;
+    }
   if (!strcmp(size, "XL") || !strcmp(size, "xl"))
-  {
-    is[0] = 512;
-    is[1] = 512;
-    is[2] = 1024;
-    return;
-  }
+    {
+      is[0] = 512;
+      is[1] = 512;
+      is[2] = 1024;
+      return;
+    }
   else
-  {
-    printf("Invalid input character !!\n");
-    exit(6);
-  }
+    {
+      printf("Invalid input character !!\n");
+      exit(6);
+    }
 }
 
 int newMat(Matrix* Mat, int mnums, int mrows, int mcols, int mdeps)
@@ -212,9 +212,9 @@ int newMat(Matrix* Mat, int mnums, int mrows, int mcols, int mdeps)
 void clearMat(Matrix* Mat)
 {
   if (Mat->m)
-  {
-    free(Mat->m);
-  }
+    {
+      free(Mat->m);
+    }
   Mat->m = NULL;
   Mat->mnums = 0;
   Mat->mcols = 0;
@@ -227,15 +227,15 @@ void mat_set(Matrix* Mat, int l, float val)
   int i, j, k;
 
   for (i = 0; i < Mat->mrows; i++)
-  {
-    for (j = 0; j < Mat->mcols; j++)
     {
-      for (k = 0; k < Mat->mdeps; k++)
-      {
-        MR(Mat, l, i, j, k) = val;
-      }
+      for (j = 0; j < Mat->mcols; j++)
+        {
+          for (k = 0; k < Mat->mdeps; k++)
+            {
+              MR(Mat, l, i, j, k) = val;
+            }
+        }
     }
-  }
 }
 
 void mat_set_init(Matrix* Mat)
@@ -244,16 +244,16 @@ void mat_set_init(Matrix* Mat)
   float tt;
 
   for (i = 0; i < Mat->mrows; i++)
-  {
-    for (j = 0; j < Mat->mcols; j++)
     {
-      for (k = 0; k < Mat->mdeps; k++)
-      {
-        MR(Mat, 0, i, j, k) =
-            (float)(i * i) / (float)((Mat->mrows - 1) * (Mat->mrows - 1));
-      }
+      for (j = 0; j < Mat->mcols; j++)
+        {
+          for (k = 0; k < Mat->mdeps; k++)
+            {
+              MR(Mat, 0, i, j, k) =
+                  (float)(i * i) / (float)((Mat->mrows - 1) * (Mat->mrows - 1));
+            }
+        }
     }
-  }
 }
 
 float jacobi(int nn, Matrix* a, Matrix* b, Matrix* c, Matrix* p, Matrix* bnd,
@@ -267,52 +267,52 @@ float jacobi(int nn, Matrix* a, Matrix* b, Matrix* c, Matrix* p, Matrix* bnd,
   kmax = p->mdeps - 1;
 
   for (n = 0; n < nn; n++)
-  {
-    gosa = 0.0;
-
-    for (i = 1; i < imax; i++)
     {
-      for (j = 1; j < jmax; j++)
-      {
-        for (k = 1; k < kmax; k++)
+      gosa = 0.0;
+
+      for (i = 1; i < imax; i++)
         {
-          s0 = MR(a, 0, i, j, k) * MR(p, 0, i + 1, j, k) +
-               MR(a, 1, i, j, k) * MR(p, 0, i, j + 1, k) +
-               MR(a, 2, i, j, k) * MR(p, 0, i, j, k + 1) +
-               MR(b, 0, i, j, k) *
-                   (MR(p, 0, i + 1, j + 1, k) - MR(p, 0, i + 1, j - 1, k) -
-                    MR(p, 0, i - 1, j + 1, k) + MR(p, 0, i - 1, j - 1, k)) +
-               MR(b, 1, i, j, k) *
-                   (MR(p, 0, i, j + 1, k + 1) - MR(p, 0, i, j - 1, k + 1) -
-                    MR(p, 0, i, j + 1, k - 1) + MR(p, 0, i, j - 1, k - 1)) +
-               MR(b, 2, i, j, k) *
-                   (MR(p, 0, i + 1, j, k + 1) - MR(p, 0, i - 1, j, k + 1) -
-                    MR(p, 0, i + 1, j, k - 1) + MR(p, 0, i - 1, j, k - 1)) +
-               MR(c, 0, i, j, k) * MR(p, 0, i - 1, j, k) +
-               MR(c, 1, i, j, k) * MR(p, 0, i, j - 1, k) +
-               MR(c, 2, i, j, k) * MR(p, 0, i, j, k - 1) + MR(wrk1, 0, i, j, k);
+          for (j = 1; j < jmax; j++)
+            {
+              for (k = 1; k < kmax; k++)
+                {
+                  s0 = MR(a, 0, i, j, k) * MR(p, 0, i + 1, j, k) +
+                       MR(a, 1, i, j, k) * MR(p, 0, i, j + 1, k) +
+                       MR(a, 2, i, j, k) * MR(p, 0, i, j, k + 1) +
+                       MR(b, 0, i, j, k) *
+                           (MR(p, 0, i + 1, j + 1, k) - MR(p, 0, i + 1, j - 1, k) -
+                            MR(p, 0, i - 1, j + 1, k) + MR(p, 0, i - 1, j - 1, k)) +
+                       MR(b, 1, i, j, k) *
+                           (MR(p, 0, i, j + 1, k + 1) - MR(p, 0, i, j - 1, k + 1) -
+                            MR(p, 0, i, j + 1, k - 1) + MR(p, 0, i, j - 1, k - 1)) +
+                       MR(b, 2, i, j, k) *
+                           (MR(p, 0, i + 1, j, k + 1) - MR(p, 0, i - 1, j, k + 1) -
+                            MR(p, 0, i + 1, j, k - 1) + MR(p, 0, i - 1, j, k - 1)) +
+                       MR(c, 0, i, j, k) * MR(p, 0, i - 1, j, k) +
+                       MR(c, 1, i, j, k) * MR(p, 0, i, j - 1, k) +
+                       MR(c, 2, i, j, k) * MR(p, 0, i, j, k - 1) + MR(wrk1, 0, i, j, k);
 
-          ss = (s0 * MR(a, 3, i, j, k) - MR(p, 0, i, j, k)) *
-               MR(bnd, 0, i, j, k);
+                  ss = (s0 * MR(a, 3, i, j, k) - MR(p, 0, i, j, k)) *
+                       MR(bnd, 0, i, j, k);
 
-          gosa += ss * ss;
-          MR(wrk2, 0, i, j, k) = MR(p, 0, i, j, k) + omega * ss;
+                  gosa += ss * ss;
+                  MR(wrk2, 0, i, j, k) = MR(p, 0, i, j, k) + omega * ss;
+                }
+            }
         }
-      }
-    }
 
-    for (i = 1; i < imax; i++)
-    {
-      for (j = 1; j < jmax; j++)
-      {
-        for (k = 1; k < kmax; k++)
+      for (i = 1; i < imax; i++)
         {
-          MR(p, 0, i, j, k) = MR(wrk2, 0, i, j, k);
+          for (j = 1; j < jmax; j++)
+            {
+              for (k = 1; k < kmax; k++)
+                {
+                  MR(p, 0, i, j, k) = MR(wrk2, 0, i, j, k);
+                }
+            }
         }
-      }
-    }
 
-  } /* end n loop */
+    } /* end n loop */
 
   return (gosa);
 }
@@ -327,16 +327,16 @@ double second()
   gettimeofday(&tm, NULL);
 
   if (base_sec == 0 && base_usec == 0)
-  {
-    base_sec = tm.tv_sec;
-    base_usec = tm.tv_usec;
-    t = 0.0;
-  }
+    {
+      base_sec = tm.tv_sec;
+      base_usec = tm.tv_usec;
+      t = 0.0;
+    }
   else
-  {
-    t = (double)(tm.tv_sec - base_sec) +
-        ((double)(tm.tv_usec - base_usec)) / 1.0e6;
-  }
+    {
+      t = (double)(tm.tv_sec - base_sec) +
+          ((double)(tm.tv_usec - base_usec)) / 1.0e6;
+    }
 
   return t;
 }

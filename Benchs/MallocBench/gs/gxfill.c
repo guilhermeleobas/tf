@@ -19,8 +19,8 @@ copies.  */
 
 /* gxfill.c */
 /* Lower-level path filling procedures for GhostScript library */
-#include "gx.h"
 #include "gserrors.h"
+#include "gx.h"
 #include "gxdevice.h" /* for gx_color_index */
 #include "gxfixed.h"
 #include "gxmatrix.h"
@@ -32,11 +32,11 @@ copies.  */
 typedef struct active_line_s
 {
   gs_fixed_point start; /* x,y where line starts */
-  gs_fixed_point end;   /* x,y where line ends */
+  gs_fixed_point end; /* x,y where line ends */
 #define al_dx(alp) ((alp)->end.x - (alp)->start.x)
 #define al_dy(alp) ((alp)->end.y - (alp)->start.y)
   fixed y_fast_max; /* can do x_at_y in fixed point */
-                    /* if y <= y_fast_max */
+  /* if y <= y_fast_max */
 #define set_al_points(alp, startp, endp)                             \
   (alp)->y_fast_max =                                                \
       max_fixed / (((endp).x > (startp).x ? (endp).x - (startp).x    \
@@ -53,14 +53,14 @@ typedef struct active_line_s
               : (stat(n_slow_x), (fixed)((double)_xaty(alp, yv)))) + \
              (alp)->start.x)
   fixed x_current; /* current x position */
-  fixed x_next;    /* x position at end of band */
-  segment *pseg;   /* endpoint of this line */
-  int direction;   /* direction of line segment */
+  fixed x_next; /* x position at end of band */
+  segment *pseg; /* endpoint of this line */
+  int direction; /* direction of line segment */
 #define dir_up 1
 #define dir_down (-1)
-  short tag;      /* distinguish path from clip path */
+  short tag; /* distinguish path from clip path */
   short end_mark; /* marks lines about to end (even) */
-                  /* or cross (odd) */
+  /* or cross (odd) */
   /* "Pending" lines (not reached in the Y ordering yet) use next and prev */
   /* to order lines by increasing starting Y.  "Active" lines (being scanned) */
   /* use next and prev to order lines by increasing current X, or if the */
@@ -92,11 +92,11 @@ struct line_list_s
 {
   active_line *area; /* allocated area */
   uint area_count;
-  short tag;           /* tag for lines being added */
-  active_line *next;   /* next allocation slot */
+  short tag; /* tag for lines being added */
+  active_line *next; /* next allocation slot */
   active_line *y_list; /* Y-sorted list of pending lines */
   active_line *y_line; /* most recently inserted line */
-  active_line x_head;  /* X-sorted list of active lines */
+  active_line x_head; /* X-sorted list of active lines */
 #define x_list x_head.next
   int no_clip; /* true if clipping not needed */
 };
@@ -169,66 +169,66 @@ int gx_fill_path(gx_path *ppath, gx_device_color *pdevc, gs_state *pgs,
   gx_path_close_subpath(ppath);
   /* Start by flattening the path.  We should do this on-the-fly.... */
   if (!ppath->curve_count)
-  { /* don't need to flatten */
-    pfpath = ppath;
-  }
-  else
-  {
-    if ((code = gx_path_flatten(ppath, &ffpath, pgs->flatness)) < 0)
-    {
-      return code;
+    { /* don't need to flatten */
+      pfpath = ppath;
     }
-    pfpath = &ffpath;
-  }
+  else
+    {
+      if ((code = gx_path_flatten(ppath, &ffpath, pgs->flatness)) < 0)
+        {
+          return code;
+        }
+      pfpath = &ffpath;
+    }
   /* may be 1 extra segment per subpath, for closing */
   max_active = pfpath->segment_count + pfpath->subpath_count +
                cpath->segment_count + cpath->subpath_count;
   if (!(code = alloc_line_list(&lst, max_active)))
-  {
-    gs_fixed_rect ibox;
-    gx_path_bbox(pfpath, &ibox);
-    if (ibox.q.y <= cpath->cbox.q.y && ibox.q.x <= cpath->cbox.q.x &&
-        ibox.p.y >= cpath->cbox.p.y && ibox.p.x >= cpath->cbox.p.x)
-    { /* Path lies entirely within clipping rectangle */
-      lst.no_clip = 1;
-    }
-    else
     {
-      lst.no_clip = 0;
+      gs_fixed_rect ibox;
+      gx_path_bbox(pfpath, &ibox);
+      if (ibox.q.y <= cpath->cbox.q.y && ibox.q.x <= cpath->cbox.q.x &&
+          ibox.p.y >= cpath->cbox.p.y && ibox.p.x >= cpath->cbox.p.x)
+        { /* Path lies entirely within clipping rectangle */
+          lst.no_clip = 1;
+        }
+      else
+        {
+          lst.no_clip = 0;
 /* Intersect the path box and the clip bounding box */
 #define int_box(pqxy, rel) \
   if (cpath->bbox.pqxy rel ibox.pqxy) ibox.pqxy = cpath->bbox.pqxy
-      int_box(p.x, >);
-      int_box(p.y, >);
-      int_box(q.x, <);
-      int_box(q.y, <);
+          int_box(p.x, >);
+          int_box(p.y, >);
+          int_box(q.x, <);
+          int_box(q.y, <);
 #undef int_box
-      if (ibox.p.x >= ibox.q.x || ibox.p.y >= ibox.q.y)
-      { /* Intersection of boxes is empty! */
-        goto skip;
-      }
-      add_y_list(cpath, (short)1, &lst, &ibox);
+          if (ibox.p.x >= ibox.q.x || ibox.p.y >= ibox.q.y)
+            { /* Intersection of boxes is empty! */
+              goto skip;
+            }
+          add_y_list(cpath, (short)1, &lst, &ibox);
+        }
+      add_y_list(pfpath, (short)0, &lst, &ibox);
+      fill_loop(pdevc, rule, &lst, &ibox, pgs, trim);
+    skip:
+      gs_free((char *)lst.area, lst.area_count, sizeof(active_line),
+              "active lines");
     }
-    add_y_list(pfpath, (short)0, &lst, &ibox);
-    fill_loop(pdevc, rule, &lst, &ibox, pgs, trim);
-  skip:
-    gs_free((char *)lst.area, lst.area_count, sizeof(active_line),
-            "active lines");
-  }
   if (pfpath != ppath)
-  { /* had to flatten */
-    gx_path_release(pfpath);
-  }
+    { /* had to flatten */
+      gx_path_release(pfpath);
+    }
 #ifdef DEBUG
   if (gs_debug['f'] || gs_debug['F'])
-  {
-    printf(
-        "[f]calls alloc   up   down  step slowx  iter  find  band bstep "
-        "bfill\n");
-    printf("   %5ld %5ld %5ld %5ld %5ld %5ld %5ld %5ld %5ld %5ld %5ld\n",
-           n_fill, n_fill_alloc, n_y_up, n_y_down, n_x_step, n_slow_x, n_iter,
-           n_find_y, n_band, n_band_step, n_band_fill);
-  }
+    {
+      printf(
+          "[f]calls alloc   up   down  step slowx  iter  find  band bstep "
+          "bfill\n");
+      printf("   %5ld %5ld %5ld %5ld %5ld %5ld %5ld %5ld %5ld %5ld %5ld\n",
+             n_fill, n_fill_alloc, n_y_up, n_y_down, n_x_step, n_slow_x, n_iter,
+             n_find_y, n_band, n_band_step, n_band_fill);
+    }
 #endif
   return code;
 }
@@ -243,9 +243,9 @@ int alloc_line_list(line_list *ll, int count)
   ll->area =
       (active_line *)gs_malloc(count, sizeof(active_line), "active lines");
   if (ll->area == 0)
-  {
-    return_error(gs_error_VMerror);
-  }
+    {
+      return_error(gs_error_VMerror);
+    }
   ll->next = ll->area;
   ll->y_list = 0;
   ll->y_line = 0;
@@ -269,19 +269,19 @@ void add_y_list(gx_path *ppath, short tag, line_list *ll, gs_fixed_rect *pbox)
   fixed xmax = pbox->q.x, ymax = pbox->q.y;
   ll->tag = tag;
   while (pseg)
-  {
-    fixed dy;
-    switch (pseg->type)
-    { /* No curves left */
-      case s_start:
-        psub = (subpath *)pseg;
-        plast = psub->last;
-        dir = 0;
-        break;
-      default: /* s_line, _close */
-      {
-        fixed iy = pseg->pt.y;
-        fixed py = prev->pt.y;
+    {
+      fixed dy;
+      switch (pseg->type)
+        { /* No curves left */
+          case s_start:
+            psub = (subpath *)pseg;
+            plast = psub->last;
+            dir = 0;
+            break;
+          default: /* s_line, _close */
+            {
+              fixed iy = pseg->pt.y;
+              fixed py = prev->pt.y;
 /* Lines falling entirely outside the ibox */
 /* are treated as though they were horizontal, */
 /* i.e., they are never put on the list. */
@@ -291,52 +291,52 @@ void add_y_list(gx_path *ppath, short tag, line_list *ll, gs_fixed_rect *pbox)
        : (dy = ye - yo) > 0                            \
              ? (ye <= ymin || yo >= ymax ? 0 : dir_up) \
              : dy < 0 ? (yo <= ymin || ye >= ymax ? 0 : dir_down) : 0)
-        dir = compute_dir(prev->pt.x, pseg->pt.x, py, iy);
-        if (dir > prev_dir)
-        {
-          if (prev_dir)
-          {
-            add_y_line(prev->prev, prev, prev_dir, ll);
-          }
-          if (dir)
-          {
-            add_y_line(prev, pseg, dir, ll);
-          }
-        }
-        if (pseg == plast)
-        { /* The beginning of a subpath is always */
-          /* treated like a horizontal line, */
-          /* so the last segment must receive */
-          /* special consideration. */
-          if (pseg->type != s_line_close)
-          { /* "Close" an open subpath */
-            int cdir;
-            py = psub->pt.y;
-            cdir = compute_dir(pseg->pt.x, psub->pt.x, iy, py);
-            if (cdir > dir && dir)
-            {
-              add_y_line(prev, pseg, dir, ll);
+              dir = compute_dir(prev->pt.x, pseg->pt.x, py, iy);
+              if (dir > prev_dir)
+                {
+                  if (prev_dir)
+                    {
+                      add_y_line(prev->prev, prev, prev_dir, ll);
+                    }
+                  if (dir)
+                    {
+                      add_y_line(prev, pseg, dir, ll);
+                    }
+                }
+              if (pseg == plast)
+                { /* The beginning of a subpath is always */
+                  /* treated like a horizontal line, */
+                  /* so the last segment must receive */
+                  /* special consideration. */
+                  if (pseg->type != s_line_close)
+                    { /* "Close" an open subpath */
+                      int cdir;
+                      py = psub->pt.y;
+                      cdir = compute_dir(pseg->pt.x, psub->pt.x, iy, py);
+                      if (cdir > dir && dir)
+                        {
+                          add_y_line(prev, pseg, dir, ll);
+                        }
+                      if ((cdir > dir && cdir) || cdir < 0)
+                        {
+                          add_y_line(pseg, (segment *)psub, cdir, ll);
+                        }
+                    }
+                  else
+                    { /* Just add the closing line if needed */
+                      if (dir < 0)
+                        {
+                          add_y_line(prev, pseg, dir, ll);
+                        }
+                    }
+                }
             }
-            if ((cdir > dir && cdir) || cdir < 0)
-            {
-              add_y_line(pseg, (segment *)psub, cdir, ll);
-            }
-          }
-          else
-          { /* Just add the closing line if needed */
-            if (dir < 0)
-            {
-              add_y_line(prev, pseg, dir, ll);
-            }
-          }
-        }
-      }
 #undef compute_dir
+        }
+      prev = pseg;
+      prev_dir = dir;
+      pseg = pseg->next;
     }
-    prev = pseg;
-    prev_dir = dir;
-    pseg = pseg->next;
-  }
 }
 /* Internal routine to test a line segment and add it to the */
 /* pending list if appropriate. */
@@ -352,58 +352,58 @@ void add_y_line(segment *prev_lp, segment *lp, int dir, line_list *ll)
   prev.y = prev_lp->pt.y;
   alp->tag = ll->tag;
   if ((alp->direction = dir) > 0)
-  { /* Upward line */
-    y_start = prev.y;
-    set_al_points(alp, prev, this);
-    alp->pseg = lp;
-  }
+    { /* Upward line */
+      y_start = prev.y;
+      set_al_points(alp, prev, this);
+      alp->pseg = lp;
+    }
   else
-  { /* Downward line */
-    y_start = this.y;
-    set_al_points(alp, this, prev);
-    alp->pseg = prev_lp;
-  }
+    { /* Downward line */
+      y_start = this.y;
+      set_al_points(alp, this, prev);
+      alp->pseg = prev_lp;
+    }
   /* Insert the new line in the Y ordering */
   {
     register active_line *yp = ll->y_line;
     register active_line *nyp;
     if (yp == 0)
-    {
-      alp->next = alp->prev = 0;
-      ll->y_list = alp;
-    }
-    else if (y_start >= yp->start.y)
-    { /* Insert the new line after y_line */
-      while (stat(n_y_up), (nyp = yp->next) != NULL && y_start > nyp->start.y)
       {
-        yp = nyp;
-      }
-      alp->next = nyp;
-      alp->prev = yp;
-      yp->next = alp;
-      if (nyp)
-      {
-        nyp->prev = alp;
-      }
-    }
-    else
-    { /* Insert the new line before y_line */
-      while (stat(n_y_down), (nyp = yp->prev) != NULL && y_start < nyp->start.y)
-      {
-        yp = nyp;
-      }
-      alp->prev = nyp;
-      alp->next = yp;
-      yp->prev = alp;
-      if (nyp)
-      {
-        nyp->next = alp;
-      }
-      else
-      {
+        alp->next = alp->prev = 0;
         ll->y_list = alp;
       }
-    }
+    else if (y_start >= yp->start.y)
+      { /* Insert the new line after y_line */
+        while (stat(n_y_up), (nyp = yp->next) != NULL && y_start > nyp->start.y)
+          {
+            yp = nyp;
+          }
+        alp->next = nyp;
+        alp->prev = yp;
+        yp->next = alp;
+        if (nyp)
+          {
+            nyp->prev = alp;
+          }
+      }
+    else
+      { /* Insert the new line before y_line */
+        while (stat(n_y_down), (nyp = yp->prev) != NULL && y_start < nyp->start.y)
+          {
+            yp = nyp;
+          }
+        alp->prev = nyp;
+        alp->next = yp;
+        yp->prev = alp;
+        if (nyp)
+          {
+            nyp->next = alp;
+          }
+        else
+          {
+            ll->y_list = alp;
+          }
+      }
   }
   ll->y_line = alp;
   print_al("add ", alp);
@@ -426,13 +426,13 @@ fixed find_cross_y(register active_line *endp, register active_line *alp)
 #else
   fixed cross_y;
   if (al_dx(alp) * edy - al_dx(endp) * ady == 0)
-  {
-    printf("[f]denom == 0!\n");
-    gs_debug['F'] = 1;
-    print_al(" l1 ", endp);
-    print_al(" l2 ", alp);
-    exit(1);
-  }
+    {
+      printf("[f]denom == 0!\n");
+      gs_debug['F'] = 1;
+      print_al(" l1 ", endp);
+      print_al(" l2 ", alp);
+      exit(1);
+    }
   cross_y = ycross();
   if (gs_debug['F'])
     printf("[f]cross %lx %lx -> %f\n", (ulong)endp, (ulong)alp,
@@ -453,194 +453,194 @@ void fill_loop(gx_device_color *pdevc, int rule, line_list *ll,
   gs_fixed_point pmax;
   fixed y;
   if (yll == 0)
-  {
-    return; /* empty list */
-  }
+    {
+      return; /* empty list */
+    }
   pmax = pbox->q;
   y = yll->start.y; /* first Y value */
   ll->x_list = 0;
   ll->x_head.end_mark = -4; /* to delimit swap group */
   while (1)
-  {
-    fixed y1;
-    int end_count;
-    active_line *endp, *alp, *alstop;
-    fixed x;
-    stat(n_iter);
-    /* Check whether we've reached the maximum y. */
-    if (y >= pmax.y)
     {
-      break;
-    }
-    /* Move newly active lines from y to x list. */
-    while (yll != 0 && yll->start.y == y)
-    {
-      active_line *ynext = yll->next; /* insert smashes next/prev links */
-      insert_x_new(yll, ll);
-      yll = ynext;
-    }
-    if (ll->x_list == 0)
-    { /* No active lines, skip to next start */
-      if (yll == 0)
-      {
-        break; /* no lines left */
-      }
-      y = yll->start.y;
-      continue;
-    }
-    /* Find the next evaluation point. */
-    /* Start by finding the smallest y value */
-    /* at which any currently active line ends */
-    /* (or the next to-be-active line begins). */
-    y1 = (yll != 0 ? yll->start.y : max_fixed);
-    for (alp = ll->x_list; alp != 0; alp = alp->next)
-    {
-      if (alp->end.y < y1)
-      {
-        y1 = alp->end.y;
-      }
-    }
-#ifdef DEBUG
-    if (gs_debug['F'])
-    {
-      active_line *lp;
-      printf("[f]y=%f y1=%f:\n", fixed2float(y), fixed2float(y1));
-      for (lp = ll->x_list; lp != 0; lp = lp->next)
-        printf("[f]%lx: x_current=%f\n", (ulong)lp, fixed2float(lp->x_current));
-    }
-#endif
-    /* Now look for line intersections before y1. */
-    /* The lines requiring attention at the end of */
-    /* band filling are those whose end_mark >= end_count. */
-    /* Each time we reset y1 downward, */
-    /* we increment end_count by 4 so that we don't */
-    /* try to swap or drop lines that haven't */
-    /* crossed or ended yet. */
-    end_count = 0;
-    x = min_fixed;
-    alstop = ll->x_list;
-    /* Loop invariant: x == al_x_at_y(endp, y1); */
-    /* for all lines alp up to alstop, */
-    /* alp->x_next = al_x_at_y(alp, y1). */
-    for (alp = alstop; stat(n_find_y), alp != 0; endp = alp, alp = alp->next)
-    { /* Check for intersecting lines. */
-      fixed nx = al_x_at_y(alp, y1);
-      alp->x_next = nx;
-      if (nx < x)
-      { /* stop at intersection */
-        y1 = find_cross_y(endp, alp);
-        while (1)
+      fixed y1;
+      int end_count;
+      active_line *endp, *alp, *alstop;
+      fixed x;
+      stat(n_iter);
+      /* Check whether we've reached the maximum y. */
+      if (y >= pmax.y)
         {
-          x = al_x_at_y(endp, y1);
-          nx = al_x_at_y(alp, y1);
-          if (nx <= x)
-          {
-            break;
-          }
-          /* This can only result from */
-          /* low-order-bit inaccuracy */
-          /* in computing the crossing y. */
-          /* Bump y by 1. */
-          y1++;
+          break;
         }
-        endp->x_next = x;
-        alp->x_next = nx;
-        alstop = endp;
-        end_count += 4;
-        endp->end_mark = end_count + 3;
-        alp->end_mark = end_count + 1;
-      }
-      else if (alp->end.y == y1) /* can't be < */
-      {
-        alp->end_mark = end_count;
-      }
-      else
-      {
-        alp->end_mark = -2;
-      }
-      x = nx;
-    }
-    /* Recompute next_x for lines before the intersection. */
-    for (alp = ll->x_list; alp != alstop; alp = alp->next)
-    {
-      alp->x_next = al_x_at_y(alp, y1);
-    }
+      /* Move newly active lines from y to x list. */
+      while (yll != 0 && yll->start.y == y)
+        {
+          active_line *ynext = yll->next; /* insert smashes next/prev links */
+          insert_x_new(yll, ll);
+          yll = ynext;
+        }
+      if (ll->x_list == 0)
+        { /* No active lines, skip to next start */
+          if (yll == 0)
+            {
+              break; /* no lines left */
+            }
+          y = yll->start.y;
+          continue;
+        }
+      /* Find the next evaluation point. */
+      /* Start by finding the smallest y value */
+      /* at which any currently active line ends */
+      /* (or the next to-be-active line begins). */
+      y1 = (yll != 0 ? yll->start.y : max_fixed);
+      for (alp = ll->x_list; alp != 0; alp = alp->next)
+        {
+          if (alp->end.y < y1)
+            {
+              y1 = alp->end.y;
+            }
+        }
 #ifdef DEBUG
-    if (gs_debug['F'])
-    {
-      active_line *lp;
-      printf("[f]y1=%f end_count=%d\n", fixed2float(y1), end_count);
-      for (lp = ll->x_list; lp != 0; lp = lp->next)
-        printf("[f]%lx: x_next=%f end_mark=%d\n", (ulong)lp,
-               fixed2float(lp->x_next), lp->end_mark);
-    }
+      if (gs_debug['F'])
+        {
+          active_line *lp;
+          printf("[f]y=%f y1=%f:\n", fixed2float(y), fixed2float(y1));
+          for (lp = ll->x_list; lp != 0; lp = lp->next)
+            printf("[f]%lx: x_current=%f\n", (ulong)lp, fixed2float(lp->x_current));
+        }
 #endif
-    /* Fill a multi-trapezoid band for the active lines. */
-    /* Drop ended lines (with end_mark = end_count) from the */
-    /* list.  Reverse the order of groups of adjacent lines */
-    /* that intersect at y = y1: the last line of such a group */
-    /* has end_mark = end_count+1, the previous ones have */
-    /* end_mark = end_count+3. */
-    {
-      active_line *alp = ll->x_list;
-      fixed height = y1 - y;
-      fixed xlbot, xltop; /* as of last "outside" line */
-      int inside[2];
-      inside[0] = 0;           /* 0 for path */
-      inside[1] = ll->no_clip; /* 1 for clip path */
-      stat(n_band);
+      /* Now look for line intersections before y1. */
+      /* The lines requiring attention at the end of */
+      /* band filling are those whose end_mark >= end_count. */
+      /* Each time we reset y1 downward, */
+      /* we increment end_count by 4 so that we don't */
+      /* try to swap or drop lines that haven't */
+      /* crossed or ended yet. */
+      end_count = 0;
+      x = min_fixed;
+      alstop = ll->x_list;
+      /* Loop invariant: x == al_x_at_y(endp, y1); */
+      /* for all lines alp up to alstop, */
+      /* alp->x_next = al_x_at_y(alp, y1). */
+      for (alp = alstop; stat(n_find_y), alp != 0; endp = alp, alp = alp->next)
+        { /* Check for intersecting lines. */
+          fixed nx = al_x_at_y(alp, y1);
+          alp->x_next = nx;
+          if (nx < x)
+            { /* stop at intersection */
+              y1 = find_cross_y(endp, alp);
+              while (1)
+                {
+                  x = al_x_at_y(endp, y1);
+                  nx = al_x_at_y(alp, y1);
+                  if (nx <= x)
+                    {
+                      break;
+                    }
+                  /* This can only result from */
+                  /* low-order-bit inaccuracy */
+                  /* in computing the crossing y. */
+                  /* Bump y by 1. */
+                  y1++;
+                }
+              endp->x_next = x;
+              alp->x_next = nx;
+              alstop = endp;
+              end_count += 4;
+              endp->end_mark = end_count + 3;
+              alp->end_mark = end_count + 1;
+            }
+          else if (alp->end.y == y1) /* can't be < */
+            {
+              alp->end_mark = end_count;
+            }
+          else
+            {
+              alp->end_mark = -2;
+            }
+          x = nx;
+        }
+      /* Recompute next_x for lines before the intersection. */
+      for (alp = ll->x_list; alp != alstop; alp = alp->next)
+        {
+          alp->x_next = al_x_at_y(alp, y1);
+        }
+#ifdef DEBUG
+      if (gs_debug['F'])
+        {
+          active_line *lp;
+          printf("[f]y1=%f end_count=%d\n", fixed2float(y1), end_count);
+          for (lp = ll->x_list; lp != 0; lp = lp->next)
+            printf("[f]%lx: x_next=%f end_mark=%d\n", (ulong)lp,
+                   fixed2float(lp->x_next), lp->end_mark);
+        }
+#endif
+      /* Fill a multi-trapezoid band for the active lines. */
+      /* Drop ended lines (with end_mark = end_count) from the */
+      /* list.  Reverse the order of groups of adjacent lines */
+      /* that intersect at y = y1: the last line of such a group */
+      /* has end_mark = end_count+1, the previous ones have */
+      /* end_mark = end_count+3. */
+      {
+        active_line *alp = ll->x_list;
+        fixed height = y1 - y;
+        fixed xlbot, xltop; /* as of last "outside" line */
+        int inside[2];
+        inside[0] = 0; /* 0 for path */
+        inside[1] = ll->no_clip; /* 1 for clip path */
+        stat(n_band);
 /* rule = -1 for winding number rule, i.e. */
 /* we are inside if the winding number is non-zero; */
 /* rule = 1 for even-odd rule, i.e. */
 /* we are inside if the winding number is odd. */
 /* Clever, eh? */
 #define inside_path_p() ((inside[0] & rule) && (inside[1] & pgs->clip_rule))
-      while (alp != 0)
-      {
-        fixed xbot = alp->x_current;
-        fixed xtop = alp->x_next;
-        active_line *next = alp->next;
-        print_al("step", alp);
-        stat(n_band_step);
-        if (inside_path_p())
-        {
-          inside[alp->tag] += alp->direction;
-          if (!inside_path_p()) /* about to go out */
+        while (alp != 0)
           {
-            stat(n_band_fill);
-            gz_fill_trapezoid_fixed(xlbot + trim, xbot - xlbot - (trim << 1), y,
-                                    xltop + trim, xtop - xltop - (trim << 1),
-                                    height, 0, pdevc, pgs);
+            fixed xbot = alp->x_current;
+            fixed xtop = alp->x_next;
+            active_line *next = alp->next;
+            print_al("step", alp);
+            stat(n_band_step);
+            if (inside_path_p())
+              {
+                inside[alp->tag] += alp->direction;
+                if (!inside_path_p()) /* about to go out */
+                  {
+                    stat(n_band_fill);
+                    gz_fill_trapezoid_fixed(xlbot + trim, xbot - xlbot - (trim << 1), y,
+                                            xltop + trim, xtop - xltop - (trim << 1),
+                                            height, 0, pdevc, pgs);
+                  }
+              }
+            else /* outside */
+              {
+                inside[alp->tag] += alp->direction;
+                if (inside_path_p())
+                  { /* about to go in */
+                    xlbot = xbot, xltop = xtop;
+                  }
+              }
+            alp->x_current = xtop;
+            if (alp->end_mark >= end_count)
+              { /* This line is ending here, or */
+                /* this is the last of an */
+                /* intersection group. */
+                switch (alp->end_mark & 3)
+                  {
+                    /* case 3: in a group, not last */
+                    case 1: /* last line of a group */
+                      swap_group(alp);
+                      break;
+                    case 0: /* ending line */
+                      ended_line(alp);
+                  }
+              }
+            alp = next;
           }
-        }
-        else /* outside */
-        {
-          inside[alp->tag] += alp->direction;
-          if (inside_path_p())
-          { /* about to go in */
-            xlbot = xbot, xltop = xtop;
-          }
-        }
-        alp->x_current = xtop;
-        if (alp->end_mark >= end_count)
-        { /* This line is ending here, or */
-          /* this is the last of an */
-          /* intersection group. */
-          switch (alp->end_mark & 3)
-          {
-            /* case 3: in a group, not last */
-            case 1: /* last line of a group */
-              swap_group(alp);
-              break;
-            case 0: /* ending line */
-              ended_line(alp);
-          }
-        }
-        alp = next;
       }
+      y = y1;
     }
-    y = y1;
-  }
 }
 
 /* Internal routine to insert a newly active line in the X ordering */
@@ -655,15 +655,15 @@ void insert_x_new(active_line *alp, line_list *ll)
              (next->x_current < x ||
               (next->x_current == x &&
                (next->start.x > alp->start.x || next->end.x < alp->end.x))))
-  {
-    prev = next;
-  }
+    {
+      prev = next;
+    }
   alp->next = next;
   alp->prev = prev;
   if (next != 0)
-  {
-    next->prev = alp;
-  }
+    {
+      next->prev = alp;
+    }
   prev->next = alp;
   alp->x_current = x;
 }
@@ -677,9 +677,9 @@ void swap_group(active_line *alp)
   active_line *first;
   active_line *next = alp->next;
   while (((prev = alp->prev)->end_mark & 3) == 3)
-  {
-    alp = prev;
-  }
+    {
+      alp = prev;
+    }
   first = alp;
 #ifdef DEBUG
   if (gs_debug['F'])
@@ -689,18 +689,19 @@ void swap_group(active_line *alp)
   /* Start by fixing up the ends. */
   prev->next = last;
   if (next != 0)
-  {
-    next->prev = first;
-  }
+    {
+      next->prev = first;
+    }
   first->prev = next;
   last->next = prev;
   do
-  {
-    active_line *nlp = alp->next;
-    alp->next = alp->prev;
-    alp->prev = nlp;
-    alp = nlp;
-  } while (alp != prev);
+    {
+      active_line *nlp = alp->next;
+      alp->next = alp->prev;
+      alp->prev = nlp;
+      alp = nlp;
+    }
+  while (alp != prev);
 }
 /* Auxiliary procedure to handle a line that just ended */
 private
@@ -711,17 +712,17 @@ void ended_line(register active_line *alp)
   fixed y = pseg->pt.y;
   gs_fixed_point npt;
   if (alp->direction == dir_up)
-  { /* Upward line, go forward along path */
-    next = pseg->next;
-    if (next == 0 || next->type == s_start)
-    {
-      next = pseg; /* stop here */
+    { /* Upward line, go forward along path */
+      next = pseg->next;
+      if (next == 0 || next->type == s_start)
+        {
+          next = pseg; /* stop here */
+        }
     }
-  }
   else
-  { /* Downward line, go backward along path */
-    next = (pseg->type == s_start ? pseg /* stop here */ : pseg->prev);
-  }
+    { /* Downward line, go backward along path */
+      next = (pseg->type == s_start ? pseg /* stop here */ : pseg->prev);
+    }
   npt.y = next->pt.y;
 #ifdef DEBUG
   if (gs_debug['F'])
@@ -729,22 +730,22 @@ void ended_line(register active_line *alp)
            (ulong)pseg, fixed2float(y), (ulong)next, fixed2float(npt.y));
 #endif
   if (npt.y <= y)
-  { /* End of a line sequence */
-    active_line *nlp = alp->next;
-    alp->prev->next = nlp;
-    if (nlp)
-    {
-      nlp->prev = alp->prev;
-    }
+    { /* End of a line sequence */
+      active_line *nlp = alp->next;
+      alp->prev->next = nlp;
+      if (nlp)
+        {
+          nlp->prev = alp->prev;
+        }
 #ifdef DEBUG
-    if (gs_debug['F']) printf("[f]drop %lx\n", (ulong)alp);
+      if (gs_debug['F']) printf("[f]drop %lx\n", (ulong)alp);
 #endif
-  }
+    }
   else
-  {
-    alp->pseg = next;
-    npt.x = next->pt.x;
-    set_al_points(alp, alp->end, npt);
-    print_al("repl", alp);
-  }
+    {
+      alp->pseg = next;
+      npt.x = next->pt.x;
+      set_al_points(alp, alp->end, npt);
+      print_al("repl", alp);
+    }
 }

@@ -19,8 +19,8 @@ copies.  */
 
 /* gxpath2.c */
 /* Path tracing procedures for GhostScript library */
-#include "gx.h"
 #include "gserrors.h"
+#include "gx.h"
 #include "gxarith.h"
 #include "gxfixed.h"
 #include "gzpath.h"
@@ -38,9 +38,9 @@ int flatten_curve(P7(gx_path *, fixed, fixed, fixed, fixed, fixed, fixed));
 int gx_path_current_point(gx_path *ppath, gs_fixed_point *ppt)
 {
   if (!ppath->position_valid)
-  {
-    return_error(gs_error_nocurrentpoint);
-  }
+    {
+      return_error(gs_error_nocurrentpoint);
+    }
   /* Copying the coordinates individually */
   /* is much faster on a PC, and almost as fast on other machines.... */
   ppt->x = ppath->position.x, ppt->y = ppath->position.y;
@@ -51,31 +51,31 @@ int gx_path_current_point(gx_path *ppath, gs_fixed_point *ppt)
 int gx_path_bbox(gx_path *ppath, gs_fixed_rect *pbox)
 {
   if (ppath->first_subpath == 0)
-  { /* The path is empty, use the current point if any. */
-    gx_path_current_point(ppath, &pbox->p);
-    return gx_path_current_point(ppath, &pbox->q);
-  }
+    { /* The path is empty, use the current point if any. */
+      gx_path_current_point(ppath, &pbox->p);
+      return gx_path_current_point(ppath, &pbox->q);
+    }
   /* The stored bounding box may not be up to date. */
   /* Correct it now if necessary. */
   if (ppath->box_last == ppath->current_subpath->last)
-  { /* Box is up to date */
-    *pbox = ppath->bbox;
-  }
+    { /* Box is up to date */
+      *pbox = ppath->bbox;
+    }
   else
-  {
-    gs_fixed_rect box;
-    register segment *pseg = ppath->box_last;
-    if (pseg == 0) /* box is uninitialized */
     {
-      pseg = (segment *)ppath->first_subpath;
-      box.p.x = box.q.x = pseg->pt.x;
-      box.p.y = box.q.y = pseg->pt.y;
-    }
-    else
-    {
-      box = ppath->bbox;
-      pseg = pseg->next;
-    }
+      gs_fixed_rect box;
+      register segment *pseg = ppath->box_last;
+      if (pseg == 0) /* box is uninitialized */
+        {
+          pseg = (segment *)ppath->first_subpath;
+          box.p.x = box.q.x = pseg->pt.x;
+          box.p.y = box.q.y = pseg->pt.y;
+        }
+      else
+        {
+          box = ppath->bbox;
+          pseg = pseg->next;
+        }
 /* Macro for adjusting the bounding box when adding a point */
 #define adjust_bbox(pt)      \
   if ((pt).x < box.p.x)      \
@@ -86,26 +86,26 @@ int gx_path_bbox(gx_path *ppath, gs_fixed_rect *pbox)
     box.p.y = (pt).y;        \
   else if ((pt).y > box.q.y) \
   box.q.y = (pt).y
-    while (pseg)
-    {
-      switch (pseg->type)
-      {
-        case s_curve:
+      while (pseg)
+        {
+          switch (pseg->type)
+            {
+              case s_curve:
 #define pcurve ((curve_segment *)pseg)
-          adjust_bbox(pcurve->p1);
-          adjust_bbox(pcurve->p2);
+                adjust_bbox(pcurve->p1);
+                adjust_bbox(pcurve->p2);
 #undef pcurve
-        /* falls through */
-        default:
-          adjust_bbox(pseg->pt);
-      }
-      pseg = pseg->next;
-    }
+              /* falls through */
+              default:
+                adjust_bbox(pseg->pt);
+            }
+          pseg = pseg->next;
+        }
 #undef adjust_bbox
-    ppath->bbox = box;
-    ppath->box_last = ppath->current_subpath->last;
-    *pbox = box;
-  }
+      ppath->bbox = box;
+      ppath->box_last = ppath->current_subpath->last;
+      *pbox = box;
+    }
   return 0;
 }
 
@@ -121,36 +121,36 @@ int gx_path_is_rectangle(gx_path *ppath, gs_fixed_rect *pbox)
   if (ppath->subpath_count == 1 && ppath->segment_count == 4 &&
       ppath->curve_count == 0 &&
       (pseg0 = ppath->first_subpath)->last->type == s_line_close)
-  {
-    fixed x0 = pseg0->pt.x, y0 = pseg0->pt.y;
-    segment *pseg1 = pseg0->next;
-    segment *pseg2 = pseg1->next;
-    fixed x2 = pseg2->pt.x, y2 = pseg2->pt.y;
-    segment *pseg3 = pseg2->next;
-    if ((x0 == pseg1->pt.x && pseg1->pt.y == y2 && x2 == pseg3->pt.x &&
-         pseg3->pt.y == y0) ||
-        (x0 == pseg3->pt.x && pseg3->pt.y == y2 && x2 == pseg1->pt.x &&
-         pseg1->pt.y == y0))
-    { /* Path is a rectangle.  Return bounding box. */
-      if (x0 < x2)
-      {
-        pbox->p.x = x0, pbox->q.x = x2;
-      }
-      else
-      {
-        pbox->p.x = x2, pbox->q.x = x0;
-      }
-      if (y0 < y2)
-      {
-        pbox->p.y = y0, pbox->q.y = y2;
-      }
-      else
-      {
-        pbox->p.y = y2, pbox->q.y = y0;
-      }
-      return 1;
+    {
+      fixed x0 = pseg0->pt.x, y0 = pseg0->pt.y;
+      segment *pseg1 = pseg0->next;
+      segment *pseg2 = pseg1->next;
+      fixed x2 = pseg2->pt.x, y2 = pseg2->pt.y;
+      segment *pseg3 = pseg2->next;
+      if ((x0 == pseg1->pt.x && pseg1->pt.y == y2 && x2 == pseg3->pt.x &&
+           pseg3->pt.y == y0) ||
+          (x0 == pseg3->pt.x && pseg3->pt.y == y2 && x2 == pseg1->pt.x &&
+           pseg1->pt.y == y0))
+        { /* Path is a rectangle.  Return bounding box. */
+          if (x0 < x2)
+            {
+              pbox->p.x = x0, pbox->q.x = x2;
+            }
+          else
+            {
+              pbox->p.x = x2, pbox->q.x = x0;
+            }
+          if (y0 < y2)
+            {
+              pbox->p.y = y0, pbox->q.y = y2;
+            }
+          else
+            {
+              pbox->p.y = y2, pbox->q.y = y0;
+            }
+          return 1;
+        }
     }
-  }
   return 0;
 }
 
@@ -189,9 +189,9 @@ int gx_path_merge(gx_path *ppfrom, gx_path *ppto)
   subpath *psfrom = ppfrom->current_subpath;
   subpath *psto = ppto->current_subpath;
   if (psto != 0 && psfrom->last != psto->last)
-  {
-    gx_path_release(ppto);
-  }
+    {
+      gx_path_release(ppto);
+    }
   *ppto = *ppfrom;
   ppfrom->shares_segments = 1;
   return 0;
@@ -208,20 +208,20 @@ int gx_path_translate(gx_path *ppath, fixed dx, fixed dy)
   translate_xy(ppath->position);
   pseg = (segment *)(ppath->first_subpath);
   while (pseg)
-  {
-    switch (pseg->type)
     {
-      case s_curve:
-      {
-        curve_segment *pc = (curve_segment *)pseg;
-        translate_xy(pc->p1);
-        translate_xy(pc->p2);
-      }
-      default:
-        translate_xy(pseg->pt);
+      switch (pseg->type)
+        {
+          case s_curve:
+            {
+              curve_segment *pc = (curve_segment *)pseg;
+              translate_xy(pc->p1);
+              translate_xy(pc->p2);
+            }
+          default:
+            translate_xy(pseg->pt);
+        }
+      pseg = pseg->next;
     }
-    pseg = pseg->next;
-  }
   return 0;
 }
 
@@ -262,37 +262,37 @@ int copy_path(gx_path *ppath_old, gx_path *ppath,
   gx_path_init(ppath, &ppath_old->memory_procs);
   pseg = (segment *)(old.first_subpath);
   while (pseg)
-  {
-    switch (pseg->type)
     {
-      case s_start:
-        code = gx_path_add_point(ppath, pseg->pt.x, pseg->pt.y);
-        break;
-      case s_curve:
-      {
-        curve_segment *pc = (curve_segment *)pseg;
-        code = (*curve_proc)(ppath, pc->p1.x, pc->p1.y, pc->p2.x, pc->p2.y,
-                             pc->pt.x, pc->pt.y);
-        break;
-      }
-      case s_line:
-        code = gx_path_add_line(ppath, pseg->pt.x, pseg->pt.y);
-        break;
-      case s_line_close:
-        code = gx_path_close_subpath(ppath);
-        break;
+      switch (pseg->type)
+        {
+          case s_start:
+            code = gx_path_add_point(ppath, pseg->pt.x, pseg->pt.y);
+            break;
+          case s_curve:
+            {
+              curve_segment *pc = (curve_segment *)pseg;
+              code = (*curve_proc)(ppath, pc->p1.x, pc->p1.y, pc->p2.x, pc->p2.y,
+                                   pc->pt.x, pc->pt.y);
+              break;
+            }
+          case s_line:
+            code = gx_path_add_line(ppath, pseg->pt.x, pseg->pt.y);
+            break;
+          case s_line_close:
+            code = gx_path_close_subpath(ppath);
+            break;
+        }
+      if (code)
+        {
+          gx_path_release(ppath);
+          if (ppath == ppath_old)
+            {
+              *ppath_old = old;
+            }
+          return code;
+        }
+      pseg = pseg->next;
     }
-    if (code)
-    {
-      gx_path_release(ppath);
-      if (ppath == ppath_old)
-      {
-        *ppath_old = old;
-      }
-      return code;
-    }
-    pseg = pseg->next;
-  }
   ppath->position = old.position; /* restore current point */
 #ifdef DEBUG
   if (gs_debug['p']) gx_dump_path(ppath, "after copy_path");
@@ -352,35 +352,35 @@ top:
     float t;
     fixed d, dist;
     if ((dx3 < 0 ? -dx3 : dx3) >= (dy3 < 0 ? -dy3 : dy3))
-    {
-      if (dx3 == 0)
       {
-        return 0; /* degenerate */
-      }
-      t = (float)dy3 / (float)dx3;
-      d = sqrt1t2xf(t);
-      if (((dist = (fixed)(t * (x1 - x0)) - y1 + y0) < 0 ? -dist : dist) <= d &&
-          ((dist = (fixed)(t * (x2 - x0)) - y2 + y0) < 0 ? -dist : dist) <= d)
-      { /* Curve is flat enough.  Add a line and exit. */
+        if (dx3 == 0)
+          {
+            return 0; /* degenerate */
+          }
+        t = (float)dy3 / (float)dx3;
+        d = sqrt1t2xf(t);
+        if (((dist = (fixed)(t * (x1 - x0)) - y1 + y0) < 0 ? -dist : dist) <= d &&
+            ((dist = (fixed)(t * (x2 - x0)) - y2 + y0) < 0 ? -dist : dist) <= d)
+          { /* Curve is flat enough.  Add a line and exit. */
 #ifdef DEBUG
-        if (gs_debug['u']) print_curve_point(x3, y3);
+            if (gs_debug['u']) print_curve_point(x3, y3);
 #endif
-        return gx_path_add_line(ppath, x3, y3);
+            return gx_path_add_line(ppath, x3, y3);
+          }
       }
-    }
     else
-    {
-      t = (float)dx3 / (float)dy3;
-      d = sqrt1t2xf(t);
-      if (((dist = (fixed)(t * (y1 - y0)) - x1 + x0) < 0 ? -dist : dist) <= d &&
-          ((dist = (fixed)(t * (y2 - y0)) - x2 + x0) < 0 ? -dist : dist) <= d)
-      { /* Curve is flat enough.  Add a line and exit. */
+      {
+        t = (float)dx3 / (float)dy3;
+        d = sqrt1t2xf(t);
+        if (((dist = (fixed)(t * (y1 - y0)) - x1 + x0) < 0 ? -dist : dist) <= d &&
+            ((dist = (fixed)(t * (y2 - y0)) - x2 + x0) < 0 ? -dist : dist) <= d)
+          { /* Curve is flat enough.  Add a line and exit. */
 #ifdef DEBUG
-        if (gs_debug['u']) print_curve_point(x3, y3);
+            if (gs_debug['u']) print_curve_point(x3, y3);
 #endif
-        return gx_path_add_line(ppath, x3, y3);
+            return gx_path_add_line(ppath, x3, y3);
+          }
       }
-    }
   }
 /* Curve isn't flat enough.  Break into two pieces and recur. */
 /* Algorithm is from "The Beta2-split: A special case of the */
@@ -398,9 +398,9 @@ top:
     code = flatten_curve(ppath, x01, y01, x02, y02, (x0 = midpoint(x02, x1)),
                          (y0 = midpoint(y02, y1)));
     if (code < 0)
-    {
-      return code;
-    }
+      {
+        return code;
+      }
   }
   goto top;
 }

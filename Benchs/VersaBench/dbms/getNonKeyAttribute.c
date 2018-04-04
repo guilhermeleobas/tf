@@ -30,24 +30,24 @@
  */
 
 #include "getNonKeyAttribute.h" /* for getNonKeyAttribute() return codes */
-#include <assert.h>             /* for assert()                          */
-#include <stdio.h>              /* for FILE definition                   */
-#include <stdlib.h>             /* for malloc() and NULL definitions     */
-#include <string.h>             /* for strcpy() and strlen() definitions */
-#include "dataManagement.h"     /* for primitive type definitions        */
-#include "dataObject.h"         /* for MAX_SIZE_OF_NON_KEY_ATTRIBUTE     */
-#include "errorMessage.h"       /* for errorMessage() definition         */
+#include <assert.h> /* for assert()                          */
+#include <stdio.h> /* for FILE definition                   */
+#include <stdlib.h> /* for malloc() and NULL definitions     */
+#include <string.h> /* for strcpy() and strlen() definitions */
+#include "dataManagement.h" /* for primitive type definitions        */
+#include "dataObject.h" /* for MAX_SIZE_OF_NON_KEY_ATTRIBUTE     */
+#include "errorMessage.h" /* for errorMessage() definition         */
 
 /*
  *  Function prototype
  */
 extern Char *getString(FILE *file);
 
-Int getNonKeyAttribute(FILE *file,   /*  input stream to get string from */
+Int getNonKeyAttribute(FILE *file, /*  input stream to get string from */
                        Char **value) /*  handle to unallocated string    */
-{                                    /*  begin getNonKeyAttribute()   */
-  Char *temp;                        /*  value returned from getString() */
-  Int returnCode;                    /*  return code for this routine    */
+{ /*  begin getNonKeyAttribute()   */
+  Char *temp; /*  value returned from getString() */
+  Int returnCode; /*  return code for this routine    */
 
   static Char name[] = "getNonKeyAttribute";
 
@@ -61,28 +61,28 @@ Int getNonKeyAttribute(FILE *file,   /*  input stream to get string from */
    */
   temp = getString(file);
   if (temp == NULL)
-  {
-    errorMessage(name, PREPEND);
-    *value = NULL;
-    returnCode = GET_NON_KEY_ATTRIBUTE_EOI;
-  } /*  end of if *value == NULL */
-  else
-  {
-    assert(strlen(temp) < MAX_SIZE_OF_NON_KEY_ATTRIBUTE);
-
-    *value = malloc(strlen(temp) + 1); /* allocate memory */
-    if (*value == NULL)
-    { /* check for error */
-      errorMessage("allocation failure", REPLACE);
+    {
       errorMessage(name, PREPEND);
-      returnCode = GET_NON_KEY_ATTRIBUTE_ALLOCATION_FAILURE;
-    } /*  end of value == NULL */
-    else
-    { /* copy over string */
-      strcpy(*value, temp);
-      returnCode = GET_NON_KEY_ATTRIBUTE_SUCCESS;
-    } /*  end of else - value != NULL */
-  }   /*  end of if temp != NULL */
+      *value = NULL;
+      returnCode = GET_NON_KEY_ATTRIBUTE_EOI;
+    } /*  end of if *value == NULL */
+  else
+    {
+      assert(strlen(temp) < MAX_SIZE_OF_NON_KEY_ATTRIBUTE);
+
+      *value = malloc(strlen(temp) + 1); /* allocate memory */
+      if (*value == NULL)
+        { /* check for error */
+          errorMessage("allocation failure", REPLACE);
+          errorMessage(name, PREPEND);
+          returnCode = GET_NON_KEY_ATTRIBUTE_ALLOCATION_FAILURE;
+        } /*  end of value == NULL */
+      else
+        { /* copy over string */
+          strcpy(*value, temp);
+          returnCode = GET_NON_KEY_ATTRIBUTE_SUCCESS;
+        } /*  end of else - value != NULL */
+    } /*  end of if temp != NULL */
 
   return (returnCode);
 } /*  end of getNonKeyAttribute()  */

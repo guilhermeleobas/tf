@@ -61,14 +61,14 @@ void fillTree(struct binaryTree** treeToFill)
   scanf("%d", &number);
 
   while (number != 0)
-  {
-    insertSortedBinaryTree(number, treeToFill);
-    if (TRACE)
     {
-      printf("%d inserted\n", number);
+      insertSortedBinaryTree(number, treeToFill);
+      if (TRACE)
+        {
+          printf("%d inserted\n", number);
+        }
+      scanf("%d", &number);
     }
-    scanf("%d", &number);
-  }
 
   printf("\n\nTree constructed\n\n\n");
 }
@@ -85,15 +85,15 @@ void fillSearchedValues(int arrayOfValues[])
   scanf("%d", &number);
 
   while ((i < MAX_SEARCHED_VALUES) && (number != 0))
-  {
-    arrayOfValues[i] = number;
-    if (TRACE)
     {
-      printf("%d read; %d inserted\n", number, arrayOfValues[i]);
+      arrayOfValues[i] = number;
+      if (TRACE)
+        {
+          printf("%d read; %d inserted\n", number, arrayOfValues[i]);
+        }
+      scanf("%d", &number);
+      i++;
     }
-    scanf("%d", &number);
-    i++;
-  }
 
   printf("\n\nArray of values constructed\n\n\n");
 }
@@ -110,20 +110,20 @@ int main()
   printf("Beginning of program\n\n\n");
 
   for (i = 0; i < 10; i++)
-  {
-    searchedValues[i] = 0;
-  }
+    {
+      searchedValues[i] = 0;
+    }
 
   fillTree(&tree);
   fillSearchedValues(searchedValues);
 
   if (TRACE)
-  {
-    printBinaryTree(tree);
-    printf("\n\n");
-    printSortedBinaryTree(tree);
-    printf("\n\n");
-  }
+    {
+      printBinaryTree(tree);
+      printf("\n\n");
+      printSortedBinaryTree(tree);
+      printf("\n\n");
+    }
 
   printf("Summary of sorted binary tree\n=============================\n\n");
   printf("Size                   : %d\n\n", getSizeBinaryTree(tree));
@@ -133,16 +133,16 @@ int main()
   //tree ) );
 
   for (i = 0; i < MAX_SEARCHED_VALUES; i++)
-  {
-    if (memberOfBinaryTree(tree, searchedValues[i]))
     {
-      printf("%d is in the tree.\n", searchedValues[i]);
+      if (memberOfBinaryTree(tree, searchedValues[i]))
+        {
+          printf("%d is in the tree.\n", searchedValues[i]);
+        }
+      else
+        {
+          printf("%d is NOT in the tree.\n", searchedValues[i]);
+        }
     }
-    else
-    {
-      printf("%d is NOT in the tree.\n", searchedValues[i]);
-    }
-  }
   printf("\n\n");
   //	for( i=0; i<MAX_SEARCHED_VALUES; i++) {
   //		if (memberOfSortedBinaryTree( tree, searchedValues[i] ))

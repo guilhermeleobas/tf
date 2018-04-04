@@ -66,46 +66,46 @@ int real_main(int argc, char *argv[])
   memset(params, 0, max_params * sizeof(int));
   gs_main(argc, argv, "GT.MAP", swproc, argproc);
   switch (testn)
-  {
+    {
 #define set_test(tproc)               \
   {                                   \
     int tproc(P2(gs_state *, int *)); \
     proc = tproc;                     \
   }
-    case 1:
-      set_test(test1);
-      break;
-    case 2:
-      set_test(test2);
-      break;
-    case 3:
-      set_test(test3);
-      break;
-    case 4:
-      set_test(test4);
-      break;
-    case 6:
-      set_test(test6);
-      break;
-    case 99:
-      set_test(test99);
-      break;
-    case 100:
-      set_test(test100);
-      break;
-    case 101:
-      set_test(test101);
-      break;
-    default:
-      printf("Unknown test #%d\n", testn);
-      exit(1);
-  }
+      case 1:
+        set_test(test1);
+        break;
+      case 2:
+        set_test(test2);
+        break;
+      case 3:
+        set_test(test3);
+        break;
+      case 4:
+        set_test(test4);
+        break;
+      case 6:
+        set_test(test6);
+        break;
+      case 99:
+        set_test(test99);
+        break;
+      case 100:
+        set_test(test100);
+        break;
+      case 101:
+        set_test(test101);
+        break;
+      default:
+        printf("Unknown test #%d\n", testn);
+        exit(1);
+    }
   z(pgs = gs_state_alloc(gs_malloc, gs_free), "alloc");
   e(gs_setdevice(pgs, gs_getdevice(0)), "setdevice");
   if (use_null)
-  {
-    gx_device_no_output(pgs); /* suppress output */
-  }
+    {
+      gx_device_no_output(pgs); /* suppress output */
+    }
   e(gs_setscreen(pgs, 10.0, 45.0, htproc), "setscreen");
   e(gs_initgraphics(pgs), "initgraphics");
   e(gs_erasepage(pgs), "erasepage");
@@ -122,21 +122,22 @@ int real_main(int argc, char *argv[])
     int count = repeat;
     time1 = get_time();
     do
-    {
-      e(gs_gsave(pgs), "outer gsave");
-      (*proc)(pgs, params);
-      gs_copypage(pgs);
-      e(gs_grestore(pgs), "outer grestore");
-    } while (--count);
+      {
+        e(gs_gsave(pgs), "outer gsave");
+        (*proc)(pgs, params);
+        gs_copypage(pgs);
+        e(gs_grestore(pgs), "outer grestore");
+      }
+    while (--count);
     ttime = get_time() - time1;
     if (repeat == 1)
-    {
-      printf("%ld\n", ttime);
-    }
+      {
+        printf("%ld\n", ttime);
+      }
     else
-    {
-      printf("%ld / %d = %ld\n", ttime, repeat, ttime / repeat);
-    }
+      {
+        printf("%ld / %d = %ld\n", ttime, repeat, ttime / repeat);
+      }
   }
   getchar(); /* wait for confirmation */
 }
@@ -145,68 +146,68 @@ float htproc(floatp x, floatp y) { return (float)(1.0 - (x * x + y * y)); }
 int swproc(char sw, char *arg)
 {
   switch (sw)
-  {
-    default:
-      return -1;
-    case 'A': /* show all steps */
-      show_all = 1;
-      break;
-    case 'N': /* select null device */
-      use_null = 1;
-      break;
-    case 'R': /* repeat test (for timing)  */
-      sscanf(arg, "%d", &repeat);
-      if (repeat <= 0)
-      {
-        printf("Repeat count <= 0\n");
-        exit(1);
-      }
-      break;
-  }
+    {
+      default:
+        return -1;
+      case 'A': /* show all steps */
+        show_all = 1;
+        break;
+      case 'N': /* select null device */
+        use_null = 1;
+        break;
+      case 'R': /* repeat test (for timing)  */
+        sscanf(arg, "%d", &repeat);
+        if (repeat <= 0)
+          {
+            printf("Repeat count <= 0\n");
+            exit(1);
+          }
+        break;
+    }
   return 0;
 }
 /* Process parameters */
 void argproc(char *arg, int index)
 {
   if (index == 0)
-  {
-    sscanf(arg, "%d", &testn);
-  }
+    {
+      sscanf(arg, "%d", &testn);
+    }
   else if (index <= max_params)
-  {
-    sscanf(arg, "%d", &params[index - 1]);
-  }
+    {
+      sscanf(arg, "%d", &params[index - 1]);
+    }
   else
-  {
-    printf("Too many arguments\n");
-    exit(1);
-  }
+    {
+      printf("Too many arguments\n");
+      exit(1);
+    }
 }
 private
 void e(int code, char *str)
 {
   if (show_all)
-  {
-    printf("%s\n", str);
-  }
+    {
+      printf("%s\n", str);
+    }
   if (code < 0)
-  {
-    printf("Error, code=%d in %s\n", code, str);
-    exit(1);
-  }
+    {
+      printf("Error, code=%d in %s\n", code, str);
+      exit(1);
+    }
 }
 private
 void ze(char *ptr, char *str)
 {
   if (show_all)
-  {
-    printf("%s\n", str);
-  }
+    {
+      printf("%s\n", str);
+    }
   if (ptr == NULL)
-  {
-    printf("Error, result=0 in %d\n", code, str);
-    exit(1);
-  }
+    {
+      printf("Error, result=0 in %d\n", code, str);
+      exit(1);
+    }
 }
 
 #define inch(n) (float)((n)*72)
@@ -219,20 +220,20 @@ test99(register gs_state *pgs, int *params)
   float ang = params[0];
   float atot = 0;
   if (ang == 0)
-  {
-    ang = 30;
-  }
+    {
+      ang = 30;
+    }
   gs_translate(pgs, inch(4), inch(5));
   gs_scale(pgs, inch(3.5), inch(3.5));
   gs_setlinewidth(pgs, 0.1);
   while (atot < 360)
-  {
-    gs_moveto(pgs, 0.25, 0.0);
-    gs_lineto(pgs, 1.0, 0.0);
-    gs_stroke(pgs);
-    gs_rotate(pgs, ang);
-    atot += ang;
-  }
+    {
+      gs_moveto(pgs, 0.25, 0.0);
+      gs_lineto(pgs, 1.0, 0.0);
+      gs_stroke(pgs);
+      gs_rotate(pgs, ang);
+      atot += ang;
+    }
 }
 
 /* A mandala program for testing stroke speed */
@@ -245,18 +246,18 @@ test100(register gs_state *pgs, int *params)
   e(gs_scale(pgs, inch(3.5), inch(3.5)), "scale");
   e(gs_setlinewidth(pgs, 0.0), "setlinewidth");
   for (delta = 1; delta <= N / 2; delta++)
-  {
-    float ang = ang1 * delta;
-    e(gs_newpath(pgs), "newpath");
-    for (i = 0; i < N; i++)
     {
-      e(gs_moveto(pgs, 0.0, 1.0), "moveto");
-      e(gs_rotate(pgs, ang), "rotate 1");
-      e(gs_lineto(pgs, 0.0, 1.0), "lineto");
-      e(gs_rotate(pgs, (float)(ang1 - ang)), "rotate 2");
+      float ang = ang1 * delta;
+      e(gs_newpath(pgs), "newpath");
+      for (i = 0; i < N; i++)
+        {
+          e(gs_moveto(pgs, 0.0, 1.0), "moveto");
+          e(gs_rotate(pgs, ang), "rotate 1");
+          e(gs_lineto(pgs, 0.0, 1.0), "lineto");
+          e(gs_rotate(pgs, (float)(ang1 - ang)), "rotate 2");
+        }
+      e(gs_stroke(pgs), "stroke");
     }
-    e(gs_stroke(pgs), "stroke");
-  }
 }
 
 /* A program for testing colors */
@@ -265,22 +266,22 @@ test101(register gs_state *pgs, int *params)
   int i, j, k;
   float unit = 36.0;
   for (i = 0; i <= 4; i++)
-  {
-    for (j = 0; j <= 4; j++)
     {
-      for (k = 0; k <= 4; k++)
-      {
-        e(gs_setrgbcolor(pgs, i * 0.25, j * 0.25, k * 0.25), "setrgbcolor");
-        gs_newpath(pgs);
-        gs_moveto(pgs, (j * 5 + k + 0.1) * unit, (i + 0.1) * unit);
-        gs_rlineto(pgs, 0.0, unit);
-        gs_rlineto(pgs, unit, 0.0);
-        gs_rlineto(pgs, 0.0, -unit);
-        gs_closepath(pgs);
-        gs_fill(pgs);
-      }
+      for (j = 0; j <= 4; j++)
+        {
+          for (k = 0; k <= 4; k++)
+            {
+              e(gs_setrgbcolor(pgs, i * 0.25, j * 0.25, k * 0.25), "setrgbcolor");
+              gs_newpath(pgs);
+              gs_moveto(pgs, (j * 5 + k + 0.1) * unit, (i + 0.1) * unit);
+              gs_rlineto(pgs, 0.0, unit);
+              gs_rlineto(pgs, unit, 0.0);
+              gs_rlineto(pgs, 0.0, -unit);
+              gs_closepath(pgs);
+              gs_fill(pgs);
+            }
+        }
     }
-  }
 }
 
 /* ------ Programs from the PostScript Cookbook ------ */
@@ -307,25 +308,25 @@ test1(register gs_state *pgs, int *params)
   gs_scale(pgs, inch(1.75), inch(1.75));
   gs_setlinewidth(pgs, 0.02);
   for (i = 1; i <= nseg; i++)
-  {
-    gs_setgray(pgs, (float)i / param);
-    if (param < 0)
     {
-      gs_rotate(pgs, -ang);
+      gs_setgray(pgs, (float)i / param);
+      if (param < 0)
+        {
+          gs_rotate(pgs, -ang);
+        }
+      e(gs_gsave(pgs), "gsave 3");
+      wedge(pgs, ang2);
+      e(gs_gsave(pgs), "gsave 4");
+      gs_fill(pgs);
+      e(gs_grestore(pgs), "grestore 4");
+      gs_setgray(pgs, 0.0);
+      gs_stroke(pgs);
+      e(gs_grestore(pgs), "grestore 3");
+      if (param > 0)
+        {
+          gs_rotate(pgs, ang);
+        }
     }
-    e(gs_gsave(pgs), "gsave 3");
-    wedge(pgs, ang2);
-    e(gs_gsave(pgs), "gsave 4");
-    gs_fill(pgs);
-    e(gs_grestore(pgs), "grestore 4");
-    gs_setgray(pgs, 0.0);
-    gs_stroke(pgs);
-    e(gs_grestore(pgs), "grestore 3");
-    if (param > 0)
-    {
-      gs_rotate(pgs, ang);
-    }
-  }
   e(gs_grestore(pgs), "grestore 2");
 }
 void wedge(register gs_state *pgs, floatp ang)
@@ -353,31 +354,31 @@ test2(gs_state *pgs, int *params)
   e(gs_translate(pgs, inch(2.5), inch(6)), "translate 1");
   e(gs_setlinewidth(pgs, 1.0 / 16), "setlinewidth 1");
   if (rota != 0)
-  {
-    e(gs_rotate(pgs, rota), "rotate");
-  }
+    {
+      e(gs_rotate(pgs, rota), "rotate");
+    }
   for (i = 1; i <= 5; i++)
-  {
-    e(gs_gsave(pgs), "gsave 2");
-    e(gs_scale(pgs, i * inch(0.5), i * inch(0.5)), "scale 1");
-    centersquare(pgs, cw);
-    e(gs_stroke(pgs), "stroke 1");
-    e(gs_grestore(pgs), "grestore 2");
-  }
+    {
+      e(gs_gsave(pgs), "gsave 2");
+      e(gs_scale(pgs, i * inch(0.5), i * inch(0.5)), "scale 1");
+      centersquare(pgs, cw);
+      e(gs_stroke(pgs), "stroke 1");
+      e(gs_grestore(pgs), "grestore 2");
+    }
   e(gs_grestore(pgs), "grestore 1");
   e(gs_gsave(pgs), "gsave 3");
   e(gs_translate(pgs, inch(6), inch(6)), "translate 2");
   e(gs_setlinewidth(pgs, 1.0), "setlinewidth 2");
   e(gs_currentmatrix(pgs, &cmtx), "currentmatrix");
   for (i = 1; i <= 5; i++)
-  {
-    e(gs_gsave(pgs), "gsave 4");
-    e(gs_scale(pgs, i * inch(0.5), i * inch(0.5)), "scale 2");
-    centersquare(pgs, cw);
-    e(gs_setmatrix(pgs, &cmtx), "setmatrix");
-    e(gs_stroke(pgs), "stroke 2");
-    e(gs_grestore(pgs), "grestore 4");
-  }
+    {
+      e(gs_gsave(pgs), "gsave 4");
+      e(gs_scale(pgs, i * inch(0.5), i * inch(0.5)), "scale 2");
+      centersquare(pgs, cw);
+      e(gs_setmatrix(pgs, &cmtx), "setmatrix");
+      e(gs_stroke(pgs), "stroke 2");
+      e(gs_grestore(pgs), "grestore 4");
+    }
   e(gs_grestore(pgs), "grestore 3");
 }
 void centersquare(register gs_state *pgs, int cw)
@@ -483,14 +484,14 @@ test6(register gs_state *pgs, int *params)
   /* The following is not in the original program. */
   /* It is here to test clipping of images. */
   if (params[1])
-  {
-    e(gs_newpath(pgs), "newpath");
-    e(gs_moveto(pgs, 0.0, 0.0), "moveto");
-    e(gs_lineto(pgs, 1.0, 3.0), "line1");
-    e(gs_lineto(pgs, 3.0, 1.0), "line2");
-    e(gs_closepath(pgs), "closepath");
-    e(gs_clip(pgs), "clip");
-  }
+    {
+      e(gs_newpath(pgs), "newpath");
+      e(gs_moveto(pgs, 0.0, 0.0), "moveto");
+      e(gs_lineto(pgs, 1.0, 3.0), "line1");
+      e(gs_lineto(pgs, 3.0, 1.0), "line2");
+      e(gs_closepath(pgs), "closepath");
+      e(gs_clip(pgs), "clip");
+    }
   e(gs_rotate(pgs, (float)params[0]), "rotate");
   gs_make_identity(&mat);
   mat.xx = 24;

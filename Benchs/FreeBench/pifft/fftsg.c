@@ -283,18 +283,18 @@ void cdft(int n, int isgn, double *a, int *ip, double *w)
 
   nw = ip[0];
   if (n > (nw << 2))
-  {
-    nw = n >> 2;
-    makewt(nw, ip, w);
-  }
+    {
+      nw = n >> 2;
+      makewt(nw, ip, w);
+    }
   if (isgn >= 0)
-  {
-    cftfsub(n, a, ip + 2, nw, w);
-  }
+    {
+      cftfsub(n, a, ip + 2, nw, w);
+    }
   else
-  {
-    cftbsub(n, a, ip + 2, nw, w);
-  }
+    {
+      cftbsub(n, a, ip + 2, nw, w);
+    }
 }
 
 void rdft(int n, int isgn, double *a, int *ip, double *w)
@@ -310,45 +310,45 @@ void rdft(int n, int isgn, double *a, int *ip, double *w)
 
   nw = ip[0];
   if (n > (nw << 2))
-  {
-    nw = n >> 2;
-    makewt(nw, ip, w);
-  }
+    {
+      nw = n >> 2;
+      makewt(nw, ip, w);
+    }
   nc = ip[1];
   if (n > (nc << 2))
-  {
-    nc = n >> 2;
-    makect(nc, ip, w + nw);
-  }
+    {
+      nc = n >> 2;
+      makect(nc, ip, w + nw);
+    }
   if (isgn >= 0)
-  {
-    if (n > 4)
     {
-      cftfsub(n, a, ip + 2, nw, w);
-      rftfsub(n, a, nc, w + nw);
+      if (n > 4)
+        {
+          cftfsub(n, a, ip + 2, nw, w);
+          rftfsub(n, a, nc, w + nw);
+        }
+      else if (n == 4)
+        {
+          cftfsub(n, a, ip + 2, nw, w);
+        }
+      xi = a[0] - a[1];
+      a[0] += a[1];
+      a[1] = xi;
     }
-    else if (n == 4)
-    {
-      cftfsub(n, a, ip + 2, nw, w);
-    }
-    xi = a[0] - a[1];
-    a[0] += a[1];
-    a[1] = xi;
-  }
   else
-  {
-    a[1] = 0.5 * (a[0] - a[1]);
-    a[0] -= a[1];
-    if (n > 4)
     {
-      rftbsub(n, a, nc, w + nw);
-      cftbsub(n, a, ip + 2, nw, w);
+      a[1] = 0.5 * (a[0] - a[1]);
+      a[0] -= a[1];
+      if (n > 4)
+        {
+          rftbsub(n, a, nc, w + nw);
+          cftbsub(n, a, ip + 2, nw, w);
+        }
+      else if (n == 4)
+        {
+          cftbsub(n, a, ip + 2, nw, w);
+        }
     }
-    else if (n == 4)
-    {
-      cftbsub(n, a, ip + 2, nw, w);
-    }
-  }
 }
 
 void ddct(int n, int isgn, double *a, int *ip, double *w)
@@ -365,57 +365,57 @@ void ddct(int n, int isgn, double *a, int *ip, double *w)
 
   nw = ip[0];
   if (n > (nw << 2))
-  {
-    nw = n >> 2;
-    makewt(nw, ip, w);
-  }
+    {
+      nw = n >> 2;
+      makewt(nw, ip, w);
+    }
   nc = ip[1];
   if (n > nc)
-  {
-    nc = n;
-    makect(nc, ip, w + nw);
-  }
+    {
+      nc = n;
+      makect(nc, ip, w + nw);
+    }
   if (isgn < 0)
-  {
-    xr = a[n - 1];
-    for (j = n - 2; j >= 2; j -= 2)
     {
-      a[j + 1] = a[j] - a[j - 1];
-      a[j] += a[j - 1];
+      xr = a[n - 1];
+      for (j = n - 2; j >= 2; j -= 2)
+        {
+          a[j + 1] = a[j] - a[j - 1];
+          a[j] += a[j - 1];
+        }
+      a[1] = a[0] - xr;
+      a[0] += xr;
+      if (n > 4)
+        {
+          rftbsub(n, a, nc, w + nw);
+          cftbsub(n, a, ip + 2, nw, w);
+        }
+      else if (n == 4)
+        {
+          cftbsub(n, a, ip + 2, nw, w);
+        }
     }
-    a[1] = a[0] - xr;
-    a[0] += xr;
-    if (n > 4)
-    {
-      rftbsub(n, a, nc, w + nw);
-      cftbsub(n, a, ip + 2, nw, w);
-    }
-    else if (n == 4)
-    {
-      cftbsub(n, a, ip + 2, nw, w);
-    }
-  }
   dctsub(n, a, nc, w + nw);
   if (isgn >= 0)
-  {
-    if (n > 4)
     {
-      cftfsub(n, a, ip + 2, nw, w);
-      rftfsub(n, a, nc, w + nw);
+      if (n > 4)
+        {
+          cftfsub(n, a, ip + 2, nw, w);
+          rftfsub(n, a, nc, w + nw);
+        }
+      else if (n == 4)
+        {
+          cftfsub(n, a, ip + 2, nw, w);
+        }
+      xr = a[0] - a[1];
+      a[0] += a[1];
+      for (j = 2; j < n; j += 2)
+        {
+          a[j - 1] = a[j] - a[j + 1];
+          a[j] += a[j + 1];
+        }
+      a[n - 1] = xr;
     }
-    else if (n == 4)
-    {
-      cftfsub(n, a, ip + 2, nw, w);
-    }
-    xr = a[0] - a[1];
-    a[0] += a[1];
-    for (j = 2; j < n; j += 2)
-    {
-      a[j - 1] = a[j] - a[j + 1];
-      a[j] += a[j + 1];
-    }
-    a[n - 1] = xr;
-  }
 }
 
 void ddst(int n, int isgn, double *a, int *ip, double *w)
@@ -432,57 +432,57 @@ void ddst(int n, int isgn, double *a, int *ip, double *w)
 
   nw = ip[0];
   if (n > (nw << 2))
-  {
-    nw = n >> 2;
-    makewt(nw, ip, w);
-  }
+    {
+      nw = n >> 2;
+      makewt(nw, ip, w);
+    }
   nc = ip[1];
   if (n > nc)
-  {
-    nc = n;
-    makect(nc, ip, w + nw);
-  }
+    {
+      nc = n;
+      makect(nc, ip, w + nw);
+    }
   if (isgn < 0)
-  {
-    xr = a[n - 1];
-    for (j = n - 2; j >= 2; j -= 2)
     {
-      a[j + 1] = -a[j] - a[j - 1];
-      a[j] -= a[j - 1];
+      xr = a[n - 1];
+      for (j = n - 2; j >= 2; j -= 2)
+        {
+          a[j + 1] = -a[j] - a[j - 1];
+          a[j] -= a[j - 1];
+        }
+      a[1] = a[0] + xr;
+      a[0] -= xr;
+      if (n > 4)
+        {
+          rftbsub(n, a, nc, w + nw);
+          cftbsub(n, a, ip + 2, nw, w);
+        }
+      else if (n == 4)
+        {
+          cftbsub(n, a, ip + 2, nw, w);
+        }
     }
-    a[1] = a[0] + xr;
-    a[0] -= xr;
-    if (n > 4)
-    {
-      rftbsub(n, a, nc, w + nw);
-      cftbsub(n, a, ip + 2, nw, w);
-    }
-    else if (n == 4)
-    {
-      cftbsub(n, a, ip + 2, nw, w);
-    }
-  }
   dstsub(n, a, nc, w + nw);
   if (isgn >= 0)
-  {
-    if (n > 4)
     {
-      cftfsub(n, a, ip + 2, nw, w);
-      rftfsub(n, a, nc, w + nw);
+      if (n > 4)
+        {
+          cftfsub(n, a, ip + 2, nw, w);
+          rftfsub(n, a, nc, w + nw);
+        }
+      else if (n == 4)
+        {
+          cftfsub(n, a, ip + 2, nw, w);
+        }
+      xr = a[0] - a[1];
+      a[0] += a[1];
+      for (j = 2; j < n; j += 2)
+        {
+          a[j - 1] = -a[j] - a[j + 1];
+          a[j] -= a[j + 1];
+        }
+      a[n - 1] = -xr;
     }
-    else if (n == 4)
-    {
-      cftfsub(n, a, ip + 2, nw, w);
-    }
-    xr = a[0] - a[1];
-    a[0] += a[1];
-    for (j = 2; j < n; j += 2)
-    {
-      a[j - 1] = -a[j] - a[j + 1];
-      a[j] -= a[j + 1];
-    }
-    a[n - 1] = -xr;
-  }
 }
 
 void dfct(int n, double *a, double *t, int *ip, double *w)
@@ -497,16 +497,16 @@ void dfct(int n, double *a, double *t, int *ip, double *w)
 
   nw = ip[0];
   if (n > (nw << 3))
-  {
-    nw = n >> 3;
-    makewt(nw, ip, w);
-  }
+    {
+      nw = n >> 3;
+      makewt(nw, ip, w);
+    }
   nc = ip[1];
   if (n > (nc << 1))
-  {
-    nc = n >> 1;
-    makect(nc, ip, w + nw);
-  }
+    {
+      nc = n >> 1;
+      makect(nc, ip, w + nw);
+    }
   m = n >> 1;
   yi = a[m];
   xi = a[0] + a[n];
@@ -514,83 +514,83 @@ void dfct(int n, double *a, double *t, int *ip, double *w)
   t[0] = xi - yi;
   t[m] = xi + yi;
   if (n > 2)
-  {
-    mh = m >> 1;
-    for (j = 1; j < mh; j++)
     {
-      k = m - j;
-      xr = a[j] - a[n - j];
-      xi = a[j] + a[n - j];
-      yr = a[k] - a[n - k];
-      yi = a[k] + a[n - k];
-      a[j] = xr;
-      a[k] = yr;
-      t[j] = xi - yi;
-      t[k] = xi + yi;
-    }
-    t[mh] = a[mh] + a[n - mh];
-    a[mh] -= a[n - mh];
-    dctsub(m, a, nc, w + nw);
-    if (m > 4)
-    {
-      cftfsub(m, a, ip + 2, nw, w);
-      rftfsub(m, a, nc, w + nw);
-    }
-    else if (m == 4)
-    {
-      cftfsub(m, a, ip + 2, nw, w);
-    }
-    a[n - 1] = a[0] - a[1];
-    a[1] = a[0] + a[1];
-    for (j = m - 2; j >= 2; j -= 2)
-    {
-      a[2 * j + 1] = a[j] + a[j + 1];
-      a[2 * j - 1] = a[j] - a[j + 1];
-    }
-    l = 2;
-    m = mh;
-    while (m >= 2)
-    {
-      dctsub(m, t, nc, w + nw);
-      if (m > 4)
-      {
-        cftfsub(m, t, ip + 2, nw, w);
-        rftfsub(m, t, nc, w + nw);
-      }
-      else if (m == 4)
-      {
-        cftfsub(m, t, ip + 2, nw, w);
-      }
-      a[n - l] = t[0] - t[1];
-      a[l] = t[0] + t[1];
-      k = 0;
-      for (j = 2; j < m; j += 2)
-      {
-        k += l << 2;
-        a[k - l] = t[j] - t[j + 1];
-        a[k + l] = t[j] + t[j + 1];
-      }
-      l <<= 1;
       mh = m >> 1;
-      for (j = 0; j < mh; j++)
-      {
-        k = m - j;
-        t[j] = t[m + k] - t[m + j];
-        t[k] = t[m + k] + t[m + j];
-      }
-      t[mh] = t[m + mh];
+      for (j = 1; j < mh; j++)
+        {
+          k = m - j;
+          xr = a[j] - a[n - j];
+          xi = a[j] + a[n - j];
+          yr = a[k] - a[n - k];
+          yi = a[k] + a[n - k];
+          a[j] = xr;
+          a[k] = yr;
+          t[j] = xi - yi;
+          t[k] = xi + yi;
+        }
+      t[mh] = a[mh] + a[n - mh];
+      a[mh] -= a[n - mh];
+      dctsub(m, a, nc, w + nw);
+      if (m > 4)
+        {
+          cftfsub(m, a, ip + 2, nw, w);
+          rftfsub(m, a, nc, w + nw);
+        }
+      else if (m == 4)
+        {
+          cftfsub(m, a, ip + 2, nw, w);
+        }
+      a[n - 1] = a[0] - a[1];
+      a[1] = a[0] + a[1];
+      for (j = m - 2; j >= 2; j -= 2)
+        {
+          a[2 * j + 1] = a[j] + a[j + 1];
+          a[2 * j - 1] = a[j] - a[j + 1];
+        }
+      l = 2;
       m = mh;
+      while (m >= 2)
+        {
+          dctsub(m, t, nc, w + nw);
+          if (m > 4)
+            {
+              cftfsub(m, t, ip + 2, nw, w);
+              rftfsub(m, t, nc, w + nw);
+            }
+          else if (m == 4)
+            {
+              cftfsub(m, t, ip + 2, nw, w);
+            }
+          a[n - l] = t[0] - t[1];
+          a[l] = t[0] + t[1];
+          k = 0;
+          for (j = 2; j < m; j += 2)
+            {
+              k += l << 2;
+              a[k - l] = t[j] - t[j + 1];
+              a[k + l] = t[j] + t[j + 1];
+            }
+          l <<= 1;
+          mh = m >> 1;
+          for (j = 0; j < mh; j++)
+            {
+              k = m - j;
+              t[j] = t[m + k] - t[m + j];
+              t[k] = t[m + k] + t[m + j];
+            }
+          t[mh] = t[m + mh];
+          m = mh;
+        }
+      a[l] = t[0];
+      a[n] = t[2] - t[1];
+      a[0] = t[2] + t[1];
     }
-    a[l] = t[0];
-    a[n] = t[2] - t[1];
-    a[0] = t[2] + t[1];
-  }
   else
-  {
-    a[1] = a[0];
-    a[2] = t[0];
-    a[0] = t[1];
-  }
+    {
+      a[1] = a[0];
+      a[2] = t[0];
+      a[0] = t[1];
+    }
 }
 
 void dfst(int n, double *a, double *t, int *ip, double *w)
@@ -605,88 +605,88 @@ void dfst(int n, double *a, double *t, int *ip, double *w)
 
   nw = ip[0];
   if (n > (nw << 3))
-  {
-    nw = n >> 3;
-    makewt(nw, ip, w);
-  }
+    {
+      nw = n >> 3;
+      makewt(nw, ip, w);
+    }
   nc = ip[1];
   if (n > (nc << 1))
-  {
-    nc = n >> 1;
-    makect(nc, ip, w + nw);
-  }
+    {
+      nc = n >> 1;
+      makect(nc, ip, w + nw);
+    }
   if (n > 2)
-  {
-    m = n >> 1;
-    mh = m >> 1;
-    for (j = 1; j < mh; j++)
     {
-      k = m - j;
-      xr = a[j] + a[n - j];
-      xi = a[j] - a[n - j];
-      yr = a[k] + a[n - k];
-      yi = a[k] - a[n - k];
-      a[j] = xr;
-      a[k] = yr;
-      t[j] = xi + yi;
-      t[k] = xi - yi;
-    }
-    t[0] = a[mh] - a[n - mh];
-    a[mh] += a[n - mh];
-    a[0] = a[m];
-    dstsub(m, a, nc, w + nw);
-    if (m > 4)
-    {
-      cftfsub(m, a, ip + 2, nw, w);
-      rftfsub(m, a, nc, w + nw);
-    }
-    else if (m == 4)
-    {
-      cftfsub(m, a, ip + 2, nw, w);
-    }
-    a[n - 1] = a[1] - a[0];
-    a[1] = a[0] + a[1];
-    for (j = m - 2; j >= 2; j -= 2)
-    {
-      a[2 * j + 1] = a[j] - a[j + 1];
-      a[2 * j - 1] = -a[j] - a[j + 1];
-    }
-    l = 2;
-    m = mh;
-    while (m >= 2)
-    {
-      dstsub(m, t, nc, w + nw);
-      if (m > 4)
-      {
-        cftfsub(m, t, ip + 2, nw, w);
-        rftfsub(m, t, nc, w + nw);
-      }
-      else if (m == 4)
-      {
-        cftfsub(m, t, ip + 2, nw, w);
-      }
-      a[n - l] = t[1] - t[0];
-      a[l] = t[0] + t[1];
-      k = 0;
-      for (j = 2; j < m; j += 2)
-      {
-        k += l << 2;
-        a[k - l] = -t[j] - t[j + 1];
-        a[k + l] = t[j] - t[j + 1];
-      }
-      l <<= 1;
+      m = n >> 1;
       mh = m >> 1;
       for (j = 1; j < mh; j++)
-      {
-        k = m - j;
-        t[j] = t[m + k] + t[m + j];
-        t[k] = t[m + k] - t[m + j];
-      }
-      t[0] = t[m + mh];
+        {
+          k = m - j;
+          xr = a[j] + a[n - j];
+          xi = a[j] - a[n - j];
+          yr = a[k] + a[n - k];
+          yi = a[k] - a[n - k];
+          a[j] = xr;
+          a[k] = yr;
+          t[j] = xi + yi;
+          t[k] = xi - yi;
+        }
+      t[0] = a[mh] - a[n - mh];
+      a[mh] += a[n - mh];
+      a[0] = a[m];
+      dstsub(m, a, nc, w + nw);
+      if (m > 4)
+        {
+          cftfsub(m, a, ip + 2, nw, w);
+          rftfsub(m, a, nc, w + nw);
+        }
+      else if (m == 4)
+        {
+          cftfsub(m, a, ip + 2, nw, w);
+        }
+      a[n - 1] = a[1] - a[0];
+      a[1] = a[0] + a[1];
+      for (j = m - 2; j >= 2; j -= 2)
+        {
+          a[2 * j + 1] = a[j] - a[j + 1];
+          a[2 * j - 1] = -a[j] - a[j + 1];
+        }
+      l = 2;
       m = mh;
+      while (m >= 2)
+        {
+          dstsub(m, t, nc, w + nw);
+          if (m > 4)
+            {
+              cftfsub(m, t, ip + 2, nw, w);
+              rftfsub(m, t, nc, w + nw);
+            }
+          else if (m == 4)
+            {
+              cftfsub(m, t, ip + 2, nw, w);
+            }
+          a[n - l] = t[1] - t[0];
+          a[l] = t[0] + t[1];
+          k = 0;
+          for (j = 2; j < m; j += 2)
+            {
+              k += l << 2;
+              a[k - l] = -t[j] - t[j + 1];
+              a[k + l] = t[j] - t[j + 1];
+            }
+          l <<= 1;
+          mh = m >> 1;
+          for (j = 1; j < mh; j++)
+            {
+              k = m - j;
+              t[j] = t[m + k] + t[m + j];
+              t[k] = t[m + k] - t[m + j];
+            }
+          t[0] = t[m + mh];
+          m = mh;
+        }
+      a[l] = t[0];
     }
-    a[l] = t[0];
-  }
   a[0] = 0;
 }
 
@@ -702,52 +702,52 @@ void makewt(int nw, int *ip, double *w)
   ip[0] = nw;
   ip[1] = 1;
   if (nw > 2)
-  {
-    nwh = nw >> 1;
-    delta = atan(1.0) / nwh;
-    wn4r = cos(delta * nwh);
-    w[0] = 1;
-    w[1] = wn4r;
-    if (nwh >= 4)
     {
-      w[2] = 0.5 / cos(delta * 2);
-      w[3] = 0.5 / cos(delta * 6);
-    }
-    for (j = 4; j < nwh; j += 4)
-    {
-      w[j] = cos(delta * j);
-      w[j + 1] = sin(delta * j);
-      w[j + 2] = cos(3 * delta * j);
-      w[j + 3] = sin(3 * delta * j);
-    }
-    nw0 = 0;
-    while (nwh > 2)
-    {
-      nw1 = nw0 + nwh;
-      nwh >>= 1;
-      w[nw1] = 1;
-      w[nw1 + 1] = wn4r;
+      nwh = nw >> 1;
+      delta = atan(1.0) / nwh;
+      wn4r = cos(delta * nwh);
+      w[0] = 1;
+      w[1] = wn4r;
       if (nwh >= 4)
-      {
-        wk1r = w[nw0 + 4];
-        wk3r = w[nw0 + 6];
-        w[nw1 + 2] = 0.5 / wk1r;
-        w[nw1 + 3] = 0.5 / wk3r;
-      }
+        {
+          w[2] = 0.5 / cos(delta * 2);
+          w[3] = 0.5 / cos(delta * 6);
+        }
       for (j = 4; j < nwh; j += 4)
-      {
-        wk1r = w[nw0 + 2 * j];
-        wk1i = w[nw0 + 2 * j + 1];
-        wk3r = w[nw0 + 2 * j + 2];
-        wk3i = w[nw0 + 2 * j + 3];
-        w[nw1 + j] = wk1r;
-        w[nw1 + j + 1] = wk1i;
-        w[nw1 + j + 2] = wk3r;
-        w[nw1 + j + 3] = wk3i;
-      }
-      nw0 = nw1;
+        {
+          w[j] = cos(delta * j);
+          w[j + 1] = sin(delta * j);
+          w[j + 2] = cos(3 * delta * j);
+          w[j + 3] = sin(3 * delta * j);
+        }
+      nw0 = 0;
+      while (nwh > 2)
+        {
+          nw1 = nw0 + nwh;
+          nwh >>= 1;
+          w[nw1] = 1;
+          w[nw1 + 1] = wn4r;
+          if (nwh >= 4)
+            {
+              wk1r = w[nw0 + 4];
+              wk3r = w[nw0 + 6];
+              w[nw1 + 2] = 0.5 / wk1r;
+              w[nw1 + 3] = 0.5 / wk3r;
+            }
+          for (j = 4; j < nwh; j += 4)
+            {
+              wk1r = w[nw0 + 2 * j];
+              wk1i = w[nw0 + 2 * j + 1];
+              wk3r = w[nw0 + 2 * j + 2];
+              wk3i = w[nw0 + 2 * j + 3];
+              w[nw1 + j] = wk1r;
+              w[nw1 + j + 1] = wk1i;
+              w[nw1 + j + 2] = wk3r;
+              w[nw1 + j + 3] = wk3i;
+            }
+          nw0 = nw1;
+        }
     }
-  }
 }
 
 void makect(int nc, int *ip, double *c)
@@ -757,22 +757,22 @@ void makect(int nc, int *ip, double *c)
 
   ip[1] = nc;
   if (nc > 1)
-  {
-    nch = nc >> 1;
-    delta = atan(1.0) / nch;
-    c[0] = cos(delta * nch);
-    c[nch] = 0.5 * c[0];
-    for (j = 1; j < nch; j++)
     {
-      c[j] = 0.5 * cos(delta * j);
-      c[nc - j] = 0.5 * sin(delta * j);
+      nch = nc >> 1;
+      delta = atan(1.0) / nch;
+      c[0] = cos(delta * nch);
+      c[nch] = 0.5 * c[0];
+      for (j = 1; j < nch; j++)
+        {
+          c[j] = 0.5 * cos(delta * j);
+          c[nc - j] = 0.5 * sin(delta * j);
+        }
     }
-  }
 }
 
 /* -------- child routines -------- */
 
-#ifndef CDFT_RECURSIVE_N     /* length of the recursive FFT mode */
+#ifndef CDFT_RECURSIVE_N /* length of the recursive FFT mode */
 #define CDFT_RECURSIVE_N 512 /* <= (L1 cache size) / 16 */
 #endif
 
@@ -793,47 +793,47 @@ void cftfsub(int n, double *a, int *ip, int nw, double *w)
   int m;
 
   if (n > 32)
-  {
-    m = n >> 2;
-    cftf1st(n, a, &w[nw - m]);
-    if (n > CDFT_RECURSIVE_N)
     {
-      cftrec1(m, a, nw, w);
-      cftrec2(m, &a[m], nw, w);
-      cftrec1(m, &a[2 * m], nw, w);
-      cftrec1(m, &a[3 * m], nw, w);
+      m = n >> 2;
+      cftf1st(n, a, &w[nw - m]);
+      if (n > CDFT_RECURSIVE_N)
+        {
+          cftrec1(m, a, nw, w);
+          cftrec2(m, &a[m], nw, w);
+          cftrec1(m, &a[2 * m], nw, w);
+          cftrec1(m, &a[3 * m], nw, w);
+        }
+      else if (m > 32)
+        {
+          cftexp1(n, a, nw, w);
+        }
+      else
+        {
+          cftfx41(n, a, nw, w);
+        }
+      bitrv2(n, ip, a);
     }
-    else if (m > 32)
-    {
-      cftexp1(n, a, nw, w);
-    }
-    else
-    {
-      cftfx41(n, a, nw, w);
-    }
-    bitrv2(n, ip, a);
-  }
   else if (n > 8)
-  {
-    if (n == 32)
     {
-      cftf161(a, &w[nw - 8]);
-      bitrv216(a);
+      if (n == 32)
+        {
+          cftf161(a, &w[nw - 8]);
+          bitrv216(a);
+        }
+      else
+        {
+          cftf081(a, w);
+          bitrv208(a);
+        }
     }
-    else
-    {
-      cftf081(a, w);
-      bitrv208(a);
-    }
-  }
   else if (n == 8)
-  {
-    cftf040(a);
-  }
+    {
+      cftf040(a);
+    }
   else if (n == 4)
-  {
-    cftx020(a);
-  }
+    {
+      cftx020(a);
+    }
 }
 
 void cftbsub(int n, double *a, int *ip, int nw, double *w)
@@ -853,47 +853,47 @@ void cftbsub(int n, double *a, int *ip, int nw, double *w)
   int m;
 
   if (n > 32)
-  {
-    m = n >> 2;
-    cftb1st(n, a, &w[nw - m]);
-    if (n > CDFT_RECURSIVE_N)
     {
-      cftrec1(m, a, nw, w);
-      cftrec2(m, &a[m], nw, w);
-      cftrec1(m, &a[2 * m], nw, w);
-      cftrec1(m, &a[3 * m], nw, w);
+      m = n >> 2;
+      cftb1st(n, a, &w[nw - m]);
+      if (n > CDFT_RECURSIVE_N)
+        {
+          cftrec1(m, a, nw, w);
+          cftrec2(m, &a[m], nw, w);
+          cftrec1(m, &a[2 * m], nw, w);
+          cftrec1(m, &a[3 * m], nw, w);
+        }
+      else if (m > 32)
+        {
+          cftexp1(n, a, nw, w);
+        }
+      else
+        {
+          cftfx41(n, a, nw, w);
+        }
+      bitrv2conj(n, ip, a);
     }
-    else if (m > 32)
-    {
-      cftexp1(n, a, nw, w);
-    }
-    else
-    {
-      cftfx41(n, a, nw, w);
-    }
-    bitrv2conj(n, ip, a);
-  }
   else if (n > 8)
-  {
-    if (n == 32)
     {
-      cftf161(a, &w[nw - 8]);
-      bitrv216neg(a);
+      if (n == 32)
+        {
+          cftf161(a, &w[nw - 8]);
+          bitrv216neg(a);
+        }
+      else
+        {
+          cftf081(a, w);
+          bitrv208neg(a);
+        }
     }
-    else
-    {
-      cftf081(a, w);
-      bitrv208neg(a);
-    }
-  }
   else if (n == 8)
-  {
-    cftb040(a);
-  }
+    {
+      cftb040(a);
+    }
   else if (n == 4)
-  {
-    cftx020(a);
-  }
+    {
+      cftx020(a);
+    }
 }
 
 void bitrv2(int n, int *ip, double *a)
@@ -905,103 +905,103 @@ void bitrv2(int n, int *ip, double *a)
   l = n;
   m = 1;
   while ((m << 3) < l)
-  {
-    l >>= 1;
-    for (j = 0; j < m; j++)
     {
-      ip[m + j] = ip[j] + l;
+      l >>= 1;
+      for (j = 0; j < m; j++)
+        {
+          ip[m + j] = ip[j] + l;
+        }
+      m <<= 1;
     }
-    m <<= 1;
-  }
   m2 = 2 * m;
   if ((m << 3) == l)
-  {
-    for (k = 0; k < m; k++)
     {
-      for (j = 0; j < k; j++)
-      {
-        j1 = 2 * j + ip[k];
-        k1 = 2 * k + ip[j];
-        xr = a[j1];
-        xi = a[j1 + 1];
-        yr = a[k1];
-        yi = a[k1 + 1];
-        a[j1] = yr;
-        a[j1 + 1] = yi;
-        a[k1] = xr;
-        a[k1 + 1] = xi;
-        j1 += m2;
-        k1 += 2 * m2;
-        xr = a[j1];
-        xi = a[j1 + 1];
-        yr = a[k1];
-        yi = a[k1 + 1];
-        a[j1] = yr;
-        a[j1 + 1] = yi;
-        a[k1] = xr;
-        a[k1 + 1] = xi;
-        j1 += m2;
-        k1 -= m2;
-        xr = a[j1];
-        xi = a[j1 + 1];
-        yr = a[k1];
-        yi = a[k1 + 1];
-        a[j1] = yr;
-        a[j1 + 1] = yi;
-        a[k1] = xr;
-        a[k1 + 1] = xi;
-        j1 += m2;
-        k1 += 2 * m2;
-        xr = a[j1];
-        xi = a[j1 + 1];
-        yr = a[k1];
-        yi = a[k1 + 1];
-        a[j1] = yr;
-        a[j1 + 1] = yi;
-        a[k1] = xr;
-        a[k1 + 1] = xi;
-      }
-      j1 = 2 * k + m2 + ip[k];
-      k1 = j1 + m2;
-      xr = a[j1];
-      xi = a[j1 + 1];
-      yr = a[k1];
-      yi = a[k1 + 1];
-      a[j1] = yr;
-      a[j1 + 1] = yi;
-      a[k1] = xr;
-      a[k1 + 1] = xi;
+      for (k = 0; k < m; k++)
+        {
+          for (j = 0; j < k; j++)
+            {
+              j1 = 2 * j + ip[k];
+              k1 = 2 * k + ip[j];
+              xr = a[j1];
+              xi = a[j1 + 1];
+              yr = a[k1];
+              yi = a[k1 + 1];
+              a[j1] = yr;
+              a[j1 + 1] = yi;
+              a[k1] = xr;
+              a[k1 + 1] = xi;
+              j1 += m2;
+              k1 += 2 * m2;
+              xr = a[j1];
+              xi = a[j1 + 1];
+              yr = a[k1];
+              yi = a[k1 + 1];
+              a[j1] = yr;
+              a[j1 + 1] = yi;
+              a[k1] = xr;
+              a[k1 + 1] = xi;
+              j1 += m2;
+              k1 -= m2;
+              xr = a[j1];
+              xi = a[j1 + 1];
+              yr = a[k1];
+              yi = a[k1 + 1];
+              a[j1] = yr;
+              a[j1 + 1] = yi;
+              a[k1] = xr;
+              a[k1 + 1] = xi;
+              j1 += m2;
+              k1 += 2 * m2;
+              xr = a[j1];
+              xi = a[j1 + 1];
+              yr = a[k1];
+              yi = a[k1 + 1];
+              a[j1] = yr;
+              a[j1 + 1] = yi;
+              a[k1] = xr;
+              a[k1 + 1] = xi;
+            }
+          j1 = 2 * k + m2 + ip[k];
+          k1 = j1 + m2;
+          xr = a[j1];
+          xi = a[j1 + 1];
+          yr = a[k1];
+          yi = a[k1 + 1];
+          a[j1] = yr;
+          a[j1 + 1] = yi;
+          a[k1] = xr;
+          a[k1 + 1] = xi;
+        }
     }
-  }
   else
-  {
-    for (k = 1; k < m; k++)
     {
-      for (j = 0; j < k; j++)
-      {
-        j1 = 2 * j + ip[k];
-        k1 = 2 * k + ip[j];
-        xr = a[j1];
-        xi = a[j1 + 1];
-        yr = a[k1];
-        yi = a[k1 + 1];
-        a[j1] = yr;
-        a[j1 + 1] = yi;
-        a[k1] = xr;
-        a[k1 + 1] = xi;
-        j1 += m2;
-        k1 += m2;
-        xr = a[j1];
-        xi = a[j1 + 1];
-        yr = a[k1];
-        yi = a[k1 + 1];
-        a[j1] = yr;
-        a[j1 + 1] = yi;
-        a[k1] = xr;
-        a[k1 + 1] = xi;
-      }
+      for (k = 1; k < m; k++)
+        {
+          for (j = 0; j < k; j++)
+            {
+              j1 = 2 * j + ip[k];
+              k1 = 2 * k + ip[j];
+              xr = a[j1];
+              xi = a[j1 + 1];
+              yr = a[k1];
+              yi = a[k1 + 1];
+              a[j1] = yr;
+              a[j1 + 1] = yi;
+              a[k1] = xr;
+              a[k1 + 1] = xi;
+              j1 += m2;
+              k1 += m2;
+              xr = a[j1];
+              xi = a[j1 + 1];
+              yr = a[k1];
+              yi = a[k1 + 1];
+              a[j1] = yr;
+              a[j1 + 1] = yi;
+              a[k1] = xr;
+              a[k1 + 1] = xi;
+            }
+        }
     }
-  }
 }
 
 void bitrv2conj(int n, int *ip, double *a)
@@ -1013,112 +1013,112 @@ void bitrv2conj(int n, int *ip, double *a)
   l = n;
   m = 1;
   while ((m << 3) < l)
-  {
-    l >>= 1;
-    for (j = 0; j < m; j++)
     {
-      ip[m + j] = ip[j] + l;
+      l >>= 1;
+      for (j = 0; j < m; j++)
+        {
+          ip[m + j] = ip[j] + l;
+        }
+      m <<= 1;
     }
-    m <<= 1;
-  }
   m2 = 2 * m;
   if ((m << 3) == l)
-  {
-    for (k = 0; k < m; k++)
     {
-      for (j = 0; j < k; j++)
-      {
-        j1 = 2 * j + ip[k];
-        k1 = 2 * k + ip[j];
-        xr = a[j1];
-        xi = -a[j1 + 1];
-        yr = a[k1];
-        yi = -a[k1 + 1];
-        a[j1] = yr;
-        a[j1 + 1] = yi;
-        a[k1] = xr;
-        a[k1 + 1] = xi;
-        j1 += m2;
-        k1 += 2 * m2;
-        xr = a[j1];
-        xi = -a[j1 + 1];
-        yr = a[k1];
-        yi = -a[k1 + 1];
-        a[j1] = yr;
-        a[j1 + 1] = yi;
-        a[k1] = xr;
-        a[k1 + 1] = xi;
-        j1 += m2;
-        k1 -= m2;
-        xr = a[j1];
-        xi = -a[j1 + 1];
-        yr = a[k1];
-        yi = -a[k1 + 1];
-        a[j1] = yr;
-        a[j1 + 1] = yi;
-        a[k1] = xr;
-        a[k1 + 1] = xi;
-        j1 += m2;
-        k1 += 2 * m2;
-        xr = a[j1];
-        xi = -a[j1 + 1];
-        yr = a[k1];
-        yi = -a[k1 + 1];
-        a[j1] = yr;
-        a[j1 + 1] = yi;
-        a[k1] = xr;
-        a[k1 + 1] = xi;
-      }
-      k1 = 2 * k + ip[k];
-      a[k1 + 1] = -a[k1 + 1];
-      j1 = k1 + m2;
-      k1 = j1 + m2;
-      xr = a[j1];
-      xi = -a[j1 + 1];
-      yr = a[k1];
-      yi = -a[k1 + 1];
-      a[j1] = yr;
-      a[j1 + 1] = yi;
-      a[k1] = xr;
-      a[k1 + 1] = xi;
-      k1 += m2;
-      a[k1 + 1] = -a[k1 + 1];
+      for (k = 0; k < m; k++)
+        {
+          for (j = 0; j < k; j++)
+            {
+              j1 = 2 * j + ip[k];
+              k1 = 2 * k + ip[j];
+              xr = a[j1];
+              xi = -a[j1 + 1];
+              yr = a[k1];
+              yi = -a[k1 + 1];
+              a[j1] = yr;
+              a[j1 + 1] = yi;
+              a[k1] = xr;
+              a[k1 + 1] = xi;
+              j1 += m2;
+              k1 += 2 * m2;
+              xr = a[j1];
+              xi = -a[j1 + 1];
+              yr = a[k1];
+              yi = -a[k1 + 1];
+              a[j1] = yr;
+              a[j1 + 1] = yi;
+              a[k1] = xr;
+              a[k1 + 1] = xi;
+              j1 += m2;
+              k1 -= m2;
+              xr = a[j1];
+              xi = -a[j1 + 1];
+              yr = a[k1];
+              yi = -a[k1 + 1];
+              a[j1] = yr;
+              a[j1 + 1] = yi;
+              a[k1] = xr;
+              a[k1 + 1] = xi;
+              j1 += m2;
+              k1 += 2 * m2;
+              xr = a[j1];
+              xi = -a[j1 + 1];
+              yr = a[k1];
+              yi = -a[k1 + 1];
+              a[j1] = yr;
+              a[j1 + 1] = yi;
+              a[k1] = xr;
+              a[k1 + 1] = xi;
+            }
+          k1 = 2 * k + ip[k];
+          a[k1 + 1] = -a[k1 + 1];
+          j1 = k1 + m2;
+          k1 = j1 + m2;
+          xr = a[j1];
+          xi = -a[j1 + 1];
+          yr = a[k1];
+          yi = -a[k1 + 1];
+          a[j1] = yr;
+          a[j1 + 1] = yi;
+          a[k1] = xr;
+          a[k1 + 1] = xi;
+          k1 += m2;
+          a[k1 + 1] = -a[k1 + 1];
+        }
     }
-  }
   else
-  {
-    a[1] = -a[1];
-    a[m2 + 1] = -a[m2 + 1];
-    for (k = 1; k < m; k++)
     {
-      for (j = 0; j < k; j++)
-      {
-        j1 = 2 * j + ip[k];
-        k1 = 2 * k + ip[j];
-        xr = a[j1];
-        xi = -a[j1 + 1];
-        yr = a[k1];
-        yi = -a[k1 + 1];
-        a[j1] = yr;
-        a[j1 + 1] = yi;
-        a[k1] = xr;
-        a[k1 + 1] = xi;
-        j1 += m2;
-        k1 += m2;
-        xr = a[j1];
-        xi = -a[j1 + 1];
-        yr = a[k1];
-        yi = -a[k1 + 1];
-        a[j1] = yr;
-        a[j1 + 1] = yi;
-        a[k1] = xr;
-        a[k1 + 1] = xi;
-      }
-      k1 = 2 * k + ip[k];
-      a[k1 + 1] = -a[k1 + 1];
-      a[k1 + m2 + 1] = -a[k1 + m2 + 1];
+      a[1] = -a[1];
+      a[m2 + 1] = -a[m2 + 1];
+      for (k = 1; k < m; k++)
+        {
+          for (j = 0; j < k; j++)
+            {
+              j1 = 2 * j + ip[k];
+              k1 = 2 * k + ip[j];
+              xr = a[j1];
+              xi = -a[j1 + 1];
+              yr = a[k1];
+              yi = -a[k1 + 1];
+              a[j1] = yr;
+              a[j1 + 1] = yi;
+              a[k1] = xr;
+              a[k1 + 1] = xi;
+              j1 += m2;
+              k1 += m2;
+              xr = a[j1];
+              xi = -a[j1 + 1];
+              yr = a[k1];
+              yi = -a[k1 + 1];
+              a[j1] = yr;
+              a[j1 + 1] = yi;
+              a[k1] = xr;
+              a[k1 + 1] = xi;
+            }
+          k1 = 2 * k + ip[k];
+          a[k1 + 1] = -a[k1 + 1];
+          a[k1 + m2 + 1] = -a[k1 + m2 + 1];
+        }
     }
-  }
 }
 
 void bitrv216(double *a)
@@ -1337,104 +1337,104 @@ void cftf1st(int n, double *a, double *w)
   wd3i = 0;
   k = 0;
   for (j = 2; j < mh - 2; j += 4)
-  {
-    k += 4;
-    wk1r = csc1 * (wd1r + w[k]);
-    wk1i = csc1 * (wd1i + w[k + 1]);
-    wk3r = csc3 * (wd3r + w[k + 2]);
-    wk3i = csc3 * (wd3i - w[k + 3]);
-    wd1r = w[k];
-    wd1i = w[k + 1];
-    wd3r = w[k + 2];
-    wd3i = -w[k + 3];
-    j1 = j + m;
-    j2 = j1 + m;
-    j3 = j2 + m;
-    x0r = a[j] + a[j2];
-    x0i = a[j + 1] + a[j2 + 1];
-    x1r = a[j] - a[j2];
-    x1i = a[j + 1] - a[j2 + 1];
-    y0r = a[j + 2] + a[j2 + 2];
-    y0i = a[j + 3] + a[j2 + 3];
-    y1r = a[j + 2] - a[j2 + 2];
-    y1i = a[j + 3] - a[j2 + 3];
-    x2r = a[j1] + a[j3];
-    x2i = a[j1 + 1] + a[j3 + 1];
-    x3r = a[j1] - a[j3];
-    x3i = a[j1 + 1] - a[j3 + 1];
-    y2r = a[j1 + 2] + a[j3 + 2];
-    y2i = a[j1 + 3] + a[j3 + 3];
-    y3r = a[j1 + 2] - a[j3 + 2];
-    y3i = a[j1 + 3] - a[j3 + 3];
-    a[j] = x0r + x2r;
-    a[j + 1] = x0i + x2i;
-    a[j + 2] = y0r + y2r;
-    a[j + 3] = y0i + y2i;
-    a[j1] = x0r - x2r;
-    a[j1 + 1] = x0i - x2i;
-    a[j1 + 2] = y0r - y2r;
-    a[j1 + 3] = y0i - y2i;
-    x0r = x1r - x3i;
-    x0i = x1i + x3r;
-    a[j2] = wk1r * x0r - wk1i * x0i;
-    a[j2 + 1] = wk1r * x0i + wk1i * x0r;
-    x0r = y1r - y3i;
-    x0i = y1i + y3r;
-    a[j2 + 2] = wd1r * x0r - wd1i * x0i;
-    a[j2 + 3] = wd1r * x0i + wd1i * x0r;
-    x0r = x1r + x3i;
-    x0i = x1i - x3r;
-    a[j3] = wk3r * x0r + wk3i * x0i;
-    a[j3 + 1] = wk3r * x0i - wk3i * x0r;
-    x0r = y1r + y3i;
-    x0i = y1i - y3r;
-    a[j3 + 2] = wd3r * x0r + wd3i * x0i;
-    a[j3 + 3] = wd3r * x0i - wd3i * x0r;
-    j0 = m - j;
-    j1 = j0 + m;
-    j2 = j1 + m;
-    j3 = j2 + m;
-    x0r = a[j0] + a[j2];
-    x0i = a[j0 + 1] + a[j2 + 1];
-    x1r = a[j0] - a[j2];
-    x1i = a[j0 + 1] - a[j2 + 1];
-    y0r = a[j0 - 2] + a[j2 - 2];
-    y0i = a[j0 - 1] + a[j2 - 1];
-    y1r = a[j0 - 2] - a[j2 - 2];
-    y1i = a[j0 - 1] - a[j2 - 1];
-    x2r = a[j1] + a[j3];
-    x2i = a[j1 + 1] + a[j3 + 1];
-    x3r = a[j1] - a[j3];
-    x3i = a[j1 + 1] - a[j3 + 1];
-    y2r = a[j1 - 2] + a[j3 - 2];
-    y2i = a[j1 - 1] + a[j3 - 1];
-    y3r = a[j1 - 2] - a[j3 - 2];
-    y3i = a[j1 - 1] - a[j3 - 1];
-    a[j0] = x0r + x2r;
-    a[j0 + 1] = x0i + x2i;
-    a[j0 - 2] = y0r + y2r;
-    a[j0 - 1] = y0i + y2i;
-    a[j1] = x0r - x2r;
-    a[j1 + 1] = x0i - x2i;
-    a[j1 - 2] = y0r - y2r;
-    a[j1 - 1] = y0i - y2i;
-    x0r = x1r - x3i;
-    x0i = x1i + x3r;
-    a[j2] = wk1i * x0r - wk1r * x0i;
-    a[j2 + 1] = wk1i * x0i + wk1r * x0r;
-    x0r = y1r - y3i;
-    x0i = y1i + y3r;
-    a[j2 - 2] = wd1i * x0r - wd1r * x0i;
-    a[j2 - 1] = wd1i * x0i + wd1r * x0r;
-    x0r = x1r + x3i;
-    x0i = x1i - x3r;
-    a[j3] = wk3i * x0r + wk3r * x0i;
-    a[j3 + 1] = wk3i * x0i - wk3r * x0r;
-    x0r = y1r + y3i;
-    x0i = y1i - y3r;
-    a[j3 - 2] = wd3i * x0r + wd3r * x0i;
-    a[j3 - 1] = wd3i * x0i - wd3r * x0r;
-  }
+    {
+      k += 4;
+      wk1r = csc1 * (wd1r + w[k]);
+      wk1i = csc1 * (wd1i + w[k + 1]);
+      wk3r = csc3 * (wd3r + w[k + 2]);
+      wk3i = csc3 * (wd3i - w[k + 3]);
+      wd1r = w[k];
+      wd1i = w[k + 1];
+      wd3r = w[k + 2];
+      wd3i = -w[k + 3];
+      j1 = j + m;
+      j2 = j1 + m;
+      j3 = j2 + m;
+      x0r = a[j] + a[j2];
+      x0i = a[j + 1] + a[j2 + 1];
+      x1r = a[j] - a[j2];
+      x1i = a[j + 1] - a[j2 + 1];
+      y0r = a[j + 2] + a[j2 + 2];
+      y0i = a[j + 3] + a[j2 + 3];
+      y1r = a[j + 2] - a[j2 + 2];
+      y1i = a[j + 3] - a[j2 + 3];
+      x2r = a[j1] + a[j3];
+      x2i = a[j1 + 1] + a[j3 + 1];
+      x3r = a[j1] - a[j3];
+      x3i = a[j1 + 1] - a[j3 + 1];
+      y2r = a[j1 + 2] + a[j3 + 2];
+      y2i = a[j1 + 3] + a[j3 + 3];
+      y3r = a[j1 + 2] - a[j3 + 2];
+      y3i = a[j1 + 3] - a[j3 + 3];
+      a[j] = x0r + x2r;
+      a[j + 1] = x0i + x2i;
+      a[j + 2] = y0r + y2r;
+      a[j + 3] = y0i + y2i;
+      a[j1] = x0r - x2r;
+      a[j1 + 1] = x0i - x2i;
+      a[j1 + 2] = y0r - y2r;
+      a[j1 + 3] = y0i - y2i;
+      x0r = x1r - x3i;
+      x0i = x1i + x3r;
+      a[j2] = wk1r * x0r - wk1i * x0i;
+      a[j2 + 1] = wk1r * x0i + wk1i * x0r;
+      x0r = y1r - y3i;
+      x0i = y1i + y3r;
+      a[j2 + 2] = wd1r * x0r - wd1i * x0i;
+      a[j2 + 3] = wd1r * x0i + wd1i * x0r;
+      x0r = x1r + x3i;
+      x0i = x1i - x3r;
+      a[j3] = wk3r * x0r + wk3i * x0i;
+      a[j3 + 1] = wk3r * x0i - wk3i * x0r;
+      x0r = y1r + y3i;
+      x0i = y1i - y3r;
+      a[j3 + 2] = wd3r * x0r + wd3i * x0i;
+      a[j3 + 3] = wd3r * x0i - wd3i * x0r;
+      j0 = m - j;
+      j1 = j0 + m;
+      j2 = j1 + m;
+      j3 = j2 + m;
+      x0r = a[j0] + a[j2];
+      x0i = a[j0 + 1] + a[j2 + 1];
+      x1r = a[j0] - a[j2];
+      x1i = a[j0 + 1] - a[j2 + 1];
+      y0r = a[j0 - 2] + a[j2 - 2];
+      y0i = a[j0 - 1] + a[j2 - 1];
+      y1r = a[j0 - 2] - a[j2 - 2];
+      y1i = a[j0 - 1] - a[j2 - 1];
+      x2r = a[j1] + a[j3];
+      x2i = a[j1 + 1] + a[j3 + 1];
+      x3r = a[j1] - a[j3];
+      x3i = a[j1 + 1] - a[j3 + 1];
+      y2r = a[j1 - 2] + a[j3 - 2];
+      y2i = a[j1 - 1] + a[j3 - 1];
+      y3r = a[j1 - 2] - a[j3 - 2];
+      y3i = a[j1 - 1] - a[j3 - 1];
+      a[j0] = x0r + x2r;
+      a[j0 + 1] = x0i + x2i;
+      a[j0 - 2] = y0r + y2r;
+      a[j0 - 1] = y0i + y2i;
+      a[j1] = x0r - x2r;
+      a[j1 + 1] = x0i - x2i;
+      a[j1 - 2] = y0r - y2r;
+      a[j1 - 1] = y0i - y2i;
+      x0r = x1r - x3i;
+      x0i = x1i + x3r;
+      a[j2] = wk1i * x0r - wk1r * x0i;
+      a[j2 + 1] = wk1i * x0i + wk1r * x0r;
+      x0r = y1r - y3i;
+      x0i = y1i + y3r;
+      a[j2 - 2] = wd1i * x0r - wd1r * x0i;
+      a[j2 - 1] = wd1i * x0i + wd1r * x0r;
+      x0r = x1r + x3i;
+      x0i = x1i - x3r;
+      a[j3] = wk3i * x0r + wk3r * x0i;
+      a[j3 + 1] = wk3i * x0i - wk3r * x0r;
+      x0r = y1r + y3i;
+      x0i = y1i - y3r;
+      a[j3 - 2] = wd3i * x0r + wd3r * x0i;
+      a[j3 - 1] = wd3i * x0i - wd3r * x0r;
+    }
   wk1r = csc1 * (wd1r + wn4r);
   wk1i = csc1 * (wd1i + wn4r);
   wk3r = csc3 * (wd3r - wn4r);
@@ -1542,104 +1542,104 @@ void cftb1st(int n, double *a, double *w)
   wd3i = 0;
   k = 0;
   for (j = 2; j < mh - 2; j += 4)
-  {
-    k += 4;
-    wk1r = csc1 * (wd1r + w[k]);
-    wk1i = csc1 * (wd1i + w[k + 1]);
-    wk3r = csc3 * (wd3r + w[k + 2]);
-    wk3i = csc3 * (wd3i - w[k + 3]);
-    wd1r = w[k];
-    wd1i = w[k + 1];
-    wd3r = w[k + 2];
-    wd3i = -w[k + 3];
-    j1 = j + m;
-    j2 = j1 + m;
-    j3 = j2 + m;
-    x0r = a[j] + a[j2];
-    x0i = -a[j + 1] - a[j2 + 1];
-    x1r = a[j] - a[j2];
-    x1i = -a[j + 1] + a[j2 + 1];
-    y0r = a[j + 2] + a[j2 + 2];
-    y0i = -a[j + 3] - a[j2 + 3];
-    y1r = a[j + 2] - a[j2 + 2];
-    y1i = -a[j + 3] + a[j2 + 3];
-    x2r = a[j1] + a[j3];
-    x2i = a[j1 + 1] + a[j3 + 1];
-    x3r = a[j1] - a[j3];
-    x3i = a[j1 + 1] - a[j3 + 1];
-    y2r = a[j1 + 2] + a[j3 + 2];
-    y2i = a[j1 + 3] + a[j3 + 3];
-    y3r = a[j1 + 2] - a[j3 + 2];
-    y3i = a[j1 + 3] - a[j3 + 3];
-    a[j] = x0r + x2r;
-    a[j + 1] = x0i - x2i;
-    a[j + 2] = y0r + y2r;
-    a[j + 3] = y0i - y2i;
-    a[j1] = x0r - x2r;
-    a[j1 + 1] = x0i + x2i;
-    a[j1 + 2] = y0r - y2r;
-    a[j1 + 3] = y0i + y2i;
-    x0r = x1r + x3i;
-    x0i = x1i + x3r;
-    a[j2] = wk1r * x0r - wk1i * x0i;
-    a[j2 + 1] = wk1r * x0i + wk1i * x0r;
-    x0r = y1r + y3i;
-    x0i = y1i + y3r;
-    a[j2 + 2] = wd1r * x0r - wd1i * x0i;
-    a[j2 + 3] = wd1r * x0i + wd1i * x0r;
-    x0r = x1r - x3i;
-    x0i = x1i - x3r;
-    a[j3] = wk3r * x0r + wk3i * x0i;
-    a[j3 + 1] = wk3r * x0i - wk3i * x0r;
-    x0r = y1r - y3i;
-    x0i = y1i - y3r;
-    a[j3 + 2] = wd3r * x0r + wd3i * x0i;
-    a[j3 + 3] = wd3r * x0i - wd3i * x0r;
-    j0 = m - j;
-    j1 = j0 + m;
-    j2 = j1 + m;
-    j3 = j2 + m;
-    x0r = a[j0] + a[j2];
-    x0i = -a[j0 + 1] - a[j2 + 1];
-    x1r = a[j0] - a[j2];
-    x1i = -a[j0 + 1] + a[j2 + 1];
-    y0r = a[j0 - 2] + a[j2 - 2];
-    y0i = -a[j0 - 1] - a[j2 - 1];
-    y1r = a[j0 - 2] - a[j2 - 2];
-    y1i = -a[j0 - 1] + a[j2 - 1];
-    x2r = a[j1] + a[j3];
-    x2i = a[j1 + 1] + a[j3 + 1];
-    x3r = a[j1] - a[j3];
-    x3i = a[j1 + 1] - a[j3 + 1];
-    y2r = a[j1 - 2] + a[j3 - 2];
-    y2i = a[j1 - 1] + a[j3 - 1];
-    y3r = a[j1 - 2] - a[j3 - 2];
-    y3i = a[j1 - 1] - a[j3 - 1];
-    a[j0] = x0r + x2r;
-    a[j0 + 1] = x0i - x2i;
-    a[j0 - 2] = y0r + y2r;
-    a[j0 - 1] = y0i - y2i;
-    a[j1] = x0r - x2r;
-    a[j1 + 1] = x0i + x2i;
-    a[j1 - 2] = y0r - y2r;
-    a[j1 - 1] = y0i + y2i;
-    x0r = x1r + x3i;
-    x0i = x1i + x3r;
-    a[j2] = wk1i * x0r - wk1r * x0i;
-    a[j2 + 1] = wk1i * x0i + wk1r * x0r;
-    x0r = y1r + y3i;
-    x0i = y1i + y3r;
-    a[j2 - 2] = wd1i * x0r - wd1r * x0i;
-    a[j2 - 1] = wd1i * x0i + wd1r * x0r;
-    x0r = x1r - x3i;
-    x0i = x1i - x3r;
-    a[j3] = wk3i * x0r + wk3r * x0i;
-    a[j3 + 1] = wk3i * x0i - wk3r * x0r;
-    x0r = y1r - y3i;
-    x0i = y1i - y3r;
-    a[j3 - 2] = wd3i * x0r + wd3r * x0i;
-    a[j3 - 1] = wd3i * x0i - wd3r * x0r;
-  }
+    {
+      k += 4;
+      wk1r = csc1 * (wd1r + w[k]);
+      wk1i = csc1 * (wd1i + w[k + 1]);
+      wk3r = csc3 * (wd3r + w[k + 2]);
+      wk3i = csc3 * (wd3i - w[k + 3]);
+      wd1r = w[k];
+      wd1i = w[k + 1];
+      wd3r = w[k + 2];
+      wd3i = -w[k + 3];
+      j1 = j + m;
+      j2 = j1 + m;
+      j3 = j2 + m;
+      x0r = a[j] + a[j2];
+      x0i = -a[j + 1] - a[j2 + 1];
+      x1r = a[j] - a[j2];
+      x1i = -a[j + 1] + a[j2 + 1];
+      y0r = a[j + 2] + a[j2 + 2];
+      y0i = -a[j + 3] - a[j2 + 3];
+      y1r = a[j + 2] - a[j2 + 2];
+      y1i = -a[j + 3] + a[j2 + 3];
+      x2r = a[j1] + a[j3];
+      x2i = a[j1 + 1] + a[j3 + 1];
+      x3r = a[j1] - a[j3];
+      x3i = a[j1 + 1] - a[j3 + 1];
+      y2r = a[j1 + 2] + a[j3 + 2];
+      y2i = a[j1 + 3] + a[j3 + 3];
+      y3r = a[j1 + 2] - a[j3 + 2];
+      y3i = a[j1 + 3] - a[j3 + 3];
+      a[j] = x0r + x2r;
+      a[j + 1] = x0i - x2i;
+      a[j + 2] = y0r + y2r;
+      a[j + 3] = y0i - y2i;
+      a[j1] = x0r - x2r;
+      a[j1 + 1] = x0i + x2i;
+      a[j1 + 2] = y0r - y2r;
+      a[j1 + 3] = y0i + y2i;
+      x0r = x1r + x3i;
+      x0i = x1i + x3r;
+      a[j2] = wk1r * x0r - wk1i * x0i;
+      a[j2 + 1] = wk1r * x0i + wk1i * x0r;
+      x0r = y1r + y3i;
+      x0i = y1i + y3r;
+      a[j2 + 2] = wd1r * x0r - wd1i * x0i;
+      a[j2 + 3] = wd1r * x0i + wd1i * x0r;
+      x0r = x1r - x3i;
+      x0i = x1i - x3r;
+      a[j3] = wk3r * x0r + wk3i * x0i;
+      a[j3 + 1] = wk3r * x0i - wk3i * x0r;
+      x0r = y1r - y3i;
+      x0i = y1i - y3r;
+      a[j3 + 2] = wd3r * x0r + wd3i * x0i;
+      a[j3 + 3] = wd3r * x0i - wd3i * x0r;
+      j0 = m - j;
+      j1 = j0 + m;
+      j2 = j1 + m;
+      j3 = j2 + m;
+      x0r = a[j0] + a[j2];
+      x0i = -a[j0 + 1] - a[j2 + 1];
+      x1r = a[j0] - a[j2];
+      x1i = -a[j0 + 1] + a[j2 + 1];
+      y0r = a[j0 - 2] + a[j2 - 2];
+      y0i = -a[j0 - 1] - a[j2 - 1];
+      y1r = a[j0 - 2] - a[j2 - 2];
+      y1i = -a[j0 - 1] + a[j2 - 1];
+      x2r = a[j1] + a[j3];
+      x2i = a[j1 + 1] + a[j3 + 1];
+      x3r = a[j1] - a[j3];
+      x3i = a[j1 + 1] - a[j3 + 1];
+      y2r = a[j1 - 2] + a[j3 - 2];
+      y2i = a[j1 - 1] + a[j3 - 1];
+      y3r = a[j1 - 2] - a[j3 - 2];
+      y3i = a[j1 - 1] - a[j3 - 1];
+      a[j0] = x0r + x2r;
+      a[j0 + 1] = x0i - x2i;
+      a[j0 - 2] = y0r + y2r;
+      a[j0 - 1] = y0i - y2i;
+      a[j1] = x0r - x2r;
+      a[j1 + 1] = x0i + x2i;
+      a[j1 - 2] = y0r - y2r;
+      a[j1 - 1] = y0i + y2i;
+      x0r = x1r + x3i;
+      x0i = x1i + x3r;
+      a[j2] = wk1i * x0r - wk1r * x0i;
+      a[j2 + 1] = wk1i * x0i + wk1r * x0r;
+      x0r = y1r + y3i;
+      x0i = y1i + y3r;
+      a[j2 - 2] = wd1i * x0r - wd1r * x0i;
+      a[j2 - 1] = wd1i * x0i + wd1r * x0r;
+      x0r = x1r - x3i;
+      x0i = x1i - x3r;
+      a[j3] = wk3i * x0r + wk3r * x0i;
+      a[j3 + 1] = wk3i * x0i - wk3r * x0r;
+      x0r = y1r - y3i;
+      x0i = y1i - y3r;
+      a[j3 - 2] = wd3i * x0r + wd3r * x0i;
+      a[j3 - 1] = wd3i * x0i - wd3r * x0r;
+    }
   wk1r = csc1 * (wd1r + wn4r);
   wk1i = csc1 * (wd1i + wn4r);
   wk3r = csc3 * (wd3r - wn4r);
@@ -1721,16 +1721,16 @@ void cftrec1(int n, double *a, int nw, double *w)
   m = n >> 2;
   cftmdl1(n, a, &w[nw - 2 * m]);
   if (n > CDFT_RECURSIVE_N)
-  {
-    cftrec1(m, a, nw, w);
-    cftrec2(m, &a[m], nw, w);
-    cftrec1(m, &a[2 * m], nw, w);
-    cftrec1(m, &a[3 * m], nw, w);
-  }
+    {
+      cftrec1(m, a, nw, w);
+      cftrec2(m, &a[m], nw, w);
+      cftrec1(m, &a[2 * m], nw, w);
+      cftrec1(m, &a[3 * m], nw, w);
+    }
   else
-  {
-    cftexp1(n, a, nw, w);
-  }
+    {
+      cftexp1(n, a, nw, w);
+    }
 }
 
 void cftrec2(int n, double *a, int nw, double *w)
@@ -1744,16 +1744,16 @@ void cftrec2(int n, double *a, int nw, double *w)
   m = n >> 2;
   cftmdl2(n, a, &w[nw - n]);
   if (n > CDFT_RECURSIVE_N)
-  {
-    cftrec1(m, a, nw, w);
-    cftrec2(m, &a[m], nw, w);
-    cftrec1(m, &a[2 * m], nw, w);
-    cftrec2(m, &a[3 * m], nw, w);
-  }
+    {
+      cftrec1(m, a, nw, w);
+      cftrec2(m, &a[m], nw, w);
+      cftrec1(m, &a[2 * m], nw, w);
+      cftrec2(m, &a[3 * m], nw, w);
+    }
   else
-  {
-    cftexp2(n, a, nw, w);
-  }
+    {
+      cftexp2(n, a, nw, w);
+    }
 }
 
 void cftexp1(int n, double *a, int nw, double *w)
@@ -1766,31 +1766,31 @@ void cftexp1(int n, double *a, int nw, double *w)
 
   l = n >> 2;
   while (l > 128)
-  {
-    for (k = l; k < n; k <<= 2)
+    {
+      for (k = l; k < n; k <<= 2)
+        {
+          for (j = k - l; j < n; j += 4 * k)
+            {
+              cftmdl1(l, &a[j], &w[nw - (l >> 1)]);
+              cftmdl2(l, &a[k + j], &w[nw - l]);
+              cftmdl1(l, &a[2 * k + j], &w[nw - (l >> 1)]);
+            }
+        }
+      cftmdl1(l, &a[n - l], &w[nw - (l >> 1)]);
+      l >>= 2;
+    }
+  for (k = l; k < n; k <<= 2)
     {
       for (j = k - l; j < n; j += 4 * k)
-      {
-        cftmdl1(l, &a[j], &w[nw - (l >> 1)]);
-        cftmdl2(l, &a[k + j], &w[nw - l]);
-        cftmdl1(l, &a[2 * k + j], &w[nw - (l >> 1)]);
-      }
+        {
+          cftmdl1(l, &a[j], &w[nw - (l >> 1)]);
+          cftfx41(l, &a[j], nw, w);
+          cftmdl2(l, &a[k + j], &w[nw - l]);
+          cftfx42(l, &a[k + j], nw, w);
+          cftmdl1(l, &a[2 * k + j], &w[nw - (l >> 1)]);
+          cftfx41(l, &a[2 * k + j], nw, w);
+        }
     }
-    cftmdl1(l, &a[n - l], &w[nw - (l >> 1)]);
-    l >>= 2;
-  }
-  for (k = l; k < n; k <<= 2)
-  {
-    for (j = k - l; j < n; j += 4 * k)
-    {
-      cftmdl1(l, &a[j], &w[nw - (l >> 1)]);
-      cftfx41(l, &a[j], nw, w);
-      cftmdl2(l, &a[k + j], &w[nw - l]);
-      cftfx42(l, &a[k + j], nw, w);
-      cftmdl1(l, &a[2 * k + j], &w[nw - (l >> 1)]);
-      cftfx41(l, &a[2 * k + j], nw, w);
-    }
-  }
   cftmdl1(l, &a[n - l], &w[nw - (l >> 1)]);
   cftfx41(l, &a[n - l], nw, w);
 }
@@ -1806,39 +1806,39 @@ void cftexp2(int n, double *a, int nw, double *w)
   m = n >> 1;
   l = n >> 2;
   while (l > 128)
-  {
-    for (k = l; k < m; k <<= 2)
+    {
+      for (k = l; k < m; k <<= 2)
+        {
+          for (j = k - l; j < m; j += 2 * k)
+            {
+              cftmdl1(l, &a[j], &w[nw - (l >> 1)]);
+              cftmdl1(l, &a[m + j], &w[nw - (l >> 1)]);
+            }
+          for (j = 2 * k - l; j < m; j += 4 * k)
+            {
+              cftmdl2(l, &a[j], &w[nw - l]);
+              cftmdl2(l, &a[m + j], &w[nw - l]);
+            }
+        }
+      l >>= 2;
+    }
+  for (k = l; k < m; k <<= 2)
     {
       for (j = k - l; j < m; j += 2 * k)
-      {
-        cftmdl1(l, &a[j], &w[nw - (l >> 1)]);
-        cftmdl1(l, &a[m + j], &w[nw - (l >> 1)]);
-      }
+        {
+          cftmdl1(l, &a[j], &w[nw - (l >> 1)]);
+          cftfx41(l, &a[j], nw, w);
+          cftmdl1(l, &a[m + j], &w[nw - (l >> 1)]);
+          cftfx41(l, &a[m + j], nw, w);
+        }
       for (j = 2 * k - l; j < m; j += 4 * k)
-      {
-        cftmdl2(l, &a[j], &w[nw - l]);
-        cftmdl2(l, &a[m + j], &w[nw - l]);
-      }
+        {
+          cftmdl2(l, &a[j], &w[nw - l]);
+          cftfx42(l, &a[j], nw, w);
+          cftmdl2(l, &a[m + j], &w[nw - l]);
+          cftfx42(l, &a[m + j], nw, w);
+        }
     }
-    l >>= 2;
-  }
-  for (k = l; k < m; k <<= 2)
-  {
-    for (j = k - l; j < m; j += 2 * k)
-    {
-      cftmdl1(l, &a[j], &w[nw - (l >> 1)]);
-      cftfx41(l, &a[j], nw, w);
-      cftmdl1(l, &a[m + j], &w[nw - (l >> 1)]);
-      cftfx41(l, &a[m + j], nw, w);
-    }
-    for (j = 2 * k - l; j < m; j += 4 * k)
-    {
-      cftmdl2(l, &a[j], &w[nw - l]);
-      cftfx42(l, &a[j], nw, w);
-      cftmdl2(l, &a[m + j], &w[nw - l]);
-      cftfx42(l, &a[m + j], nw, w);
-    }
-  }
 }
 
 void cftmdl1(int n, double *a, double *w)
@@ -1871,60 +1871,60 @@ void cftmdl1(int n, double *a, double *w)
   wn4r = w[1];
   k = 0;
   for (j = 2; j < mh; j += 2)
-  {
-    k += 4;
-    wk1r = w[k];
-    wk1i = w[k + 1];
-    wk3r = w[k + 2];
-    wk3i = -w[k + 3];
-    j1 = j + m;
-    j2 = j1 + m;
-    j3 = j2 + m;
-    x0r = a[j] + a[j2];
-    x0i = a[j + 1] + a[j2 + 1];
-    x1r = a[j] - a[j2];
-    x1i = a[j + 1] - a[j2 + 1];
-    x2r = a[j1] + a[j3];
-    x2i = a[j1 + 1] + a[j3 + 1];
-    x3r = a[j1] - a[j3];
-    x3i = a[j1 + 1] - a[j3 + 1];
-    a[j] = x0r + x2r;
-    a[j + 1] = x0i + x2i;
-    a[j1] = x0r - x2r;
-    a[j1 + 1] = x0i - x2i;
-    x0r = x1r - x3i;
-    x0i = x1i + x3r;
-    a[j2] = wk1r * x0r - wk1i * x0i;
-    a[j2 + 1] = wk1r * x0i + wk1i * x0r;
-    x0r = x1r + x3i;
-    x0i = x1i - x3r;
-    a[j3] = wk3r * x0r + wk3i * x0i;
-    a[j3 + 1] = wk3r * x0i - wk3i * x0r;
-    j0 = m - j;
-    j1 = j0 + m;
-    j2 = j1 + m;
-    j3 = j2 + m;
-    x0r = a[j0] + a[j2];
-    x0i = a[j0 + 1] + a[j2 + 1];
-    x1r = a[j0] - a[j2];
-    x1i = a[j0 + 1] - a[j2 + 1];
-    x2r = a[j1] + a[j3];
-    x2i = a[j1 + 1] + a[j3 + 1];
-    x3r = a[j1] - a[j3];
-    x3i = a[j1 + 1] - a[j3 + 1];
-    a[j0] = x0r + x2r;
-    a[j0 + 1] = x0i + x2i;
-    a[j1] = x0r - x2r;
-    a[j1 + 1] = x0i - x2i;
-    x0r = x1r - x3i;
-    x0i = x1i + x3r;
-    a[j2] = wk1i * x0r - wk1r * x0i;
-    a[j2 + 1] = wk1i * x0i + wk1r * x0r;
-    x0r = x1r + x3i;
-    x0i = x1i - x3r;
-    a[j3] = wk3i * x0r + wk3r * x0i;
-    a[j3 + 1] = wk3i * x0i - wk3r * x0r;
-  }
+    {
+      k += 4;
+      wk1r = w[k];
+      wk1i = w[k + 1];
+      wk3r = w[k + 2];
+      wk3i = -w[k + 3];
+      j1 = j + m;
+      j2 = j1 + m;
+      j3 = j2 + m;
+      x0r = a[j] + a[j2];
+      x0i = a[j + 1] + a[j2 + 1];
+      x1r = a[j] - a[j2];
+      x1i = a[j + 1] - a[j2 + 1];
+      x2r = a[j1] + a[j3];
+      x2i = a[j1 + 1] + a[j3 + 1];
+      x3r = a[j1] - a[j3];
+      x3i = a[j1 + 1] - a[j3 + 1];
+      a[j] = x0r + x2r;
+      a[j + 1] = x0i + x2i;
+      a[j1] = x0r - x2r;
+      a[j1 + 1] = x0i - x2i;
+      x0r = x1r - x3i;
+      x0i = x1i + x3r;
+      a[j2] = wk1r * x0r - wk1i * x0i;
+      a[j2 + 1] = wk1r * x0i + wk1i * x0r;
+      x0r = x1r + x3i;
+      x0i = x1i - x3r;
+      a[j3] = wk3r * x0r + wk3i * x0i;
+      a[j3 + 1] = wk3r * x0i - wk3i * x0r;
+      j0 = m - j;
+      j1 = j0 + m;
+      j2 = j1 + m;
+      j3 = j2 + m;
+      x0r = a[j0] + a[j2];
+      x0i = a[j0 + 1] + a[j2 + 1];
+      x1r = a[j0] - a[j2];
+      x1i = a[j0 + 1] - a[j2 + 1];
+      x2r = a[j1] + a[j3];
+      x2i = a[j1 + 1] + a[j3 + 1];
+      x3r = a[j1] - a[j3];
+      x3i = a[j1 + 1] - a[j3 + 1];
+      a[j0] = x0r + x2r;
+      a[j0 + 1] = x0i + x2i;
+      a[j1] = x0r - x2r;
+      a[j1 + 1] = x0i - x2i;
+      x0r = x1r - x3i;
+      x0i = x1i + x3r;
+      a[j2] = wk1i * x0r - wk1r * x0i;
+      a[j2 + 1] = wk1i * x0i + wk1r * x0r;
+      x0r = x1r + x3i;
+      x0i = x1i - x3r;
+      a[j3] = wk3i * x0r + wk3r * x0i;
+      a[j3 + 1] = wk3i * x0i - wk3r * x0r;
+    }
   j0 = mh;
   j1 = j0 + m;
   j2 = j1 + m;
@@ -1986,73 +1986,73 @@ void cftmdl2(int n, double *a, double *w)
   k = 0;
   kr = 2 * m;
   for (j = 2; j < mh; j += 2)
-  {
-    k += 4;
-    wk1r = w[k];
-    wk1i = w[k + 1];
-    wk3r = w[k + 2];
-    wk3i = -w[k + 3];
-    kr -= 4;
-    wd1i = w[kr];
-    wd1r = w[kr + 1];
-    wd3i = w[kr + 2];
-    wd3r = -w[kr + 3];
-    j1 = j + m;
-    j2 = j1 + m;
-    j3 = j2 + m;
-    x0r = a[j] - a[j2 + 1];
-    x0i = a[j + 1] + a[j2];
-    x1r = a[j] + a[j2 + 1];
-    x1i = a[j + 1] - a[j2];
-    x2r = a[j1] - a[j3 + 1];
-    x2i = a[j1 + 1] + a[j3];
-    x3r = a[j1] + a[j3 + 1];
-    x3i = a[j1 + 1] - a[j3];
-    y0r = wk1r * x0r - wk1i * x0i;
-    y0i = wk1r * x0i + wk1i * x0r;
-    y2r = wd1r * x2r - wd1i * x2i;
-    y2i = wd1r * x2i + wd1i * x2r;
-    a[j] = y0r + y2r;
-    a[j + 1] = y0i + y2i;
-    a[j1] = y0r - y2r;
-    a[j1 + 1] = y0i - y2i;
-    y0r = wk3r * x1r + wk3i * x1i;
-    y0i = wk3r * x1i - wk3i * x1r;
-    y2r = wd3r * x3r + wd3i * x3i;
-    y2i = wd3r * x3i - wd3i * x3r;
-    a[j2] = y0r + y2r;
-    a[j2 + 1] = y0i + y2i;
-    a[j3] = y0r - y2r;
-    a[j3 + 1] = y0i - y2i;
-    j0 = m - j;
-    j1 = j0 + m;
-    j2 = j1 + m;
-    j3 = j2 + m;
-    x0r = a[j0] - a[j2 + 1];
-    x0i = a[j0 + 1] + a[j2];
-    x1r = a[j0] + a[j2 + 1];
-    x1i = a[j0 + 1] - a[j2];
-    x2r = a[j1] - a[j3 + 1];
-    x2i = a[j1 + 1] + a[j3];
-    x3r = a[j1] + a[j3 + 1];
-    x3i = a[j1 + 1] - a[j3];
-    y0r = wd1i * x0r - wd1r * x0i;
-    y0i = wd1i * x0i + wd1r * x0r;
-    y2r = wk1i * x2r - wk1r * x2i;
-    y2i = wk1i * x2i + wk1r * x2r;
-    a[j0] = y0r + y2r;
-    a[j0 + 1] = y0i + y2i;
-    a[j1] = y0r - y2r;
-    a[j1 + 1] = y0i - y2i;
-    y0r = wd3i * x1r + wd3r * x1i;
-    y0i = wd3i * x1i - wd3r * x1r;
-    y2r = wk3i * x3r + wk3r * x3i;
-    y2i = wk3i * x3i - wk3r * x3r;
-    a[j2] = y0r + y2r;
-    a[j2 + 1] = y0i + y2i;
-    a[j3] = y0r - y2r;
-    a[j3 + 1] = y0i - y2i;
-  }
+    {
+      k += 4;
+      wk1r = w[k];
+      wk1i = w[k + 1];
+      wk3r = w[k + 2];
+      wk3i = -w[k + 3];
+      kr -= 4;
+      wd1i = w[kr];
+      wd1r = w[kr + 1];
+      wd3i = w[kr + 2];
+      wd3r = -w[kr + 3];
+      j1 = j + m;
+      j2 = j1 + m;
+      j3 = j2 + m;
+      x0r = a[j] - a[j2 + 1];
+      x0i = a[j + 1] + a[j2];
+      x1r = a[j] + a[j2 + 1];
+      x1i = a[j + 1] - a[j2];
+      x2r = a[j1] - a[j3 + 1];
+      x2i = a[j1 + 1] + a[j3];
+      x3r = a[j1] + a[j3 + 1];
+      x3i = a[j1 + 1] - a[j3];
+      y0r = wk1r * x0r - wk1i * x0i;
+      y0i = wk1r * x0i + wk1i * x0r;
+      y2r = wd1r * x2r - wd1i * x2i;
+      y2i = wd1r * x2i + wd1i * x2r;
+      a[j] = y0r + y2r;
+      a[j + 1] = y0i + y2i;
+      a[j1] = y0r - y2r;
+      a[j1 + 1] = y0i - y2i;
+      y0r = wk3r * x1r + wk3i * x1i;
+      y0i = wk3r * x1i - wk3i * x1r;
+      y2r = wd3r * x3r + wd3i * x3i;
+      y2i = wd3r * x3i - wd3i * x3r;
+      a[j2] = y0r + y2r;
+      a[j2 + 1] = y0i + y2i;
+      a[j3] = y0r - y2r;
+      a[j3 + 1] = y0i - y2i;
+      j0 = m - j;
+      j1 = j0 + m;
+      j2 = j1 + m;
+      j3 = j2 + m;
+      x0r = a[j0] - a[j2 + 1];
+      x0i = a[j0 + 1] + a[j2];
+      x1r = a[j0] + a[j2 + 1];
+      x1i = a[j0 + 1] - a[j2];
+      x2r = a[j1] - a[j3 + 1];
+      x2i = a[j1 + 1] + a[j3];
+      x3r = a[j1] + a[j3 + 1];
+      x3i = a[j1 + 1] - a[j3];
+      y0r = wd1i * x0r - wd1r * x0i;
+      y0i = wd1i * x0i + wd1r * x0r;
+      y2r = wk1i * x2r - wk1r * x2i;
+      y2i = wk1i * x2i + wk1r * x2r;
+      a[j0] = y0r + y2r;
+      a[j0 + 1] = y0i + y2i;
+      a[j1] = y0r - y2r;
+      a[j1 + 1] = y0i - y2i;
+      y0r = wd3i * x1r + wd3r * x1i;
+      y0i = wd3i * x1i - wd3r * x1r;
+      y2r = wk3i * x3r + wk3r * x3i;
+      y2i = wk3i * x3i - wk3r * x3r;
+      a[j2] = y0r + y2r;
+      a[j2 + 1] = y0i + y2i;
+      a[j3] = y0r - y2r;
+      a[j3 + 1] = y0i - y2i;
+    }
   wk1r = w[m];
   wk1i = w[m + 1];
   j0 = mh;
@@ -2093,19 +2093,19 @@ void cftfx41(int n, double *a, int nw, double *w)
   void cftf082(double *a, double *w);
 
   if (n == 128)
-  {
-    cftf161(a, &w[nw - 8]);
-    cftf162(&a[32], &w[nw - 32]);
-    cftf161(&a[64], &w[nw - 8]);
-    cftf161(&a[96], &w[nw - 8]);
-  }
+    {
+      cftf161(a, &w[nw - 8]);
+      cftf162(&a[32], &w[nw - 32]);
+      cftf161(&a[64], &w[nw - 8]);
+      cftf161(&a[96], &w[nw - 8]);
+    }
   else
-  {
-    cftf081(a, &w[nw - 16]);
-    cftf082(&a[16], &w[nw - 16]);
-    cftf081(&a[32], &w[nw - 16]);
-    cftf081(&a[48], &w[nw - 16]);
-  }
+    {
+      cftf081(a, &w[nw - 16]);
+      cftf082(&a[16], &w[nw - 16]);
+      cftf081(&a[32], &w[nw - 16]);
+      cftf081(&a[48], &w[nw - 16]);
+    }
 }
 
 void cftfx42(int n, double *a, int nw, double *w)
@@ -2116,19 +2116,19 @@ void cftfx42(int n, double *a, int nw, double *w)
   void cftf082(double *a, double *w);
 
   if (n == 128)
-  {
-    cftf161(a, &w[nw - 8]);
-    cftf162(&a[32], &w[nw - 32]);
-    cftf161(&a[64], &w[nw - 8]);
-    cftf162(&a[96], &w[nw - 32]);
-  }
+    {
+      cftf161(a, &w[nw - 8]);
+      cftf162(&a[32], &w[nw - 32]);
+      cftf161(&a[64], &w[nw - 8]);
+      cftf162(&a[96], &w[nw - 32]);
+    }
   else
-  {
-    cftf081(a, &w[nw - 16]);
-    cftf082(&a[16], &w[nw - 16]);
-    cftf081(&a[32], &w[nw - 16]);
-    cftf082(&a[48], &w[nw - 16]);
-  }
+    {
+      cftf081(a, &w[nw - 16]);
+      cftf082(&a[16], &w[nw - 16]);
+      cftf081(&a[32], &w[nw - 16]);
+      cftf082(&a[48], &w[nw - 16]);
+    }
 }
 
 void cftf161(double *a, double *w)
@@ -2662,20 +2662,20 @@ void rftfsub(int n, double *a, int nc, double *c)
   ks = 2 * nc / m;
   kk = 0;
   for (j = 2; j < m; j += 2)
-  {
-    k = n - j;
-    kk += ks;
-    wkr = 0.5 - c[nc - kk];
-    wki = c[kk];
-    xr = a[j] - a[k];
-    xi = a[j + 1] + a[k + 1];
-    yr = wkr * xr - wki * xi;
-    yi = wkr * xi + wki * xr;
-    a[j] -= yr;
-    a[j + 1] -= yi;
-    a[k] += yr;
-    a[k + 1] -= yi;
-  }
+    {
+      k = n - j;
+      kk += ks;
+      wkr = 0.5 - c[nc - kk];
+      wki = c[kk];
+      xr = a[j] - a[k];
+      xi = a[j + 1] + a[k + 1];
+      yr = wkr * xr - wki * xi;
+      yi = wkr * xi + wki * xr;
+      a[j] -= yr;
+      a[j + 1] -= yi;
+      a[k] += yr;
+      a[k + 1] -= yi;
+    }
 }
 
 void rftbsub(int n, double *a, int nc, double *c)
@@ -2687,20 +2687,20 @@ void rftbsub(int n, double *a, int nc, double *c)
   ks = 2 * nc / m;
   kk = 0;
   for (j = 2; j < m; j += 2)
-  {
-    k = n - j;
-    kk += ks;
-    wkr = 0.5 - c[nc - kk];
-    wki = c[kk];
-    xr = a[j] - a[k];
-    xi = a[j + 1] + a[k + 1];
-    yr = wkr * xr + wki * xi;
-    yi = wkr * xi - wki * xr;
-    a[j] -= yr;
-    a[j + 1] -= yi;
-    a[k] += yr;
-    a[k + 1] -= yi;
-  }
+    {
+      k = n - j;
+      kk += ks;
+      wkr = 0.5 - c[nc - kk];
+      wki = c[kk];
+      xr = a[j] - a[k];
+      xi = a[j + 1] + a[k + 1];
+      yr = wkr * xr + wki * xi;
+      yi = wkr * xi - wki * xr;
+      a[j] -= yr;
+      a[j + 1] -= yi;
+      a[k] += yr;
+      a[k + 1] -= yi;
+    }
 }
 
 void dctsub(int n, double *a, int nc, double *c)
@@ -2712,15 +2712,15 @@ void dctsub(int n, double *a, int nc, double *c)
   ks = nc / n;
   kk = 0;
   for (j = 1; j < m; j++)
-  {
-    k = n - j;
-    kk += ks;
-    wkr = c[kk] - c[nc - kk];
-    wki = c[kk] + c[nc - kk];
-    xr = wki * a[j] - wkr * a[k];
-    a[j] = wkr * a[j] + wki * a[k];
-    a[k] = xr;
-  }
+    {
+      k = n - j;
+      kk += ks;
+      wkr = c[kk] - c[nc - kk];
+      wki = c[kk] + c[nc - kk];
+      xr = wki * a[j] - wkr * a[k];
+      a[j] = wkr * a[j] + wki * a[k];
+      a[k] = xr;
+    }
   a[m] *= c[0];
 }
 
@@ -2733,14 +2733,14 @@ void dstsub(int n, double *a, int nc, double *c)
   ks = nc / n;
   kk = 0;
   for (j = 1; j < m; j++)
-  {
-    k = n - j;
-    kk += ks;
-    wkr = c[kk] - c[nc - kk];
-    wki = c[kk] + c[nc - kk];
-    xr = wki * a[k] - wkr * a[j];
-    a[k] = wkr * a[k] + wki * a[j];
-    a[j] = xr;
-  }
+    {
+      k = n - j;
+      kk += ks;
+      wkr = c[kk] - c[nc - kk];
+      wki = c[kk] + c[nc - kk];
+      xr = wki * a[k] - wkr * a[j];
+      a[k] = wkr * a[k] + wki * a[j];
+      a[j] = xr;
+    }
   a[m] *= c[0];
 }

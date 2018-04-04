@@ -19,41 +19,42 @@ int v;
 
   (void)pparm(u);
   if (v < 0)
-  {
-    d = (digit)-v;
-  }
+    {
+      d = (digit)-v;
+    }
   else
-  {
-    d = (digit)v;
-  }
+    {
+      d = (digit)v;
+    }
   if (d >= BASE)
-  {
-    errorp(PDOMAIN, "pimod", "divisor too big for single digit");
-    goto done;
-  }
+    {
+      errorp(PDOMAIN, "pimod", "divisor too big for single digit");
+      goto done;
+    }
   if (d == 0)
-  {
-    errorp(PDOMAIN, "pimod", "divide by zero");
-    goto done;
-  }
+    {
+      errorp(PDOMAIN, "pimod", "divide by zero");
+      goto done;
+    }
 #ifndef ASM_16BIT
   uPtr = u->value + u->size;
   r = 0; /* r is current remainder */
   do
-  {
-    temp = mulBase(r); /* 0 <= temp <= (base-1)^2 */
-    temp += *--uPtr;   /* 0 <= temp <= base(base-1) */
-    r = temp % d;      /* 0 <= r < base */
-  } while (uPtr > u->value);
+    {
+      temp = mulBase(r); /* 0 <= temp <= (base-1)^2 */
+      temp += *--uPtr; /* 0 <= temp <= base(base-1) */
+      r = temp % d; /* 0 <= r < base */
+    }
+  while (uPtr > u->value);
 #else
   r = memmodw1(u->value, u->size, d);
 #endif
 
   res = (int)r;
   if (u->sign)
-  {
-    res = -res;
-  }
+    {
+      res = -res;
+    }
 done:
   pdestroy(u);
   return res;

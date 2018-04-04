@@ -28,15 +28,15 @@
  *	Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include <assert.h>         /* for assert()                  */
-#include <stdlib.h>         /* for NULL and malloc()         */
+#include <assert.h> /* for assert()                  */
+#include <stdlib.h> /* for NULL and malloc()         */
 #include "dataManagement.h" /* for primitive data types      */
-#include "dataObject.h"     /* for DataObject definition     */
-#include "errorMessage.h"   /* for errorMessage() definition */
+#include "dataObject.h" /* for DataObject definition     */
+#include "errorMessage.h" /* for errorMessage() definition */
 
 DataObject *createDataObject(DataObjectType dataObjectType)
-{                         /*  beginning of createDataObject() */
-  Int i;                  /* looping index for attributes */
+{ /*  beginning of createDataObject() */
+  Int i; /* looping index for attributes */
   Int numberOfAttributes; /* number of attribute by type  */
   DataObject *dataObject; /* data object to create        */
 
@@ -56,44 +56,44 @@ DataObject *createDataObject(DataObjectType dataObjectType)
    */
   dataObject = (DataObject *)malloc(sizeof(DataObject));
   if (dataObject == NULL)
-  {
-    /*
+    {
+      /*
      *  Done: memory allocation error
      */
-    errorMessage("memory allocation failure", REPLACE);
-    errorMessage(name, PREPEND);
-    return (NULL);
-  } /*  end if ( dataObject == NULL )    */
+      errorMessage("memory allocation failure", REPLACE);
+      errorMessage(name, PREPEND);
+      return (NULL);
+    } /*  end if ( dataObject == NULL )    */
 
   /*
    *  Determine number of attributes based on type input
    */
   if (dataObjectType == SMALL)
-  {
-    dataObject->type = SMALL;
-    numberOfAttributes = NUM_OF_SMALL_ATTRIBUTES;
-  } /*  end if ( dataObjectType == SMALL )      */
+    {
+      dataObject->type = SMALL;
+      numberOfAttributes = NUM_OF_SMALL_ATTRIBUTES;
+    } /*  end if ( dataObjectType == SMALL )      */
   else if (dataObjectType == MEDIUM)
-  {
-    dataObject->type = MEDIUM;
-    numberOfAttributes = NUM_OF_MEDIUM_ATTRIBUTES;
-  } /*  end if ( dataObjectType == MEDIUM )    */
+    {
+      dataObject->type = MEDIUM;
+      numberOfAttributes = NUM_OF_MEDIUM_ATTRIBUTES;
+    } /*  end if ( dataObjectType == MEDIUM )    */
   else if (dataObjectType == LARGE)
-  {
-    dataObject->type = LARGE;
-    numberOfAttributes = NUM_OF_LARGE_ATTRIBUTES;
-  } /*  end if ( dataObjectType == LARGE )      */
+    {
+      dataObject->type = LARGE;
+      numberOfAttributes = NUM_OF_LARGE_ATTRIBUTES;
+    } /*  end if ( dataObjectType == LARGE )      */
   else
-  {
-    errorMessage("invalid object type to create", REPLACE);
-    errorMessage(name, PREPEND);
-    free(dataObject);
+    {
+      errorMessage("invalid object type to create", REPLACE);
+      errorMessage(name, PREPEND);
+      free(dataObject);
 
-    /*
+      /*
      *  Done: data object type error
      */
-    return (NULL);
-  } /*  end else    */
+      return (NULL);
+    } /*  end else    */
 
   /*
    *  Allocate memory for attributes
@@ -101,31 +101,31 @@ DataObject *createDataObject(DataObjectType dataObjectType)
   dataObject->attributes = (DataObjectAttribute *)malloc(
       numberOfAttributes * sizeof(DataObjectAttribute));
   if (dataObject->attributes == NULL)
-  {
-    /*
+    {
+      /*
      *  Done: memory allocation error
      */
-    errorMessage("memory allocation failure", REPLACE);
-    errorMessage(name, PREPEND);
-    free(dataObject);
-    return (NULL);
-  } /* end if ( dataObject->attributes == NULL )    */
+      errorMessage("memory allocation failure", REPLACE);
+      errorMessage(name, PREPEND);
+      free(dataObject);
+      return (NULL);
+    } /* end if ( dataObject->attributes == NULL )    */
 
   /*
    *  Assign implausible initial key values
    */
   for (i = MIN_ATTRIBUTE_CODE; i < NUM_OF_KEY_ATTRIBUTES; i++)
-  {
-    dataObject->attributes[i].value.key = MINIMUM_VALUE_OF_FLOAT;
-  } /*  end loop for i  */
+    {
+      dataObject->attributes[i].value.key = MINIMUM_VALUE_OF_FLOAT;
+    } /*  end loop for i  */
 
   /*
    *  Assign default non-key values
    */
   for (i = NUM_OF_KEY_ATTRIBUTES; i < numberOfAttributes; i++)
-  {
-    dataObject->attributes[i].value.nonKey = NULL;
-  } /*  end loop for i  */
+    {
+      dataObject->attributes[i].value.nonKey = NULL;
+    } /*  end loop for i  */
 
   return (dataObject);
 } /*  end of createDataObject()   */

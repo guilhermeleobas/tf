@@ -14,10 +14,10 @@ void addList(struct List *list, struct Patient *patient)
   struct List *b;
 
   while (list != NULL)
-  {
-    b = list;
-    list = list->forward;
-  }
+    {
+      b = list;
+      list = list->forward;
+    }
 
   list = (struct List *)malloc(sizeof(struct List));
   list->patient = patient;
@@ -33,19 +33,19 @@ void removeList(struct List *list, struct Patient *patient)
 
   p = list->patient;
   while (p != patient)
-  {
-    list = list->forward;
-    p = list->patient;
-  }
+    {
+      list = list->forward;
+      p = list->patient;
+    }
 
   l1 = list->back;
   l2 = list->forward;
   l1->forward = l2;
   if (list->forward != NULL)
-  {
-    l1 = list->forward;
-    l2 = list->back;
-    l1->back = l2;
-  }
+    {
+      l1 = list->forward;
+      l2 = list->back;
+      l1->back = l2;
+    }
   /*free(list);*/
 }

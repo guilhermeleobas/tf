@@ -65,138 +65,138 @@ int ab(int alpha, int beta)
 
   nodes++;
   if (plycnt == 41)
-  {
-    return DRAW;
-  }
+    {
+      return DRAW;
+    }
   side = (otherside = plycnt & 1) ^ 1;
   for (i = nav = 0; ++i <= 7;)
-  {
-    if ((h = height[i]) <= 6)
     {
-      if (wins(i, h, 3) || colthr[columns[i]] != 0)
-      {
-        if (h + 1 <= 6 && wins(i, h + 1, 1 << otherside))
+      if ((h = height[i]) <= 6)
         {
-          return LOSE;
+          if (wins(i, h, 3) || colthr[columns[i]] != 0)
+            {
+              if (h + 1 <= 6 && wins(i, h + 1, 1 << otherside))
+                {
+                  return LOSE;
+                }
+              av[0] = i; /* forget other moves */
+              while (++i <= 7)
+                {
+                  if ((h = height[i]) <= 6 &&
+                      (wins(i, h, 3) || colthr[columns[i]] != 0))
+                    {
+                      return LOSE;
+                    }
+                }
+              nav = 1;
+              break;
+            }
+          if (!(h + 1 <= 6 && wins(i, h + 1, 1 << otherside)))
+            {
+              av[nav++] = i;
+            }
         }
-        av[0] = i; /* forget other moves */
-        while (++i <= 7)
-        {
-          if ((h = height[i]) <= 6 &&
-              (wins(i, h, 3) || colthr[columns[i]] != 0))
-          {
-            return LOSE;
-          }
-        }
-        nav = 1;
-        break;
-      }
-      if (!(h + 1 <= 6 && wins(i, h + 1, 1 << otherside)))
-      {
-        av[nav++] = i;
-      }
     }
-  }
   if (nav == 0)
-  {
-    return LOSE;
-  }
+    {
+      return LOSE;
+    }
   if (nav == 1)
-  {
-    makemove(av[0]);
-    score = -ab(-beta, -alpha);
-    backmove();
-    return score;
-  }
+    {
+      makemove(av[0]);
+      score = -ab(-beta, -alpha);
+      backmove();
+      return score;
+    }
   if ((x = transpose()) != ABSENT)
-  {
-    score = x >> 5;
-    if (score == DRAWLOSE)
     {
-      if ((beta = DRAW) <= alpha)
-      {
-        return score;
-      }
+      score = x >> 5;
+      if (score == DRAWLOSE)
+        {
+          if ((beta = DRAW) <= alpha)
+            {
+              return score;
+            }
+        }
+      else if (score == DRAWWIN)
+        {
+          if ((alpha = DRAW) >= beta)
+            {
+              return score;
+            }
+        }
+      else
+        {
+          return score; /* exact score */
+        }
     }
-    else if (score == DRAWWIN)
-    {
-      if ((alpha = DRAW) >= beta)
-      {
-        return score;
-      }
-    }
-    else
-    {
-      return score; /* exact score */
-    }
-  }
   poscnt = posed;
   l = besti = 0;
   score = -999999; /* try to get the best bound if score > beta */
   for (i = 0; i < nav; i++)
-  {
-    for (j = i, val = -999999; j < nav; j++)
     {
-      k = av[j];
-      v = history[side][height[k] << 3 | k];
-      if (v > val)
-      {
-        val = v;
-        l = j;
-      }
-    }
-    j = av[l];
-    if (i != l)
-    {
-      av[l] = av[i];
-      av[i] = j;
-    }
-    makemove(j);
-    val = -ab(-beta, -alpha);
-    backmove();
-    if (val > score)
-    {
-      besti = i;
-      if ((score = val) > alpha && (alpha = val) >= beta)
-      {
-        if (score == DRAW && i < nav - 1)
+      for (j = i, val = -999999; j < nav; j++)
         {
-          score = DRAWWIN;
+          k = av[j];
+          v = history[side][height[k] << 3 | k];
+          if (v > val)
+            {
+              val = v;
+              l = j;
+            }
         }
-        break;
-      }
+      j = av[l];
+      if (i != l)
+        {
+          av[l] = av[i];
+          av[i] = j;
+        }
+      makemove(j);
+      val = -ab(-beta, -alpha);
+      backmove();
+      if (val > score)
+        {
+          besti = i;
+          if ((score = val) > alpha && (alpha = val) >= beta)
+            {
+              if (score == DRAW && i < nav - 1)
+                {
+                  score = DRAWWIN;
+                }
+              break;
+            }
+        }
     }
-  }
   if (besti > 0)
-  {
-    for (i = 0; i < besti; i++)
     {
-      history[side][height[av[i]] << 3 | av[i]]--; /* punish bad historiess */
+      for (i = 0; i < besti; i++)
+        {
+          history[side][height[av[i]] << 3 | av[i]]--; /* punish bad historiess */
+        }
+      history[side][height[av[besti]] << 3 | av[besti]] += besti;
     }
-    history[side][height[av[besti]] << 3 | av[besti]] += besti;
-  }
   poscnt = posed - poscnt;
   for (work = 1; (poscnt >>= 1) != 0; work++)
-  {
-    ; /* work=log #positions stored */
-  }
-  if (x != ABSENT)
-  {
-    if (score == -(x >> 5))
-    { /* combine < and > */
-      score = DRAW;
+    {
+      ; /* work=log #positions stored */
     }
-    transrestore(score, work);
-  }
+  if (x != ABSENT)
+    {
+      if (score == -(x >> 5))
+        { /* combine < and > */
+          score = DRAW;
+        }
+      transrestore(score, work);
+    }
   else
-  {
-    transtore(score, work);
-  }
+    {
+      transtore(score, work);
+    }
   if (plycnt == REPORTPLY)
-  {
-    printMoves();
-    printf("%c%d\n", "##-<=>+#"[4 + score], work);
-  }
+    {
+      printMoves();
+      printf("%c%d\n", "##-<=>+#"[4 + score], work);
+    }
   return score;
 }
 
@@ -211,29 +211,29 @@ int solve()
   msecs = 1;
   side = (plycnt + 1) & 1;
   for (i = 0; ++i <= 7;)
-  {
-    if (height[i] <= 6)
     {
-      if (wins(i, height[i], 1 << side) || colthr[columns[i]] == (1 << side))
-      {
-        return (side != 0 ? WIN : LOSE) << 5; /* all score & no work:) */
-      }
+      if (height[i] <= 6)
+        {
+          if (wins(i, height[i], 1 << side) || colthr[columns[i]] == (1 << side))
+            {
+              return (side != 0 ? WIN : LOSE) << 5; /* all score & no work:) */
+            }
+        }
     }
-  }
   if ((x = transpose()) != ABSENT)
-  {
-    if ((x & 32) == 0)
-    { /* exact score */
-      return x;
+    {
+      if ((x & 32) == 0)
+        { /* exact score */
+          return x;
+        }
     }
-  }
   msecs = millisecs() - 1L;
   score = ab(LOSE, WIN);
   poscnt = posed;
   for (work = 1; (poscnt >>= 1) != 0; work++)
-  {
-    ; /*work = log of #positions stored*/
-  }
+    {
+      ; /*work = log of #positions stored*/
+    }
   msecs = millisecs() - msecs;
   return score << 5 | work;
 }
@@ -243,51 +243,51 @@ int main()
   int c, i, result;
 
   if (sizeof(int64) != 8)
-  {
-    printf("sizeof(int64) == %lu; please redefine.\n", sizeof(int64));
-    exit(0);
-  }
+    {
+      printf("sizeof(int64) == %lu; please redefine.\n", sizeof(int64));
+      exit(0);
+    }
   c4_init();
   puts("Fhourstones 2.0");
   printf("Using %d transposition table entries with %d probes.\n", TRANSIZE,
          PROBES);
   for (;;)
-  {
-    reset();
-    while ((c = getchar()) != -1)
     {
-      if (c >= '1' && c <= '7')
-      {
-        makemove(c - '0');
-      }
-      else if (c >= 'A' && c <= 'G')
-      {
-        makemove(c - 'A' + 1);
-      }
-      else if (c >= 'a' && c <= 'g')
-      {
-        makemove(c - 'a' + 1);
-      }
-      else if (c == '\n')
-      {
-        break;
-      }
-    }
-    if (c == -1)
-    {
-      break;
-    }
-    printf("Solving %d-ply position after ", plycnt);
-    printMoves();
-    puts(" . . .");
+      reset();
+      while ((c = getchar()) != -1)
+        {
+          if (c >= '1' && c <= '7')
+            {
+              makemove(c - '0');
+            }
+          else if (c >= 'A' && c <= 'G')
+            {
+              makemove(c - 'A' + 1);
+            }
+          else if (c >= 'a' && c <= 'g')
+            {
+              makemove(c - 'a' + 1);
+            }
+          else if (c == '\n')
+            {
+              break;
+            }
+        }
+      if (c == -1)
+        {
+          break;
+        }
+      printf("Solving %d-ply position after ", plycnt);
+      printMoves();
+      puts(" . . .");
 
-    emptyTT();
-    result = solve(); /* expect score << 5 | work */
-    printf("score = %d (%c)  work = %d\n", (result >> 5),
-           "##-<=>+#"[4 + (result >> 5)], result & 31);
-    printf("%lu pos / %lu msec = %.1f Kpos/sec\n", (long)nodes, (long)msecs,
-           (double)nodes / msecs);
-    htstat();
-  }
+      emptyTT();
+      result = solve(); /* expect score << 5 | work */
+      printf("score = %d (%c)  work = %d\n", (result >> 5),
+             "##-<=>+#"[4 + (result >> 5)], result & 31);
+      printf("%lu pos / %lu msec = %.1f Kpos/sec\n", (long)nodes, (long)msecs,
+             (double)nodes / msecs);
+      htstat();
+    }
   return 0;
 }

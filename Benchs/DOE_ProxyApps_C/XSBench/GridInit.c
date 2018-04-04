@@ -11,17 +11,17 @@ void generate_grids(NuclideGridPoint **nuclide_grids, long n_isotopes,
                     long n_gridpoints)
 {
   for (long i = 0; i < n_isotopes; i++)
-  {
-    for (long j = 0; j < n_gridpoints; j++)
     {
-      nuclide_grids[i][j].energy = ((double)rand() / (double)RAND_MAX);
-      nuclide_grids[i][j].total_xs = ((double)rand() / (double)RAND_MAX);
-      nuclide_grids[i][j].elastic_xs = ((double)rand() / (double)RAND_MAX);
-      nuclide_grids[i][j].absorbtion_xs = ((double)rand() / (double)RAND_MAX);
-      nuclide_grids[i][j].fission_xs = ((double)rand() / (double)RAND_MAX);
-      nuclide_grids[i][j].nu_fission_xs = ((double)rand() / (double)RAND_MAX);
+      for (long j = 0; j < n_gridpoints; j++)
+        {
+          nuclide_grids[i][j].energy = ((double)rand() / (double)RAND_MAX);
+          nuclide_grids[i][j].total_xs = ((double)rand() / (double)RAND_MAX);
+          nuclide_grids[i][j].elastic_xs = ((double)rand() / (double)RAND_MAX);
+          nuclide_grids[i][j].absorbtion_xs = ((double)rand() / (double)RAND_MAX);
+          nuclide_grids[i][j].fission_xs = ((double)rand() / (double)RAND_MAX);
+          nuclide_grids[i][j].nu_fission_xs = ((double)rand() / (double)RAND_MAX);
+        }
     }
-  }
 }
 
 // Verification version of this function (tighter control over RNG)
@@ -29,17 +29,17 @@ void generate_grids_v(NuclideGridPoint **nuclide_grids, long n_isotopes,
                       long n_gridpoints)
 {
   for (long i = 0; i < n_isotopes; i++)
-  {
-    for (long j = 0; j < n_gridpoints; j++)
     {
-      nuclide_grids[i][j].energy = rn_v();
-      nuclide_grids[i][j].total_xs = rn_v();
-      nuclide_grids[i][j].elastic_xs = rn_v();
-      nuclide_grids[i][j].absorbtion_xs = rn_v();
-      nuclide_grids[i][j].fission_xs = rn_v();
-      nuclide_grids[i][j].nu_fission_xs = rn_v();
+      for (long j = 0; j < n_gridpoints; j++)
+        {
+          nuclide_grids[i][j].energy = rn_v();
+          nuclide_grids[i][j].total_xs = rn_v();
+          nuclide_grids[i][j].elastic_xs = rn_v();
+          nuclide_grids[i][j].absorbtion_xs = rn_v();
+          nuclide_grids[i][j].fission_xs = rn_v();
+          nuclide_grids[i][j].nu_fission_xs = rn_v();
+        }
     }
-  }
 }
 
 // Sorts the nuclide grids by energy (lowest -> highest)
@@ -50,9 +50,9 @@ void sort_nuclide_grids(NuclideGridPoint **nuclide_grids, long n_isotopes,
   cmp = NGP_compare;
 
   for (long i = 0; i < n_isotopes; i++)
-  {
-    qsort(nuclide_grids[i], n_gridpoints, sizeof(NuclideGridPoint), cmp);
-  }
+    {
+      qsort(nuclide_grids[i], n_gridpoints, sizeof(NuclideGridPoint), cmp);
+    }
 
   // error debug check
   /*
@@ -77,9 +77,9 @@ GridPoint *generate_energy_grid(long n_isotopes, long n_gridpoints,
 #endif
 
   if (mype == 0)
-  {
-    printf("Generating Unionized Energy Grid...\n");
-  }
+    {
+      printf("Generating Unionized Energy Grid...\n");
+    }
 
   long n_unionized_grid_points = n_isotopes * n_gridpoints;
   int (*cmp)(const void *, const void *);
@@ -88,9 +88,9 @@ GridPoint *generate_energy_grid(long n_isotopes, long n_gridpoints,
   GridPoint *energy_grid =
       (GridPoint *)malloc(n_unionized_grid_points * sizeof(GridPoint));
   if (mype == 0)
-  {
-    printf("Copying and Sorting all nuclide grids...\n");
-  }
+    {
+      printf("Copying and Sorting all nuclide grids...\n");
+    }
 
   NuclideGridPoint **n_grid_sorted = gpmatrix(n_isotopes, n_gridpoints);
 
@@ -101,28 +101,28 @@ GridPoint *generate_energy_grid(long n_isotopes, long n_gridpoints,
         cmp);
 
   if (mype == 0)
-  {
-    printf("Assigning energies to unionized grid...\n");
-  }
+    {
+      printf("Assigning energies to unionized grid...\n");
+    }
 
   for (long i = 0; i < n_unionized_grid_points; i++)
-  {
-    energy_grid[i].energy = n_grid_sorted[0][i].energy;
-  }
+    {
+      energy_grid[i].energy = n_grid_sorted[0][i].energy;
+    }
 
   gpmatrix_free(n_grid_sorted);
 
   int *full = (int *)malloc(n_isotopes * n_unionized_grid_points * sizeof(int));
   if (full == NULL)
-  {
-    fprintf(stderr, "ERROR - Out Of Memory!\n");
-    exit(1);
-  }
+    {
+      fprintf(stderr, "ERROR - Out Of Memory!\n");
+      exit(1);
+    }
 
   for (long i = 0; i < n_unionized_grid_points; i++)
-  {
-    energy_grid[i].xs_ptrs = &full[n_isotopes * i];
-  }
+    {
+      energy_grid[i].xs_ptrs = &full[n_isotopes * i];
+    }
 
   // debug error checking
   /*
@@ -147,40 +147,40 @@ void set_grid_ptrs(GridPoint *energy_grid, NuclideGridPoint **nuclide_grids,
 #endif
 
   if (mype == 0)
-  {
-    printf("Assigning pointers to Unionized Energy Grid...\n");
-  }
+    {
+      printf("Assigning pointers to Unionized Energy Grid...\n");
+    }
 #ifdef OPENMP
 #pragma omp parallel for default(none) shared(energy_grid, nuclide_grids, \
                                               n_isotopes, n_gridpoints, mype)
 #endif
   for (long i = 0; i < n_isotopes * n_gridpoints; i++)
-  {
-    int nthreads = 1, tid = 0;
-    double quarry = energy_grid[i].energy;
+    {
+      int nthreads = 1, tid = 0;
+      double quarry = energy_grid[i].energy;
 
 #ifdef OPENMP
-    nthreads = omp_get_num_threads();
-    tid = omp_get_thread_num();
+      nthreads = omp_get_num_threads();
+      tid = omp_get_thread_num();
 #endif
 
-    if (INFO && mype == 0 && tid == 0 && i % 200 == 0)
-    {
-      printf("\rAligning Unionized Grid...(%.0lf%% complete)",
-             100.0 * (double)i / (n_isotopes * n_gridpoints / nthreads));
+      if (INFO && mype == 0 && tid == 0 && i % 200 == 0)
+        {
+          printf("\rAligning Unionized Grid...(%.0lf%% complete)",
+                 100.0 * (double)i / (n_isotopes * n_gridpoints / nthreads));
+        }
+      for (long j = 0; j < n_isotopes; j++)
+        {
+          // j is the nuclide i.d.
+          // log n binary search
+          energy_grid[i].xs_ptrs[j] =
+              binary_search(nuclide_grids[j], quarry, n_gridpoints);
+        }
     }
-    for (long j = 0; j < n_isotopes; j++)
-    {
-      // j is the nuclide i.d.
-      // log n binary search
-      energy_grid[i].xs_ptrs[j] =
-          binary_search(nuclide_grids[j], quarry, n_gridpoints);
-    }
-  }
   if (mype == 0)
-  {
-    printf("\n");
-  }
+    {
+      printf("\n");
+    }
 
   // test
   /*

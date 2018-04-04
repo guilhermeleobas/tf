@@ -13,13 +13,13 @@ void calculate_micro_xs(double p_energy, int nuc, long n_isotopes,
   // pull ptr from energy grid and check to ensure that
   // we're not reading off the end of the nuclide's grid
   if (energy_grid[idx].xs_ptrs[nuc] == n_gridpoints - 1)
-  {
-    low = &nuclide_grids[nuc][energy_grid[idx].xs_ptrs[nuc] - 1];
-  }
+    {
+      low = &nuclide_grids[nuc][energy_grid[idx].xs_ptrs[nuc] - 1];
+    }
   else
-  {
-    low = &nuclide_grids[nuc][energy_grid[idx].xs_ptrs[nuc]];
-  }
+    {
+      low = &nuclide_grids[nuc][energy_grid[idx].xs_ptrs[nuc]];
+    }
 
   high = low + 1;
 
@@ -70,9 +70,9 @@ void calculate_macro_xs(double p_energy, int mat, long n_isotopes,
 
   // cleans out macro_xs_vector
   for (int k = 0; k < 5; k++)
-  {
-    macro_xs_vector[k] = 0;
-  }
+    {
+      macro_xs_vector[k] = 0;
+    }
 
   // binary search for energy on unionized energy grid (UEG)
   idx = grid_search(n_isotopes * n_gridpoints, p_energy, energy_grid);
@@ -85,16 +85,16 @@ void calculate_macro_xs(double p_energy, int mat, long n_isotopes,
   // micro XS is multiplied by the concentration of that nuclide
   // in the material, and added to the total macro XS array.
   for (int j = 0; j < num_nucs[mat]; j++)
-  {
-    p_nuc = mats[mat][j];
-    conc = concs[mat][j];
-    calculate_micro_xs(p_energy, p_nuc, n_isotopes, n_gridpoints, energy_grid,
-                       nuclide_grids, idx, xs_vector);
-    for (int k = 0; k < 5; k++)
     {
-      macro_xs_vector[k] += xs_vector[k] * conc;
+      p_nuc = mats[mat][j];
+      conc = concs[mat][j];
+      calculate_micro_xs(p_energy, p_nuc, n_isotopes, n_gridpoints, energy_grid,
+                         nuclide_grids, idx, xs_vector);
+      for (int k = 0; k < 5; k++)
+        {
+          macro_xs_vector[k] += xs_vector[k] * conc;
+        }
     }
-  }
 
   // test
   /*
@@ -114,20 +114,20 @@ long grid_search(long n, double quarry, GridPoint* A)
   long length = upperLimit - lowerLimit;
 
   while (length > 1)
-  {
-    examinationPoint = lowerLimit + (length / 2);
-
-    if (A[examinationPoint].energy > quarry)
     {
-      upperLimit = examinationPoint;
-    }
-    else
-    {
-      lowerLimit = examinationPoint;
-    }
+      examinationPoint = lowerLimit + (length / 2);
 
-    length = upperLimit - lowerLimit;
-  }
+      if (A[examinationPoint].energy > quarry)
+        {
+          upperLimit = examinationPoint;
+        }
+      else
+        {
+          lowerLimit = examinationPoint;
+        }
+
+      length = upperLimit - lowerLimit;
+    }
 
   return lowerLimit;
 }

@@ -35,38 +35,38 @@ void fulllink(void)
   pptr = Hlist;
   nptr = Hlist->next;
   for (;;)
-  {
-    tpop(&hEdgeRoot, &junkptr, &location, &index);
-    if (junkptr == (TNODEPTR)NULL)
     {
-      break;
+      tpop(&hEdgeRoot, &junkptr, &location, &index);
+      if (junkptr == (TNODEPTR)NULL)
+        {
+          break;
+        }
+      ptr = (DLINK1PTR)malloc(sizeof(DLINK1));
+      ptr->edge = index;
+      ptr->prev = pptr;
+      ptr->next = nptr;
+      pptr->next = ptr;
+      nptr->prev = ptr;
+      pptr = ptr;
     }
-    ptr = (DLINK1PTR)malloc(sizeof(DLINK1));
-    ptr->edge = index;
-    ptr->prev = pptr;
-    ptr->next = nptr;
-    pptr->next = ptr;
-    nptr->prev = ptr;
-    pptr = ptr;
-  }
 
   pptr = Vlist;
   nptr = Vlist->next;
   for (;;)
-  {
-    tpop(&vEdgeRoot, &junkptr, &location, &index);
-    if (junkptr == (TNODEPTR)NULL)
     {
-      break;
+      tpop(&vEdgeRoot, &junkptr, &location, &index);
+      if (junkptr == (TNODEPTR)NULL)
+        {
+          break;
+        }
+      ptr = (DLINK1PTR)malloc(sizeof(DLINK1));
+      ptr->edge = index;
+      ptr->prev = pptr;
+      ptr->next = nptr;
+      pptr->next = ptr;
+      nptr->prev = ptr;
+      pptr = ptr;
     }
-    ptr = (DLINK1PTR)malloc(sizeof(DLINK1));
-    ptr->edge = index;
-    ptr->prev = pptr;
-    ptr->next = nptr;
-    pptr->next = ptr;
-    nptr->prev = ptr;
-    pptr = ptr;
-  }
 
   makeVertDownTree();
   makeHoriRiteTree();
@@ -87,19 +87,19 @@ void makeVertTree(void)
 
   last = -1000000;
   for (vptr = Vlist; vptr != (DLINK1PTR)NULL; vptr = vptr->next)
-  {
-    edge = vptr->edge;
-    if (edgeList[edge].loc > last)
     {
-      last = edgeList[edge].loc;
-      if (++count % 100 == 0)
-      {
-        Vptrs = (DLINK1PTR *)realloc(Vptrs, (count + 100) * sizeof(DLINK1PTR));
-      }
-      Vptrs[count] = vptr;
-      tinsert(&Vroot, last, count);
+      edge = vptr->edge;
+      if (edgeList[edge].loc > last)
+        {
+          last = edgeList[edge].loc;
+          if (++count % 100 == 0)
+            {
+              Vptrs = (DLINK1PTR *)realloc(Vptrs, (count + 100) * sizeof(DLINK1PTR));
+            }
+          Vptrs[count] = vptr;
+          tinsert(&Vroot, last, count);
+        }
     }
-  }
 
   return;
 }
@@ -115,19 +115,19 @@ void makeHoriTree(void)
 
   last = -1000000;
   for (hptr = Hlist; hptr != (DLINK1PTR)NULL; hptr = hptr->next)
-  {
-    edge = hptr->edge;
-    if (edgeList[edge].loc > last)
     {
-      last = edgeList[edge].loc;
-      if (++count % 100 == 0)
-      {
-        Hptrs = (DLINK1PTR *)realloc(Hptrs, (count + 100) * sizeof(DLINK1PTR));
-      }
-      Hptrs[count] = hptr;
-      tinsert(&Hroot, last, count);
+      edge = hptr->edge;
+      if (edgeList[edge].loc > last)
+        {
+          last = edgeList[edge].loc;
+          if (++count % 100 == 0)
+            {
+              Hptrs = (DLINK1PTR *)realloc(Hptrs, (count + 100) * sizeof(DLINK1PTR));
+            }
+          Hptrs[count] = hptr;
+          tinsert(&Hroot, last, count);
+        }
     }
-  }
 
   return;
 }
@@ -143,24 +143,24 @@ void makeVertDownTree(void)
 
   last = -1000000;
   for (vptr = Vlist; vptr != (DLINK1PTR)NULL; vptr = vptr->next)
-  {
-    edge = vptr->edge;
-    if (edgeList[edge].UorR > 0)
     {
-      continue;
+      edge = vptr->edge;
+      if (edgeList[edge].UorR > 0)
+        {
+          continue;
+        }
+      if (edgeList[edge].loc > last)
+        {
+          last = edgeList[edge].loc;
+          if (++count % 100 == 0)
+            {
+              VDptrs =
+                  (DLINK1PTR *)realloc(VDptrs, (count + 100) * sizeof(DLINK1PTR));
+            }
+          VDptrs[count] = vptr;
+          tinsert(&VDroot, last, count);
+        }
     }
-    if (edgeList[edge].loc > last)
-    {
-      last = edgeList[edge].loc;
-      if (++count % 100 == 0)
-      {
-        VDptrs =
-            (DLINK1PTR *)realloc(VDptrs, (count + 100) * sizeof(DLINK1PTR));
-      }
-      VDptrs[count] = vptr;
-      tinsert(&VDroot, last, count);
-    }
-  }
 
   return;
 }
@@ -176,24 +176,24 @@ void makeHoriRiteTree(void)
 
   last = -1000000;
   for (hptr = Hlist; hptr != (DLINK1PTR)NULL; hptr = hptr->next)
-  {
-    edge = hptr->edge;
-    if (edgeList[edge].UorR < 0)
     {
-      continue;
+      edge = hptr->edge;
+      if (edgeList[edge].UorR < 0)
+        {
+          continue;
+        }
+      if (edgeList[edge].loc > last)
+        {
+          last = edgeList[edge].loc;
+          if (++count % 100 == 0)
+            {
+              HRptrs =
+                  (DLINK1PTR *)realloc(HRptrs, (count + 100) * sizeof(DLINK1PTR));
+            }
+          HRptrs[count] = hptr;
+          tinsert(&HRroot, last, count);
+        }
     }
-    if (edgeList[edge].loc > last)
-    {
-      last = edgeList[edge].loc;
-      if (++count % 100 == 0)
-      {
-        HRptrs =
-            (DLINK1PTR *)realloc(HRptrs, (count + 100) * sizeof(DLINK1PTR));
-      }
-      HRptrs[count] = hptr;
-      tinsert(&HRroot, last, count);
-    }
-  }
 
   return;
 }

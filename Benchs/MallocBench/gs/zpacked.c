@@ -70,15 +70,15 @@ int zpackedarray(register ref *op)
 {
   int code = make_array(op, t_packedarray, a_read + a_execute, "packedarray");
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   { /* Fill the array from the stack. */
     uintptr_t size = op->size;
     if (size > op - osbot)
-    {
-      return e_stackunderflow;
-    }
+      {
+        return e_stackunderflow;
+      }
     refcpy(op->value.refs, op - size, size);
     op[-size] = *op;
     pop(size);

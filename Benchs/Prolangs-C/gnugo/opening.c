@@ -73,30 +73,30 @@ int opening(int *i, int *j, int *cnd, int type)
 
   /* get i, j */
   if ((type == 1) || (type == 3))
-  {
-    *i = 18 - tree[*cnd].i; /* inverted */
-  }
+    {
+      *i = 18 - tree[*cnd].i; /* inverted */
+    }
   else
-  {
-    *i = tree[*cnd].i;
-  }
+    {
+      *i = tree[*cnd].i;
+    }
   if ((type == 2) || (type == 3))
-  {
-    *j = 18 - tree[*cnd].j; /* reflected */
-  }
+    {
+      *j = 18 - tree[*cnd].j; /* reflected */
+    }
   else
-  {
-    *j = tree[*cnd].j;
-  }
+    {
+      *j = tree[*cnd].j;
+    }
   if (tree[*cnd].ndct) /* more move */
-  {
-    random_nasko(&rd);
-    m = rd % tree[*cnd].ndct;  /* select move */
-    *cnd = tree[*cnd].next[m]; /* new	current node */
-    return 1;
-  }
+    {
+      random_nasko(&rd);
+      m = rd % tree[*cnd].ndct; /* select move */
+      *cnd = tree[*cnd].next[m]; /* new	current node */
+      return 1;
+    }
   else
-  {
-    return 0;
-  }
+    {
+      return 0;
+    }
 } /* end opening */

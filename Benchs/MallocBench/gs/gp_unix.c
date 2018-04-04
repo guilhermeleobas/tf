@@ -36,10 +36,10 @@ void gs_get_clock(long *pdt)
   struct tm *tm, *localtime();
 
   if (gettimeofday(&tp, &tzp) == -1)
-  {
-    perror("Ghostscript: gettimeofday failed:");
-    exit(-1);
-  }
+    {
+      perror("Ghostscript: gettimeofday failed:");
+      exit(-1);
+    }
 
   /* tp.tv_sec is #secs since Jan 1, 1970 */
 
@@ -53,9 +53,9 @@ void gs_get_clock(long *pdt)
   /* adjust for daylight savings time - assume dst offset is 1 hour */
   tm = localtime(&(tp.tv_sec));
   if (tm->tm_isdst)
-  {
-    secs_since_1980 += (60 * 60);
-  }
+    {
+      secs_since_1980 += (60 * 60);
+    }
 
   /* divide secs by #secs/day to get #days (integer division truncates) */
   pdt[0] = secs_since_1980 / (60 * 60 * 24);
@@ -84,8 +84,8 @@ int gp_file_name_is_absolute(char *fname, uint len)
 char *gp_file_name_concat_string(char *prefix, uint plen, char *fname, uint len)
 {
   if (plen > 0 && prefix[plen - 1] == '/')
-  {
-    return "";
-  }
+    {
+      return "";
+    }
   return "/";
 }

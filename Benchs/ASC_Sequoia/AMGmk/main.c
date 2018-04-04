@@ -143,9 +143,9 @@ void test_Matvec()
   t0_cpu = clock();
 
   for (i = 0; i < testIter; ++i)
-  {
-    hypre_CSRMatrixMatvec(1, A, x, 0, y);
-  }
+    {
+      hypre_CSRMatrixMatvec(1, A, x, 0, y);
+    }
 
   gettimeofday(&t1, ((void *)0));
   t1_cpu = clock();
@@ -160,18 +160,18 @@ void test_Matvec()
 
   error = 0;
   for (i = 0; i < nx * ny * nz; i++)
-  {
-    diff = fabs(y_data[i] - sol_data[i]);
-    if (diff > error)
     {
-      error = diff;
+      diff = fabs(y_data[i] - sol_data[i]);
+      if (diff > error)
+        {
+          error = diff;
+        }
     }
-  }
 
   if (error > 0)
-  {
-    printf(" \n Matvec: error: %e\n", error);
-  }
+    {
+      printf(" \n Matvec: error: %e\n", error);
+    }
 
   hypre_TFree(values);
   hypre_CSRMatrixDestroy(A);
@@ -210,9 +210,9 @@ void test_Relax()
   t0_cpu = clock();
 
   for (i = 0; i < testIter; ++i)
-  {
-    hypre_BoomerAMGSeqRelax(A, sol, x);
-  }
+    {
+      hypre_BoomerAMGSeqRelax(A, sol, x);
+    }
 
   gettimeofday(&t1, ((void *)0));
   t1_cpu = clock();
@@ -225,18 +225,18 @@ void test_Relax()
   x_data = hypre_VectorData(x);
   error = 0;
   for (i = 0; i < nx * ny * nz; i++)
-  {
-    diff = fabs(x_data[i] - 1);
-    if (diff > error)
     {
-      error = diff;
+      diff = fabs(x_data[i] - 1);
+      if (diff > error)
+        {
+          error = diff;
+        }
     }
-  }
 
   if (error > 0)
-  {
-    printf(" \n Relax: error: %e\n", error);
-  }
+    {
+      printf(" \n Relax: error: %e\n", error);
+    }
 
   hypre_TFree(values);
   hypre_CSRMatrixDestroy(A);
@@ -271,9 +271,9 @@ void test_Axpy()
   t0_cpu = clock();
 
   for (i = 0; i < testIter; ++i)
-  {
-    hypre_SeqVectorAxpy(alpha, x, y);
-  }
+    {
+      hypre_SeqVectorAxpy(alpha, x, y);
+    }
 
   gettimeofday(&t1, ((void *)0));
   t1_cpu = clock();
@@ -281,18 +281,18 @@ void test_Axpy()
   y_data = hypre_VectorData(y);
   error = 0;
   for (i = 0; i < nx; i++)
-  {
-    diff = fabs(y_data[i] - 1 - 0.5 * (double)testIter);
-    if (diff > error)
     {
-      error = diff;
+      diff = fabs(y_data[i] - 1 - 0.5 * (double)testIter);
+      if (diff > error)
+        {
+          error = diff;
+        }
     }
-  }
 
   if (error > 0)
-  {
-    printf(" \n Axpy: error: %e\n", error);
-  }
+    {
+      printf(" \n Axpy: error: %e\n", error);
+    }
 
   totalWallTime += (double)(t1.tv_sec - t0.tv_sec) +
                    (double)(t1.tv_usec - t0.tv_usec) / 1000000.0;

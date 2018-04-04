@@ -21,19 +21,19 @@ int main(int argc, char *argv[])
   struct ht_ht *ht = ht_create(n);
 
   for (i = 1; i <= n; i++)
-  {
-    sprintf(buf, "%x", i);
-    (ht_find_new(ht, buf))->val = i;
-  }
+    {
+      sprintf(buf, "%x", i);
+      (ht_find_new(ht, buf))->val = i;
+    }
 
   for (i = n; i > 0; i--)
-  {
-    sprintf(buf, "%d", i);
-    if (ht_find(ht, buf))
     {
-      c++;
+      sprintf(buf, "%d", i);
+      if (ht_find(ht, buf))
+        {
+          c++;
+        }
     }
-  }
 
   ht_destroy(ht);
 

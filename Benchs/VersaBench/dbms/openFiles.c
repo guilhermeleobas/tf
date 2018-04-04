@@ -45,26 +45,26 @@
  */
 
 #include "openFiles.h" /* for openFiles return codes          */
-#include <assert.h>    /* for assert()                        */
-#include <stdio.h>     /* for FILE definitions and fopen()    */
+#include <assert.h> /* for assert()                        */
+#include <stdio.h> /* for FILE definitions and fopen()    */
 #include <string.h>
 #include "dataManagement.h" /* for primitive type definitions      */
-#include "errorMessage.h"   /* for errorMessage() definition       */
+#include "errorMessage.h" /* for errorMessage() definition       */
 
 /*
  *  Function Prototypes
  */
 extern void initOutputBuffer(FILE *file);
 
-Int openFiles(Int argc,           /*  command-line arguments to provide   */
-              Char **argv,        /*  input values for file names         */
-              FILE **inputFile,   /*  input file ptr - output             */
-              FILE **outputFile,  /*  output file ptr - output            */
+Int openFiles(Int argc, /*  command-line arguments to provide   */
+              Char **argv, /*  input values for file names         */
+              FILE **inputFile, /*  input file ptr - output             */
+              FILE **outputFile, /*  output file ptr - output            */
               FILE **metricsFile) /*  metrics file ptr - output           */
-{                                 /*  begin openFiles()   */
-  Char *inputFileName;            /*  character strings used to store name  */
-  Char *outputFileName;           /*  values parsed from input command-line */
-  Char *metricsFileName;          /*  arguments                             */
+{ /*  begin openFiles()   */
+  Char *inputFileName; /*  character strings used to store name  */
+  Char *outputFileName; /*  values parsed from input command-line */
+  Char *metricsFileName; /*  arguments                             */
 
   static Char name[] = "openFiles";
 
@@ -86,133 +86,133 @@ Int openFiles(Int argc,           /*  command-line arguments to provide   */
   outputFileName = NULL;
   metricsFileName = NULL;
   if (argc > 1)
-  {
-    Int i; /* counter for current argument being parsed */
+    {
+      Int i; /* counter for current argument being parsed */
 
-    i = 1; /* start with second argument - first is program name */
-    while (i < argc)
-    { /* parse command-line arguments until all parsed */
-      if (strlen(argv[i]) == 2 && argv[i][0] == '-')
-      {
-        if (argv[i][1] == 'i')
-        {
-          if (i + 1 < argc)
-          {
-            i++;
-            inputFileName = argv[i];
-          } /* end of if i+1 <= argc */
+      i = 1; /* start with second argument - first is program name */
+      while (i < argc)
+        { /* parse command-line arguments until all parsed */
+          if (strlen(argv[i]) == 2 && argv[i][0] == '-')
+            {
+              if (argv[i][1] == 'i')
+                {
+                  if (i + 1 < argc)
+                    {
+                      i++;
+                      inputFileName = argv[i];
+                    } /* end of if i+1 <= argc */
+                  else
+                    {
+                      errorMessage("missing argument for -i", REPLACE);
+                      errorMessage(name, PREPEND);
+
+                      inputFileName = NULL;
+                      outputFileName = NULL;
+                      metricsFileName = NULL;
+
+                      fprintf(stderr, "Usage: %s [-h], or\n", argv[0]);
+                      fprintf(stderr, "       %s", argv[0]);
+                      fprintf(stderr, " [-i <input file = stdin>]");
+                      fprintf(stderr, " [-o <output file = stdout>]");
+                      fprintf(stderr, " [-m <metrics file = stderr>]\n");
+                      return (OPEN_FILES_USAGE_ERROR);
+                    } /* end of if i+1 > argc */
+                  i++;
+                } /* end of if argv[ i ][ 1 ] = 'i' */
+              else if (argv[i][1] == 'o')
+                {
+                  if (i + 1 < argc)
+                    {
+                      i++;
+                      outputFileName = argv[i];
+                    } /* end of if i+1 <= argc */
+                  else
+                    {
+                      errorMessage("missing argument for -o", REPLACE);
+                      errorMessage(name, PREPEND);
+
+                      inputFileName = NULL;
+                      outputFileName = NULL;
+                      metricsFileName = NULL;
+
+                      fprintf(stderr, "Usage: %s [-h], or\n", argv[0]);
+                      fprintf(stderr, "       %s", argv[0]);
+                      fprintf(stderr, " [-i <input file = stdin>]");
+                      fprintf(stderr, " [-o <output file = stdout>]");
+                      fprintf(stderr, " [-m <metrics file = stderr>]\n");
+                      return (OPEN_FILES_USAGE_ERROR);
+                    } /* end of if i+1 > argc */
+                  i++;
+                } /* end of if argv[ i ][ 1 ] = 'o' */
+              else if (argv[i][1] == 'm')
+                {
+                  if (i + 1 < argc)
+                    {
+                      i++;
+                      metricsFileName = argv[i];
+                    } /* end of if i+1 <= argc */
+                  else
+                    {
+                      errorMessage("missing argument for -m", REPLACE);
+                      errorMessage(name, PREPEND);
+
+                      inputFileName = NULL;
+                      outputFileName = NULL;
+                      metricsFileName = NULL;
+
+                      fprintf(stderr, "Usage: %s [-h], or\n", argv[0]);
+                      fprintf(stderr, "       %s", argv[0]);
+                      fprintf(stderr, " [-i <input file = stdin>]");
+                      fprintf(stderr, " [-o <output file = stdout>]");
+                      fprintf(stderr, " [-m <metrics file = stderr>]\n");
+                      return (OPEN_FILES_USAGE_ERROR);
+                    } /* end of if i+1 > argc */
+                  i++;
+                } /* end of if argv[ i ][ 1 ] = 'm' */
+              else if (argv[i][1] == 'h')
+                {
+                  fprintf(stderr, "Usage: %s [-h], or\n", argv[0]);
+                  fprintf(stderr, "       %s", argv[0]);
+                  fprintf(stderr, " [-i <input file = stdin>]");
+                  fprintf(stderr, " [-o <output file = stdout>]");
+                  fprintf(stderr, " [-m <metrics file = stderr>]\n");
+                  return (OPEN_FILES_USAGE_REQUEST);
+                } /* end of if argv[ i ][ 1 ] = 'h' */
+              else
+                {
+                  errorMessage("unknown option", REPLACE);
+                  errorMessage(name, PREPEND);
+
+                  inputFileName = NULL;
+                  outputFileName = NULL;
+                  metricsFileName = NULL;
+
+                  fprintf(stderr, "Usage: %s [-h], or\n", argv[0]);
+                  fprintf(stderr, "       %s", argv[0]);
+                  fprintf(stderr, " [-i <input file = stdin>]");
+                  fprintf(stderr, " [-o <output file = stdout>]");
+                  fprintf(stderr, " [-m <metrics file = stderr>]\n");
+                  return (OPEN_FILES_USAGE_ERROR);
+                } /* end of else - unknown option */
+            } /* end of if strlen( argv ) > 1 && argv[i][0] = '-' */
           else
-          {
-            errorMessage("missing argument for -i", REPLACE);
-            errorMessage(name, PREPEND);
+            {
+              errorMessage("incorrect format - unknown option", REPLACE);
+              errorMessage(name, PREPEND);
 
-            inputFileName = NULL;
-            outputFileName = NULL;
-            metricsFileName = NULL;
+              inputFileName = NULL;
+              outputFileName = NULL;
+              metricsFileName = NULL;
 
-            fprintf(stderr, "Usage: %s [-h], or\n", argv[0]);
-            fprintf(stderr, "       %s", argv[0]);
-            fprintf(stderr, " [-i <input file = stdin>]");
-            fprintf(stderr, " [-o <output file = stdout>]");
-            fprintf(stderr, " [-m <metrics file = stderr>]\n");
-            return (OPEN_FILES_USAGE_ERROR);
-          } /* end of if i+1 > argc */
-          i++;
-        } /* end of if argv[ i ][ 1 ] = 'i' */
-        else if (argv[i][1] == 'o')
-        {
-          if (i + 1 < argc)
-          {
-            i++;
-            outputFileName = argv[i];
-          } /* end of if i+1 <= argc */
-          else
-          {
-            errorMessage("missing argument for -o", REPLACE);
-            errorMessage(name, PREPEND);
-
-            inputFileName = NULL;
-            outputFileName = NULL;
-            metricsFileName = NULL;
-
-            fprintf(stderr, "Usage: %s [-h], or\n", argv[0]);
-            fprintf(stderr, "       %s", argv[0]);
-            fprintf(stderr, " [-i <input file = stdin>]");
-            fprintf(stderr, " [-o <output file = stdout>]");
-            fprintf(stderr, " [-m <metrics file = stderr>]\n");
-            return (OPEN_FILES_USAGE_ERROR);
-          } /* end of if i+1 > argc */
-          i++;
-        } /* end of if argv[ i ][ 1 ] = 'o' */
-        else if (argv[i][1] == 'm')
-        {
-          if (i + 1 < argc)
-          {
-            i++;
-            metricsFileName = argv[i];
-          } /* end of if i+1 <= argc */
-          else
-          {
-            errorMessage("missing argument for -m", REPLACE);
-            errorMessage(name, PREPEND);
-
-            inputFileName = NULL;
-            outputFileName = NULL;
-            metricsFileName = NULL;
-
-            fprintf(stderr, "Usage: %s [-h], or\n", argv[0]);
-            fprintf(stderr, "       %s", argv[0]);
-            fprintf(stderr, " [-i <input file = stdin>]");
-            fprintf(stderr, " [-o <output file = stdout>]");
-            fprintf(stderr, " [-m <metrics file = stderr>]\n");
-            return (OPEN_FILES_USAGE_ERROR);
-          } /* end of if i+1 > argc */
-          i++;
-        } /* end of if argv[ i ][ 1 ] = 'm' */
-        else if (argv[i][1] == 'h')
-        {
-          fprintf(stderr, "Usage: %s [-h], or\n", argv[0]);
-          fprintf(stderr, "       %s", argv[0]);
-          fprintf(stderr, " [-i <input file = stdin>]");
-          fprintf(stderr, " [-o <output file = stdout>]");
-          fprintf(stderr, " [-m <metrics file = stderr>]\n");
-          return (OPEN_FILES_USAGE_REQUEST);
-        } /* end of if argv[ i ][ 1 ] = 'h' */
-        else
-        {
-          errorMessage("unknown option", REPLACE);
-          errorMessage(name, PREPEND);
-
-          inputFileName = NULL;
-          outputFileName = NULL;
-          metricsFileName = NULL;
-
-          fprintf(stderr, "Usage: %s [-h], or\n", argv[0]);
-          fprintf(stderr, "       %s", argv[0]);
-          fprintf(stderr, " [-i <input file = stdin>]");
-          fprintf(stderr, " [-o <output file = stdout>]");
-          fprintf(stderr, " [-m <metrics file = stderr>]\n");
-          return (OPEN_FILES_USAGE_ERROR);
-        } /* end of else - unknown option */
-      }   /* end of if strlen( argv ) > 1 && argv[i][0] = '-' */
-      else
-      {
-        errorMessage("incorrect format - unknown option", REPLACE);
-        errorMessage(name, PREPEND);
-
-        inputFileName = NULL;
-        outputFileName = NULL;
-        metricsFileName = NULL;
-
-        fprintf(stderr, "Usage: %s [-h], or\n", argv[0]);
-        fprintf(stderr, "       %s", argv[0]);
-        fprintf(stderr, " [-i <input file = stdin>]");
-        fprintf(stderr, " [-o <output file = stdout>]");
-        fprintf(stderr, " [-m <metrics file = stderr>]\n");
-        return (OPEN_FILES_USAGE_ERROR);
-      } /* end of else - incorrect format */
-    }   /* end of option present with '-' in front */
-  }     /* end of if argc > 1 - command-line arguments present */
+              fprintf(stderr, "Usage: %s [-h], or\n", argv[0]);
+              fprintf(stderr, "       %s", argv[0]);
+              fprintf(stderr, " [-i <input file = stdin>]");
+              fprintf(stderr, " [-o <output file = stdout>]");
+              fprintf(stderr, " [-m <metrics file = stderr>]\n");
+              return (OPEN_FILES_USAGE_ERROR);
+            } /* end of else - incorrect format */
+        } /* end of option present with '-' in front */
+    } /* end of if argc > 1 - command-line arguments present */
 
   /*
    *  Check each file name for either default value or no value, open each
@@ -220,54 +220,54 @@ Int openFiles(Int argc,           /*  command-line arguments to provide   */
    *  message in error buffer and return appropriate code.
    */
   if (inputFileName == NULL)
-  { /*  input file  */
-    *inputFile = stdin;
-  } /*  end of if ( inputFileName == NULL )    */
+    { /*  input file  */
+      *inputFile = stdin;
+    } /*  end of if ( inputFileName == NULL )    */
   else
-  {
-    *inputFile = fopen(inputFileName, "r");
-    if (*inputFile == NULL)
     {
-      errorMessage("error opening input file", REPLACE);
-      errorMessage(name, PREPEND);
+      *inputFile = fopen(inputFileName, "r");
+      if (*inputFile == NULL)
+        {
+          errorMessage("error opening input file", REPLACE);
+          errorMessage(name, PREPEND);
 
-      return (OPEN_FILES_INPUT_FILE_ERROR);
-    } /*  end of if ( *inputFile == NULL )    */
-  }   /*  end of branches for input file  */
+          return (OPEN_FILES_INPUT_FILE_ERROR);
+        } /*  end of if ( *inputFile == NULL )    */
+    } /*  end of branches for input file  */
 
   if (outputFileName == NULL)
-  { /*  output file    */
-    *outputFile = stdout;
-  } /*  end of if ( outputFileName == NULL )    */
+    { /*  output file    */
+      *outputFile = stdout;
+    } /*  end of if ( outputFileName == NULL )    */
   else
-  {
-    *outputFile = fopen(outputFileName, "w");
-    if (*outputFile == NULL)
     {
-      errorMessage("error opening output file", REPLACE);
-      errorMessage(name, PREPEND);
+      *outputFile = fopen(outputFileName, "w");
+      if (*outputFile == NULL)
+        {
+          errorMessage("error opening output file", REPLACE);
+          errorMessage(name, PREPEND);
 
-      return (OPEN_FILES_OUTPUT_FILE_ERROR);
-    } /*  end of if ( *outputFile == NULL )    */
-  }   /*  end of branches for output file  */
+          return (OPEN_FILES_OUTPUT_FILE_ERROR);
+        } /*  end of if ( *outputFile == NULL )    */
+    } /*  end of branches for output file  */
 
   initOutputBuffer(*outputFile);
 
   if (metricsFileName == NULL)
-  { /*  metrics file  */
-    *metricsFile = stderr;
-  } /*  end of if ( metricsFileName == NULL )   */
+    { /*  metrics file  */
+      *metricsFile = stderr;
+    } /*  end of if ( metricsFileName == NULL )   */
   else
-  {
-    *metricsFile = fopen(metricsFileName, "w");
-    if (*metricsFile == NULL)
     {
-      errorMessage("error opening metrics file", REPLACE);
-      errorMessage(name, PREPEND);
+      *metricsFile = fopen(metricsFileName, "w");
+      if (*metricsFile == NULL)
+        {
+          errorMessage("error opening metrics file", REPLACE);
+          errorMessage(name, PREPEND);
 
-      return (OPEN_FILES_METRICS_FILE_ERROR);
-    } /*  end of if ( *metricsFile == NULL )    */
-  }   /*  end of branches for metrics file  */
+          return (OPEN_FILES_METRICS_FILE_ERROR);
+        } /*  end of if ( *metricsFile == NULL )    */
+    } /*  end of branches for metrics file  */
 
   return (OPEN_FILES_SUCCESS);
 } /*  end of openFiles()  */

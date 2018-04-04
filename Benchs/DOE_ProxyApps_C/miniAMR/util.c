@@ -40,10 +40,10 @@ void *ma_malloc(size_t size, char *file, int line)
   ptr = (void *)malloc(size);
 
   if (ptr == NULL)
-  {
-    printf("NULL pointer from malloc call in %s at %d\n", file, line);
-    exit(-1);
-  }
+    {
+      printf("NULL pointer from malloc call in %s at %d\n", file, line);
+      exit(-1);
+    }
 
   counter_malloc++;
   size_malloc += (double)size;

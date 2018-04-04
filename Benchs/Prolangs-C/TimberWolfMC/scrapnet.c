@@ -12,31 +12,31 @@ void scrapnet(void)
   criticalMass = (temp > 8) ? temp : 8;
 
   for (net = 1; net <= numnets; net++)
-  {
-    for (cell = 1; cell <= numcells; cell++)
     {
-      vector[cell] = 0;
-    }
-    count = 0;
-    dimptr = netarray[net];
-    netptr = dimptr->netptr;
-    for (; netptr != NETNULL; netptr = netptr->nextterm)
-    {
-      cell = netptr->cell;
-      if (cell <= numcells)
-      {
-        if (vector[cell] == 0)
+      for (cell = 1; cell <= numcells; cell++)
         {
-          vector[cell] = 1;
-          count++;
+          vector[cell] = 0;
         }
-      }
+      count = 0;
+      dimptr = netarray[net];
+      netptr = dimptr->netptr;
+      for (; netptr != NETNULL; netptr = netptr->nextterm)
+        {
+          cell = netptr->cell;
+          if (cell <= numcells)
+            {
+              if (vector[cell] == 0)
+                {
+                  vector[cell] = 1;
+                  count++;
+                }
+            }
+        }
+      if (count >= criticalMass)
+        {
+          dimptr->skip = 1;
+        }
     }
-    if (count >= criticalMass)
-    {
-      dimptr->skip = 1;
-    }
-  }
   free(vector);
 
   return;

@@ -17,13 +17,13 @@
  *              Copyright 1999, Atlantic Aerospace Electronics Corp.
  */
 
-#include <assert.h>         /* for assert()                   */
+#include <assert.h> /* for assert()                   */
 #include "dataManagement.h" /* for primitive type definitions */
-#include "indexKey.h"       /* for IndexKey definition        */
+#include "indexKey.h" /* for IndexKey definition        */
 
 Float volume(IndexKey key) /* input key for volume calc */
-{                          /*  beginning of volume()  */
-  Float vol;               /*  calculated volume of index key  */
+{ /*  beginning of volume()  */
+  Float vol; /*  calculated volume of index key  */
 
   /*
    *  Determine "volume" of key
@@ -35,10 +35,10 @@ Float volume(IndexKey key) /* input key for volume calc */
 
   /* assert( vol > 0.0 ); */
   if (vol <= 0.0)
-  {
-    Float* p = 0;
-    vol = *p;
-  }
+    {
+      Float* p = 0;
+      vol = *p;
+    }
 
   return (vol);
 } /*  end of volume()    */

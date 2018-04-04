@@ -34,15 +34,15 @@ long read_min(net) network_t *net;
   node_t *node;
 
   if ((in = fopen(net->inputfile, "r")) == NULL)
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
 
   fgets(instring, 200, in);
   if (sscanf(instring, "%ld %ld", &t, &h) != 2)
-  {
-    return -1;
-  }
+    {
+      return -1;
+    }
 
   net->n_trips = t;
   net->m_org = h;
@@ -50,22 +50,22 @@ long read_min(net) network_t *net;
   net->m = (t + t + t + h);
 
   if (net->n_trips <= MAX_NB_TRIPS_FOR_SMALL_NET)
-  {
-    net->max_m = net->m;
-    net->max_new_m = MAX_NEW_ARCS_SMALL_NET;
-  }
+    {
+      net->max_m = net->m;
+      net->max_new_m = MAX_NEW_ARCS_SMALL_NET;
+    }
   else
-  {
+    {
 #ifdef SPEC_STATIC
-    /*
+      /*
           //net->max_m = 0x1c00000l;
     */
-    net->max_m = 0x1a10000l;
+      net->max_m = 0x1a10000l;
 #else
-    net->max_m = MAX(net->m + MAX_NEW_ARCS, STRECHT(STRECHT(net->m)));
+      net->max_m = MAX(net->m + MAX_NEW_ARCS, STRECHT(STRECHT(net->m)));
 #endif
-    net->max_new_m = MAX_NEW_ARCS_LARGE_NET;
-  }
+      net->max_new_m = MAX_NEW_ARCS_LARGE_NET;
+    }
 
   net->max_residual_new_m = net->max_m - net->m;
 
@@ -76,11 +76,11 @@ long read_min(net) network_t *net;
   net->arcs = (arc_t *)calloc(net->max_m, sizeof(arc_t));
 
   if (!(net->nodes && net->arcs && net->dummy_arcs))
-  {
-    printf("read_min(): not enough memory\n");
-    getfree(net);
-    return -1;
-  }
+    {
+      printf("read_min(): not enough memory\n");
+      getfree(net);
+      return -1;
+    }
 
 #if defined AT_HOME
   printf("malloc for nodes       MB %4ld\n",
@@ -104,96 +104,96 @@ long read_min(net) network_t *net;
   arc = net->arcs;
 
   for (i = 1; i <= net->n_trips; i++)
-  {
-    fgets(instring, 200, in);
-
-    if (sscanf(instring, "%ld %ld", &t, &h) != 2 || t > h)
     {
-      return -1;
+      fgets(instring, 200, in);
+
+      if (sscanf(instring, "%ld %ld", &t, &h) != 2 || t > h)
+        {
+          return -1;
+        }
+
+      node[i].number = -i;
+      node[i].flow = (flow_t)-1;
+
+      node[i + net->n_trips].number = i;
+      node[i + net->n_trips].flow = (flow_t)1;
+
+      node[i].time = t;
+      node[i + net->n_trips].time = h;
+
+      arc->tail = &(node[net->n]);
+      arc->head = &(node[i]);
+      arc->org_cost = arc->cost = (cost_t)(net->bigM + 15);
+      arc->nextout = arc->tail->firstout;
+      arc->tail->firstout = arc;
+      arc->nextin = arc->head->firstin;
+      arc->head->firstin = arc;
+      arc++;
+
+      arc->tail = &(node[i + net->n_trips]);
+      arc->head = &(node[net->n]);
+      arc->org_cost = arc->cost = (cost_t)15;
+      arc->nextout = arc->tail->firstout;
+      arc->tail->firstout = arc;
+      arc->nextin = arc->head->firstin;
+      arc->head->firstin = arc;
+      arc++;
+
+      arc->tail = &(node[i]);
+      arc->head = &(node[i + net->n_trips]);
+      arc->org_cost = arc->cost = (cost_t)(2 * MAX(net->bigM, (long)BIGM));
+      arc->nextout = arc->tail->firstout;
+      arc->tail->firstout = arc;
+      arc->nextin = arc->head->firstin;
+      arc->head->firstin = arc;
+      arc++;
     }
-
-    node[i].number = -i;
-    node[i].flow = (flow_t)-1;
-
-    node[i + net->n_trips].number = i;
-    node[i + net->n_trips].flow = (flow_t)1;
-
-    node[i].time = t;
-    node[i + net->n_trips].time = h;
-
-    arc->tail = &(node[net->n]);
-    arc->head = &(node[i]);
-    arc->org_cost = arc->cost = (cost_t)(net->bigM + 15);
-    arc->nextout = arc->tail->firstout;
-    arc->tail->firstout = arc;
-    arc->nextin = arc->head->firstin;
-    arc->head->firstin = arc;
-    arc++;
-
-    arc->tail = &(node[i + net->n_trips]);
-    arc->head = &(node[net->n]);
-    arc->org_cost = arc->cost = (cost_t)15;
-    arc->nextout = arc->tail->firstout;
-    arc->tail->firstout = arc;
-    arc->nextin = arc->head->firstin;
-    arc->head->firstin = arc;
-    arc++;
-
-    arc->tail = &(node[i]);
-    arc->head = &(node[i + net->n_trips]);
-    arc->org_cost = arc->cost = (cost_t)(2 * MAX(net->bigM, (long)BIGM));
-    arc->nextout = arc->tail->firstout;
-    arc->tail->firstout = arc;
-    arc->nextin = arc->head->firstin;
-    arc->head->firstin = arc;
-    arc++;
-  }
 
   if (i != net->n_trips + 1)
-  {
-    return -1;
-  }
-
-  for (i = 0; i < net->m_org; i++, arc++)
-  {
-    fgets(instring, 200, in);
-
-    if (sscanf(instring, "%ld %ld %ld", &t, &h, &c) != 3)
     {
       return -1;
     }
 
-    arc->tail = &(node[t + net->n_trips]);
-    arc->head = &(node[h]);
-    arc->org_cost = (cost_t)c;
-    arc->cost = (cost_t)c;
-    arc->nextout = arc->tail->firstout;
-    arc->tail->firstout = arc;
-    arc->nextin = arc->head->firstin;
-    arc->head->firstin = arc;
-  }
+  for (i = 0; i < net->m_org; i++, arc++)
+    {
+      fgets(instring, 200, in);
+
+      if (sscanf(instring, "%ld %ld %ld", &t, &h, &c) != 3)
+        {
+          return -1;
+        }
+
+      arc->tail = &(node[t + net->n_trips]);
+      arc->head = &(node[h]);
+      arc->org_cost = (cost_t)c;
+      arc->cost = (cost_t)c;
+      arc->nextout = arc->tail->firstout;
+      arc->tail->firstout = arc;
+      arc->nextin = arc->head->firstin;
+      arc->head->firstin = arc;
+    }
 
   if (net->stop_arcs != arc)
-  {
-    net->stop_arcs = arc;
-    arc = net->arcs;
-    for (net->m = 0; arc < net->stop_arcs; arc++)
     {
-      (net->m)++;
+      net->stop_arcs = arc;
+      arc = net->arcs;
+      for (net->m = 0; arc < net->stop_arcs; arc++)
+        {
+          (net->m)++;
+        }
+      net->m_org = net->m;
     }
-    net->m_org = net->m;
-  }
 
   fclose(in);
 
   net->clustfile[0] = (char)0;
 
   for (i = 1; i <= net->n_trips; i++)
-  {
-    net->arcs[3 * i - 1].cost = (cost_t)((-2) * MAX(net->bigM, (long)BIGM));
-    net->arcs[3 * i - 1].org_cost =
-        (cost_t)((-2) * (MAX(net->bigM, (long)BIGM)));
-  }
+    {
+      net->arcs[3 * i - 1].cost = (cost_t)((-2) * MAX(net->bigM, (long)BIGM));
+      net->arcs[3 * i - 1].org_cost =
+          (cost_t)((-2) * (MAX(net->bigM, (long)BIGM)));
+    }
 
   return 0;
 }

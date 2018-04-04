@@ -20,29 +20,29 @@ int main(int argc, char **argv)
   unsigned int m, sz = 10000 << 12;
   bits *primes = (bits *)malloc(BSIZE(sz));
   if (!primes)
-  {
-    return 1;
-  }
-  for (m = 0; m <= 2; m++)
-  {
-    unsigned int i, j, count = 0, n = sz >> m;
-    memset(primes, 0xff, BSIZE(n));
-    for (i = 2; i <= n; i++)
     {
-      if (BTEST(primes, i))
-      {
-        count++;
-        for (j = i + i; j <= n; j += i)
-        {
-          if (BTEST(primes, j))
-          {
-            BFLIP(primes, j);
-          }
-        }
-      }
+      return 1;
     }
-    printf("Primes up to %8d %8d\n", n, count);
-  }
+  for (m = 0; m <= 2; m++)
+    {
+      unsigned int i, j, count = 0, n = sz >> m;
+      memset(primes, 0xff, BSIZE(n));
+      for (i = 2; i <= n; i++)
+        {
+          if (BTEST(primes, i))
+            {
+              count++;
+              for (j = i + i; j <= n; j += i)
+                {
+                  if (BTEST(primes, j))
+                    {
+                      BFLIP(primes, j);
+                    }
+                }
+            }
+        }
+      printf("Primes up to %8d %8d\n", n, count);
+    }
   free(primes);
   return 0;
 }

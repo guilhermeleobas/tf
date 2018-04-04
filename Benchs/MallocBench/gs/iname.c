@@ -30,7 +30,7 @@ copies.  */
 /* 1-character names are the first nt_1char_size entries. */
 #define nt_log2_sub_size 7
 #define nt_sub_size (1 << nt_log2_sub_size)
-#define nt_hash_size 256  /* must be a power of 2 */
+#define nt_hash_size 256 /* must be a power of 2 */
 #define nt_1char_size 256 /* must cover a full byte */
 typedef name name_sub_table[nt_sub_size];
 typedef struct
@@ -60,10 +60,10 @@ void name_init()
   the_nt = (name_table *)alloc(1, sizeof(name_table), "name_init");
   memset(the_nt, 0, sizeof(name_table));
   for (i = 0; i < nt_1char_size; i += nt_sub_size)
-  {
-    the_nt->count = i;
-    name_alloc_sub(the_nt);
-  }
+    {
+      the_nt->count = i;
+      name_alloc_sub(the_nt);
+    }
 }
 
 /* Look up or enter a name in the table. */
@@ -77,63 +77,63 @@ int name_ref(byte *ptr, uint isize, ref *pref, int enterflag)
   byte *cptr;
   ushort size = (ushort)isize; /* see name.h */
   if (size == 1)
-  {
-    pname = name_index_ptr(the_nt, *ptr);
-    if (pname->string_size != 0)
     {
-      make_name(pref, pname);
-      return 0;
+      pname = name_index_ptr(the_nt, *ptr);
+      if (pname->string_size != 0)
+        {
+          make_name(pref, pname);
+          return 0;
+        }
+      if (enterflag < 0)
+        {
+          return e_undefined;
+        }
+      pname->index = *ptr;
     }
-    if (enterflag < 0)
-    {
-      return e_undefined;
-    }
-    pname->index = *ptr;
-  }
   else
-  {
-    ushort hash = (ushort)string_hash(ptr, size);
-    ppname = the_nt->hash + (hash & (nt_hash_size - 1));
-    while ((pname = *ppname) != 0)
     {
-      if (pname->string_size == size && !memcmp(ptr, pname->string_bytes, size))
-      {
-        make_name(pref, pname);
-        return 0;
-      }
-      ppname = &pname->next;
+      ushort hash = (ushort)string_hash(ptr, size);
+      ppname = the_nt->hash + (hash & (nt_hash_size - 1));
+      while ((pname = *ppname) != 0)
+        {
+          if (pname->string_size == size && !memcmp(ptr, pname->string_bytes, size))
+            {
+              make_name(pref, pname);
+              return 0;
+            }
+          ppname = &pname->next;
+        }
+      /* Not in table, allocate a new entry. */
+      if (enterflag < 0)
+        {
+          return e_undefined;
+        }
+      if (!(the_nt->count & (nt_sub_size - 1)))
+        {
+          int code = name_alloc_sub(the_nt);
+          if (code < 0)
+            {
+              return code;
+            }
+        }
+      pname = name_index_ptr(the_nt, the_nt->count);
+      pname->index = the_nt->count++;
+      *ppname = pname;
     }
-    /* Not in table, allocate a new entry. */
-    if (enterflag < 0)
-    {
-      return e_undefined;
-    }
-    if (!(the_nt->count & (nt_sub_size - 1)))
-    {
-      int code = name_alloc_sub(the_nt);
-      if (code < 0)
-      {
-        return code;
-      }
-    }
-    pname = name_index_ptr(the_nt, the_nt->count);
-    pname->index = the_nt->count++;
-    *ppname = pname;
-  }
   /* Name was not in the table.  Make a new entry. */
   if (enterflag)
-  {
-    cptr = (byte *)alloc(size, 1, "name_ref(string)");
-    if (cptr == 0)
     {
-      return e_VMerror;
+      cptr = (byte *)alloc(size, 1, "name_ref(string)");
+      if (cptr == 0)
+        {
+          return e_VMerror;
+        }
+      memcpy(cptr, ptr, size);
     }
-    memcpy(cptr, ptr, size);
-  }
   else
-  {
-    cptr = ptr;
-  }
+    {
+      cptr = ptr;
+    }
   pname->string_size = size;
   pname->string_bytes = cptr;
   pname->next = 0;
@@ -155,9 +155,9 @@ void name_string_ref(ref *pnref /* t_name */, ref *psref /* result, t_string */)
 void name_enter(char *str, ref *pref)
 {
   if (name_ref((byte *)str, strlen(str), pref, 0))
-  {
-    dprintf1("name_enter failed - %s", str), exit(1);
-  }
+    {
+      dprintf1("name_enter failed - %s", str), exit(1);
+    }
 }
 
 /* Get the name with a given index. */
@@ -174,9 +174,9 @@ int name_alloc_sub(name_table *nt)
 {
   name *sub = (name *)alloc(1, sizeof(name_sub_table), "name_alloc_sub");
   if (sub == 0)
-  {
-    return e_VMerror;
-  }
+    {
+      return e_VMerror;
+    }
   memset(sub, 0, sizeof(name_sub_table));
   nt->table[nt->count >> nt_log2_sub_size] = sub;
   return 0;

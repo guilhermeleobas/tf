@@ -81,45 +81,45 @@ struct variable_set *set;
 
   hashval = 0;
   for (i = 0; i < length; ++i)
-  {
-    HASH(hashval, name[i]);
-  }
+    {
+      HASH(hashval, name[i]);
+    }
   hashval %= set->buckets;
 
   for (v = set->table[hashval]; v != 0; v = v->next)
-  {
-    if (*v->name == *name && !strncmp(v->name + 1, name + 1, length - 1) &&
-        v->name[length] == '\0')
     {
-      break;
+      if (*v->name == *name && !strncmp(v->name + 1, name + 1, length - 1) &&
+          v->name[length] == '\0')
+        {
+          break;
+        }
     }
-  }
 
   if (env_overrides && origin == o_env)
-  {
-    origin = o_env_override;
-  }
+    {
+      origin = o_env_override;
+    }
 
   if (v != 0)
-  {
-    if (env_overrides && v->origin == o_env)
     {
-      /* V came from in the environment.  Since it was defined
+      if (env_overrides && v->origin == o_env)
+        {
+          /* V came from in the environment.  Since it was defined
          before the switches were parsed, it wasn't affected by -e.  */
-      v->origin = o_env_override;
-    }
+          v->origin = o_env_override;
+        }
 
-    /* A variable of this name is already defined.
+      /* A variable of this name is already defined.
        If the old definition is from a stronger source
        than this one, don't redefine it.  */
-    if ((int)origin >= (int)v->origin)
-    {
-      v->value = savestring(value, strlen(value));
-      v->origin = origin;
-      v->recursive = recursive;
+      if ((int)origin >= (int)v->origin)
+        {
+          v->value = savestring(value, strlen(value));
+          v->origin = origin;
+          v->recursive = recursive;
+        }
+      return v;
     }
-    return v;
-  }
 
   /* Create a new variable definition and add it to the hash table.  */
 
@@ -175,26 +175,26 @@ unsigned int length;
   register unsigned int rawhash = 0;
 
   for (i = 0; i < length; ++i)
-  {
-    HASH(rawhash, name[i]);
-  }
+    {
+      HASH(rawhash, name[i]);
+    }
 
   for (setlist = current_variable_set_list; setlist != 0;
        setlist = setlist->next)
-  {
-    register struct variable_set *set = setlist->set;
-    register unsigned int hashval = rawhash % set->buckets;
-    register struct variable *v;
-
-    for (v = set->table[hashval]; v != 0; v = v->next)
     {
-      if (*v->name == *name && !strncmp(v->name + 1, name + 1, length - 1) &&
-          v->name[length] == 0)
-      {
-        return v;
-      }
+      register struct variable_set *set = setlist->set;
+      register unsigned int hashval = rawhash % set->buckets;
+      register struct variable *v;
+
+      for (v = set->table[hashval]; v != 0; v = v->next)
+        {
+          if (*v->name == *name && !strncmp(v->name + 1, name + 1, length - 1) &&
+              v->name[length] == 0)
+            {
+              return v;
+            }
+        }
     }
-  }
 
   return 0;
 }
@@ -207,28 +207,28 @@ void initialize_file_variables(file) struct file *file;
 {
   register struct variable_set_list *l = file->variables;
   if (l == 0)
-  {
-    l = (struct variable_set_list *)xmalloc(sizeof(struct variable_set_list));
-    l->set = (struct variable_set *)xmalloc(sizeof(struct variable_set));
-    l->set->buckets = PERFILE_VARIABLE_BUCKETS;
-    l->set->table = (struct variable **)xmalloc(l->set->buckets *
-                                                sizeof(struct variable *));
-    bzero((char *)l->set->table, l->set->buckets * sizeof(struct variable *));
-    file->variables = l;
-  }
+    {
+      l = (struct variable_set_list *)xmalloc(sizeof(struct variable_set_list));
+      l->set = (struct variable_set *)xmalloc(sizeof(struct variable_set));
+      l->set->buckets = PERFILE_VARIABLE_BUCKETS;
+      l->set->table = (struct variable **)xmalloc(l->set->buckets *
+                                                  sizeof(struct variable *));
+      bzero((char *)l->set->table, l->set->buckets * sizeof(struct variable *));
+      file->variables = l;
+    }
 
   if (file->parent == 0)
-  {
-    l->next = &global_setlist;
-  }
-  else
-  {
-    if (file->parent->variables == 0)
     {
-      initialize_file_variables(file->parent);
+      l->next = &global_setlist;
     }
-    l->next = file->parent->variables;
-  }
+  else
+    {
+      if (file->parent->variables == 0)
+        {
+          initialize_file_variables(file->parent);
+        }
+      l->next = file->parent->variables;
+    }
 }
 
 /* Pop the top set off the current variable set list,
@@ -244,17 +244,17 @@ void pop_variable_scope()
   free((char *)setlist);
 
   for (i = 0; i < set->buckets; ++i)
-  {
-    register struct variable *next = set->table[i];
-    while (next != 0)
     {
-      register struct variable *v = next;
-      next = v->next;
+      register struct variable *next = set->table[i];
+      while (next != 0)
+        {
+          register struct variable *v = next;
+          next = v->next;
 
-      free(v->name);
-      free((char *)v);
+          free(v->name);
+          free((char *)v);
+        }
     }
-  }
   free((char *)set->table);
   free((char *)set);
 }
@@ -286,54 +286,54 @@ static void merge_variable_sets(set0, set1) struct variable_set *set0, *set1;
   register unsigned int bucket1;
 
   for (bucket1 = 0; bucket1 < set1->buckets; ++bucket1)
-  {
-    register struct variable *v1 = set1->table[bucket1];
-    while (v1 != 0)
     {
-      struct variable *next = v1->next;
-      unsigned int bucket0;
-      register struct variable *v0;
-
-      if (set1->buckets >= set0->buckets)
-      {
-        bucket0 = bucket1;
-      }
-      else
-      {
-        register char *n;
-        bucket0 = 0;
-        for (n = v1->name; *n != '\0'; ++n)
+      register struct variable *v1 = set1->table[bucket1];
+      while (v1 != 0)
         {
-          HASH(bucket0, *n);
-        }
-      }
-      bucket0 %= set0->buckets;
+          struct variable *next = v1->next;
+          unsigned int bucket0;
+          register struct variable *v0;
 
-      for (v0 = set0->table[bucket0]; v0 != 0; v0 = v0->next)
-      {
-        if (streq(v0->name, v1->name))
-        {
-          break;
-        }
-      }
+          if (set1->buckets >= set0->buckets)
+            {
+              bucket0 = bucket1;
+            }
+          else
+            {
+              register char *n;
+              bucket0 = 0;
+              for (n = v1->name; *n != '\0'; ++n)
+                {
+                  HASH(bucket0, *n);
+                }
+            }
+          bucket0 %= set0->buckets;
 
-      if (v0 == 0)
-      {
-        /* There is no variable in SET0 with the same name.  */
-        v1->next = set0->table[bucket0];
-        set0->table[bucket0] = v1;
-      }
-      else
-      {
-        /* The same variable exists in both sets.
+          for (v0 = set0->table[bucket0]; v0 != 0; v0 = v0->next)
+            {
+              if (streq(v0->name, v1->name))
+                {
+                  break;
+                }
+            }
+
+          if (v0 == 0)
+            {
+              /* There is no variable in SET0 with the same name.  */
+              v1->next = set0->table[bucket0];
+              set0->table[bucket0] = v1;
+            }
+          else
+            {
+              /* The same variable exists in both sets.
            SET0 takes precedence.  */
-        free(v1->value);
-        free((char *)v1);
-      }
+              free(v1->value);
+              free((char *)v1);
+            }
 
-      v1 = next;
+          v1 = next;
+        }
     }
-  }
 }
 
 /* Merge SETLIST1 into SETLIST0, freeing unused storage in SETLIST1.  */
@@ -346,29 +346,29 @@ void merge_variable_set_lists(setlist0,
   struct variable_set_list *last0 = 0;
 
   while (setlist1 != 0 && list0 != 0)
-  {
-    struct variable_set_list *next = setlist1;
-    setlist1 = setlist1->next;
+    {
+      struct variable_set_list *next = setlist1;
+      setlist1 = setlist1->next;
 
-    merge_variable_sets(list0->set, next->set);
+      merge_variable_sets(list0->set, next->set);
 
-    free((char *)next);
+      free((char *)next);
 
-    last0 = list0;
-    list0 = list0->next;
-  }
+      last0 = list0;
+      list0 = list0->next;
+    }
 
   if (setlist1 != 0)
-  {
-    if (last0 == 0)
     {
-      *setlist0 = setlist1;
+      if (last0 == 0)
+        {
+          *setlist0 = setlist1;
+        }
+      else
+        {
+          last0->next = setlist1;
+        }
     }
-    else
-    {
-      last0->next = setlist1;
-    }
-  }
 }
 
 /* Define the automatic variables, and record the addresses
@@ -390,10 +390,10 @@ void define_automatic_variables()
   /* Don't let SHELL come from the environment
      if MAKELEVEL is 0.  Also, SHELL must not be empty.  */
   if (*v->value == '\0' || (v->origin == o_env && makelevel == 0))
-  {
-    v->origin = o_file;
-    v->value = savestring("/bin/sh", 7);
-  }
+    {
+      v->origin = o_file;
+      v->value = savestring("/bin/sh", 7);
+    }
 }
 
 /* Subroutine of variable_expand and friends:
@@ -409,12 +409,12 @@ unsigned int length;
   register unsigned int newlen = length + (ptr - variable_buffer);
 
   if (newlen > variable_buffer_length)
-  {
-    unsigned int offset = ptr - variable_buffer;
-    variable_buffer_length = max(2 * variable_buffer_length, newlen + 100);
-    variable_buffer = (char *)xrealloc(variable_buffer, variable_buffer_length);
-    ptr = variable_buffer + offset;
-  }
+    {
+      unsigned int offset = ptr - variable_buffer;
+      variable_buffer_length = max(2 * variable_buffer_length, newlen + 100);
+      variable_buffer = (char *)xrealloc(variable_buffer, variable_buffer_length);
+      ptr = variable_buffer + offset;
+    }
 
   bcopy(string, ptr, length);
   return ptr + length;
@@ -427,10 +427,10 @@ char *initialize_variable_output()
   /* If we don't have a variable output buffer yet, get one.  */
 
   if (variable_buffer == 0)
-  {
-    variable_buffer_length = 200;
-    variable_buffer = (char *)xmalloc(variable_buffer_length);
-  }
+    {
+      variable_buffer_length = 200;
+      variable_buffer = (char *)xmalloc(variable_buffer_length);
+    }
 
   return variable_buffer;
 }
@@ -458,12 +458,12 @@ char **target_environment(file) struct file *file;
   s = file->variables;
   buckets = s->set->buckets;
   for (s = s->next; s != 0; s = s->next)
-  {
-    if (s->set->buckets < buckets)
     {
-      buckets = s->set->buckets;
+      if (s->set->buckets < buckets)
+        {
+          buckets = s->set->buckets;
+        }
     }
-  }
 
   /* Temporarily allocate a table with that many buckets.  */
   table = (struct variable_bucket **)alloca(buckets *
@@ -474,82 +474,82 @@ char **target_environment(file) struct file *file;
      accumulating variables in TABLE.  */
   nvariables = 0;
   for (s = file->variables; s != 0; s = s->next)
-  {
-    register struct variable_set *set = s->set;
-    for (i = 0; i < set->buckets; ++i)
     {
-      register struct variable *v;
-      for (v = set->table[i]; v != 0; v = v->next)
-      {
-        extern char *getenv();
-        unsigned int j = i % buckets;
-        register struct variable_bucket *ov;
-        register char *p = v->name;
+      register struct variable_set *set = s->set;
+      for (i = 0; i < set->buckets; ++i)
+        {
+          register struct variable *v;
+          for (v = set->table[i]; v != 0; v = v->next)
+            {
+              extern char *getenv();
+              unsigned int j = i % buckets;
+              register struct variable_bucket *ov;
+              register char *p = v->name;
 
-        /* If `.NOEXPORT' was specified, only export command-line and
+              /* If `.NOEXPORT' was specified, only export command-line and
            environment variables.  This is a temporary (very ugly) hack
            until I fix this problem the right way in version 4.  Ick.  */
-        if (noexport && (v->origin != o_command && v->origin != o_env &&
-                         v->origin != o_env_override &&
-                         !(v->origin == o_file && getenv(p) != 0)))
-        {
-          continue;
-        }
+              if (noexport && (v->origin != o_command && v->origin != o_env &&
+                               v->origin != o_env_override &&
+                               !(v->origin == o_file && getenv(p) != 0)))
+                {
+                  continue;
+                }
 
-        if (v->origin == o_default || streq(p, "MAKELEVEL"))
-        {
-          continue;
-        }
+              if (v->origin == o_default || streq(p, "MAKELEVEL"))
+                {
+                  continue;
+                }
 
-        if (*p != '_' && (*p < 'A' || *p > 'Z') && (*p < 'a' || *p > 'z'))
-        {
-          continue;
-        }
-        for (++p; *p != '\0'; ++p)
-        {
-          if (*p != '_' && (*p < 'a' || *p > 'z') && (*p < 'A' || *p > 'Z') &&
-              (*p < '0' || *p > '9'))
-          {
-            break;
-          }
-        }
-        if (*p != '\0')
-        {
-          continue;
-        }
+              if (*p != '_' && (*p < 'A' || *p > 'Z') && (*p < 'a' || *p > 'z'))
+                {
+                  continue;
+                }
+              for (++p; *p != '\0'; ++p)
+                {
+                  if (*p != '_' && (*p < 'a' || *p > 'z') && (*p < 'A' || *p > 'Z') &&
+                      (*p < '0' || *p > '9'))
+                    {
+                      break;
+                    }
+                }
+              if (*p != '\0')
+                {
+                  continue;
+                }
 
-        for (ov = table[j]; ov != 0; ov = ov->next)
-        {
-          if (streq(v->name, ov->variable->name))
-          {
-            break;
-          }
+              for (ov = table[j]; ov != 0; ov = ov->next)
+                {
+                  if (streq(v->name, ov->variable->name))
+                    {
+                      break;
+                    }
+                }
+              if (ov == 0)
+                {
+                  register struct variable_bucket *entry;
+                  entry =
+                      (struct variable_bucket *)alloca(sizeof(struct variable_bucket));
+                  entry->next = table[j];
+                  entry->variable = v;
+                  table[j] = entry;
+                  ++nvariables;
+                }
+            }
         }
-        if (ov == 0)
-        {
-          register struct variable_bucket *entry;
-          entry =
-              (struct variable_bucket *)alloca(sizeof(struct variable_bucket));
-          entry->next = table[j];
-          entry->variable = v;
-          table[j] = entry;
-          ++nvariables;
-        }
-      }
     }
-  }
 
   result = (char **)xmalloc((nvariables + 2) * sizeof(char *));
   nvariables = 0;
   for (i = 0; i < buckets; ++i)
-  {
-    register struct variable_bucket *b;
-    for (b = table[i]; b != 0; b = b->next)
     {
-      register struct variable *v = b->variable;
-      result[nvariables++] = concat(v->name, "=", v->value);
+      register struct variable_bucket *b;
+      for (b = table[i]; b != 0; b = b->next)
+        {
+          register struct variable *v = b->variable;
+          result[nvariables++] = concat(v->name, "=", v->value);
+        }
     }
-  }
   result[nvariables] = (char *)xmalloc(100);
   (void)sprintf(result[nvariables], "MAKELEVEL=%u", makelevel + 1);
   result[++nvariables] = 0;
@@ -582,46 +582,46 @@ enum variable_origin origin;
   register int recursive;
 
   if (*p == '\t')
-  {
-    return 0;
-  }
-  while (1)
-  {
-    c = *p++;
-    if (c == '\0' || c == '#')
     {
       return 0;
     }
-    if (c == '=')
+  while (1)
     {
-      recursive = 1;
-      break;
+      c = *p++;
+      if (c == '\0' || c == '#')
+        {
+          return 0;
+        }
+      if (c == '=')
+        {
+          recursive = 1;
+          break;
+        }
+      else if (c == ':')
+        {
+          if (*p == '=')
+            {
+              ++p;
+              recursive = 0;
+              break;
+            }
+          else
+            {
+              return 0;
+            }
+        }
     }
-    else if (c == ':')
-    {
-      if (*p == '=')
-      {
-        ++p;
-        recursive = 0;
-        break;
-      }
-      else
-      {
-        return 0;
-      }
-    }
-  }
 
   beg = next_token(line);
   end = p - 1;
   if (!recursive)
-  {
-    --end;
-  }
+    {
+      --end;
+    }
   while (isblank(end[-1]))
-  {
-    --end;
-  }
+    {
+      --end;
+    }
   p = next_token(p);
 
   (void)define_variable(beg, end - beg, recursive ? p : variable_expand(p),
@@ -638,73 +638,73 @@ char *prefix;
   char *origin;
 
   switch (v->origin)
-  {
-    case o_default:
-      origin = "default";
-      break;
-    case o_env:
-      origin = "environment";
-      break;
-    case o_file:
-      origin = "makefile";
-      break;
-    case o_env_override:
-      origin = "environment under -e";
-      break;
-    case o_command:
-      origin = "command line";
-      break;
-    case o_override:
-      origin = "`override' directive";
-      break;
-    case o_automatic:
-      origin = "automatic";
-      break;
-    case o_invalid:
-    default:
-      abort();
-      break;
-  }
+    {
+      case o_default:
+        origin = "default";
+        break;
+      case o_env:
+        origin = "environment";
+        break;
+      case o_file:
+        origin = "makefile";
+        break;
+      case o_env_override:
+        origin = "environment under -e";
+        break;
+      case o_command:
+        origin = "command line";
+        break;
+      case o_override:
+        origin = "`override' directive";
+        break;
+      case o_automatic:
+        origin = "automatic";
+        break;
+      case o_invalid:
+      default:
+        abort();
+        break;
+    }
   printf("# %s\n", origin);
 
   fputs(prefix, stdout);
 
   /* Is this a `define'?  */
   if (v->recursive && index(v->value, '\n') != 0)
-  {
-    printf("define %s\n%s\nendef\n", v->name, v->value);
-  }
+    {
+      printf("define %s\n%s\nendef\n", v->name, v->value);
+    }
   else
-  {
-    register char *p;
+    {
+      register char *p;
 
-    printf("%s %s= ", v->name, v->recursive ? "" : ":");
+      printf("%s %s= ", v->name, v->recursive ? "" : ":");
 
-    /* Check if the value is just whitespace.  */
-    p = next_token(v->value);
-    if (p != v->value && *p == '\0')
-    {
-      /* All whitespace.  */
-      printf("$(subst ,,%s)", v->value);
-    }
-    else if (v->recursive)
-    {
-      fputs(v->value, stdout);
-    }
-    else
-    {
-      /* Double up dollar signs.  */
-      for (p = v->value; *p != '\0'; ++p)
-      {
-        if (*p == '$')
+      /* Check if the value is just whitespace.  */
+      p = next_token(v->value);
+      if (p != v->value && *p == '\0')
         {
-          putchar('$');
+          /* All whitespace.  */
+          printf("$(subst ,,%s)", v->value);
         }
-        putchar(*p);
-      }
+      else if (v->recursive)
+        {
+          fputs(v->value, stdout);
+        }
+      else
+        {
+          /* Double up dollar signs.  */
+          for (p = v->value; *p != '\0'; ++p)
+            {
+              if (*p == '$')
+                {
+                  putchar('$');
+                }
+              putchar(*p);
+            }
+        }
+      putchar('\n');
     }
-    putchar('\n');
-  }
 }
 
 /* Print all the variables in SET.  PREFIX is printed before
@@ -718,36 +718,36 @@ char *prefix;
 
   per_bucket = nvariables = 0;
   for (i = 0; i < set->buckets; ++i)
-  {
-    register unsigned int this_bucket = 0;
-
-    for (v = set->table[i]; v != 0; v = v->next)
     {
-      ++this_bucket;
-      print_variable(v, prefix);
-    }
+      register unsigned int this_bucket = 0;
 
-    nvariables += this_bucket;
-    if (this_bucket > per_bucket)
-    {
-      per_bucket = this_bucket;
+      for (v = set->table[i]; v != 0; v = v->next)
+        {
+          ++this_bucket;
+          print_variable(v, prefix);
+        }
+
+      nvariables += this_bucket;
+      if (this_bucket > per_bucket)
+        {
+          per_bucket = this_bucket;
+        }
     }
-  }
 
   if (nvariables == 0)
-  {
-    puts("# No variables.");
-  }
+    {
+      puts("# No variables.");
+    }
   else
-  {
-    printf("# %u variables in %u hash buckets.\n", nvariables, set->buckets);
+    {
+      printf("# %u variables in %u hash buckets.\n", nvariables, set->buckets);
 #ifndef NO_FLOAT
-    printf(
-        "# average of %.1f variables per bucket, \
+      printf(
+          "# average of %.1f variables per bucket, \
 max %u in one bucket.\n",
-        ((double)nvariables) * 100.0 / (double)set->buckets, per_bucket);
+          ((double)nvariables) * 100.0 / (double)set->buckets, per_bucket);
 #endif
-  }
+    }
 }
 
 /* Print the data base of variables.  */
@@ -764,9 +764,9 @@ void print_variable_data_base()
 void print_file_variables(file) struct file *file;
 {
   if (file->variables != 0)
-  {
-    print_variable_set(file->variables->set, "# ");
-  }
+    {
+      print_variable_set(file->variables->set, "# ");
+    }
 }
 
 struct output_state
@@ -799,9 +799,9 @@ void restore_variable_output(save) char *save;
   register struct output_state *state = (struct output_state *)save;
 
   if (variable_buffer != 0)
-  {
-    free(variable_buffer);
-  }
+    {
+      free(variable_buffer);
+    }
 
   variable_buffer = state->buffer;
   variable_buffer_length = state->length;

@@ -32,11 +32,11 @@ void print_list(Tree t)
   y = t->y;
   chatting("%f %f\n", x, y);
   for (tmp = t->next; tmp != t; tmp = tmp->next)
-  {
-    x = tmp->x;
-    y = tmp->y;
-    chatting("%f %f\n", x, y);
-  }
+    {
+      x = tmp->x;
+      y = tmp->y;
+      chatting("%f %f\n", x, y);
+    }
 }
 
 int main(int argc, char *argv[])

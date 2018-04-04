@@ -20,21 +20,21 @@ void SolveCubic(double a, double b, double c, double d, int *solutions,
   double theta;
 
   if (R2_Q3 <= 0)
-  {
-    *solutions = 3;
-    theta = acos(R / sqrt(Q * Q * Q));
-    x[0] = -2.0 * sqrt(Q) * cos(theta / 3.0) - a1 / 3.0;
-    x[1] = -2.0 * sqrt(Q) * cos((theta + 2.0 * PI) / 3.0) - a1 / 3.0;
-    x[2] = -2.0 * sqrt(Q) * cos((theta + 4.0 * PI) / 3.0) - a1 / 3.0;
-  }
+    {
+      *solutions = 3;
+      theta = acos(R / sqrt(Q * Q * Q));
+      x[0] = -2.0 * sqrt(Q) * cos(theta / 3.0) - a1 / 3.0;
+      x[1] = -2.0 * sqrt(Q) * cos((theta + 2.0 * PI) / 3.0) - a1 / 3.0;
+      x[2] = -2.0 * sqrt(Q) * cos((theta + 4.0 * PI) / 3.0) - a1 / 3.0;
+    }
   else
-  {
-    *solutions = 1;
-    x[0] = pow(sqrt(R2_Q3) + fabsl(R), 1 / 3.0);
-    x[0] += Q / x[0];
-    x[0] *= (R < 0.0) ? 1 : -1;
-    x[0] -= a1 / 3.0;
-  }
+    {
+      *solutions = 1;
+      x[0] = pow(sqrt(R2_Q3) + fabsl(R), 1 / 3.0);
+      x[0] += Q / x[0];
+      x[0] *= (R < 0.0) ? 1 : -1;
+      x[0] -= a1 / 3.0;
+    }
 }
 
 #ifdef TEST

@@ -50,83 +50,86 @@ static INLINE void fht(FLOAT *fz, short n)
   tri = &costab[0];
   k4 = 4;
   do
-  {
-    FLOAT s1, c1;
-    short i, k1, k2, k3, kx;
-    kx = k4 >> 1;
-    k1 = k4;
-    k2 = k4 << 1;
-    k3 = k2 + k1;
-    k4 = k2 << 1;
-    fi = fz;
-    gi = fi + kx;
-    do
     {
-      FLOAT f0, f1, f2, f3;
-      f1 = fi[0] - fi[k1];
-      f0 = fi[0] + fi[k1];
-      f3 = fi[k2] - fi[k3];
-      f2 = fi[k2] + fi[k3];
-      fi[k2] = f0 - f2;
-      fi[0] = f0 + f2;
-      fi[k3] = f1 - f3;
-      fi[k1] = f1 + f3;
-      f1 = gi[0] - gi[k1];
-      f0 = gi[0] + gi[k1];
-      f3 = SQRT2 * gi[k3];
-      f2 = SQRT2 * gi[k2];
-      gi[k2] = f0 - f2;
-      gi[0] = f0 + f2;
-      gi[k3] = f1 - f3;
-      gi[k1] = f1 + f3;
-      gi += k4;
-      fi += k4;
-    } while (fi < fn);
-    c1 = tri[0];
-    s1 = tri[1];
-    for (i = 1; i < kx; i++)
-    {
-      FLOAT c2, s2;
-      c2 = 1 - (2 * s1) * s1;
-      s2 = (2 * s1) * c1;
-      fi = fz + i;
-      gi = fz + k1 - i;
+      FLOAT s1, c1;
+      short i, k1, k2, k3, kx;
+      kx = k4 >> 1;
+      k1 = k4;
+      k2 = k4 << 1;
+      k3 = k2 + k1;
+      k4 = k2 << 1;
+      fi = fz;
+      gi = fi + kx;
       do
-      {
-        FLOAT a, b, g0, f0, f1, g1, f2, g2, f3, g3;
-        b = s2 * fi[k1] - c2 * gi[k1];
-        a = c2 * fi[k1] + s2 * gi[k1];
-        f1 = fi[0] - a;
-        f0 = fi[0] + a;
-        g1 = gi[0] - b;
-        g0 = gi[0] + b;
-        b = s2 * fi[k3] - c2 * gi[k3];
-        a = c2 * fi[k3] + s2 * gi[k3];
-        f3 = fi[k2] - a;
-        f2 = fi[k2] + a;
-        g3 = gi[k2] - b;
-        g2 = gi[k2] + b;
-        b = s1 * f2 - c1 * g3;
-        a = c1 * f2 + s1 * g3;
-        fi[k2] = f0 - a;
-        fi[0] = f0 + a;
-        gi[k3] = g1 - b;
-        gi[k1] = g1 + b;
-        b = c1 * g2 - s1 * f3;
-        a = s1 * g2 + c1 * f3;
-        gi[k2] = g0 - a;
-        gi[0] = g0 + a;
-        fi[k3] = f1 - b;
-        fi[k1] = f1 + b;
-        gi += k4;
-        fi += k4;
-      } while (fi < fn);
-      c2 = c1;
-      c1 = c2 * tri[0] - s1 * tri[1];
-      s1 = c2 * tri[1] + s1 * tri[0];
+        {
+          FLOAT f0, f1, f2, f3;
+          f1 = fi[0] - fi[k1];
+          f0 = fi[0] + fi[k1];
+          f3 = fi[k2] - fi[k3];
+          f2 = fi[k2] + fi[k3];
+          fi[k2] = f0 - f2;
+          fi[0] = f0 + f2;
+          fi[k3] = f1 - f3;
+          fi[k1] = f1 + f3;
+          f1 = gi[0] - gi[k1];
+          f0 = gi[0] + gi[k1];
+          f3 = SQRT2 * gi[k3];
+          f2 = SQRT2 * gi[k2];
+          gi[k2] = f0 - f2;
+          gi[0] = f0 + f2;
+          gi[k3] = f1 - f3;
+          gi[k1] = f1 + f3;
+          gi += k4;
+          fi += k4;
+        }
+      while (fi < fn);
+      c1 = tri[0];
+      s1 = tri[1];
+      for (i = 1; i < kx; i++)
+        {
+          FLOAT c2, s2;
+          c2 = 1 - (2 * s1) * s1;
+          s2 = (2 * s1) * c1;
+          fi = fz + i;
+          gi = fz + k1 - i;
+          do
+            {
+              FLOAT a, b, g0, f0, f1, g1, f2, g2, f3, g3;
+              b = s2 * fi[k1] - c2 * gi[k1];
+              a = c2 * fi[k1] + s2 * gi[k1];
+              f1 = fi[0] - a;
+              f0 = fi[0] + a;
+              g1 = gi[0] - b;
+              g0 = gi[0] + b;
+              b = s2 * fi[k3] - c2 * gi[k3];
+              a = c2 * fi[k3] + s2 * gi[k3];
+              f3 = fi[k2] - a;
+              f2 = fi[k2] + a;
+              g3 = gi[k2] - b;
+              g2 = gi[k2] + b;
+              b = s1 * f2 - c1 * g3;
+              a = c1 * f2 + s1 * g3;
+              fi[k2] = f0 - a;
+              fi[0] = f0 + a;
+              gi[k3] = g1 - b;
+              gi[k1] = g1 + b;
+              b = c1 * g2 - s1 * f3;
+              a = s1 * g2 + c1 * f3;
+              gi[k2] = g0 - a;
+              gi[0] = g0 + a;
+              fi[k3] = f1 - b;
+              fi[k1] = f1 + b;
+              gi += k4;
+              fi += k4;
+            }
+          while (fi < fn);
+          c2 = c1;
+          c1 = c2 * tri[0] - s1 * tri[1];
+          s1 = c2 * tri[1] + s1 * tri[0];
+        }
+      tri += 2;
     }
-    tri += 2;
-  } while (k4 < n);
+  while (k4 < n);
 }
 
 static const short rv_tbl[] = {
@@ -173,127 +176,130 @@ void fft_short(FLOAT x_real[3][BLKSIZE_s], int chn, short *buffer[2])
   short i, j, b;
 
   for (b = 0; b < 3; b++)
-  {
-    FLOAT *x = &x_real[b][BLKSIZE_s / 2];
-    short k = (576 / 3) * (b + 1);
-    j = BLKSIZE_s / 8 - 1;
-    if (chn < 2)
     {
-      do
-      {
-        FLOAT f0, f1, f2, f3, w;
+      FLOAT *x = &x_real[b][BLKSIZE_s / 2];
+      short k = (576 / 3) * (b + 1);
+      j = BLKSIZE_s / 8 - 1;
+      if (chn < 2)
+        {
+          do
+            {
+              FLOAT f0, f1, f2, f3, w;
 
-        i = rv_tbl[j << 2];
+              i = rv_tbl[j << 2];
 
-        f0 = ms00(ch01);
-        w = ms10(ch01);
-        f1 = f0 - w;
-        f0 = f0 + w;
-        f2 = ms20(ch01);
-        w = ms30(ch01);
-        f3 = f2 - w;
-        f2 = f2 + w;
+              f0 = ms00(ch01);
+              w = ms10(ch01);
+              f1 = f0 - w;
+              f0 = f0 + w;
+              f2 = ms20(ch01);
+              w = ms30(ch01);
+              f3 = f2 - w;
+              f2 = f2 + w;
 
-        x -= 4;
-        x[0] = f0 + f2;
-        x[2] = f0 - f2;
-        x[1] = f1 + f3;
-        x[3] = f1 - f3;
+              x -= 4;
+              x[0] = f0 + f2;
+              x[2] = f0 - f2;
+              x[1] = f1 + f3;
+              x[3] = f1 - f3;
 
-        f0 = ms01(ch01);
-        w = ms11(ch01);
-        f1 = f0 - w;
-        f0 = f0 + w;
-        f2 = ms21(ch01);
-        w = ms31(ch01);
-        f3 = f2 - w;
-        f2 = f2 + w;
+              f0 = ms01(ch01);
+              w = ms11(ch01);
+              f1 = f0 - w;
+              f0 = f0 + w;
+              f2 = ms21(ch01);
+              w = ms31(ch01);
+              f3 = f2 - w;
+              f2 = f2 + w;
 
-        x[BLKSIZE_s / 2 + 0] = f0 + f2;
-        x[BLKSIZE_s / 2 + 2] = f0 - f2;
-        x[BLKSIZE_s / 2 + 1] = f1 + f3;
-        x[BLKSIZE_s / 2 + 3] = f1 - f3;
-      } while (--j >= 0);
+              x[BLKSIZE_s / 2 + 0] = f0 + f2;
+              x[BLKSIZE_s / 2 + 2] = f0 - f2;
+              x[BLKSIZE_s / 2 + 1] = f1 + f3;
+              x[BLKSIZE_s / 2 + 3] = f1 - f3;
+            }
+          while (--j >= 0);
+        }
+      else if (chn == 2)
+        {
+          do
+            {
+              FLOAT f0, f1, f2, f3, w;
+
+              i = rv_tbl[j << 2];
+
+              f0 = ms00(ch2);
+              w = ms10(ch2);
+              f1 = f0 - w;
+              f0 = f0 + w;
+              f2 = ms20(ch2);
+              w = ms30(ch2);
+              f3 = f2 - w;
+              f2 = f2 + w;
+
+              x -= 4;
+              x[0] = f0 + f2;
+              x[2] = f0 - f2;
+              x[1] = f1 + f3;
+              x[3] = f1 - f3;
+
+              f0 = ms01(ch2);
+              w = ms11(ch2);
+              f1 = f0 - w;
+              f0 = f0 + w;
+              f2 = ms21(ch2);
+              w = ms31(ch2);
+              f3 = f2 - w;
+              f2 = f2 + w;
+
+              x[BLKSIZE_s / 2 + 0] = f0 + f2;
+              x[BLKSIZE_s / 2 + 2] = f0 - f2;
+              x[BLKSIZE_s / 2 + 1] = f1 + f3;
+              x[BLKSIZE_s / 2 + 3] = f1 - f3;
+            }
+          while (--j >= 0);
+        }
+      else
+        {
+          do
+            {
+              FLOAT f0, f1, f2, f3, w;
+
+              i = rv_tbl[j << 2];
+
+              f0 = ms00(ch3);
+              w = ms10(ch3);
+              f1 = f0 - w;
+              f0 = f0 + w;
+              f2 = ms20(ch3);
+              w = ms30(ch3);
+              f3 = f2 - w;
+              f2 = f2 + w;
+
+              x -= 4;
+              x[0] = f0 + f2;
+              x[2] = f0 - f2;
+              x[1] = f1 + f3;
+              x[3] = f1 - f3;
+
+              f0 = ms01(ch3);
+              w = ms11(ch3);
+              f1 = f0 - w;
+              f0 = f0 + w;
+              f2 = ms21(ch3);
+              w = ms31(ch3);
+              f3 = f2 - w;
+              f2 = f2 + w;
+
+              x[BLKSIZE_s / 2 + 0] = f0 + f2;
+              x[BLKSIZE_s / 2 + 2] = f0 - f2;
+              x[BLKSIZE_s / 2 + 1] = f1 + f3;
+              x[BLKSIZE_s / 2 + 3] = f1 - f3;
+            }
+          while (--j >= 0);
+        }
+
+      fht(x, BLKSIZE_s);
     }
-    else if (chn == 2)
-    {
-      do
-      {
-        FLOAT f0, f1, f2, f3, w;
-
-        i = rv_tbl[j << 2];
-
-        f0 = ms00(ch2);
-        w = ms10(ch2);
-        f1 = f0 - w;
-        f0 = f0 + w;
-        f2 = ms20(ch2);
-        w = ms30(ch2);
-        f3 = f2 - w;
-        f2 = f2 + w;
-
-        x -= 4;
-        x[0] = f0 + f2;
-        x[2] = f0 - f2;
-        x[1] = f1 + f3;
-        x[3] = f1 - f3;
-
-        f0 = ms01(ch2);
-        w = ms11(ch2);
-        f1 = f0 - w;
-        f0 = f0 + w;
-        f2 = ms21(ch2);
-        w = ms31(ch2);
-        f3 = f2 - w;
-        f2 = f2 + w;
-
-        x[BLKSIZE_s / 2 + 0] = f0 + f2;
-        x[BLKSIZE_s / 2 + 2] = f0 - f2;
-        x[BLKSIZE_s / 2 + 1] = f1 + f3;
-        x[BLKSIZE_s / 2 + 3] = f1 - f3;
-      } while (--j >= 0);
-    }
-    else
-    {
-      do
-      {
-        FLOAT f0, f1, f2, f3, w;
-
-        i = rv_tbl[j << 2];
-
-        f0 = ms00(ch3);
-        w = ms10(ch3);
-        f1 = f0 - w;
-        f0 = f0 + w;
-        f2 = ms20(ch3);
-        w = ms30(ch3);
-        f3 = f2 - w;
-        f2 = f2 + w;
-
-        x -= 4;
-        x[0] = f0 + f2;
-        x[2] = f0 - f2;
-        x[1] = f1 + f3;
-        x[3] = f1 - f3;
-
-        f0 = ms01(ch3);
-        w = ms11(ch3);
-        f1 = f0 - w;
-        f0 = f0 + w;
-        f2 = ms21(ch3);
-        w = ms31(ch3);
-        f3 = f2 - w;
-        f2 = f2 + w;
-
-        x[BLKSIZE_s / 2 + 0] = f0 + f2;
-        x[BLKSIZE_s / 2 + 2] = f0 - f2;
-        x[BLKSIZE_s / 2 + 1] = f1 + f3;
-        x[BLKSIZE_s / 2 + 3] = f1 - f3;
-      } while (--j >= 0);
-    }
-
-    fht(x, BLKSIZE_s);
-  }
 }
 
 void fft_long(FLOAT x[BLKSIZE], int chn, short *buffer[2])
@@ -302,116 +308,119 @@ void fft_long(FLOAT x[BLKSIZE], int chn, short *buffer[2])
   x += BLKSIZE / 2;
 
   if (chn < 2)
-  {
-    do
     {
-      FLOAT f0, f1, f2, f3, w;
+      do
+        {
+          FLOAT f0, f1, f2, f3, w;
 
-      i = rv_tbl[jj];
-      f0 = ml00(ch01);
-      w = ml10(ch01);
-      f1 = f0 - w;
-      f0 = f0 + w;
-      f2 = ml20(ch01);
-      w = ml30(ch01);
-      f3 = f2 - w;
-      f2 = f2 + w;
+          i = rv_tbl[jj];
+          f0 = ml00(ch01);
+          w = ml10(ch01);
+          f1 = f0 - w;
+          f0 = f0 + w;
+          f2 = ml20(ch01);
+          w = ml30(ch01);
+          f3 = f2 - w;
+          f2 = f2 + w;
 
-      x -= 4;
-      x[0] = f0 + f2;
-      x[2] = f0 - f2;
-      x[1] = f1 + f3;
-      x[3] = f1 - f3;
+          x -= 4;
+          x[0] = f0 + f2;
+          x[2] = f0 - f2;
+          x[1] = f1 + f3;
+          x[3] = f1 - f3;
 
-      f0 = ml01(ch01);
-      w = ml11(ch01);
-      f1 = f0 - w;
-      f0 = f0 + w;
-      f2 = ml21(ch01);
-      w = ml31(ch01);
-      f3 = f2 - w;
-      f2 = f2 + w;
+          f0 = ml01(ch01);
+          w = ml11(ch01);
+          f1 = f0 - w;
+          f0 = f0 + w;
+          f2 = ml21(ch01);
+          w = ml31(ch01);
+          f3 = f2 - w;
+          f2 = f2 + w;
 
-      x[BLKSIZE / 2 + 0] = f0 + f2;
-      x[BLKSIZE / 2 + 2] = f0 - f2;
-      x[BLKSIZE / 2 + 1] = f1 + f3;
-      x[BLKSIZE / 2 + 3] = f1 - f3;
-    } while (--jj >= 0);
-  }
+          x[BLKSIZE / 2 + 0] = f0 + f2;
+          x[BLKSIZE / 2 + 2] = f0 - f2;
+          x[BLKSIZE / 2 + 1] = f1 + f3;
+          x[BLKSIZE / 2 + 3] = f1 - f3;
+        }
+      while (--jj >= 0);
+    }
   else if (chn == 2)
-  {
-    do
     {
-      FLOAT f0, f1, f2, f3, w;
+      do
+        {
+          FLOAT f0, f1, f2, f3, w;
 
-      i = rv_tbl[jj];
-      f0 = ml00(ch2);
-      w = ml10(ch2);
-      f1 = f0 - w;
-      f0 = f0 + w;
-      f2 = ml20(ch2);
-      w = ml30(ch2);
-      f3 = f2 - w;
-      f2 = f2 + w;
+          i = rv_tbl[jj];
+          f0 = ml00(ch2);
+          w = ml10(ch2);
+          f1 = f0 - w;
+          f0 = f0 + w;
+          f2 = ml20(ch2);
+          w = ml30(ch2);
+          f3 = f2 - w;
+          f2 = f2 + w;
 
-      x -= 4;
-      x[0] = f0 + f2;
-      x[2] = f0 - f2;
-      x[1] = f1 + f3;
-      x[3] = f1 - f3;
+          x -= 4;
+          x[0] = f0 + f2;
+          x[2] = f0 - f2;
+          x[1] = f1 + f3;
+          x[3] = f1 - f3;
 
-      f0 = ml01(ch2);
-      w = ml11(ch2);
-      f1 = f0 - w;
-      f0 = f0 + w;
-      f2 = ml21(ch2);
-      w = ml31(ch2);
-      f3 = f2 - w;
-      f2 = f2 + w;
+          f0 = ml01(ch2);
+          w = ml11(ch2);
+          f1 = f0 - w;
+          f0 = f0 + w;
+          f2 = ml21(ch2);
+          w = ml31(ch2);
+          f3 = f2 - w;
+          f2 = f2 + w;
 
-      x[BLKSIZE / 2 + 0] = f0 + f2;
-      x[BLKSIZE / 2 + 2] = f0 - f2;
-      x[BLKSIZE / 2 + 1] = f1 + f3;
-      x[BLKSIZE / 2 + 3] = f1 - f3;
-    } while (--jj >= 0);
-  }
+          x[BLKSIZE / 2 + 0] = f0 + f2;
+          x[BLKSIZE / 2 + 2] = f0 - f2;
+          x[BLKSIZE / 2 + 1] = f1 + f3;
+          x[BLKSIZE / 2 + 3] = f1 - f3;
+        }
+      while (--jj >= 0);
+    }
   else
-  {
-    do
     {
-      FLOAT f0, f1, f2, f3, w;
+      do
+        {
+          FLOAT f0, f1, f2, f3, w;
 
-      i = rv_tbl[jj];
-      f0 = ml00(ch3);
-      w = ml10(ch3);
-      f1 = f0 - w;
-      f0 = f0 + w;
-      f2 = ml20(ch3);
-      w = ml30(ch3);
-      f3 = f2 - w;
-      f2 = f2 + w;
+          i = rv_tbl[jj];
+          f0 = ml00(ch3);
+          w = ml10(ch3);
+          f1 = f0 - w;
+          f0 = f0 + w;
+          f2 = ml20(ch3);
+          w = ml30(ch3);
+          f3 = f2 - w;
+          f2 = f2 + w;
 
-      x -= 4;
-      x[0] = f0 + f2;
-      x[2] = f0 - f2;
-      x[1] = f1 + f3;
-      x[3] = f1 - f3;
+          x -= 4;
+          x[0] = f0 + f2;
+          x[2] = f0 - f2;
+          x[1] = f1 + f3;
+          x[3] = f1 - f3;
 
-      f0 = ml01(ch3);
-      w = ml11(ch3);
-      f1 = f0 - w;
-      f0 = f0 + w;
-      f2 = ml21(ch3);
-      w = ml31(ch3);
-      f3 = f2 - w;
-      f2 = f2 + w;
+          f0 = ml01(ch3);
+          w = ml11(ch3);
+          f1 = f0 - w;
+          f0 = f0 + w;
+          f2 = ml21(ch3);
+          w = ml31(ch3);
+          f3 = f2 - w;
+          f2 = f2 + w;
 
-      x[BLKSIZE / 2 + 0] = f0 + f2;
-      x[BLKSIZE / 2 + 2] = f0 - f2;
-      x[BLKSIZE / 2 + 1] = f1 + f3;
-      x[BLKSIZE / 2 + 3] = f1 - f3;
-    } while (--jj >= 0);
-  }
+          x[BLKSIZE / 2 + 0] = f0 + f2;
+          x[BLKSIZE / 2 + 2] = f0 - f2;
+          x[BLKSIZE / 2 + 1] = f1 + f3;
+          x[BLKSIZE / 2 + 3] = f1 - f3;
+        }
+      while (--jj >= 0);
+    }
 
   fht(x, BLKSIZE);
 }
@@ -422,21 +431,21 @@ void init_fft(void)
 
   FLOAT r = PI * 0.125;
   for (i = 0; i < TRI_SIZE; i++)
-  {
-    costab[i * 2] = cos(r);
-    costab[i * 2 + 1] = sin(r);
-    r *= 0.25;
-  }
+    {
+      costab[i * 2] = cos(r);
+      costab[i * 2 + 1] = sin(r);
+      r *= 0.25;
+    }
 
   /*
    * calculate HANN window coefficients
    */
   for (i = 0; i < BLKSIZE / 2; i++)
-  {
-    window[i] = 0.5 * (1.0 - cos(2.0 * PI * (i + 0.5) / BLKSIZE));
-  }
+    {
+      window[i] = 0.5 * (1.0 - cos(2.0 * PI * (i + 0.5) / BLKSIZE));
+    }
   for (i = 0; i < BLKSIZE_s / 2; i++)
-  {
-    window_s[i] = 0.5 * (1.0 - cos(2.0 * PI * (i + 0.5) / BLKSIZE_s));
-  }
+    {
+      window_s[i] = 0.5 * (1.0 - cos(2.0 * PI * (i + 0.5) / BLKSIZE_s));
+    }
 }

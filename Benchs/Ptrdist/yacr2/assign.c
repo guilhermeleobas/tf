@@ -36,9 +36,9 @@ void AllocAssign(void)
    */
   costMatrix = (long **)malloc((channelNets + 1) * sizeof(long *));
   for (net = 1; net <= channelNets; net++)
-  {
-    costMatrix[net] = (long *)malloc((channelTracks + 2) * sizeof(long));
-  }
+    {
+      costMatrix[net] = (long *)malloc((channelTracks + 2) * sizeof(long));
+    }
 
   /*
    * Allocate structures associated with cost matrix.
@@ -60,9 +60,9 @@ void FreeAssign(void)
    * Free cost matrix.
    */
   for (net = 1; net <= channelNets; net++)
-  {
-    free(costMatrix[net]);
-  }
+    {
+      free(costMatrix[net]);
+    }
   free(costMatrix);
 
   /*
@@ -85,9 +85,9 @@ void NetsAssign(void)
    * Init.
    */
   for (net = 1; net <= channelNets; net++)
-  {
-    netsAssign[net] = 0;
-  }
+    {
+      netsAssign[net] = 0;
+    }
 
   /*
    * Assign nets in max density column.
@@ -134,37 +134,37 @@ void MaxNetsAssign(void)
    */
   netsCrossing = 0;
   for (net = 1; net <= channelNets; net++)
-  {
-    if ((FIRST[net] <= channelDensityColumn) &&
-        (LAST[net] >= channelDensityColumn))
     {
-      CROSSING[net] = TRUE;
-      netsCrossing++;
+      if ((FIRST[net] <= channelDensityColumn) &&
+          (LAST[net] >= channelDensityColumn))
+        {
+          CROSSING[net] = TRUE;
+          netsCrossing++;
+        }
+      else
+        {
+          CROSSING[net] = FALSE;
+        }
     }
-    else
-    {
-      CROSSING[net] = FALSE;
-    }
-  }
 
   while (netsCrossing > 0)
-  {
-    /*
+    {
+      /*
      * Choose net from CROSSING to assign.
      */
-    Select(VCG, HCG, netsAssign, &netSelect, CROSSING);
+      Select(VCG, HCG, netsAssign, &netSelect, CROSSING);
 
-    /*
+      /*
      * Assign net to a track.
      */
-    Assign(VCG, netsAssign, netSelect);
+      Assign(VCG, netsAssign, netSelect);
 
-    /*
+      /*
      * Done net.
      */
-    CROSSING[netSelect] = FALSE;
-    netsCrossing--;
-  };
+      CROSSING[netSelect] = FALSE;
+      netsCrossing--;
+    };
 }
 
 void RightNetsAssign(void)
@@ -181,68 +181,68 @@ void RightNetsAssign(void)
    * Init.
    */
   for (net = 1; net <= channelNets; net++)
-  {
-    CROSSING[net] = FALSE;
-  }
+    {
+      CROSSING[net] = FALSE;
+    }
   netsCrossing = 0;
 
   /*
    * Assign nets within channel.
    */
   for (col = channelDensityColumn + 1; col <= channelColumns; col++)
-  {
-    /*
+    {
+      /*
      * Collection.
      */
-    top = TOP[col];
-    bot = BOT[col];
-    if (top != bot)
-    {
-      if (top && (FIRST[top] == col))
-      {
-        CROSSING[top] = TRUE;
-        netsCrossing++;
-      }
-      if (bot && (FIRST[bot] == col))
-      {
-        CROSSING[bot] = TRUE;
-        netsCrossing++;
-      }
-    }
-    else
-    {
-      if (top && (FIRST[top] == col))
-      {
-        CROSSING[top] = TRUE;
-        netsCrossing++;
-      }
-    }
+      top = TOP[col];
+      bot = BOT[col];
+      if (top != bot)
+        {
+          if (top && (FIRST[top] == col))
+            {
+              CROSSING[top] = TRUE;
+              netsCrossing++;
+            }
+          if (bot && (FIRST[bot] == col))
+            {
+              CROSSING[bot] = TRUE;
+              netsCrossing++;
+            }
+        }
+      else
+        {
+          if (top && (FIRST[top] == col))
+            {
+              CROSSING[top] = TRUE;
+              netsCrossing++;
+            }
+        }
 
-    /*
+      /*
      * Assignment.
      */
-    if ((LAST[top] == col) || (LAST[bot] == col))
-    {
-      while (netsCrossing > 0)
-      {
-        /*
+      if ((LAST[top] == col) || (LAST[bot] == col))
+        {
+          while (netsCrossing > 0)
+            {
+              /*
          * Choose net from CROSSING to assign.
          */
-        Select(VCG, HCG, netsAssign, &netSelect, CROSSING);
+              Select(VCG, HCG, netsAssign, &netSelect, CROSSING);
 
-        /*
+              /*
          * Assign net to a track.
          */
-        Assign(VCG, netsAssign, netSelect);
+              Assign(VCG, netsAssign, netSelect);
 
-        /*
+              /*
          * Done net.
          */
-        CROSSING[netSelect] = FALSE;
-        netsCrossing--;
-      }
+              CROSSING[netSelect] = FALSE;
+              netsCrossing--;
+            }
+        }
     }
-  }
   assert(!netsCrossing);
   ;
 }
@@ -261,68 +261,68 @@ void LeftNetsAssign(void)
    * Init.
    */
   for (net = 1; net <= channelNets; net++)
-  {
-    CROSSING[net] = FALSE;
-  }
+    {
+      CROSSING[net] = FALSE;
+    }
   netsCrossing = 0;
 
   /*
    * Assign nets within channel.
    */
   for (col = channelDensityColumn - 1; col >= 1; col--)
-  {
-    /*
+    {
+      /*
      * Collection.
      */
-    top = TOP[col];
-    bot = BOT[col];
-    if (top != bot)
-    {
-      if (top && (LAST[top] == col))
-      {
-        CROSSING[top] = TRUE;
-        netsCrossing++;
-      }
-      if (bot && (LAST[bot] == col))
-      {
-        CROSSING[bot] = TRUE;
-        netsCrossing++;
-      }
-    }
-    else
-    {
-      if (top && (LAST[top] == col))
-      {
-        CROSSING[top] = TRUE;
-        netsCrossing++;
-      }
-    }
+      top = TOP[col];
+      bot = BOT[col];
+      if (top != bot)
+        {
+          if (top && (LAST[top] == col))
+            {
+              CROSSING[top] = TRUE;
+              netsCrossing++;
+            }
+          if (bot && (LAST[bot] == col))
+            {
+              CROSSING[bot] = TRUE;
+              netsCrossing++;
+            }
+        }
+      else
+        {
+          if (top && (LAST[top] == col))
+            {
+              CROSSING[top] = TRUE;
+              netsCrossing++;
+            }
+        }
 
-    /*
+      /*
      * Assignment.
      */
-    if ((FIRST[top] == col) || (FIRST[bot] == col))
-    {
-      while (netsCrossing > 0)
-      {
-        /*
+      if ((FIRST[top] == col) || (FIRST[bot] == col))
+        {
+          while (netsCrossing > 0)
+            {
+              /*
          * Choose net from CROSSING to assign.
          */
-        Select(VCG, HCG, netsAssign, &netSelect, CROSSING);
+              Select(VCG, HCG, netsAssign, &netSelect, CROSSING);
 
-        /*
+              /*
          * Assign net to a track.
          */
-        Assign(VCG, netsAssign, netSelect);
+              Assign(VCG, netsAssign, netSelect);
 
-        /*
+              /*
          * Done net.
          */
-        CROSSING[netSelect] = FALSE;
-        netsCrossing--;
-      }
+              CROSSING[netSelect] = FALSE;
+              netsCrossing--;
+            }
+        }
     }
-  }
   assert(!netsCrossing);
   ;
 }
@@ -363,16 +363,16 @@ void Assign(nodeVCGType *VCG, ulong *assign, ulong select)
 #ifdef VERBOSE
   printf("HCV's:\n");
   for (track = 1; track <= channelTracks; track++)
-  {
-    if (tracksNoHCV[track])
     {
-      printf("[%d] no hcv\n", track);
+      if (tracksNoHCV[track])
+        {
+          printf("[%d] no hcv\n", track);
+        }
+      else
+        {
+          printf("[%d] hcv\n", track);
+        }
     }
-    else
-    {
-      printf("[%d] hcv\n", track);
-    }
-  }
   printf("\n");
 #endif
 
@@ -383,87 +383,87 @@ void Assign(nodeVCGType *VCG, ulong *assign, ulong select)
   assert((select >= 1) && (select <= channelNets));
   tracks = 0;
   for (track = 1; track <= channelTracks; track++)
-  {
-    tracksAssign[track] = FALSE;
-  }
+    {
+      tracksAssign[track] = FALSE;
+    }
 
   /*
    * Choice 1.
    */
   for (track = 1; track <= channelTracks; track++)
-  {
-    if (tracksNoHCV[track] && (!tracksNotPref[track]))
     {
-      tracksAssign[track] = TRUE;
-      tracks++;
+      if (tracksNoHCV[track] && (!tracksNotPref[track]))
+        {
+          tracksAssign[track] = TRUE;
+          tracks++;
+        }
     }
-  }
 #ifdef VERBOSE
   if (tracks != 0)
-  {
-    printf("using choice 1...\n");
-  }
+    {
+      printf("using choice 1...\n");
+    }
 #endif
   /*
    * Choice 2.
    */
   if (tracks == 0)
-  {
-    for (track = 1; track <= channelTracks; track++)
     {
-      if (tracksNoHCV[track] && tracksTopNotPref[track] &&
-          tracksBotNotPref[track])
-      {
-        tracksAssign[track] = TRUE;
-        tracks++;
-      }
-    }
+      for (track = 1; track <= channelTracks; track++)
+        {
+          if (tracksNoHCV[track] && tracksTopNotPref[track] &&
+              tracksBotNotPref[track])
+            {
+              tracksAssign[track] = TRUE;
+              tracks++;
+            }
+        }
 #ifdef VERBOSE
-    if (tracks != 0)
-    {
-      printf("using choice 2...\n");
-    }
+      if (tracks != 0)
+        {
+          printf("using choice 2...\n");
+        }
 #endif
-  }
+    }
   /*
    * Choice 3.
    */
   if (tracks == 0)
-  {
-    for (track = 2; track < channelTracks; track++)
     {
-      if (tracksNoHCV[track] && tracksNotPref[track])
-      {
-        tracksAssign[track] = TRUE;
-        tracks++;
-      }
-    }
+      for (track = 2; track < channelTracks; track++)
+        {
+          if (tracksNoHCV[track] && tracksNotPref[track])
+            {
+              tracksAssign[track] = TRUE;
+              tracks++;
+            }
+        }
 #ifdef VERBOSE
-    if (tracks != 0)
-    {
-      printf("using choice 3...\n");
-    }
+      if (tracks != 0)
+        {
+          printf("using choice 3...\n");
+        }
 #endif
-  }
+    }
   /*
    * Choice 4.
    */
   if (tracks == 0)
-  {
-    if (tracksNoHCV[1])
     {
-      tracksAssign[1] = TRUE;
-      tracks++;
-    }
-    if (tracksNoHCV[channelTracks])
-    {
-      tracksAssign[channelTracks] = TRUE;
-      tracks++;
-    }
+      if (tracksNoHCV[1])
+        {
+          tracksAssign[1] = TRUE;
+          tracks++;
+        }
+      if (tracksNoHCV[channelTracks])
+        {
+          tracksAssign[channelTracks] = TRUE;
+          tracks++;
+        }
 #ifdef VERBOSE
-    printf("using choice 4...\n");
+      printf("using choice 4...\n");
 #endif
-  }
+    }
   assert(tracks != 0);
 
   /*
@@ -506,37 +506,37 @@ void Assign(nodeVCGType *VCG, ulong *assign, ulong select)
   trackAssign = 0;
   vcvAssign = INFINITY;
   for (track = 1; track <= channelTracks; track++)
-  {
-    if (tracksAssign[track])
     {
-      vcv = VCV(VCG, select, track, netsAssign);
-      if (vcv < vcvAssign)
-      {
-        vcvAssign = vcv;
-        trackAssign = track;
-        vcvDist = (long)(track - ideal);
-        if (vcvDist < 0)
+      if (tracksAssign[track])
         {
-          vcvDist *= -1;
+          vcv = VCV(VCG, select, track, netsAssign);
+          if (vcv < vcvAssign)
+            {
+              vcvAssign = vcv;
+              trackAssign = track;
+              vcvDist = (long)(track - ideal);
+              if (vcvDist < 0)
+                {
+                  vcvDist *= -1;
+                }
+            }
+          else if (vcv == vcvAssign)
+            {
+              assert(trackAssign);
+              dist = (long)(track - ideal);
+              if (dist < 0)
+                {
+                  dist *= -1;
+                }
+              if (dist < vcvDist)
+                {
+                  vcvDist = dist;
+                  vcvAssign = vcv;
+                  trackAssign = track;
+                }
+            }
         }
-      }
-      else if (vcv == vcvAssign)
-      {
-        assert(trackAssign);
-        dist = (long)(track - ideal);
-        if (dist < 0)
-        {
-          dist *= -1;
-        }
-        if (dist < vcvDist)
-        {
-          vcvDist = dist;
-          vcvAssign = vcv;
-          trackAssign = track;
-        }
-      }
     }
-  }
   assert(trackAssign);
   assign[select] = trackAssign;
 #ifdef VERBOSE
@@ -567,22 +567,22 @@ void Select(nodeVCGType *VCG, nodeHCGType *HCG, ulong *netsAssign,
   largest = -1;
   select = 0;
   for (net = 1; net <= channelNets; net++)
-  {
-    if (CROSSING[net])
     {
-      cost = 0;
-      costNet = costMatrix[net];
-      for (track = 1; track <= channelTracks; track++)
-      {
-        cost += costNet[track];
-      }
-      if (cost > largest)
-      {
-        largest = cost;
-        select = net;
-      }
+      if (CROSSING[net])
+        {
+          cost = 0;
+          costNet = costMatrix[net];
+          for (track = 1; track <= channelTracks; track++)
+            {
+              cost += costNet[track];
+            }
+          if (cost > largest)
+            {
+              largest = cost;
+              select = net;
+            }
+        }
     }
-  }
   assert(select);
 
   /*
@@ -606,82 +606,82 @@ void BuildCostMatrix(nodeVCGType *VCG, nodeHCGType *HCG, ulong *netsAssign,
    * Initialize cost matrix.
    */
   for (net = 1; net <= channelNets; net++)
-  {
-    costNet = costMatrix[net];
-    for (track = 1; track <= channelTracks; track++)
     {
-      costNet[track] = 0;
+      costNet = costMatrix[net];
+      for (track = 1; track <= channelTracks; track++)
+        {
+          costNet[track] = 0;
+        }
     }
-  }
 
   for (net = 1; net <= channelNets; net++)
-  {
-    if (CROSSING[net])
     {
-      /*
+      if (CROSSING[net])
+        {
+          /*
        * Compute one column in cost matrix.
        * That is, the cost associated with each track for some net.
        */
-      costNet = costMatrix[net];
+          costNet = costMatrix[net];
 
-      /*
+          /*
        * Compute measures related to cost.
        */
-      LongestPathVCG(VCG, net);
-      NoHCV(HCG, net, netsAssign, tracksNoHCV);
-      IdealTrack(channelTracks, cardTopNotPref, cardBotNotPref, &ideal);
+          LongestPathVCG(VCG, net);
+          NoHCV(HCG, net, netsAssign, tracksNoHCV);
+          IdealTrack(channelTracks, cardTopNotPref, cardBotNotPref, &ideal);
 
-      /*
+          /*
        * Compute cost associated with each track.
        */
-      for (track = 1; track <= channelTracks; track++)
-      {
-        if (tracksNoHCV[track])
-        {
-          if (cardNotPref != channelTracks)
-          {
-            if (tracksNotPref[track])
+          for (track = 1; track <= channelTracks; track++)
             {
-              costNet[track] = HIGH;
-            }
-            else
-            {
-              costNet[track] = MEDIUM * cardNotPref;
-            }
-          }
-          else
-          {
-            if ((track > (channelTracks - cardBotNotPref)) &&
-                (track <= cardTopNotPref))
-            {
-              mult = cardNotPref -
-                     (cardTopNotPref + cardBotNotPref - channelTracks);
-              assert(mult >= 0);
-              costNet[track] = MEDIUM * mult;
-            }
-            else
-            {
-              costNet[track] = HIGH;
-            }
-          }
+              if (tracksNoHCV[track])
+                {
+                  if (cardNotPref != channelTracks)
+                    {
+                      if (tracksNotPref[track])
+                        {
+                          costNet[track] = HIGH;
+                        }
+                      else
+                        {
+                          costNet[track] = MEDIUM * cardNotPref;
+                        }
+                    }
+                  else
+                    {
+                      if ((track > (channelTracks - cardBotNotPref)) &&
+                          (track <= cardTopNotPref))
+                        {
+                          mult = cardNotPref -
+                                 (cardTopNotPref + cardBotNotPref - channelTracks);
+                          assert(mult >= 0);
+                          costNet[track] = MEDIUM * mult;
+                        }
+                      else
+                        {
+                          costNet[track] = HIGH;
+                        }
+                    }
 
-          if (costNet[track] < INFINITY)
-          {
-            dist = (long)(ideal - track);
-            if (dist < 0)
-            {
-              dist *= -1;
+                  if (costNet[track] < INFINITY)
+                    {
+                      dist = (long)(ideal - track);
+                      if (dist < 0)
+                        {
+                          dist *= -1;
+                        }
+                      costNet[track] += LOW * dist;
+                    }
+                }
+              else
+                {
+                  costNet[track] = INFINITY;
+                }
             }
-            costNet[track] += LOW * dist;
-          }
         }
-        else
-        {
-          costNet[track] = INFINITY;
-        }
-      }
-    }
-  };
+    };
 }
 
 void IdealTrack(ulong tracks, ulong top, ulong bot, ulong *ideal)
@@ -693,11 +693,11 @@ void IdealTrack(ulong tracks, ulong top, ulong bot, ulong *ideal)
   den = top + bot;
 
   if (den != 0)
-  {
-    *ideal = (ulong)((ulong)num / (ulong)den);
-  }
+    {
+      *ideal = (ulong)((ulong)num / (ulong)den);
+    }
   else
-  {
-    *ideal = 1;
-  }
+    {
+      *ideal = 1;
+    }
 }

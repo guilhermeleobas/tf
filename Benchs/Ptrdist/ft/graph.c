@@ -97,40 +97,40 @@ Vertices *GenTree(int nVertex)
   NEXT_VERTEX(graph) = graph;
 
   for (i = 1; i < nVertex; i++)
-  {
-    vertex = NewVertex();
-    edge = NewEdge();
+    {
+      vertex = NewVertex();
+      edge = NewEdge();
 
-    /*
+      /*
      * The newly created vertex has one edge ...
      */
-    EDGES(vertex) = edge;
+      EDGES(vertex) = edge;
 
-    /*
+      /*
      * ... which is connected to the graph so far generated.  The connection
      * point in the graph is picked at random.
      */
-    VERTEX(edge) = PickVertex(graph, random() % i);
-    weight = GET_WEIGHT;
-    WEIGHT(edge) = weight;
-    SOURCE(edge) = vertex;
+      VERTEX(edge) = PickVertex(graph, random() % i);
+      weight = GET_WEIGHT;
+      WEIGHT(edge) = weight;
+      SOURCE(edge) = vertex;
 
-    /*
+      /*
      * Link the new vertex into the graph.
      */
-    NEXT_VERTEX(vertex) = NEXT_VERTEX(graph);
-    NEXT_VERTEX(graph) = vertex;
+      NEXT_VERTEX(vertex) = NEXT_VERTEX(graph);
+      NEXT_VERTEX(graph) = vertex;
 
-    /*
+      /*
      * Add an edge to the vertex randomly picked as the connection point.
      */
-    edge = NewEdge();
-    WEIGHT(edge) = weight;
-    SOURCE(edge) = VERTEX(EDGES(vertex));
-    VERTEX(edge) = vertex;
-    NEXT_EDGE(edge) = EDGES(VERTEX(EDGES(vertex)));
-    EDGES(VERTEX(EDGES(vertex))) = edge;
-  }
+      edge = NewEdge();
+      WEIGHT(edge) = weight;
+      SOURCE(edge) = VERTEX(EDGES(vertex));
+      VERTEX(edge) = vertex;
+      NEXT_EDGE(edge) = EDGES(VERTEX(EDGES(vertex)));
+      EDGES(VERTEX(EDGES(vertex))) = edge;
+    }
 
   return (graph);
 }
@@ -145,16 +145,17 @@ Vertices *AddEdges(Vertices *graph, int nVertex, int nEdge)
   assert(nEdge >= 0);
 
   for (i = 0; i < nEdge; i++)
-  {
-    do
     {
-      vertex1 = PickVertex(graph, random() % nVertex);
-      vertex2 = PickVertex(NEXT_VERTEX(vertex1), (random() % nVertex) - 1);
-      assert(vertex1 != vertex2);
-    } while (Duplicate(vertex1, vertex2));
+      do
+        {
+          vertex1 = PickVertex(graph, random() % nVertex);
+          vertex2 = PickVertex(NEXT_VERTEX(vertex1), (random() % nVertex) - 1);
+          assert(vertex1 != vertex2);
+        }
+      while (Duplicate(vertex1, vertex2));
 
-    Connect(vertex1, vertex2);
-  }
+      Connect(vertex1, vertex2);
+    }
 
   return (graph);
 }
@@ -164,9 +165,9 @@ Vertices *PickVertex(Vertices *graph, int whichVertex)
   int i;
 
   for (i = 0; i < whichVertex; i++)
-  {
-    graph = NEXT_VERTEX(graph);
-  }
+    {
+      graph = NEXT_VERTEX(graph);
+    }
 
   return (graph);
 }
@@ -200,14 +201,14 @@ int Duplicate(Vertices *vertex1, Vertices *vertex2)
   edge = EDGES(vertex1);
 
   while (edge != NULL_EDGE)
-  {
-    if (VERTEX(edge) == vertex2)
     {
-      return (TRUE);
-    }
+      if (VERTEX(edge) == vertex2)
+        {
+          return (TRUE);
+        }
 
-    edge = NEXT_EDGE(edge);
-  }
+      edge = NEXT_EDGE(edge);
+    }
 
   return (FALSE);
 }
@@ -219,10 +220,10 @@ Vertices *NewVertex()
   vertex = (Vertices *)malloc(sizeof(Vertices));
 
   if (vertex == NULL)
-  {
-    fprintf(stderr, "Could not malloc\n");
-    exit(1);
-  }
+    {
+      fprintf(stderr, "Could not malloc\n");
+      exit(1);
+    }
 
   ID(vertex) = id++;
   EDGES(vertex) = NULL;
@@ -238,10 +239,10 @@ Edges *NewEdge()
   edge = (Edges *)malloc(sizeof(Edges));
 
   if (edge == NULL)
-  {
-    fprintf(stderr, "Could not malloc\n");
-    exit(1);
-  }
+    {
+      fprintf(stderr, "Could not malloc\n");
+      exit(1);
+    }
 
   WEIGHT(edge) = 0;
   VERTEX(edge) = NULL;
@@ -258,12 +259,13 @@ void PrintGraph(Vertices *graph)
 
   vertex = graph;
   do
-  {
-    printf("Vertex %d is connected to:", ID(vertex));
-    PrintNeighbors(vertex);
-    printf("\n");
-    vertex = NEXT_VERTEX(vertex);
-  } while (vertex != graph);
+    {
+      printf("Vertex %d is connected to:", ID(vertex));
+      PrintNeighbors(vertex);
+      printf("\n");
+      vertex = NEXT_VERTEX(vertex);
+    }
+  while (vertex != graph);
 }
 
 void PrintNeighbors(Vertices *vertex)
@@ -272,8 +274,8 @@ void PrintNeighbors(Vertices *vertex)
 
   edge = EDGES(vertex);
   while (edge != NULL)
-  {
-    printf(" %d(%d)[%d]", ID(VERTEX(edge)), WEIGHT(edge), ID(SOURCE(edge)));
-    edge = NEXT_EDGE(edge);
-  }
+    {
+      printf(" %d(%d)[%d]", ID(VERTEX(edge)), WEIGHT(edge), ID(SOURCE(edge)));
+      edge = NEXT_EDGE(edge);
+    }
 }

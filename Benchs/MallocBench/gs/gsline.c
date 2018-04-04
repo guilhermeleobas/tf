@@ -21,7 +21,7 @@ copies.  */
 /* Line parameter operators for GhostScript library */
 #include "gserrors.h"
 #include "gx.h"
-#include "gxfixed.h"  /* ditto */
+#include "gxfixed.h" /* ditto */
 #include "gxmatrix.h" /* for gzstate */
 #include "gzline.h"
 #include "gzstate.h"
@@ -32,9 +32,9 @@ copies.  */
 int gs_setlinewidth(gs_state *pgs, floatp width)
 {
   if (width < 0)
-  {
-    return_error(gs_error_rangecheck);
-  }
+    {
+      return_error(gs_error_rangecheck);
+    }
   pgs->line_params->width = width / 2;
   return 0;
 }
@@ -71,9 +71,9 @@ gs_line_join gs_currentlinejoin(gs_state *pgs)
 int gs_setmiterlimit(gs_state *pgs, floatp limit)
 {
   if (limit < 1.0)
-  {
-    return_error(gs_error_rangecheck);
-  }
+    {
+      return_error(gs_error_rangecheck);
+    }
   pgs->line_params->miter_limit = limit;
   /* The supplied miter limit is an upper bound on */
   /* 1/sin(phi/2).  We convert this to a lower bound on */
@@ -110,40 +110,40 @@ int gs_setdash(gs_state *pgs, float *pattern, uint length, floatp offset)
   float *ppat;
   /* Check the dash pattern */
   while (n--)
-  {
-    float elt = *dfrom++;
-    if (elt < 0)
     {
-      return_error(gs_error_rangecheck);
+      float elt = *dfrom++;
+      if (elt < 0)
+        {
+          return_error(gs_error_rangecheck);
+        }
+      pattern_length += elt;
     }
-    pattern_length += elt;
-  }
   if (length == 0) /* empty pattern */
-  {
-    dist_left = 0.0;
-    ppat = 0;
-  }
-  else
-  {
-    if (pattern_length == 0)
     {
-      return_error(gs_error_rangecheck);
+      dist_left = 0.0;
+      ppat = 0;
     }
+  else
+    {
+      if (pattern_length == 0)
+        {
+          return_error(gs_error_rangecheck);
+        }
 /* Compute the initial index, ink_on, and distance left */
 /* in the pattern, according to the offset. */
 #define f_mod(a, b) ((a)-floor((a) / (b)) * (b))
-    dist_left = f_mod(offset, pattern_length);
-    while ((dist_left -= pattern[index]) >= 0)
-    {
-      ink = !ink, index++;
+      dist_left = f_mod(offset, pattern_length);
+      while ((dist_left -= pattern[index]) >= 0)
+        {
+          ink = !ink, index++;
+        }
+      ppat = (float *)gs_malloc(length, sizeof(float), "dash pattern");
+      if (ppat == 0)
+        {
+          return_error(gs_error_VMerror);
+        }
+      memcpy(ppat, pattern, length * sizeof(float));
     }
-    ppat = (float *)gs_malloc(length, sizeof(float), "dash pattern");
-    if (ppat == 0)
-    {
-      return_error(gs_error_VMerror);
-    }
-    memcpy(ppat, pattern, length * sizeof(float));
-  }
   dash->pattern = ppat;
   dash->pattern_size = length;
   dash->offset = offset;

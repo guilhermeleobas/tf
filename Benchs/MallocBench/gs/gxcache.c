@@ -19,9 +19,9 @@ copies.  */
 
 /* gxcache.c */
 /* Character cache routines for GhostScript library */
-#include "gx.h"
 #include "gserrors.h"
 #include "gspaint.h"
+#include "gx.h"
 #include "gxchar.h"
 #include "gxdevmem.h"
 #include "gxfdir.h"
@@ -54,18 +54,18 @@ cached_char *gx_alloc_char_bits(gs_font_dir *dir, gx_device_memory *dev,
   dev->height = iheight;
   isize = gx_device_memory_bitmap_size(dev); /* sets raster */
   if (dev->raster != 0 && iheight > dir->upper / dev->raster)
-  {
-    return 0; /* too big */
-  }
-  if (dir->csize >= dir->cmax || dir->bmax - dir->bsize < isize)
-  { /* There isn't enough room.  Clear the entire cache. */
-    /* We'll do something better someday.... */
-    if (dir->cmax == 0 || dir->bmax < isize)
     {
-      return 0;
+      return 0; /* too big */
     }
-    zap_cache(dir);
-  }
+  if (dir->csize >= dir->cmax || dir->bmax - dir->bsize < isize)
+    { /* There isn't enough room.  Clear the entire cache. */
+      /* We'll do something better someday.... */
+      if (dir->cmax == 0 || dir->bmax < isize)
+        {
+          return 0;
+        }
+      zap_cache(dir);
+    }
   /* Allocate the cache entry and the bits. */
   cc = &dir->cdata[dir->cnext++];
   cc->bits = &dir->bdata[dir->bnext];
@@ -102,32 +102,32 @@ cached_fm_pair *gx_lookup_fm_pair(register gs_state *pgs)
   register cached_fm_pair *pair = dir->mdata + dir->mnext;
   int count = dir->msize;
   while (count--)
-  {
-    if (pair == dir->mdata)
     {
-      pair += dir->mmax;
+      if (pair == dir->mdata)
+        {
+          pair += dir->mmax;
+        }
+      else
+        {
+          pair--;
+        }
+      if (pair->font == font && pair->mxx == mxx && pair->mxy == mxy &&
+          pair->myx == myx && pair->myy == myy)
+        {
+          return pair;
+        }
     }
-    else
-    {
-      pair--;
-    }
-    if (pair->font == font && pair->mxx == mxx && pair->mxy == mxy &&
-        pair->myx == myx && pair->myy == myy)
-    {
-      return pair;
-    }
-  }
   /* Add the pair to the cache */
   if (dir->msize == dir->mmax)
-  {
-    zap_cache(dir); /* crude, but it works */
-  }
+    {
+      zap_cache(dir); /* crude, but it works */
+    }
   dir->msize++;
   pair = dir->mdata + dir->mnext;
   if (++dir->mnext == dir->mmax)
-  {
-    dir->mnext = 0;
-  }
+    {
+      dir->mnext = 0;
+    }
   pair->font = font;
   pair->mxx = mxx, pair->mxy = mxy;
   pair->myx = myx, pair->myy = myy;
@@ -140,9 +140,9 @@ void gx_add_cached_char(gs_font_dir *dir, cached_char *cc, cached_fm_pair *pair)
 { /* Add the new character at the tail of its chain. */
   cached_char **head = &dir->chars[cc->code & (gx_char_cache_modulus - 1)];
   while (*head != 0)
-  {
-    head = &(*head)->next;
-  }
+    {
+      head = &(*head)->next;
+    }
   *head = cc;
   cc->next = 0;
   cc->pair = pair;
@@ -157,13 +157,13 @@ cached_char *gx_lookup_cached_char(gs_state *pgs, cached_fm_pair *pair,
   register cached_char *cc =
       pgs->font->dir->chars[ccode & (gx_char_cache_modulus - 1)];
   while (cc != 0)
-  {
-    if (cc->code == ccode && cc->pair == pair)
     {
-      return cc;
+      if (cc->code == ccode && cc->pair == pair)
+        {
+          return cc;
+        }
+      cc = cc->next;
     }
-    cc = cc->next;
-  }
   return 0;
 }
 
@@ -180,20 +180,20 @@ int gx_copy_cached_char(register gs_show_enum *penum, register cached_char *cc)
   gs_fixed_point pt;
   code = gx_path_current_point_inline(pgs->path, &pt);
   if (code < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   /* Compute the device color if needed; abort if it isn't pure. */
   if (!penum->color_loaded)
-  {
-    gx_device_color *pdevc = pgs->dev_color;
-    gx_color_render(pgs->color, pdevc, pgs);
-    if (!color_is_pure(pdevc))
     {
-      return 1; /* can't use cache */
+      gx_device_color *pdevc = pgs->dev_color;
+      gx_color_render(pgs->color, pdevc, pgs);
+      if (!color_is_pure(pdevc))
+        {
+          return 1; /* can't use cache */
+        }
+      penum->color_loaded = 1;
     }
-    penum->color_loaded = 1;
-  }
   /* If the character doesn't lie entirely within the */
   /* quick-check clipping rectangle, we have to use */
   /* the general case of image rendering. */
@@ -205,19 +205,19 @@ int gx_copy_cached_char(register gs_show_enum *penum, register cached_char *cc)
   h = cc->height;
   if (x < penum->cxmin || x + w > penum->cxmax || y < penum->cymin ||
       y + h > penum->cymax)
-  {
-    gs_matrix mat;
-    mat = ctm_only(pgs);
-    mat.tx -= fixed2float(pt.x);
-    mat.ty -= fixed2float(pt.y);
-    code = gs_imagemask(pgs, cc->raster * 8, h, 1, &mat, cc->bits);
-  }
+    {
+      gs_matrix mat;
+      mat = ctm_only(pgs);
+      mat.tx -= fixed2float(pt.x);
+      mat.ty -= fixed2float(pt.y);
+      code = gs_imagemask(pgs, cc->raster * 8, h, 1, &mat, cc->bits);
+    }
   else
-  { /* Just copy the bits */
-    gx_device *dev = pgs->device->info;
-    code = (*dev->procs->copy_mono)(dev, cc->bits, 0, cc->raster, x, y, w, h,
-                                    gx_no_color_index, pgs->dev_color->color1);
-  }
+    { /* Just copy the bits */
+      gx_device *dev = pgs->device->info;
+      code = (*dev->procs->copy_mono)(dev, cc->bits, 0, cc->raster, x, y, w, h,
+                                      gx_no_color_index, pgs->dev_color->color1);
+    }
   return (code < 0 ? code : 0);
 }
 

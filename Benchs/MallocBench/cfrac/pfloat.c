@@ -19,25 +19,26 @@ precision dtop(f) register double f;
 
   u = palloc(DOUBLESIZE); /* pretty big */
   if (u == pUndef)
-  {
-    return u;
-  }
+    {
+      return u;
+    }
 
   if (f < 0.0)
-  {
-    f = -f;
-    u->sign = true;
-  }
+    {
+      f = -f;
+      u->sign = true;
+    }
   else
-  {
-    u->sign = false;
-  }
+    {
+      u->sign = false;
+    }
   uPtr = u->value;
   do
-  {
-    *uPtr++ = fmod(f, (double)BASE);
-    f = floor(f / (double)BASE);
-  } while (f != 0.0);
+    {
+      *uPtr++ = fmod(f, (double)BASE);
+      f = floor(f / (double)BASE);
+    }
+  while (f != 0.0);
 
   u->size = (uPtr - u->value);
 
@@ -56,14 +57,15 @@ double ptod(u) precision u;
   uPtr = u->value + u->size;
   f = 0.0;
   do
-  {
-    f = f * (double)BASE + (double)*--uPtr;
-  } while (uPtr > u->value);
+    {
+      f = f * (double)BASE + (double)*--uPtr;
+    }
+  while (uPtr > u->value);
 
   if (u->sign)
-  {
-    f = -f;
-  }
+    {
+      f = -f;
+    }
 
   pdestroy(u);
   return f;

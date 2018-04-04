@@ -34,17 +34,17 @@ int main(int argc, char *argv[])
   int invfft = 0;
 
   if (argc < 3)
-  {
-    printf("Usage: fft <waves> <length> -i\n");
-    printf("-i performs an inverse fft\n");
-    printf("make <waves> random sinusoids");
-    printf("<length> is the number of samples\n");
-    exit(-1);
-  }
+    {
+      printf("Usage: fft <waves> <length> -i\n");
+      printf("-i performs an inverse fft\n");
+      printf("make <waves> random sinusoids");
+      printf("<length> is the number of samples\n");
+      exit(-1);
+    }
   else if (argc == 4)
-  {
-    invfft = !strncmp(argv[3], "-i", 2);
-  }
+    {
+      invfft = !strncmp(argv[3], "-i", 2);
+    }
   MAXSIZE = atoi(argv[2]);
   MAXWAVES = atoi(argv[1]);
   srand(1);
@@ -58,44 +58,44 @@ int main(int argc, char *argv[])
 
   /* Makes MAXWAVES waves of random amplitude and period */
   for (i = 0; i < MAXWAVES; i++)
-  {
-    coeff[i] = i % 1000;
-    amp[i] = i % 1000;
-  }
-  for (i = 0; i < MAXSIZE; i++)
-  {
-    /*   RealIn[i]=rand();*/
-    RealIn[i] = 0;
-    for (j = 0; j < MAXWAVES; j++)
     {
-      /* randomly select sin or cos */
-      if (rand() % 2)
-      {
-        RealIn[i] += coeff[j] * cos(amp[j] * i);
-      }
-      else
-      {
-        RealIn[i] += coeff[j] * sin(amp[j] * i);
-      }
-      ImagIn[i] = 0;
+      coeff[i] = i % 1000;
+      amp[i] = i % 1000;
     }
-  }
+  for (i = 0; i < MAXSIZE; i++)
+    {
+      /*   RealIn[i]=rand();*/
+      RealIn[i] = 0;
+      for (j = 0; j < MAXWAVES; j++)
+        {
+          /* randomly select sin or cos */
+          if (rand() % 2)
+            {
+              RealIn[i] += coeff[j] * cos(amp[j] * i);
+            }
+          else
+            {
+              RealIn[i] += coeff[j] * sin(amp[j] * i);
+            }
+          ImagIn[i] = 0;
+        }
+    }
 
   /* regular*/
   fft_float(MAXSIZE, invfft, RealIn, ImagIn, RealOut, ImagOut);
 
   printf("RealOut:\n");
   for (i = 0; i < MAXSIZE; i++)
-  {
-    printf("%f \t", RealOut[i]);
-  }
+    {
+      printf("%f \t", RealOut[i]);
+    }
   printf("\n");
 
   printf("ImagOut:\n");
   for (i = 0; i < MAXSIZE; i++)
-  {
-    printf("%f \t", ImagOut[i]);
-  }
+    {
+      printf("%f \t", ImagOut[i]);
+    }
   printf("\n");
 
   free(RealIn);

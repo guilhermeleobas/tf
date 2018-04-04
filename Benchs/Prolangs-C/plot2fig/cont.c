@@ -29,26 +29,26 @@ int PointsInLine = 0;
 int cont(int x, int y)
 {
   if (PointsInLine <= 1)
-  {
-    printf("%d %d %d %d %d %d %d %d %.3f %d %d %d\n\t", 2, /* polyline object */
-           1,           /* polyline subtype */
-           line_style,  /* style */
-           1,           /* thickness */
-           0,           /* color */
-           0,           /* depth */
-           0,           /* pen */
-           fill_level,  /* area fill */
-           dash_length, /* style val */
-           0,           /* radius */
-           0,           /* forward arrow */
-           0            /* backward arrow */
-           );
-  }
+    {
+      printf("%d %d %d %d %d %d %d %d %.3f %d %d %d\n\t", 2, /* polyline object */
+             1, /* polyline subtype */
+             line_style, /* style */
+             1, /* thickness */
+             0, /* color */
+             0, /* depth */
+             0, /* pen */
+             fill_level, /* area fill */
+             dash_length, /* style val */
+             0, /* radius */
+             0, /* forward arrow */
+             0 /* backward arrow */
+      );
+    }
   if (PointsInLine == 1)
-  {
-    printf(" %d %d", (int)((last_x - x_input_min) / x_scale + x_output_min),
-           (int)((last_y - y_input_min) / y_scale + y_output_min));
-  }
+    {
+      printf(" %d %d", (int)((last_x - x_input_min) / x_scale + x_output_min),
+             (int)((last_y - y_input_min) / y_scale + y_output_min));
+    }
 
   PointsInLine++;
   printf(" %d %d", (int)((x - x_input_min) / x_scale + x_output_min),

@@ -29,10 +29,10 @@ char *mallocate(register unsigned n)
 
   block = calloc(n, 1);
   if (block == NULL)
-  {
-    fprintf(stderr, "bison: memory exhausted\n");
-    done(1);
-  }
+    {
+      fprintf(stderr, "bison: memory exhausted\n");
+      done(1);
+    }
 
   return (block);
 }

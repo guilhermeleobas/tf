@@ -67,10 +67,10 @@ typedef struct
 {
   struct cjpeg_source_struct pub; /* public fields */
 
-  U_CHAR *iobuffer;    /* non-FAR pointer to I/O buffer */
-  JSAMPROW pixrow;     /* FAR pointer to same */
+  U_CHAR *iobuffer; /* non-FAR pointer to I/O buffer */
+  JSAMPROW pixrow; /* FAR pointer to same */
   size_t buffer_width; /* width of I/O buffer */
-  JSAMPLE *rescale;    /* => maxval-remapping array, or NULL */
+  JSAMPLE *rescale; /* => maxval-remapping array, or NULL */
 } ppm_source_struct;
 
 typedef ppm_source_struct *ppm_source_ptr;
@@ -84,12 +84,13 @@ pbm_getc(FILE *infile)
 
   ch = getc(infile);
   if (ch == '#')
-  {
-    do
     {
-      ch = getc(infile);
-    } while (ch != '\n' && ch != EOF);
-  }
+      do
+        {
+          ch = getc(infile);
+        }
+      while (ch != '\n' && ch != EOF);
+    }
   return ch;
 }
 
@@ -105,25 +106,26 @@ read_pbm_integer(j_compress_ptr cinfo, FILE *infile)
 
   /* Skip any leading whitespace */
   do
-  {
-    ch = pbm_getc(infile);
-    if (ch == EOF)
     {
-      ERREXIT(cinfo, JERR_INPUT_EOF);
+      ch = pbm_getc(infile);
+      if (ch == EOF)
+        {
+          ERREXIT(cinfo, JERR_INPUT_EOF);
+        }
     }
-  } while (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r');
+  while (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r');
 
   if (ch < '0' || ch > '9')
-  {
-    ERREXIT(cinfo, JERR_PPM_NONNUMERIC);
-  }
+    {
+      ERREXIT(cinfo, JERR_PPM_NONNUMERIC);
+    }
 
   val = ch - '0';
   while ((ch = pbm_getc(infile)) >= '0' && ch <= '9')
-  {
-    val *= 10;
-    val += ch - '0';
-  }
+    {
+      val *= 10;
+      val += ch - '0';
+    }
   return val;
 }
 
@@ -149,9 +151,9 @@ get_text_gray_row(j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
 
   ptr = source->pub.buffer[0];
   for (col = cinfo->image_width; col > 0; col--)
-  {
-    *ptr++ = rescale[read_pbm_integer(cinfo, infile)];
-  }
+    {
+      *ptr++ = rescale[read_pbm_integer(cinfo, infile)];
+    }
   return 1;
 }
 
@@ -167,11 +169,11 @@ get_text_rgb_row(j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
 
   ptr = source->pub.buffer[0];
   for (col = cinfo->image_width; col > 0; col--)
-  {
-    *ptr++ = rescale[read_pbm_integer(cinfo, infile)];
-    *ptr++ = rescale[read_pbm_integer(cinfo, infile)];
-    *ptr++ = rescale[read_pbm_integer(cinfo, infile)];
-  }
+    {
+      *ptr++ = rescale[read_pbm_integer(cinfo, infile)];
+      *ptr++ = rescale[read_pbm_integer(cinfo, infile)];
+      *ptr++ = rescale[read_pbm_integer(cinfo, infile)];
+    }
   return 1;
 }
 
@@ -186,15 +188,15 @@ get_scaled_gray_row(j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
   JDIMENSION col;
 
   if (!ReadOK(source->pub.input_file, source->iobuffer, source->buffer_width))
-  {
-    ERREXIT(cinfo, JERR_INPUT_EOF);
-  }
+    {
+      ERREXIT(cinfo, JERR_INPUT_EOF);
+    }
   ptr = source->pub.buffer[0];
   bufferptr = source->iobuffer;
   for (col = cinfo->image_width; col > 0; col--)
-  {
-    *ptr++ = rescale[UCH(*bufferptr++)];
-  }
+    {
+      *ptr++ = rescale[UCH(*bufferptr++)];
+    }
   return 1;
 }
 
@@ -209,17 +211,17 @@ get_scaled_rgb_row(j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
   JDIMENSION col;
 
   if (!ReadOK(source->pub.input_file, source->iobuffer, source->buffer_width))
-  {
-    ERREXIT(cinfo, JERR_INPUT_EOF);
-  }
+    {
+      ERREXIT(cinfo, JERR_INPUT_EOF);
+    }
   ptr = source->pub.buffer[0];
   bufferptr = source->iobuffer;
   for (col = cinfo->image_width; col > 0; col--)
-  {
-    *ptr++ = rescale[UCH(*bufferptr++)];
-    *ptr++ = rescale[UCH(*bufferptr++)];
-    *ptr++ = rescale[UCH(*bufferptr++)];
-  }
+    {
+      *ptr++ = rescale[UCH(*bufferptr++)];
+      *ptr++ = rescale[UCH(*bufferptr++)];
+      *ptr++ = rescale[UCH(*bufferptr++)];
+    }
   return 1;
 }
 
@@ -233,9 +235,9 @@ get_raw_row(j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
   ppm_source_ptr source = (ppm_source_ptr)sinfo;
 
   if (!ReadOK(source->pub.input_file, source->iobuffer, source->buffer_width))
-  {
-    ERREXIT(cinfo, JERR_INPUT_EOF);
-  }
+    {
+      ERREXIT(cinfo, JERR_INPUT_EOF);
+    }
   return 1;
 }
 
@@ -250,18 +252,18 @@ get_word_gray_row(j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
   JDIMENSION col;
 
   if (!ReadOK(source->pub.input_file, source->iobuffer, source->buffer_width))
-  {
-    ERREXIT(cinfo, JERR_INPUT_EOF);
-  }
+    {
+      ERREXIT(cinfo, JERR_INPUT_EOF);
+    }
   ptr = source->pub.buffer[0];
   bufferptr = source->iobuffer;
   for (col = cinfo->image_width; col > 0; col--)
-  {
-    register int temp;
-    temp = UCH(*bufferptr++);
-    temp |= UCH(*bufferptr++) << 8;
-    *ptr++ = rescale[temp];
-  }
+    {
+      register int temp;
+      temp = UCH(*bufferptr++);
+      temp |= UCH(*bufferptr++) << 8;
+      *ptr++ = rescale[temp];
+    }
   return 1;
 }
 
@@ -276,24 +278,24 @@ get_word_rgb_row(j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
   JDIMENSION col;
 
   if (!ReadOK(source->pub.input_file, source->iobuffer, source->buffer_width))
-  {
-    ERREXIT(cinfo, JERR_INPUT_EOF);
-  }
+    {
+      ERREXIT(cinfo, JERR_INPUT_EOF);
+    }
   ptr = source->pub.buffer[0];
   bufferptr = source->iobuffer;
   for (col = cinfo->image_width; col > 0; col--)
-  {
-    register int temp;
-    temp = UCH(*bufferptr++);
-    temp |= UCH(*bufferptr++) << 8;
-    *ptr++ = rescale[temp];
-    temp = UCH(*bufferptr++);
-    temp |= UCH(*bufferptr++) << 8;
-    *ptr++ = rescale[temp];
-    temp = UCH(*bufferptr++);
-    temp |= UCH(*bufferptr++) << 8;
-    *ptr++ = rescale[temp];
-  }
+    {
+      register int temp;
+      temp = UCH(*bufferptr++);
+      temp |= UCH(*bufferptr++) << 8;
+      *ptr++ = rescale[temp];
+      temp = UCH(*bufferptr++);
+      temp |= UCH(*bufferptr++) << 8;
+      *ptr++ = rescale[temp];
+      temp = UCH(*bufferptr++);
+      temp |= UCH(*bufferptr++) << 8;
+      *ptr++ = rescale[temp];
+    }
   return 1;
 }
 
@@ -310,9 +312,9 @@ start_input_ppm(j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
   boolean need_iobuffer, use_raw_buffer, need_rescale;
 
   if (getc(source->pub.input_file) != 'P')
-  {
-    ERREXIT(cinfo, JERR_PPM_NOT);
-  }
+    {
+      ERREXIT(cinfo, JERR_PPM_NOT);
+    }
 
   c = getc(source->pub.input_file); /* save format discriminator for a sec */
 
@@ -322,128 +324,128 @@ start_input_ppm(j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
   maxval = read_pbm_integer(cinfo, source->pub.input_file);
 
   if (w <= 0 || h <= 0 || maxval <= 0)
-  { /* error check */
-    ERREXIT(cinfo, JERR_PPM_NOT);
-  }
+    { /* error check */
+      ERREXIT(cinfo, JERR_PPM_NOT);
+    }
 
   cinfo->data_precision = BITS_IN_JSAMPLE; /* we always rescale data to this */
   cinfo->image_width = (JDIMENSION)w;
   cinfo->image_height = (JDIMENSION)h;
 
   /* initialize flags to most common settings */
-  need_iobuffer = TRUE;   /* do we need an I/O buffer? */
+  need_iobuffer = TRUE; /* do we need an I/O buffer? */
   use_raw_buffer = FALSE; /* do we map input buffer onto I/O buffer? */
-  need_rescale = TRUE;    /* do we need a rescale array? */
+  need_rescale = TRUE; /* do we need a rescale array? */
 
   switch (c)
-  {
-    case '2': /* it's a text-format PGM file */
-      cinfo->input_components = 1;
-      cinfo->in_color_space = JCS_GRAYSCALE;
-      TRACEMS2(cinfo, 1, JTRC_PGM_TEXT, w, h);
-      source->pub.get_pixel_rows = get_text_gray_row;
-      need_iobuffer = FALSE;
-      break;
+    {
+      case '2': /* it's a text-format PGM file */
+        cinfo->input_components = 1;
+        cinfo->in_color_space = JCS_GRAYSCALE;
+        TRACEMS2(cinfo, 1, JTRC_PGM_TEXT, w, h);
+        source->pub.get_pixel_rows = get_text_gray_row;
+        need_iobuffer = FALSE;
+        break;
 
-    case '3': /* it's a text-format PPM file */
-      cinfo->input_components = 3;
-      cinfo->in_color_space = JCS_RGB;
-      TRACEMS2(cinfo, 1, JTRC_PPM_TEXT, w, h);
-      source->pub.get_pixel_rows = get_text_rgb_row;
-      need_iobuffer = FALSE;
-      break;
+      case '3': /* it's a text-format PPM file */
+        cinfo->input_components = 3;
+        cinfo->in_color_space = JCS_RGB;
+        TRACEMS2(cinfo, 1, JTRC_PPM_TEXT, w, h);
+        source->pub.get_pixel_rows = get_text_rgb_row;
+        need_iobuffer = FALSE;
+        break;
 
-    case '5': /* it's a raw-format PGM file */
-      cinfo->input_components = 1;
-      cinfo->in_color_space = JCS_GRAYSCALE;
-      TRACEMS2(cinfo, 1, JTRC_PGM, w, h);
-      if (maxval > 255)
-      {
-        source->pub.get_pixel_rows = get_word_gray_row;
-      }
-      else if (maxval == MAXJSAMPLE && SIZEOF(JSAMPLE) == SIZEOF(U_CHAR))
-      {
-        source->pub.get_pixel_rows = get_raw_row;
-        use_raw_buffer = TRUE;
-        need_rescale = FALSE;
-      }
-      else
-      {
-        source->pub.get_pixel_rows = get_scaled_gray_row;
-      }
-      break;
+      case '5': /* it's a raw-format PGM file */
+        cinfo->input_components = 1;
+        cinfo->in_color_space = JCS_GRAYSCALE;
+        TRACEMS2(cinfo, 1, JTRC_PGM, w, h);
+        if (maxval > 255)
+          {
+            source->pub.get_pixel_rows = get_word_gray_row;
+          }
+        else if (maxval == MAXJSAMPLE && SIZEOF(JSAMPLE) == SIZEOF(U_CHAR))
+          {
+            source->pub.get_pixel_rows = get_raw_row;
+            use_raw_buffer = TRUE;
+            need_rescale = FALSE;
+          }
+        else
+          {
+            source->pub.get_pixel_rows = get_scaled_gray_row;
+          }
+        break;
 
-    case '6': /* it's a raw-format PPM file */
-      cinfo->input_components = 3;
-      cinfo->in_color_space = JCS_RGB;
-      TRACEMS2(cinfo, 1, JTRC_PPM, w, h);
-      if (maxval > 255)
-      {
-        source->pub.get_pixel_rows = get_word_rgb_row;
-      }
-      else if (maxval == MAXJSAMPLE && SIZEOF(JSAMPLE) == SIZEOF(U_CHAR))
-      {
-        source->pub.get_pixel_rows = get_raw_row;
-        use_raw_buffer = TRUE;
-        need_rescale = FALSE;
-      }
-      else
-      {
-        source->pub.get_pixel_rows = get_scaled_rgb_row;
-      }
-      break;
+      case '6': /* it's a raw-format PPM file */
+        cinfo->input_components = 3;
+        cinfo->in_color_space = JCS_RGB;
+        TRACEMS2(cinfo, 1, JTRC_PPM, w, h);
+        if (maxval > 255)
+          {
+            source->pub.get_pixel_rows = get_word_rgb_row;
+          }
+        else if (maxval == MAXJSAMPLE && SIZEOF(JSAMPLE) == SIZEOF(U_CHAR))
+          {
+            source->pub.get_pixel_rows = get_raw_row;
+            use_raw_buffer = TRUE;
+            need_rescale = FALSE;
+          }
+        else
+          {
+            source->pub.get_pixel_rows = get_scaled_rgb_row;
+          }
+        break;
 
-    default:
-      ERREXIT(cinfo, JERR_PPM_NOT);
-      break;
-  }
+      default:
+        ERREXIT(cinfo, JERR_PPM_NOT);
+        break;
+    }
 
   /* Allocate space for I/O buffer: 1 or 3 bytes or words/pixel. */
   if (need_iobuffer)
-  {
-    source->buffer_width =
-        (size_t)w * cinfo->input_components *
-        ((maxval <= 255) ? SIZEOF(U_CHAR) : (2 * SIZEOF(U_CHAR)));
-    source->iobuffer = (U_CHAR *)(*cinfo->mem->alloc_small)(
-        (j_common_ptr)cinfo, JPOOL_IMAGE, source->buffer_width);
-  }
+    {
+      source->buffer_width =
+          (size_t)w * cinfo->input_components *
+          ((maxval <= 255) ? SIZEOF(U_CHAR) : (2 * SIZEOF(U_CHAR)));
+      source->iobuffer = (U_CHAR *)(*cinfo->mem->alloc_small)(
+          (j_common_ptr)cinfo, JPOOL_IMAGE, source->buffer_width);
+    }
 
   /* Create compressor input buffer. */
   if (use_raw_buffer)
-  {
-    /* For unscaled raw-input case, we can just map it onto the I/O buffer. */
-    /* Synthesize a JSAMPARRAY pointer structure */
-    /* Cast here implies near->far pointer conversion on PCs */
-    source->pixrow = (JSAMPROW)source->iobuffer;
-    source->pub.buffer = &source->pixrow;
-    source->pub.buffer_height = 1;
-  }
+    {
+      /* For unscaled raw-input case, we can just map it onto the I/O buffer. */
+      /* Synthesize a JSAMPARRAY pointer structure */
+      /* Cast here implies near->far pointer conversion on PCs */
+      source->pixrow = (JSAMPROW)source->iobuffer;
+      source->pub.buffer = &source->pixrow;
+      source->pub.buffer_height = 1;
+    }
   else
-  {
-    /* Need to translate anyway, so make a separate sample buffer. */
-    source->pub.buffer = (*cinfo->mem->alloc_sarray)(
-        (j_common_ptr)cinfo, JPOOL_IMAGE,
-        (JDIMENSION)w * cinfo->input_components, (JDIMENSION)1);
-    source->pub.buffer_height = 1;
-  }
+    {
+      /* Need to translate anyway, so make a separate sample buffer. */
+      source->pub.buffer = (*cinfo->mem->alloc_sarray)(
+          (j_common_ptr)cinfo, JPOOL_IMAGE,
+          (JDIMENSION)w * cinfo->input_components, (JDIMENSION)1);
+      source->pub.buffer_height = 1;
+    }
 
   /* Compute the rescaling array if required. */
   if (need_rescale)
-  {
-    INT32 val, half_maxval;
-
-    /* On 16-bit-int machines we have to be careful of maxval = 65535 */
-    source->rescale = (JSAMPLE *)(*cinfo->mem->alloc_small)(
-        (j_common_ptr)cinfo, JPOOL_IMAGE,
-        (size_t)(((long)maxval + 1L) * SIZEOF(JSAMPLE)));
-    half_maxval = maxval / 2;
-    for (val = 0; val <= (INT32)maxval; val++)
     {
-      /* The multiplication here must be done in 32 bits to avoid overflow */
-      source->rescale[val] =
-          (JSAMPLE)((val * MAXJSAMPLE + half_maxval) / maxval);
+      INT32 val, half_maxval;
+
+      /* On 16-bit-int machines we have to be careful of maxval = 65535 */
+      source->rescale = (JSAMPLE *)(*cinfo->mem->alloc_small)(
+          (j_common_ptr)cinfo, JPOOL_IMAGE,
+          (size_t)(((long)maxval + 1L) * SIZEOF(JSAMPLE)));
+      half_maxval = maxval / 2;
+      for (val = 0; val <= (INT32)maxval; val++)
+        {
+          /* The multiplication here must be done in 32 bits to avoid overflow */
+          source->rescale[val] =
+              (JSAMPLE)((val * MAXJSAMPLE + half_maxval) / maxval);
+        }
     }
-  }
 }
 
 /*
@@ -451,7 +453,9 @@ start_input_ppm(j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
  */
 
 METHODDEF(void)
-finish_input_ppm(j_compress_ptr cinfo, cjpeg_source_ptr sinfo) { /* no work */ }
+finish_input_ppm(j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
+{ /* no work */
+}
 /*
  * The module selection routine for PPM format input.
  */

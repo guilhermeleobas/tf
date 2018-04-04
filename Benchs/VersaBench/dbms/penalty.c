@@ -24,8 +24,8 @@
  */
 
 #include "dataManagement.h" /* for primitive type definitions */
-#include "index.h"          /* for IndexEntry definition      */
-#include "indexKey.h"       /* for IndexKey definition        */
+#include "index.h" /* for IndexEntry definition      */
+#include "indexKey.h" /* for IndexKey definition        */
 
 /*
  *  Function Prototypes
@@ -35,7 +35,7 @@ extern Float volume(IndexKey key);
 
 Float penalty(IndexEntry A, /* first entry for penalty  */
               IndexEntry B) /* second entry for penalty */
-{                           /*  beginning of penalty()  */
+{ /*  beginning of penalty()  */
   Float penalty;
   IndexKey key;
 

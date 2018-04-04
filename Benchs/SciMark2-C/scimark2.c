@@ -27,31 +27,31 @@ int main(int argc, char *argv[])
   Random R = new_Random_seed(RANDOM_SEED);
 
   if (argc > 1)
-  {
-    int current_arg = 1;
-
-    if (strcmp(argv[1], "-help") == 0 || strcmp(argv[1], "-h") == 0)
     {
-      fprintf(stderr, "Usage: [-large] [minimum_time]\n");
-      exit(0);
-    }
+      int current_arg = 1;
 
-    if (strcmp(argv[1], "-large") == 0)
-    {
-      FFT_size = LG_FFT_SIZE;
-      SOR_size = LG_SOR_SIZE;
-      Sparse_size_M = LG_SPARSE_SIZE_M;
-      Sparse_size_nz = LG_SPARSE_SIZE_nz;
-      LU_size = LG_LU_SIZE;
+      if (strcmp(argv[1], "-help") == 0 || strcmp(argv[1], "-h") == 0)
+        {
+          fprintf(stderr, "Usage: [-large] [minimum_time]\n");
+          exit(0);
+        }
 
-      current_arg++;
-    }
+      if (strcmp(argv[1], "-large") == 0)
+        {
+          FFT_size = LG_FFT_SIZE;
+          SOR_size = LG_SOR_SIZE;
+          Sparse_size_M = LG_SPARSE_SIZE_M;
+          Sparse_size_nz = LG_SPARSE_SIZE_nz;
+          LU_size = LG_LU_SIZE;
 
-    if (current_arg < argc)
-    {
-      min_time = atof(argv[current_arg]);
+          current_arg++;
+        }
+
+      if (current_arg < argc)
+        {
+          min_time = atof(argv[current_arg]);
+        }
     }
-  }
 
   print_banner();
   printf("Using %10.2f seconds min time per kenel.\n", min_time);

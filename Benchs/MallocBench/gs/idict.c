@@ -45,7 +45,7 @@ extern ref dstack[];
  */
 struct dict_s
 {
-  ref count;    /* t_integer */
+  ref count; /* t_integer */
   ref contents; /* t_array */
 };
 struct pair_s
@@ -68,23 +68,23 @@ int dict_create(uint size, ref *pref)
   dict *pdict = (dict *)alloc(1, sizeof(dict), "dict_create");
   pair *pp;
   if (pdict == 0)
-  {
-    return e_VMerror;
-  }
+    {
+      return e_VMerror;
+    }
   pp = (pair *)alloc(asize, sizeof(pair), "dict_create(pairs)");
   if (pp == 0)
-  {
-    alloc_free((char *)pdict, 1, sizeof(dict), "dict_create");
-    return e_VMerror;
-  }
+    {
+      alloc_free((char *)pdict, 1, sizeof(dict), "dict_create");
+      return e_VMerror;
+    }
   n_store_int(&pdict->count, 0);
   n_store_tasv(&pdict->contents, t_array, a_all, asize * 2, refs, (ref *)pp);
   n_store_tav(pref, t_dictionary, a_all, pdict, pdict);
   pp = pairs(pdict);
   while (asize--)
-  {
-    pp->key.type_attrs = pp->value.type_attrs = null_type_attrs, pp++;
-  }
+    {
+      pp->key.type_attrs = pp->value.type_attrs = null_type_attrs, pp++;
+    }
   return 0;
 }
 
@@ -108,111 +108,112 @@ int dict_lookup(ref *pdbot, ref *pdtop, ref *pkey,
   /* Compute hash.  The only types we bother with are strings */
   /* and names. */
   switch (r_type(pkey))
-  {
-    case t_name:
-      kpname = pkey->value.pname;
-    nh:
-      hash = kpname->index * 40503;
-      ktype = t_name;
-      break;
-    case t_string: /* convert to a name first */
     {
-      ref nref;
-      int code = name_ref(pkey->value.bytes, pkey->size, &nref, 1);
-      if (code < 0)
-      {
-        return code;
-      }
-      kpname = nref.value.pname;
+      case t_name:
+        kpname = pkey->value.pname;
+      nh:
+        hash = kpname->index * 40503;
+        ktype = t_name;
+        break;
+      case t_string: /* convert to a name first */
+        {
+          ref nref;
+          int code = name_ref(pkey->value.bytes, pkey->size, &nref, 1);
+          if (code < 0)
+            {
+              return code;
+            }
+          kpname = nref.value.pname;
+        }
+        goto nh;
+      default:
+        hash = r_btype(pkey) * 99; /* yech */
+        ktype = -1;
     }
-      goto nh;
-    default:
-      hash = r_btype(pkey) * 99; /* yech */
-      ktype = -1;
-  }
   do
-  {
-    dict *pdict = pdref->value.pdict;
-    uint size = npairs(pdict);
-    pair *ppbot = pairs(pdict);
-    register pair *pp; /* probe pointer */
-    int wrap = 0;
-    register int etype;
+    {
+      dict *pdict = pdref->value.pdict;
+      uint size = npairs(pdict);
+      pair *ppbot = pairs(pdict);
+      register pair *pp; /* probe pointer */
+      int wrap = 0;
+      register int etype;
 /* Search the dictionary */
 #ifdef DEBUG
-    if (gs_debug['d'])
-    {
-      extern void debug_print_ref(P1(ref *));
-      printf("[d]");
-      debug_print_ref(pdref);
-      printf(":");
-      debug_print_ref(pkey);
-      printf("->");
-    }
+      if (gs_debug['d'])
+        {
+          extern void debug_print_ref(P1(ref *));
+          printf("[d]");
+          debug_print_ref(pdref);
+          printf(":");
+          debug_print_ref(pkey);
+          printf("->");
+        }
 #endif
 #ifdef DEBUG
-#define print_found()                       \
-  if (gs_debug['d'])                        \
-  {                                         \
-    extern void debug_print_ref(P1(ref *)); \
-    debug_print_ref(&pp->value);            \
-    printf("; ");                           \
-  }
+#define print_found()                         \
+  if (gs_debug['d'])                          \
+    {                                         \
+      extern void debug_print_ref(P1(ref *)); \
+      debug_print_ref(&pp->value);            \
+      printf("; ");                           \
+    }
 #else
 #define print_found()
 #endif
-    for (pp = ppbot + (hash % size) + 2;;)
-    {
-      if ((etype = r_type(&(--pp)->key)) == ktype)
-      { /* Fast comparison if both keys are names */
-        if (pp->key.value.pname == kpname)
+      for (pp = ppbot + (hash % size) + 2;;)
         {
-          *ppvalue = &pp->value;
-          print_found();
-          return 1;
-        }
-      }
-      else if (etype == t_null)
-      { /* We might have hit the dummy entry at */
-        /* the beginning, in which case we should */
-        /* wrap around to the end. */
-        if (pp == ppbot) /* wrap */
-        {
-          if (wrap++) /* wrapped twice */
-          {
-            if (full > 0)
-            {
-              full = e_dictfull;
+          if ((etype = r_type(&(--pp)->key)) == ktype)
+            { /* Fast comparison if both keys are names */
+              if (pp->key.value.pname == kpname)
+                {
+                  *ppvalue = &pp->value;
+                  print_found();
+                  return 1;
+                }
             }
-            goto next_dict;
-          }
-          pp += size + 1;
+          else if (etype == t_null)
+            { /* We might have hit the dummy entry at */
+              /* the beginning, in which case we should */
+              /* wrap around to the end. */
+              if (pp == ppbot) /* wrap */
+                {
+                  if (wrap++) /* wrapped twice */
+                    {
+                      if (full > 0)
+                        {
+                          full = e_dictfull;
+                        }
+                      goto next_dict;
+                    }
+                  pp += size + 1;
+                }
+              else
+                { /* key not found */
+                  break;
+                }
+            }
+          else
+            {
+              if (obj_eq(&pp->key, pkey))
+                {
+                  *ppvalue = &pp->value;
+                  print_found();
+                  return 1;
+                }
+            }
         }
-        else
-        { /* key not found */
-          break;
-        }
-      }
-      else
-      {
-        if (obj_eq(&pp->key, pkey))
+      if (full > 0)
         {
           *ppvalue = &pp->value;
-          print_found();
-          return 1;
-        }
-      }
-    }
-    if (full > 0)
-    {
-      *ppvalue = &pp->value;
 #ifdef DEBUG
-      if (gs_debug['d']) printf("0(%lx); ", (ulong)&pp->value);
+          if (gs_debug['d']) printf("0(%lx); ", (ulong)&pp->value);
 #endif
-      full = 0;
+          full = 0;
+        }
+    next_dict:;
     }
-  next_dict:;
-  } while (--pdref >= pdbot);
+  while (--pdref >= pdbot);
   return full;
 }
 
@@ -222,29 +223,29 @@ int dict_put(ref *pdref /* t_dictionary */, ref *pkey, ref *pvalue)
 {
   ref *pvslot;
   if (dict_find(pdref, pkey, &pvslot) <= 0) /* not found */
-  {                                         /* Check for overflow */
-    dict *pdict = pdref->value.pdict;
-    if (pdict->count.value.intval == npairs(pdict))
-    {
-      return e_dictfull;
+    { /* Check for overflow */
+      dict *pdict = pdref->value.pdict;
+      if (pdict->count.value.intval == npairs(pdict))
+        {
+          return e_dictfull;
+        }
+      pdict->count.value.intval++;
+      pvslot[-1] = *pkey; /* i.e. key of pair */
+      /* If the key is a name, update its 1-element cache. */
+      if (r_type(pkey) == t_name)
+        {
+          name *pname = pkey->value.pname;
+          if (pname->pvalue == pv_no_defn &&
+              (pdict == systemdict.value.pdict || pdict == userdict.value.pdict))
+            { /* Initialize the cache */
+              pname->pvalue = pvslot;
+            }
+          else
+            { /* The cache is worthless */
+              pname->pvalue = pv_other;
+            }
+        }
     }
-    pdict->count.value.intval++;
-    pvslot[-1] = *pkey; /* i.e. key of pair */
-    /* If the key is a name, update its 1-element cache. */
-    if (r_type(pkey) == t_name)
-    {
-      name *pname = pkey->value.pname;
-      if (pname->pvalue == pv_no_defn &&
-          (pdict == systemdict.value.pdict || pdict == userdict.value.pdict))
-      { /* Initialize the cache */
-        pname->pvalue = pvslot;
-      }
-      else
-      { /* The cache is worthless */
-        pname->pvalue = pv_other;
-      }
-    }
-  }
   store_i(pvslot, pvalue);
   return 0;
 }
@@ -269,16 +270,16 @@ int dict_copy(ref *pdrfrom /* t_dictionary */, ref *pdrto /* t_dictionary */)
   pair *pp = pairs(pdict);
   int code;
   while (count--)
-  {
-    if (r_type(&pp->key) != t_null)
     {
-      if ((code = dict_put(pdrto, &pp->key, &pp->value)) != 0)
-      {
-        return code;
-      }
+      if (r_type(&pp->key) != t_null)
+        {
+          if ((code = dict_put(pdrto, &pp->key, &pp->value)) != 0)
+            {
+              return code;
+            }
+        }
+      pp++;
     }
-    pp++;
-  }
   return 0;
 }
 
@@ -289,9 +290,9 @@ int dict_resize(ref *pdrfrom, uint new_size)
   ref drto;
   int code;
   if ((code = dict_create(new_size, &drto)) < 0)
-  {
-    return code;
-  }
+    {
+      return code;
+    }
   dict_copy(pdrfrom, &drto); /* can't fail */
   /* Free the old dictionary */
   alloc_free((char *)pdict->contents.value.refs, dict_maxlength(pdrfrom),
@@ -313,13 +314,13 @@ int dict_next(ref *pdref, int index, ref *eltp /* ref eltp[2] */)
 {
   pair *pp = pairs(pdref->value.pdict) + index;
   while (pp--, --index >= 0)
-  {
-    if (r_type(&pp->key) != t_null)
     {
-      eltp[0] = pp->key;
-      eltp[1] = pp->value;
-      return index;
+      if (r_type(&pp->key) != t_null)
+        {
+          eltp[0] = pp->key;
+          eltp[1] = pp->value;
+          return index;
+        }
     }
-  }
   return -1; /* no more elements */
 }

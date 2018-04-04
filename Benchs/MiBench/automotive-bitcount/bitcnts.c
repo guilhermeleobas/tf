@@ -52,25 +52,25 @@ int main(int argc, char *argv[])
       "Non-recursive bit count by bytes (BW)",
       "Non-recursive bit count by bytes (AR)", "Shift and count bits"};
   if (argc < 2)
-  {
-    fprintf(stderr, "Usage: bitcnts <iterations>\n");
-    exit(-1);
-  }
+    {
+      fprintf(stderr, "Usage: bitcnts <iterations>\n");
+      exit(-1);
+    }
   iterations = atoi(argv[1]);
   srand(1);
 
   puts("Bit counter algorithm benchmark\n");
 
   for (i = 0; i < FUNCS; i++)
-  {
+    {
 #if 0
     start = clock();
 #endif
 
-    for (j = n = 0, seed = rand(); j < iterations; j++, seed += 13)
-    {
-      n += pBitCntFunc[i](seed);
-    }
+      for (j = n = 0, seed = rand(); j < iterations; j++, seed += 13)
+        {
+          n += pBitCntFunc[i](seed);
+        }
 
 #if 0
     stop = clock();
@@ -86,8 +86,8 @@ int main(int argc, char *argv[])
 
     printf("%-38s> Time: %7.3f sec.; Bits: %ld\n", text[i], ct, n);
 #endif
-    printf("%-38s> Bits: %ld\n", text[i], n);
-  }
+      printf("%-38s> Bits: %ld\n", text[i], n);
+    }
 #if 0
   printf("\nBest  > %s\n", text[cminix]);
   printf("Worst > %s\n", text[cmaxix]);
@@ -100,8 +100,8 @@ static int CDECL bit_shifter(long int x)
   int i, n;
 
   for (i = n = 0; x && (i < (sizeof(long) * CHAR_BIT)); ++i, x >>= 1)
-  {
-    n += (int)(x & 1L);
-  }
+    {
+      n += (int)(x & 1L);
+    }
   return n;
 }

@@ -14,14 +14,14 @@ typedef struct pw_node pwlist;
 
 struct pw_node
 {
-  char *lname;   /* login name */
-  char *fname;   /* full name  */
-  int uid;       /* user-id    */
-  char *home;    /* login name */
+  char *lname; /* login name */
+  char *fname; /* full name  */
+  int uid; /* user-id    */
+  char *home; /* login name */
   pwlist *vlink; /* link to next item */
 };
 
-pwlist *pwhead;    /* head of linked list */
+pwlist *pwhead; /* head of linked list */
 pwlist *pwparse(); /* head of linked list */
 
 #define PNULL ((pwlist *)0)
@@ -35,23 +35,23 @@ char *pwfnam(char *user)
   */
 
   for (f = pwhead; f != NULL; f = f->vlink)
-  {
-    if (strcmp(user, f->lname) == 0)
     {
-      return (f->fname);
+      if (strcmp(user, f->lname) == 0)
+        {
+          return (f->fname);
+        }
     }
-  }
   /*
   ** not found parse the password file
   */
 
   while ((f = pwparse()) != PNULL)
-  {
-    if (strcmp(user, f->lname) == 0)
     {
-      return (f->fname);
+      if (strcmp(user, f->lname) == 0)
+        {
+          return (f->fname);
+        }
     }
-  }
   return (NULL);
 }
 
@@ -64,23 +64,23 @@ char *pwuid(int uid)
   */
 
   for (f = pwhead; f != NULL; f = f->vlink)
-  {
-    if (uid == f->uid)
     {
-      return (f->lname);
+      if (uid == f->uid)
+        {
+          return (f->lname);
+        }
     }
-  }
   /*
   ** not found parse the password file
   */
 
   while ((f = pwparse()) != PNULL)
-  {
-    if (uid == f->uid)
     {
-      return (f->lname);
+      if (uid == f->uid)
+        {
+          return (f->lname);
+        }
     }
-  }
   return (NULL);
 }
 
@@ -94,23 +94,23 @@ char *tilde(char *user)
   */
 
   for (f = pwhead; f != NULL; f = f->vlink)
-  {
-    if (strcmp(user, f->lname) == 0)
     {
-      return (f->home);
+      if (strcmp(user, f->lname) == 0)
+        {
+          return (f->home);
+        }
     }
-  }
   /*
   ** not found parse the password file
   */
 
   while ((f = pwparse()) != PNULL)
-  {
-    if (strcmp(user, f->lname) == 0)
     {
-      return (f->home);
+      if (strcmp(user, f->lname) == 0)
+        {
+          return (f->home);
+        }
     }
-  }
   return (NULL);
 }
 #endif /* not SENDMAIL */
@@ -122,30 +122,30 @@ char *fullname(char *gecos)
 
   (void)strcpy(fname, gecos);
   if ((cend == index(fname, ',')))
-  {
-    *cend = '\0';
-  }
+    {
+      *cend = '\0';
+    }
   if ((cend == index(fname, '(')))
-  {
-    *cend = '\0';
-    /*
+    {
+      *cend = '\0';
+      /*
     ** Skip USG-style 0000-Name nonsense if necessary.
     */
-  }
-  if (isdigit(*(cend = fname)))
-  {
-    if ((cend = index(fname, '-')) != NULL)
-    {
-      cend++;
     }
-    else
+  if (isdigit(*(cend = fname)))
     {
-      /*
+      if ((cend = index(fname, '-')) != NULL)
+        {
+          cend++;
+        }
+      else
+        {
+          /*
       ** There was no `-' following digits.
       */
-      cend = fname;
+          cend = fname;
+        }
     }
-  }
   return (cend);
 }
 
@@ -177,9 +177,9 @@ pwlist *pwparse(void)
   */
   f = (pwlist *)malloc(sizeof(pwlist));
   if (f == PNULL)
-  {
-    return (PNULL);
-  }
+    {
+      return (PNULL);
+    }
 
   f->vlink = pwhead;
   pwhead = f;
@@ -188,26 +188,26 @@ pwlist *pwparse(void)
   i = strlen(pwent->pw_name) + 1;
   p = malloc(i);
   if (p == NULL)
-  {
-    return (PNULL);
-  }
+    {
+      return (PNULL);
+    }
   f->lname = strcpy(p, pwent->pw_name);
 
   i = strlen(pwent->pw_dir) + 1;
   p = malloc(i);
   if (p == NULL)
-  {
-    return (PNULL);
-  }
+    {
+      return (PNULL);
+    }
   f->home = strcpy(p, pwent->pw_dir);
 
   name = fullname(pwent->pw_gecos);
   i = strlen(name) + 1;
   p = malloc(i);
   if (p == NULL)
-  {
-    return (PNULL);
-  }
+    {
+      return (PNULL);
+    }
   f->fname = strcpy(p, name);
   return (f);
 }
@@ -233,23 +233,23 @@ char *res_fname(register char *user)
   DEBUG("res_fname: looking for '%s'\n", user);
 
   if (pathlength == 0)
-  { /* open file on first use */
-    if ((file = fopen(fnlist, "r")) == NULL)
-    {
-      DEBUG("can't access %s.\n", fnlist);
-      pathlength = -1;
+    { /* open file on first use */
+      if ((file = fopen(fnlist, "r")) == NULL)
+        {
+          DEBUG("can't access %s.\n", fnlist);
+          pathlength = -1;
+        }
+      else
+        {
+          (void)fseek(file, 0L, 2); /* find length */
+          pathlength = ftell(file);
+        }
     }
-    else
-    {
-      (void)fseek(file, 0L, 2); /* find length */
-      pathlength = ftell(file);
-    }
-  }
 
   if (pathlength == -1)
-  {
-    return (NULL);
-  }
+    {
+      return (NULL);
+    }
 
   lo = 0;
   hi = pathlength;
@@ -259,58 +259,58 @@ char *res_fname(register char *user)
   (void)strcat(path, "\t");
 
   for (;;)
-  {
-    pos = middle = (hi + lo + 1) / 2;
-    (void)fseek(file, pos, 0); /* find midpoint */
-    if (pos != 0)
-    { /* to beginning of next line */
-      while ((c = getc(file)) != EOF && c != '\n')
-      {
-        ;
-      }
-    }
-    for (flag = 0, s = path; flag == 0; s++)
-    { /* match??? */
-      if (*s == '\0')
-      {
-        goto solved;
-      }
-      c = getc(file);
-      flag = lower(c) - lower(*s);
-    }
-    if (lo >= middle)
-    { /* failure? */
-      return (NULL);
-    }
-
-    if (c != EOF && flag < 0)
-    { /* close window */
-      lo = middle;
-    }
-    else
     {
-      hi = middle - 1;
+      pos = middle = (hi + lo + 1) / 2;
+      (void)fseek(file, pos, 0); /* find midpoint */
+      if (pos != 0)
+        { /* to beginning of next line */
+          while ((c = getc(file)) != EOF && c != '\n')
+            {
+              ;
+            }
+        }
+      for (flag = 0, s = path; flag == 0; s++)
+        { /* match??? */
+          if (*s == '\0')
+            {
+              goto solved;
+            }
+          c = getc(file);
+          flag = lower(c) - lower(*s);
+        }
+      if (lo >= middle)
+        { /* failure? */
+          return (NULL);
+        }
+
+      if (c != EOF && flag < 0)
+        { /* close window */
+          lo = middle;
+        }
+      else
+        {
+          hi = middle - 1;
+        }
     }
-  }
 /*
 ** Now just copy the result.
 */
 solved:
   while (((c = getc(file)) != EOF) && (c != '\t') && (c != '\n'))
-  {
-    *path++ = c;
-  }
+    {
+      *path++ = c;
+    }
 
   if (path == namebuf)
-  { /* NULL alias field */
-    return (NULL);
-  }
+    { /* NULL alias field */
+      return (NULL);
+    }
 
   *path = '\0';
   if ((path = malloc((unsigned)strlen(namebuf) + 1)) == NULL)
-  {
-    return (NULL); /* sorry, no memory */
-  }
+    {
+      return (NULL); /* sorry, no memory */
+    }
 
   (void)strcpy(path, namebuf);
   return (path);

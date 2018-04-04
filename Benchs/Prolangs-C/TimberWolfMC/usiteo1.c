@@ -39,31 +39,31 @@ int usiteo1(int a, int xb, int yb, int newaor)
   if ((cost + newpenalty <= funccost + penalty) ||
       (exp((double)(funccost + penalty - cost - newpenalty) / T) >
        ((double)RAND / (double)0x7fffffff)))
-  {
-    ufixpin(anewtermptr, 1, 0, 0);
-    usoftpin(acellptr, 1, 0, 0, 0);
-
-    if (occa1ptr != occa2ptr)
     {
-      for (i = 1; occa1ptr[i] != a; i++)
-      {
-        ;
-      }
-      occa1ptr[i] = occa1ptr[occa1ptr[0]--];
-      occa2ptr[++occa2ptr[0]] = a;
+      ufixpin(anewtermptr, 1, 0, 0);
+      usoftpin(acellptr, 1, 0, 0, 0);
+
+      if (occa1ptr != occa2ptr)
+        {
+          for (i = 1; occa1ptr[i] != a; i++)
+            {
+              ;
+            }
+          occa1ptr[i] = occa1ptr[occa1ptr[0]--];
+          occa2ptr[++occa2ptr[0]] = a;
+        }
+
+      acellptr->xcenter = xb;
+      acellptr->ycenter = yb;
+      acellptr->orient = newaor;
+
+      funccost = cost;
+      penalty = newpenalty;
+
+      return (1);
     }
-
-    acellptr->xcenter = xb;
-    acellptr->ycenter = yb;
-    acellptr->orient = newaor;
-
-    funccost = cost;
-    penalty = newpenalty;
-
-    return (1);
-  }
   else
-  {
-    return (0);
-  }
+    {
+      return (0);
+    }
 }
