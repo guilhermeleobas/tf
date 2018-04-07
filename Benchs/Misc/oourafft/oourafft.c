@@ -64,6 +64,7 @@ int main()
   cdft(2 * N, 1, ref, ip, w);
   cdft(2 * N, -1, ref, ip, w);
   err_val = errorcheck(0, 2 * N - 1, 1.0 / N, ref);
+  printf("%lf\n", err_val);
   if (fabs(err_val) > 1e-10)
     {
       printf("FFT sanity check failed! Difference is: %le\n", err_val);
