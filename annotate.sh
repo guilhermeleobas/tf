@@ -13,6 +13,7 @@ function annotate() {
 
     f=$(basename $file_name .c) # filename without extension
     $TIMEOUT --signal=KILL 5m ${BASEDIR}/runAnalyzesTest.sh $file_name 2> taskminer_$f.out # creates a tmp_AI.c
+  
     mv tmp_AI.c ${f}_AI.c
     
     if [[ $? -ne 0 ]]; then

@@ -17,127 +17,134 @@
 
 ============================================================================*/
 
-#include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
 
-#include "ddcmath.h"
 #include "fourier.h"
+#include "ddcmath.h"
 
-#define CHECKPOINTER(p) CheckPointer(p, #p)
+#define CHECKPOINTER(p)  CheckPointer(p,#p)
 
-static void CheckPointer(void *p, char *name)
+static void CheckPointer ( void *p, char *name )
 {
-  if (p == NULL)
+    if ( p == NULL )
     {
-      fprintf(stderr, "Error in fft_float():  %s == NULL\n", name);
-      exit(1);
+        fprintf ( stderr, "Error in fft_float():  %s == NULL\n", name );
+        exit(1);
     }
 }
 
-void fft_float(unsigned NumSamples, int InverseTransform, float *RealIn,
-               float *ImagIn, float *RealOut, float *ImagOut)
+
+void fft_float (
+    unsigned  NumSamples,
+    int       InverseTransform,
+    float    *RealIn,
+    float    *ImagIn,
+    float    *RealOut,
+    float    *ImagOut )
 {
-  unsigned NumBits; /* Number of bits needed to store indices */
-  unsigned i, j, k, n;
-  unsigned BlockSize, BlockEnd;
+    unsigned NumBits;    /* Number of bits needed to store indices */
+    unsigned i, j, k, n;
+    unsigned BlockSize, BlockEnd;
 
-  double angle_numerator = 2.0 * DDC_PI;
-  double tr, ti; /* temp real, temp imaginary */
+    double angle_numerator = 2.0 * DDC_PI;
+    double tr, ti;     /* temp real, temp imaginary */
 
-  if (!IsPowerOfTwo(NumSamples))
+    if ( !IsPowerOfTwo(NumSamples) )
     {
-      fprintf(stderr, "Error in fft():  NumSamples=%u is not power of two\n",
-              NumSamples);
+        fprintf (
+            stderr,
+            "Error in fft():  NumSamples=%u is not power of two\n",
+            NumSamples );
 
-      exit(1);
+        exit(1);
     }
 
-  if (InverseTransform)
+    if ( InverseTransform )
+        angle_numerator = -angle_numerator;
+
+    CHECKPOINTER ( RealIn );
+    CHECKPOINTER ( RealOut );
+    CHECKPOINTER ( ImagOut );
+
+    NumBits = NumberOfBitsNeeded ( NumSamples );
+
+    /*
+    **   Do simultaneous data copy and bit-reversal ordering into outputs...
+    */
+
+    for ( i=0; i < NumSamples; i++ )
     {
-      angle_numerator = -angle_numerator;
+        j = ReverseBits ( i, NumBits );
+        RealOut[j] = RealIn[i];
+        ImagOut[j] = (ImagIn == NULL) ? 0.0 : ImagIn[i];
     }
 
-  CHECKPOINTER(RealIn);
-  CHECKPOINTER(RealOut);
-  CHECKPOINTER(ImagOut);
+    /*
+    **   Do the FFT itself...
+    */
 
-  NumBits = NumberOfBitsNeeded(NumSamples);
-
-  /*
-  **   Do simultaneous data copy and bit-reversal ordering into outputs...
-  */
-
-  for (i = 0; i < NumSamples; i++)
+    BlockEnd = 1;
+    for ( BlockSize = 2; BlockSize <= NumSamples; BlockSize <<= 1 )
     {
-      j = ReverseBits(i, NumBits);
-      RealOut[j] = RealIn[i];
-      ImagOut[j] = (ImagIn == NULL) ? 0.0 : ImagIn[i];
-    }
+        double delta_angle = angle_numerator / (double)BlockSize;
+        double sm2 = sin ( -2 * delta_angle );
+        double sm1 = sin ( -delta_angle );
+        double cm2 = cos ( -2 * delta_angle );
+        double cm1 = cos ( -delta_angle );
+        double w = 2 * cm1;
+        double ar[3], ai[3];
+        double temp;
 
-  /*
-  **   Do the FFT itself...
-  */
-
-  BlockEnd = 1;
-  for (BlockSize = 2; BlockSize <= NumSamples; BlockSize <<= 1)
-    {
-      double delta_angle = angle_numerator / (double)BlockSize;
-      double sm2 = sin(-2 * delta_angle);
-      double sm1 = sin(-delta_angle);
-      double cm2 = cos(-2 * delta_angle);
-      double cm1 = cos(-delta_angle);
-      double w = 2 * cm1;
-      double ar[3], ai[3];
-      double temp;
-
-      for (i = 0; i < NumSamples; i += BlockSize)
+        for ( i=0; i < NumSamples; i += BlockSize )
         {
-          ar[2] = cm2;
-          ar[1] = cm1;
+            ar[2] = cm2;
+            ar[1] = cm1;
 
-          ai[2] = sm2;
-          ai[1] = sm1;
+            ai[2] = sm2;
+            ai[1] = sm1;
 
-          for (j = i, n = 0; n < BlockEnd; j++, n++)
+            for ( j=i, n=0; n < BlockEnd; j++, n++ )
             {
-              ar[0] = w * ar[1] - ar[2];
-              ar[2] = ar[1];
-              ar[1] = ar[0];
+                ar[0] = w*ar[1] - ar[2];
+                ar[2] = ar[1];
+                ar[1] = ar[0];
 
-              ai[0] = w * ai[1] - ai[2];
-              ai[2] = ai[1];
-              ai[1] = ai[0];
+                ai[0] = w*ai[1] - ai[2];
+                ai[2] = ai[1];
+                ai[1] = ai[0];
 
-              k = j + BlockEnd;
-              tr = ar[0] * RealOut[k] - ai[0] * ImagOut[k];
-              ti = ar[0] * ImagOut[k] + ai[0] * RealOut[k];
+                k = j + BlockEnd;
+                tr = ar[0]*RealOut[k] - ai[0]*ImagOut[k];
+                ti = ar[0]*ImagOut[k] + ai[0]*RealOut[k];
 
-              RealOut[k] = RealOut[j] - tr;
-              ImagOut[k] = ImagOut[j] - ti;
+                RealOut[k] = RealOut[j] - tr;
+                ImagOut[k] = ImagOut[j] - ti;
 
-              RealOut[j] += tr;
-              ImagOut[j] += ti;
+                RealOut[j] += tr;
+                ImagOut[j] += ti;
             }
         }
 
-      BlockEnd = BlockSize;
+        BlockEnd = BlockSize;
     }
 
-  /*
-  **   Need to normalize if inverse transform...
-  */
+    /*
+    **   Need to normalize if inverse transform...
+    */
 
-  if (InverseTransform)
+    if ( InverseTransform )
     {
-      double denom = (double)NumSamples;
+        double denom = (double)NumSamples;
 
-      for (i = 0; i < NumSamples; i++)
+        for ( i=0; i < NumSamples; i++ )
         {
-          RealOut[i] /= denom;
-          ImagOut[i] /= denom;
+            RealOut[i] /= denom;
+            ImagOut[i] /= denom;
         }
     }
 }
+
 
 /*--- end of file fourierf.c ---*/

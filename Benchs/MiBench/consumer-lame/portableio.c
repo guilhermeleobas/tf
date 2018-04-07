@@ -4,7 +4,7 @@
  * Warranty Information
  * Even though Apple has reviewed this software, Apple makes no warranty
  * or representation, either express or implied, with respect to this
- * software, its quality, accuracy, merchantability, or fitness for a
+ * software, its quality, accuracy, merchantability, or fitness for a 
  * particular purpose.  As a result, this software is provided "as is,"
  * and you, its user, are assuming the entire risk as to its quality
  * and accuracy.
@@ -59,272 +59,300 @@
  * Revision 2.6  91/04/30  17:06:02  malcolm
  */
 
-#include "portableio.h"
-#include <math.h>
-#include <stdio.h>
+#include	<stdio.h>
+#include	<math.h>
+#include	"portableio.h"
 
 /****************************************************************
  * Big/little-endian independent I/O routines.
  ****************************************************************/
 
-int ReadByte(FILE *fp)
-{
-  int result;
 
-  result = getc(fp) & 0xff;
-  if (result & 0x80)
-    {
-      result = result - 0x100;
-    }
-  return result;
+int
+ReadByte(FILE *fp)
+{
+	int	result;
+
+	result = getc(fp) & 0xff;
+	if (result & 0x80)
+		result = result - 0x100;
+	return result;
 }
 
-int Read16BitsLowHigh(FILE *fp)
+
+int
+Read16BitsLowHigh(FILE *fp)
 {
-  int first, second, result;
+	int	first, second, result;
 
-  first = 0xff & getc(fp);
-  second = 0xff & getc(fp);
+	first = 0xff & getc(fp);
+	second = 0xff & getc(fp);
 
-  result = (second << 8) + first;
-#ifndef THINK_C42
-  if (result & 0x8000)
-    {
-      result = result - 0x10000;
-    }
-#endif /* THINK_C */
-  return (result);
+	result = (second << 8) + first;
+#ifndef	THINK_C42
+	if (result & 0x8000)
+		result = result - 0x10000;
+#endif	/* THINK_C */
+	return(result);
 }
 
-int Read16BitsHighLow(FILE *fp)
+
+int
+Read16BitsHighLow(FILE *fp)
 {
-  int first, second, result;
+	int	first, second, result;
 
-  first = 0xff & getc(fp);
-  second = 0xff & getc(fp);
+	first = 0xff & getc(fp);
+	second = 0xff & getc(fp);
 
-  result = (first << 8) + second;
-#ifndef THINK_C42
-  if (result & 0x8000)
-    {
-      result = result - 0x10000;
-    }
-#endif /* THINK_C */
-  return (result);
+	result = (first << 8) + second;
+#ifndef	THINK_C42
+	if (result & 0x8000)
+		result = result - 0x10000;
+#endif	/* THINK_C */
+	return(result);
 }
 
-void Write8Bits(FILE *fp, int i) { putc(i & 0xff, fp); }
-void Write16BitsLowHigh(FILE *fp, int i)
+
+void
+Write8Bits(FILE *fp, int i)
 {
-  putc(i & 0xff, fp);
-  putc((i >> 8) & 0xff, fp);
+	putc(i&0xff,fp);
 }
 
-void Write16BitsHighLow(FILE *fp, int i)
+
+void
+Write16BitsLowHigh(FILE *fp, int i)
 {
-  putc((i >> 8) & 0xff, fp);
-  putc(i & 0xff, fp);
+	putc(i&0xff,fp);
+	putc((i>>8)&0xff,fp);
 }
 
-int Read24BitsHighLow(FILE *fp)
+
+void
+Write16BitsHighLow(FILE *fp, int i)
 {
-  int first, second, third;
-  int result;
-
-  first = 0xff & getc(fp);
-  second = 0xff & getc(fp);
-  third = 0xff & getc(fp);
-
-  result = (first << 16) + (second << 8) + third;
-  if (result & 0x800000)
-    {
-      result = result - 0x1000000;
-    }
-  return (result);
+	putc((i>>8)&0xff,fp);
+	putc(i&0xff,fp);
 }
 
-#define Read32BitsLowHigh(f) Read32Bits(f)
 
-int Read32Bits(FILE *fp)
+int
+Read24BitsHighLow(FILE *fp)
 {
-  int first, second, result;
+	int	first, second, third;
+	int	result;
 
-  first = 0xffff & Read16BitsLowHigh(fp);
-  second = 0xffff & Read16BitsLowHigh(fp);
+	first = 0xff & getc(fp);
+	second = 0xff & getc(fp);
+	third = 0xff & getc(fp);
 
-  result = (second << 16) + first;
-#ifdef CRAY
-  if (result & 0x80000000) result = result - 0x100000000;
-#endif /* CRAY */
-  return (result);
+	result = (first << 16) + (second << 8) + third;
+	if (result & 0x800000)
+		result = result - 0x1000000;
+	return(result);
 }
 
-int Read32BitsHighLow(FILE *fp)
+#define	Read32BitsLowHigh(f)	Read32Bits(f)
+
+
+int
+Read32Bits(FILE *fp)
 {
-  int first, second, result;
+	int	first, second, result;
 
-  first = 0xffff & Read16BitsHighLow(fp);
-  second = 0xffff & Read16BitsHighLow(fp);
+	first = 0xffff & Read16BitsLowHigh(fp);
+	second = 0xffff & Read16BitsLowHigh(fp);
 
-  result = (first << 16) + second;
-#ifdef CRAY
-  if (result & 0x80000000) result = result - 0x100000000;
+	result = (second << 16) + first;
+#ifdef	CRAY
+	if (result & 0x80000000)
+		result = result - 0x100000000;
+#endif	/* CRAY */
+	return(result);
+}
+
+
+int
+Read32BitsHighLow(FILE *fp)
+{
+	int	first, second, result;
+
+	first = 0xffff & Read16BitsHighLow(fp);
+	second = 0xffff & Read16BitsHighLow(fp);
+
+	result = (first << 16) + second;
+#ifdef	CRAY
+	if (result & 0x80000000)
+		result = result - 0x100000000;
 #endif
-  return (result);
+	return(result);
 }
 
-void Write32Bits(FILE *fp, int i)
+
+void
+Write32Bits(FILE *fp, int i)
 {
-  Write16BitsLowHigh(fp, (int)(i & 0xffffL));
-  Write16BitsLowHigh(fp, (int)((i >> 16) & 0xffffL));
+	Write16BitsLowHigh(fp,(int)(i&0xffffL));
+	Write16BitsLowHigh(fp,(int)((i>>16)&0xffffL));
 }
 
-void Write32BitsLowHigh(FILE *fp, int i)
+
+void
+Write32BitsLowHigh(FILE *fp, int i)
 {
-  Write16BitsLowHigh(fp, (int)(i & 0xffffL));
-  Write16BitsLowHigh(fp, (int)((i >> 16) & 0xffffL));
+	Write16BitsLowHigh(fp,(int)(i&0xffffL));
+	Write16BitsLowHigh(fp,(int)((i>>16)&0xffffL));
 }
 
-void Write32BitsHighLow(FILE *fp, int i)
+
+void
+Write32BitsHighLow(FILE *fp, int i)
 {
-  Write16BitsHighLow(fp, (int)((i >> 16) & 0xffffL));
-  Write16BitsHighLow(fp, (int)(i & 0xffffL));
+	Write16BitsHighLow(fp,(int)((i>>16)&0xffffL));
+	Write16BitsHighLow(fp,(int)(i&0xffffL));
 }
 
-void ReadBytes(FILE *fp, char *p, int n)
+void ReadBytes(FILE	*fp, char *p, int n)
 {
-  while (!feof(fp) & (n-- > 0))
-    {
-      *p++ = getc(fp);
-    }
+	while (!feof(fp) & (n-- > 0))
+		*p++ = getc(fp);
 }
 
 void ReadBytesSwapped(FILE *fp, char *p, int n)
 {
-  register char *q = p;
+	register char	*q = p;
 
-  while (!feof(fp) & (n-- > 0))
-    {
-      *q++ = getc(fp);
-    }
+	while (!feof(fp) & (n-- > 0))
+		*q++ = getc(fp);
 
-  for (q--; p < q; p++, q--)
-    {
-      n = *p;
-      *p = *q;
-      *q = n;
-    }
+	for (q--; p < q; p++, q--){
+		n = *p;
+		*p = *q;
+		*q = n;
+	}
 }
 
 void WriteBytes(FILE *fp, char *p, int n)
 {
-  while (n-- > 0)
-    {
-      putc(*p++, fp);
-    }
+	while (n-- > 0)
+		putc(*p++, fp);
 }
 
 void WriteBytesSwapped(FILE *fp, char *p, int n)
 {
-  p += n - 1;
-  while (n-- > 0)
-    {
-      putc(*p--, fp);
-    }
+	p += n-1;
+	while (n-- > 0)
+		putc(*p--, fp);
 }
 
-defdouble ReadIeeeFloatHighLow(FILE *fp)
+defdouble
+ReadIeeeFloatHighLow(FILE *fp)
 {
-  char bits[kFloatLength];
+	char	bits[kFloatLength];
 
-  ReadBytes(fp, bits, kFloatLength);
-  return ConvertFromIeeeSingle(bits);
+	ReadBytes(fp, bits, kFloatLength);
+	return ConvertFromIeeeSingle(bits);
 }
 
-defdouble ReadIeeeFloatLowHigh(FILE *fp)
+defdouble
+ReadIeeeFloatLowHigh(FILE *fp)
 {
-  char bits[kFloatLength];
+	char	bits[kFloatLength];
 
-  ReadBytesSwapped(fp, bits, kFloatLength);
-  return ConvertFromIeeeSingle(bits);
+	ReadBytesSwapped(fp, bits, kFloatLength);
+	return ConvertFromIeeeSingle(bits);
 }
 
-defdouble ReadIeeeDoubleHighLow(FILE *fp)
+defdouble
+ReadIeeeDoubleHighLow(FILE *fp)
 {
-  char bits[kDoubleLength];
+	char	bits[kDoubleLength];
 
-  ReadBytes(fp, bits, kDoubleLength);
-  return ConvertFromIeeeDouble(bits);
+	ReadBytes(fp, bits, kDoubleLength);
+	return ConvertFromIeeeDouble(bits);
 }
 
-defdouble ReadIeeeDoubleLowHigh(FILE *fp)
+defdouble
+ReadIeeeDoubleLowHigh(FILE *fp)
 {
-  char bits[kDoubleLength];
+	char	bits[kDoubleLength];
 
-  ReadBytesSwapped(fp, bits, kDoubleLength);
-  return ConvertFromIeeeDouble(bits);
+	ReadBytesSwapped(fp, bits, kDoubleLength);
+	return ConvertFromIeeeDouble(bits);
 }
 
-defdouble ReadIeeeExtendedHighLow(FILE *fp)
+defdouble
+ReadIeeeExtendedHighLow(FILE *fp)
 {
-  char bits[kExtendedLength];
+	char	bits[kExtendedLength];
 
-  ReadBytes(fp, bits, kExtendedLength);
-  return ConvertFromIeeeExtended(bits);
+	ReadBytes(fp, bits, kExtendedLength);
+	return ConvertFromIeeeExtended(bits);
 }
 
-defdouble ReadIeeeExtendedLowHigh(FILE *fp)
+defdouble
+ReadIeeeExtendedLowHigh(FILE *fp)
 {
-  char bits[kExtendedLength];
+	char	bits[kExtendedLength];
 
-  ReadBytesSwapped(fp, bits, kExtendedLength);
-  return ConvertFromIeeeExtended(bits);
+	ReadBytesSwapped(fp, bits, kExtendedLength);
+	return ConvertFromIeeeExtended(bits);
 }
 
-void WriteIeeeFloatLowHigh(FILE *fp, defdouble num)
+void
+WriteIeeeFloatLowHigh(FILE *fp, defdouble num)
 {
-  char bits[kFloatLength];
+	char	bits[kFloatLength];
 
-  ConvertToIeeeSingle(num, bits);
-  WriteBytesSwapped(fp, bits, kFloatLength);
+	ConvertToIeeeSingle(num,bits);
+	WriteBytesSwapped(fp,bits,kFloatLength);
 }
 
-void WriteIeeeFloatHighLow(FILE *fp, defdouble num)
+void
+WriteIeeeFloatHighLow(FILE *fp, defdouble num)
 {
-  char bits[kFloatLength];
+	char	bits[kFloatLength];
 
-  ConvertToIeeeSingle(num, bits);
-  WriteBytes(fp, bits, kFloatLength);
+	ConvertToIeeeSingle(num,bits);
+	WriteBytes(fp,bits,kFloatLength);
 }
 
-void WriteIeeeDoubleLowHigh(FILE *fp, defdouble num)
+void
+WriteIeeeDoubleLowHigh(FILE *fp, defdouble num)
 {
-  char bits[kDoubleLength];
+	char	bits[kDoubleLength];
 
-  ConvertToIeeeDouble(num, bits);
-  WriteBytesSwapped(fp, bits, kDoubleLength);
+	ConvertToIeeeDouble(num,bits);
+	WriteBytesSwapped(fp,bits,kDoubleLength);
 }
 
-void WriteIeeeDoubleHighLow(FILE *fp, defdouble num)
+void
+WriteIeeeDoubleHighLow(FILE *fp, defdouble num)
 {
-  char bits[kDoubleLength];
+	char	bits[kDoubleLength];
 
-  ConvertToIeeeDouble(num, bits);
-  WriteBytes(fp, bits, kDoubleLength);
+	ConvertToIeeeDouble(num,bits);
+	WriteBytes(fp,bits,kDoubleLength);
 }
 
-void WriteIeeeExtendedLowHigh(FILE *fp, defdouble num)
+void
+WriteIeeeExtendedLowHigh(FILE *fp, defdouble num)
 {
-  char bits[kExtendedLength];
+	char	bits[kExtendedLength];
 
-  ConvertToIeeeExtended(num, bits);
-  WriteBytesSwapped(fp, bits, kExtendedLength);
+	ConvertToIeeeExtended(num,bits);
+	WriteBytesSwapped(fp,bits,kExtendedLength);
 }
 
-void WriteIeeeExtendedHighLow(FILE *fp, defdouble num)
+
+void
+WriteIeeeExtendedHighLow(FILE *fp, defdouble num)
 {
-  char bits[kExtendedLength];
+	char	bits[kExtendedLength];
 
-  ConvertToIeeeExtended(num, bits);
-  WriteBytes(fp, bits, kExtendedLength);
+	ConvertToIeeeExtended(num,bits);
+	WriteBytes(fp,bits,kExtendedLength);
 }
+
+
