@@ -5,7 +5,8 @@ function BenchmarkGame() { dirs=($( ls -d */ )); walk "${dirs[@]}" ; }
 function BitBench() { dirs=($( ls -d */ )); walk "${dirs[@]}" ; }
 function CoyoteBench() { dirs=($( ls -d */ )); walk "${dirs[@]}" ; }
 function Dhrystone() { dirs=($( ls -d */ )); walk "${dirs[@]}" ; }
-function DOE_ProxyApps_C() { dirs=($( ls -d */ )); walk "${dirs[@]}" ; }
+# function DOE_ProxyApps_C() { dirs=($( ls -d */ )); walk "${dirs[@]}" ; }
+function DOE_ProxyApps_C() { dirs=("miniGMG" "Pathfinder" "RSBench" "SimpleMOC" "XSBench"   ); walk "${dirs[@]}" ; }
 function McGill() { dirs=($( ls -d */ )); walk "${dirs[@]}" ; }
 function MiBench() { dirs=($( ls -d */ )); walk "${dirs[@]}" ; }
 function Misc() { dirs=($( ls -d */ )); walk "${dirs[@]}" ; }
@@ -51,4 +52,3 @@ benchs=( "ASC_Sequoia" "BenchmarkGame" "BitBench" "CoyoteBench" "DOE_ProxyApps_C
 # benchs=( "Fhourstones" "Fhourstones_31" "Linpack" "ASCI_Purple" "SciMark2-C"
 #   "sim" "mafft" "llubenchmark" "nbench")
 
-benchs=("BenchmarkGame")
