@@ -26,14 +26,14 @@ int verboseflag;
 int definesflag;
 int debugflag;
 int nolinesflag;
-extern int fixed_outfiles;/* JF */
+extern int fixed_outfiles; /* JF */
 
 extern void fatal(char *s);
 #ifndef __sun__
-extern int getopt(int argc,char **argv,char *optstring);
+extern int getopt(int argc, char **argv, char *optstring);
 #endif
 
-void getargs(int argc,char *argv[])
+void getargs(int argc, char *argv[])
 {
   register int c;
   char *p = argv[0];
@@ -53,45 +53,57 @@ void getargs(int argc,char *argv[])
   while (*p)
     {
       if (*p == '/')
-	lastcomponent = p + 1;
+        {
+          lastcomponent = p + 1;
+        }
       p++;
     }
-  if (! strcmp (lastcomponent, "yacc"))
-    /* If so, pretend we have "-y" as argument.  */
-    fixed_outfiles = 1;
+  if (!strcmp(lastcomponent, "yacc"))
+    {
+      /* If so, pretend we have "-y" as argument.  */
+      fixed_outfiles = 1;
+    }
 
-  while ((c = getopt (argc, argv, "yvdlto:")) != EOF)
-    switch (c)
-      {
-      case 'y':
-	fixed_outfiles = 1;
-	break;
+  while ((c = getopt(argc, argv, "yvdlto:")) != EOF)
+    {
+      switch (c)
+        {
+          case 'y':
+            fixed_outfiles = 1;
+            break;
 
-      case 'v':
-	verboseflag = 1;
-	break;
+          case 'v':
+            verboseflag = 1;
+            break;
 
-      case 'd':
-	definesflag = 1;
-	break;
+          case 'd':
+            definesflag = 1;
+            break;
 
-      case 'l':
-	nolinesflag = 1;
-	break;
+          case 'l':
+            nolinesflag = 1;
+            break;
 
-      case 't':
-	debugflag = 1;
-	break;
+          case 't':
+            debugflag = 1;
+            break;
 
-      case 'o':
-	spec_outfile = optarg;
-      }
+          case 'o':
+            spec_outfile = optarg;
+        }
+    }
 
   if (optind == argc)
-    fatal("grammar file not specified");
+    {
+      fatal("grammar file not specified");
+    }
   else
-    infile = argv[optind];
+    {
+      infile = argv[optind];
+    }
 
   if (optind < argc - 1)
-    fprintf(stderr, "bison: warning: extra arguments ignored\n");
+    {
+      fprintf(stderr, "bison: warning: extra arguments ignored\n");
+    }
 }

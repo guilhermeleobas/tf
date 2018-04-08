@@ -27,7 +27,7 @@ char *mallocate(register unsigned n)
 {
   register char *block;
 
-  block = calloc(n,1);
+  block = calloc(n, 1);
   if (block == NULL)
     {
       fprintf(stderr, "bison: memory exhausted\n");

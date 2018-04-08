@@ -15,14 +15,16 @@
  *    * require this specific rand implementation in order to pass verification
  *     * tests.
  *      *
- *       * For more information, see: http://www.mathstat.dal.ca/~selinger/random/
+ *       * For more information, see:
+ * http://www.mathstat.dal.ca/~selinger/random/
  *        **/
 
 #define TABLE_SIZE 344
 static unsigned int table[TABLE_SIZE];
 static int next;
 
-int glibc_compat_rand(void) {
+int glibc_compat_rand(void)
+{
   /* Calculate the indices i-3 and i-31 in the circular vector. */
   int i3 = (next < 3) ? (TABLE_SIZE + next - 3) : (next - 3);
   int i31 = (next < 31) ? (TABLE_SIZE + next - 31) : (next - 31);
@@ -32,29 +34,41 @@ int glibc_compat_rand(void) {
 
   ++next;
   if (next >= TABLE_SIZE)
-    next = 0;
+    {
+      next = 0;
+    }
 
   return r;
 }
 
-void glibc_compat_srand(unsigned int seed) {
+void glibc_compat_srand(unsigned int seed)
+{
   if (seed == 0)
-    seed = 1;
+    {
+      seed = 1;
+    }
 
   table[0] = seed;
 
-  for (int i = 1; i < 31; i++) {
-    int r = (16807ll * table[i - 1]) % 2147483647;
-    if (r < 0)
-      r += 2147483647;
+  for (int i = 1; i < 31; i++)
+    {
+      int r = (16807ll * table[i - 1]) % 2147483647;
+      if (r < 0)
+        {
+          r += 2147483647;
+        }
 
-    table[i] = r;
-  }
+      table[i] = r;
+    }
 
   for (int i = 31; i < 34; i++)
-    table[i] = table[i - 31];
+    {
+      table[i] = table[i - 31];
+    }
   for (int i = 34; i < TABLE_SIZE; i++)
-    table[i] = table[i - 31] + table[i - 3];
+    {
+      table[i] = table[i - 31] + table[i - 3];
+    }
 
   next = 0;
 }

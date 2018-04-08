@@ -28,8 +28,8 @@ double fastathreshold;
 int pslocal, ppslocal;
 int constraint;
 int divpairscore;
-int fmodel; // 1-> fmodel 0->default -1->raw
-int nblosum; // 45, 50, 62, 80
+int fmodel;  // 1-> fmodel 0->default -1->raw
+int nblosum;  // 45, 50, 62, 80
 int kobetsubunkatsu;
 int bunkatsu;
 int dorp;

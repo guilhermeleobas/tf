@@ -6,89 +6,100 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+enum
+{
+  false,
+  true
+};
 
-enum {false, true};
+#define TOGGLE                    \
+  char state;                     \
+  char (*value)(struct Toggle *); \
+  struct Toggle *(*activate)(struct Toggle *)
 
-#define TOGGLE \
-    char state; \
-    char (*value)(struct Toggle *); \
-    struct Toggle *(*activate)(struct Toggle *)
+#define DESTROY free
 
-#define DESTROY  free
-
-typedef struct Toggle {
-    TOGGLE;
+typedef struct Toggle
+{
+  TOGGLE;
 } Toggle;
 
-char toggle_value(Toggle *this) {
-    return(this->state);
+char toggle_value(Toggle *this) { return (this->state); }
+Toggle *toggle_activate(Toggle *this)
+{
+  this->state = !this->state;
+  return (this);
 }
-Toggle *toggle_activate(Toggle *this) {
-    this->state = !this->state;
-    return(this);
+Toggle *init_Toggle(Toggle *this, char start_state)
+{
+  this->state = start_state;
+  this->value = toggle_value;
+  this->activate = toggle_activate;
+  return (this);
 }
-Toggle *init_Toggle(Toggle *this, char start_state) {
-    this->state = start_state;
-    this->value = toggle_value;
-    this->activate = toggle_activate;
-    return(this);
-}
-Toggle *new_Toggle(char start_state) {
-    Toggle *this = (Toggle *)malloc(sizeof(Toggle));
-    return(init_Toggle(this, start_state));
+Toggle *new_Toggle(char start_state)
+{
+  Toggle *this = (Toggle *)malloc(sizeof(Toggle));
+  return (init_Toggle(this, start_state));
 }
 
-
-typedef struct NthToggle {
-    TOGGLE;
-    int count_max;
-    int counter;
+typedef struct NthToggle
+{
+  TOGGLE;
+  int count_max;
+  int counter;
 } NthToggle;
 
-NthToggle *nth_toggle_activate(NthToggle *this) {
-    if (++this->counter >= this->count_max) {
-	this->state = !this->state;
-	this->counter = 0;
+NthToggle *nth_toggle_activate(NthToggle *this)
+{
+  if (++this->counter >= this->count_max)
+    {
+      this->state = !this->state;
+      this->counter = 0;
     }
-    return(this);
+  return (this);
 }
-NthToggle *init_NthToggle(NthToggle *this, int max_count) {
-    this->count_max = max_count;
-    this->counter = 0;
-    this->activate = (Toggle *(*)(Toggle *))nth_toggle_activate;
-    return(this);
+NthToggle *init_NthToggle(NthToggle *this, int max_count)
+{
+  this->count_max = max_count;
+  this->counter = 0;
+  this->activate = (Toggle * (*)(Toggle *)) nth_toggle_activate;
+  return (this);
 }
-NthToggle *new_NthToggle(char start_state, int max_count) {
-    NthToggle *this = (NthToggle *)malloc(sizeof(NthToggle));
-    this = (NthToggle *)init_Toggle((Toggle *)this, start_state);
-    return(init_NthToggle(this, max_count));
+NthToggle *new_NthToggle(char start_state, int max_count)
+{
+  NthToggle *this = (NthToggle *)malloc(sizeof(NthToggle));
+  this = (NthToggle *)init_Toggle((Toggle *)this, start_state);
+  return (init_NthToggle(this, max_count));
 }
 
-
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
 #ifdef SMALL_PROBLEM_SIZE
 #define LENGTH 50000000
 #else
 #define LENGTH 500000000
 #endif
-    int i, n = ((argc == 2) ? atoi(argv[1]) : LENGTH);
-    Toggle *tog;
-    NthToggle *ntog;
-    char val = true;
+  int i, n = ((argc == 2) ? atoi(argv[1]) : LENGTH);
+  Toggle *tog;
+  NthToggle *ntog;
+  char val = true;
 
-    tog = new_Toggle(true);
-    for (i=0; i<n; i++) {
-	val = tog->activate(tog)->value(tog);
+  tog = new_Toggle(true);
+  for (i = 0; i < n; i++)
+    {
+      val = tog->activate(tog)->value(tog);
     }
-    puts(val ? "true\n" : "false\n");
-    DESTROY(tog);
-    
-    val = true;
-    ntog = new_NthToggle(val, 3);
-    for (i=0; i<n; i++) {
-	val = ntog->activate(ntog)->value(ntog);
+  puts(val ? "true\n" : "false\n");
+  DESTROY(tog);
+
+  val = true;
+  ntog = new_NthToggle(val, 3);
+  for (i = 0; i < n; i++)
+    {
+      val = ntog->activate(ntog)->value(ntog);
     }
-    puts(val ? "true\n" : "false\n");
-    DESTROY(ntog);
-    return 0;
+  puts(val ? "true\n" : "false\n");
+  DESTROY(ntog);
+  return 0;
 }

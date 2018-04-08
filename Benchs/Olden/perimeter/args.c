@@ -44,6 +44,4 @@ int dealwithargs(int argc, char *argv[])
     level = 11;
 
   return level;
-
 }
-

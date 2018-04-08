@@ -19,12 +19,11 @@ notice and this notice must be preserved on all copies.
  what you give them.   Help stamp out software-hoarding!  */
 
 #include <stdio.h>
-#include "machine.h"
-#include "new.h"
 #include "files.h"
 #include "gram.h"
+#include "machine.h"
+#include "new.h"
 #include "state.h"
-
 
 extern char **tags;
 extern int nstates;
@@ -41,7 +40,7 @@ extern void conflict_log(void);
 extern void verbose_conflict_log(void);
 extern void print_reductions(int state);
 
-void print_token(int extnum,int token);
+void print_token(int extnum, int token);
 void print_state(int state);
 void print_core(int state);
 void print_actions(int state);
@@ -59,20 +58,30 @@ void verbose(void)
   register int i;
 
   if (any_conflicts)
-    verbose_conflict_log();
+    {
+      verbose_conflict_log();
+    }
 
   fprintf(foutput, "\n\ntoken types:\n");
-  print_token (-1, 0);
+  print_token(-1, 0);
   if (translations)
     {
       for (i = 0; i <= max_user_token_number; i++)
-	/* Don't mention all the meaningless ones.  */
-	if (token_translations[i] != 2)
-	  print_token (i, token_translations[i]);
+        {
+          /* Don't mention all the meaningless ones.  */
+          if (token_translations[i] != 2)
+            {
+              print_token(i, token_translations[i]);
+            }
+        }
     }
   else
-    for (i = 1; i < ntokens; i++)
-      print_token (i, i);
+    {
+      for (i = 1; i < ntokens; i++)
+        {
+          print_token(i, i);
+        }
+    }
 
   for (i = 0; i < nstates; i++)
     {
@@ -80,7 +89,7 @@ void verbose(void)
     }
 }
 
-void print_token(int extnum,int token)
+void print_token(int extnum, int token)
 {
   fprintf(foutput, " type %d is %s\n", extnum, tags[token]);
 }
@@ -104,32 +113,37 @@ void print_core(int state)
   statep = state_table[state];
   k = statep->nitems;
 
-  if (k == 0) return;
+  if (k == 0)
+    {
+      return;
+    }
 
   for (i = 0; i < k; i++)
     {
       sp1 = sp = ritem + statep->items[i];
 
       while (*sp > 0)
-	sp++;
+        {
+          sp++;
+        }
 
       rule = -(*sp);
       fprintf(foutput, "    %s  ->  ", tags[rlhs[rule]]);
 
       for (sp = ritem + rrhs[rule]; sp < sp1; sp++)
-	{
-	  fprintf(foutput, "%s ", tags[*sp]);
-	}
+        {
+          fprintf(foutput, "%s ", tags[*sp]);
+        }
 
       putc('.', foutput);
 
       while (*sp > 0)
-	{
-	  fprintf(foutput, " %s", tags[*sp]);
-	  sp++;
-	}
+        {
+          fprintf(foutput, " %s", tags[*sp]);
+          sp++;
+        }
 
-      fprintf (foutput, "   (%d)", rule);
+      fprintf(foutput, "   (%d)", rule);
       putc('\n', foutput);
     }
 
@@ -162,16 +176,21 @@ void print_actions(int state)
       k = shiftp->nshifts;
 
       for (i = 0; i < k; i++)
-	{
-	  if (! shiftp->shifts[i]) continue;
-	  state1 = shiftp->shifts[i];
-	  symbol = accessing_symbol[state1];
-/*	  if (ISVAR(symbol)) break;  */
-	  fprintf(foutput, "    %-4s\tshift  %d\n", tags[symbol], state1);
-	}
+        {
+          if (!shiftp->shifts[i])
+            {
+              continue;
+            }
+          state1 = shiftp->shifts[i];
+          symbol = accessing_symbol[state1];
+          /*	  if (ISVAR(symbol)) break;  */
+          fprintf(foutput, "    %-4s\tshift  %d\n", tags[symbol], state1);
+        }
 
       if (i > 0)
-	putc('\n', foutput);
+        {
+          putc('\n', foutput);
+        }
     }
   else
     {
@@ -184,14 +203,19 @@ void print_actions(int state)
       k = errp->nerrs;
 
       for (i = 0; i < k; i++)
-	{
-	  if (! errp->errs[i]) continue;
-	  symbol = errp->errs[i];
-	  fprintf(foutput, "    %-4s\terror (nonassociative)\n", tags[symbol]);
-	}
+        {
+          if (!errp->errs[i])
+            {
+              continue;
+            }
+          symbol = errp->errs[i];
+          fprintf(foutput, "    %-4s\terror (nonassociative)\n", tags[symbol]);
+        }
 
       if (i > 0)
-	putc('\n', foutput);
+        {
+          putc('\n', foutput);
+        }
     }
   else
     {
@@ -203,8 +227,7 @@ void print_actions(int state)
     {
       rule = redp->rules[0];
       symbol = rlhs[rule];
-      fprintf(foutput, "    $default\treduce  %d  (%s)\n\n",
-     	        rule, tags[symbol]);
+      fprintf(foutput, "    $default\treduce  %d  (%s)\n\n", rule, tags[symbol]);
     }
   else if (redp)
     {
@@ -214,12 +237,15 @@ void print_actions(int state)
   if (i < k)
     {
       for (; i < k; i++)
-	{
-	  if (! shiftp->shifts[i]) continue;
-	  state1 = shiftp->shifts[i];
-	  symbol = accessing_symbol[state1];
-	  fprintf(foutput, "    %-4s\tgoto  %d\n", tags[symbol], state1);
-	}
+        {
+          if (!shiftp->shifts[i])
+            {
+              continue;
+            }
+          state1 = shiftp->shifts[i];
+          symbol = accessing_symbol[state1];
+          fprintf(foutput, "    %-4s\tgoto  %d\n", tags[symbol], state1);
+        }
 
       putc('\n', foutput);
     }

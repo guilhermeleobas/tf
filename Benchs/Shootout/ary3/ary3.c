@@ -14,7 +14,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
 #ifdef SMALL_PROBLEM_SIZE
 #define LENGTH 150000
 #else
@@ -23,23 +24,26 @@ int main(int argc, char *argv[]) {
   int n = ((argc == 2) ? atoi(argv[1]) : LENGTH);
   int i, k, *x, *y;
 
-  x = (int *) calloc(n, sizeof(int));
-  y = (int *) calloc(n, sizeof(int));
+  x = (int *)calloc(n, sizeof(int));
+  y = (int *)calloc(n, sizeof(int));
 
-  for (i = 0; i < n; i++) {
-    x[i] = i + 1;
-  }
-
-  for (k=0; k<1000; k++) {
-    for (i = n-1; i >= 0; i--) {
-      y[i] += x[i];
+  for (i = 0; i < n; i++)
+    {
+      x[i] = i + 1;
     }
-  }
 
-  printf("%d %d\n", y[0], y[n-1]);
+  for (k = 0; k < 1000; k++)
+    {
+      for (i = n - 1; i >= 0; i--)
+        {
+          y[i] += x[i];
+        }
+    }
+
+  printf("%d %d\n", y[0], y[n - 1]);
 
   free(x);
   free(y);
-  
-  return(0);
+
+  return (0);
 }

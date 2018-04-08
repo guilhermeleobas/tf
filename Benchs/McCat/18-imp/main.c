@@ -10,7 +10,7 @@
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 ****/
 
 /*
@@ -99,21 +99,19 @@ void ParseInputFile(char *file)
   FILE *fp;
   char s[80];
   int p;
-  ParmT parms[] = {
-    {"image", STR, &IMAGE},
-    {"sigma", DBL, &SIGMA},
-    {"var_thresh", INT, &VAR_THRESHOLD},
-    {"vspread_thresh", DBL, &VSPREAD_THRESHOLD}, 
-    {"same_row_thresh", INT, &SAME_ROW_THRESHOLD},
-    {"same_row_v", INT, &SAME_ROW_V},
-    {"same_row_h", INT, &SAME_ROW_H},
-    {"max_char_size", INT, &MAX_CHAR_SIZE},
-    {"min_char_size", INT, &MIN_CHAR_SIZE},
-    {"kill_small", INT, &KILL_SMALL_COMP},
-    {"small_thresh", INT, &SMALL_THRESHOLD},
-    {"hvar_window", INT, &HVAR_WINDOW},
-    {"", 0, NULL}
-  };
+  ParmT parms[] = {{"image", STR, &IMAGE},
+                   {"sigma", DBL, &SIGMA},
+                   {"var_thresh", INT, &VAR_THRESHOLD},
+                   {"vspread_thresh", DBL, &VSPREAD_THRESHOLD},
+                   {"same_row_thresh", INT, &SAME_ROW_THRESHOLD},
+                   {"same_row_v", INT, &SAME_ROW_V},
+                   {"same_row_h", INT, &SAME_ROW_H},
+                   {"max_char_size", INT, &MAX_CHAR_SIZE},
+                   {"min_char_size", INT, &MIN_CHAR_SIZE},
+                   {"kill_small", INT, &KILL_SMALL_COMP},
+                   {"small_thresh", INT, &SMALL_THRESHOLD},
+                   {"hvar_window", INT, &HVAR_WINDOW},
+                   {"", 0, NULL}};
   char read_parm[25];
   char read_val[80];
 
@@ -133,28 +131,31 @@ void ParseInputFile(char *file)
       strcpy(read_parm, strtok(s, " \t"));
       strcpy(read_val, strtok(NULL, " \t"));
 
-      while((parms[p].var != NULL) && strcmp(read_parm, parms[p].parm))
-	p++;
+      while ((parms[p].var != NULL) && strcmp(read_parm, parms[p].parm))
+        {
+          p++;
+        }
 
       if (parms[p].var == NULL)
-	continue;
+        {
+          continue;
+        }
 
-      switch(parms[p].type)
-	{
-	case INT:
-	  *(int *)(parms[p].var) = atoi(read_val);
-	  break;
+      switch (parms[p].type)
+        {
+          case INT:
+            *(int *)(parms[p].var) = atoi(read_val);
+            break;
 
-	case DBL:
-	  *(double *)(parms[p].var) = strtod(read_val, NULL);
-	  break;
+          case DBL:
+            *(double *)(parms[p].var) = strtod(read_val, NULL);
+            break;
 
-	case STR:
-	  strcpy((char *) parms[p].var, read_val);
-	  ((char *) (parms[p].var))[strlen((char *) (parms[p].var)) - 1] =
-	    '\0';
-	  break;
-	}
+          case STR:
+            strcpy((char *)parms[p].var, read_val);
+            ((char *)(parms[p].var))[strlen((char *)(parms[p].var)) - 1] = '\0';
+            break;
+        }
     }
   fclose(fp);
 }
@@ -179,7 +180,7 @@ int main(int argc, char *argv[])
   if (argc != 4)
     {
       DisplayUsage(argv[0]);
-      return(-1);
+      return (-1);
     }
 
   sigma = strtod(argv[2], NULL);
@@ -188,7 +189,7 @@ int main(int argc, char *argv[])
   ParseInputFile(argv[1]);
 #endif
 
-  /* Initialize image information object. */
+/* Initialize image information object. */
 #ifdef BOGUS
   PGM_InitImage(&image, argv[1]);
 #else
@@ -201,23 +202,23 @@ int main(int argc, char *argv[])
   /* Load image data. */
   if ((rc = PGM_LoadImage(&image)) != PGM_OK)
     {
-      switch(rc)
-	{
-	case PGM_NOT_FOUND:
-	  printf("Error: %s not found. Exiting.\n", image.filename);
-	  break;
+      switch (rc)
+        {
+          case PGM_NOT_FOUND:
+            printf("Error: %s not found. Exiting.\n", image.filename);
+            break;
 
-	case PGM_NOT_PGM:
-	  printf("Error: %s is not a PGM file. Exiting.\n", image.filename);
-	  break;
+          case PGM_NOT_PGM:
+            printf("Error: %s is not a PGM file. Exiting.\n", image.filename);
+            break;
 
-	case PGM_NO_DATA:
-	  printf("Error: %s has 0 length. Exiting.\n", image.filename);
-	  break;
-	}
+          case PGM_NO_DATA:
+            printf("Error: %s has 0 length. Exiting.\n", image.filename);
+            break;
+        }
       free(image.filename);
       free(image.imgname);
-      return(-2);
+      return (-2);
     }
 
   /* Print image info. */
@@ -235,11 +236,10 @@ int main(int argc, char *argv[])
 #endif
 
   /* Perform Canny edge detection on the variance bitmap. */
-  if (L_canny(sigma, image.var, image.width, image.height, &(image.cedge),
-	      err))
+  if (L_canny(sigma, image.var, image.width, image.height, &(image.cedge), err))
     {
       printf("Error: '%s' in L_canny(). Exiting.\n", err);
-      return(-3);
+      return (-3);
     }
 
 #ifdef INTERMEDIATE_OUTPUT
@@ -293,5 +293,5 @@ int main(int argc, char *argv[])
   /* Free image information object. */
   PGM_FreeImage(&image);
 
-  return(0);
+  return (0);
 }

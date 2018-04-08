@@ -18,15 +18,17 @@ notice and this notice must be preserved on all copies.
  You are forbidden to forbid anyone else to use, share and improve
  what you give them.   Help stamp out software-hoarding!  */
 
-/* set_derives finds, for each variable (nonterminal), which rules can derive it.
+/* set_derives finds, for each variable (nonterminal), which rules can derive
+   it.
    It sets up the value of derives so that
-   derives[i - ntokens] points to a vector of rule numbers, terminated with a zero.  */
+   derives[i - ntokens] points to a vector of rule numbers, terminated with a
+   zero.  */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "gram.h"
 #include "new.h"
 #include "types.h"
-#include "gram.h"
 
 short **derives;
 
@@ -60,14 +62,14 @@ void set_derives(void)
       derives[i] = q;
       p = dset[i];
       while (p)
-	{
-	  *q++ = p->value;
-	  p = p->next;
-	}
+        {
+          *q++ = p->value;
+          p = p->next;
+        }
       *q++ = -1;
     }
 
-#ifdef	DEBUG
+#ifdef DEBUG
   print_derives();
 #endif
 
@@ -75,16 +77,13 @@ void set_derives(void)
   FREE(delts);
 }
 
-
 void free_derives(void)
 {
   FREE(derives[ntokens]);
   FREE(derives + ntokens);
 }
 
-
-
-#ifdef	DEBUG
+#ifdef DEBUG
 
 void print_derives(void)
 {
@@ -99,9 +98,9 @@ void print_derives(void)
     {
       printf("%s derives", tags[i]);
       for (sp = derives[i]; *sp > 0; sp++)
-	{
-	  printf("  %d", *sp);
-	}
+        {
+          printf("  %d", *sp);
+        }
       putchar('\n');
     }
 

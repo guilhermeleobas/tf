@@ -7,11 +7,15 @@ int flag;
 
 int mylog(int num)
 {
-  int j=0,k=1;
-  
-  while(k<num) { k*=2; j++; }
+  int j = 0, k = 1;
+
+  while (k < num)
+    {
+      k *= 2;
+      j++;
+    }
   return j;
-} 
+}
 
 int dealwithargs(int argc, char *argv[])
 {
@@ -19,12 +23,12 @@ int dealwithargs(int argc, char *argv[])
 
   if (argc > 3)
     flag = atoi(argv[3]);
-  else 
+  else
     flag = 0;
 
-  if (argc > 2) 
+  if (argc > 2)
     NumNodes = atoi(argv[2]);
-  else 
+  else
     NumNodes = 4;
 
   NDim = mylog(NumNodes);
@@ -36,12 +40,3 @@ int dealwithargs(int argc, char *argv[])
 
   return num;
 }
-
-
-
-
-
-
-
-
-

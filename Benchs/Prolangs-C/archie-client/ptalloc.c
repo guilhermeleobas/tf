@@ -14,12 +14,12 @@
 #include <pfs.h>
 #include <pmachine.h> /* for correct definition of ZERO */
 #ifdef MSDOS
-# define free _pfree   /* otherwise we get conflicts with free() */
+#define free _pfree /* otherwise we get conflicts with free() */
 #endif
 
-static PTEXT	free1 = NULL;
-int 		ptext_count = 0;
-int		ptext_max = 0;
+static PTEXT free1 = NULL;
+int ptext_count = 0;
+int ptext_max = 0;
 
 /*
  * ptalloc - allocate and initialize ptext structure
@@ -29,29 +29,31 @@ int		ptext_max = 0;
  *    returns NULL.
  */
 
-extern void bzero(char *b,int length);
+extern void bzero(char *b, int length);
 
 PTEXT ptalloc(void)
+{
+  PTEXT vt;
+  if (free1)
     {
-	PTEXT	vt;
-	if(free1) {
-	    vt = free1;
-	    free1 = free1->next;
-	}
-	else {
-	    vt = (PTEXT) malloc(sizeof(PTEXT_ST));
-	    if (!vt) return(NULL);
-	    ptext_max++;
-	}
-	ptext_count++;
-
-	/* nearly all parts are 0 [or NULL] */
-	ZERO(vt);
-	/* The offset is to leave room for additional headers */
-	vt->start = vt->dat + MAX_PTXT_HDR;
-
-	return(vt);
+      vt = free1;
+      free1 = free1->next;
     }
+  else
+    {
+      vt = (PTEXT)malloc(sizeof(PTEXT_ST));
+      if (!vt) return (NULL);
+      ptext_max++;
+    }
+  ptext_count++;
+
+  /* nearly all parts are 0 [or NULL] */
+  ZERO(vt);
+  /* The offset is to leave room for additional headers */
+  vt->start = vt->dat + MAX_PTXT_HDR;
+
+  return (vt);
+}
 
 /*
  * ptfree - free a VTEXT structure
@@ -61,12 +63,12 @@ PTEXT ptalloc(void)
  */
 
 void ptfree(PTEXT vt)
-    {
-	vt->next = free1;
-	vt->previous = NULL;
-	free1 = vt;
-	ptext_count--;
-    }
+{
+  vt->next = free1;
+  vt->previous = NULL;
+  free1 = vt;
+  ptext_count--;
+}
 
 /*
  * ptlfree - free a VTEXT structure
@@ -77,12 +79,13 @@ void ptfree(PTEXT vt)
  */
 
 void ptlfree(PTEXT vt)
-    {
-	PTEXT	nxt;
+{
+  PTEXT nxt;
 
-	while(vt != NULL) {
-	    nxt = vt->next;
-	    ptfree(vt);
-	    vt = nxt;
-	}
+  while (vt != NULL)
+    {
+      nxt = vt->next;
+      ptfree(vt);
+      vt = nxt;
     }
+}

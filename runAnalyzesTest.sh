@@ -45,7 +45,7 @@ $CLANGFORM -style="{BasedOnStyle: llvm, IndentWidth: 2, ColumnLimit: 0}" ${THIS}
 
 # mv tmp.txt ${THIS}/$1
 
-bash $HOME/Programs/tf/scopetest.sh ${THIS}/$TMP_FILE
+bash $HOME/Programs/tf_taskminer/scopetest.sh ${THIS}/$TMP_FILE
 
 $CLANG $OMP $COMP_FLAGS -lm -g -S -emit-llvm ${THIS}/$TMP_FILE -o result.bc 
 
@@ -55,7 +55,15 @@ $CLANG $OMP $COMP_FLAGS -lm -g -S -emit-llvm ${THIS}/$TMP_FILE -o result.bc
 $OPT -load $ST -instnamer -mem2reg -scopeTree result.bc 
 
 $OPT -load $ST -load $WTM -load $WAI -instnamer -mem2reg -writeInFile -Run-Mode=true \
-   -debug-only=print-tasks -S result.bc -o result2.bc
+   -debug-only=print-tasks -S result.bc -o result2.bc &> /tmp/tempao.txt
+
+achou=$(cat /tmp/tempao.txt | grep "Is safe for annotation?  no" )
+
+if [[ $achou != "" ]]; then
+  echo "can't annotate program! skipping"
+  rm -f ${THIS}/tmp_AI.c
+  exit 1
+fi
 
 $CLANGFORM -style="{BasedOnStyle: llvm, IndentWidth: 2}" ${THIS}/$TMP_FILE &> tmp.txt
 

@@ -6,11 +6,11 @@
  * 	    It's free because it's yours.
  */
 
-#include "stdinc.h"
 #include <errno.h>
+#include "stdinc.h"
 
-#define A	16807.0
-#define M	2147483647.0
+#define A 16807.0
+#define M 2147483647.0
 
 void exit(int);
 
@@ -19,12 +19,11 @@ void exit(int);
  */
 double my_rand(double seed)
 {
-    double	t = A*seed  + 1; 
-    double floor();
+  double t = A * seed + 1;
+  double floor();
 
-
-    seed = t - (M * floor(t / M));
-    return seed;
+  seed = t - (M * floor(t / M));
+  return seed;
 
 } /* end of random */
 
@@ -33,14 +32,12 @@ double my_rand(double seed)
  */
 
 double xrand(double xl, double xh, double r)
-{   double res;
+{
+  double res;
 
-    res = xl + (xh-xl)*r/2147483647.0;
-    return (res);
+  res = xl + (xh - xl) * r / 2147483647.0;
+  return (res);
 }
-
-
-
 
 /*
  * ERROR: scream and die quickly.
@@ -48,11 +45,7 @@ double xrand(double xl, double xh, double r)
 
 error(char *msg)
 {
-    fprintf(stderr, msg);
-    if (errno != 0)
-        perror("Error");
-    exit(0);
+  fprintf(stderr, msg);
+  if (errno != 0) perror("Error");
+  exit(0);
 }
-
-
-

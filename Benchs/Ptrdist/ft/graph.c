@@ -28,10 +28,10 @@
  *
  */
 
+#include "graph.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "graph.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -40,7 +40,7 @@
 #define random() rand()
 #endif
 
-#define GET_WEIGHT	(random() + 1) % MAX_WEIGHT
+#define GET_WEIGHT (random() + 1) % MAX_WEIGHT
 
 /*
  * Local variables.
@@ -50,14 +50,14 @@ static int generatedEdges;
 /*
  * Local functions.
  */
-Vertices * GenTree(int vertex);
-Vertices * AddEdges(Vertices * graph, int nVertex, int nEdge);
-Vertices * PickVertex(Vertices * graph, int whichVertex);
-void      Connect(Vertices * vertex1, Vertices * vertex2);
-int       Duplicate(Vertices * vertex1, Vertices * vertex2);
-Vertices * NewVertex();
-Edges * NewEdge();
-void      PrintNeighbors(Vertices * vertex);
+Vertices *GenTree(int vertex);
+Vertices *AddEdges(Vertices *graph, int nVertex, int nEdge);
+Vertices *PickVertex(Vertices *graph, int whichVertex);
+void Connect(Vertices *vertex1, Vertices *vertex2);
+int Duplicate(Vertices *vertex1, Vertices *vertex2);
+Vertices *NewVertex();
+Edges *NewEdge();
+void PrintNeighbors(Vertices *vertex);
 
 /*
  * Local variables.
@@ -71,10 +71,9 @@ static id = 1;
  * Apparently a good reference is Tinhofer G., ,
  * C. Hanser, Verlag, M\"{u}nchen 1980.
  */
-Vertices *
-GenGraph(int nVertex, int nEdge)
+Vertices *GenGraph(int nVertex, int nEdge)
 {
-  Vertices * graph;
+  Vertices *graph;
 
   assert(nEdge + 1 >= nVertex);
   assert(nEdge <= nVertex * (nVertex - 1) / 2);
@@ -83,104 +82,100 @@ GenGraph(int nVertex, int nEdge)
 
   graph = GenTree(nVertex);
   graph = AddEdges(graph, nVertex, nEdge - nVertex + 1);
-  return(graph);
+  return (graph);
 }
 
-Vertices *
-GenTree(int nVertex)
+Vertices *GenTree(int nVertex)
 {
-  int       i;
-  int       weight;
-  Vertices * vertex;
-  Vertices * graph;
-  Edges * edge;
+  int i;
+  int weight;
+  Vertices *vertex;
+  Vertices *graph;
+  Edges *edge;
 
   graph = NewVertex();
   NEXT_VERTEX(graph) = graph;
 
-  for(i = 1; i < nVertex; i++)
-  {
-    vertex = NewVertex();
-    edge = NewEdge();
+  for (i = 1; i < nVertex; i++)
+    {
+      vertex = NewVertex();
+      edge = NewEdge();
 
-    /*
+      /*
      * The newly created vertex has one edge ...
      */
-    EDGES(vertex) = edge;
+      EDGES(vertex) = edge;
 
-    /*
+      /*
      * ... which is connected to the graph so far generated.  The connection
      * point in the graph is picked at random.
      */
-    VERTEX(edge) = PickVertex(graph, random() % i);
-    weight = GET_WEIGHT;
-    WEIGHT(edge) = weight;
-    SOURCE(edge) = vertex;
+      VERTEX(edge) = PickVertex(graph, random() % i);
+      weight = GET_WEIGHT;
+      WEIGHT(edge) = weight;
+      SOURCE(edge) = vertex;
 
-    /*
+      /*
      * Link the new vertex into the graph.
      */
-    NEXT_VERTEX(vertex) = NEXT_VERTEX(graph);
-    NEXT_VERTEX(graph) = vertex;
+      NEXT_VERTEX(vertex) = NEXT_VERTEX(graph);
+      NEXT_VERTEX(graph) = vertex;
 
-    /*
+      /*
      * Add an edge to the vertex randomly picked as the connection point.
      */
-    edge = NewEdge();
-    WEIGHT(edge) = weight;
-    SOURCE(edge) = VERTEX(EDGES(vertex));
-    VERTEX(edge) = vertex;
-    NEXT_EDGE(edge) = EDGES(VERTEX(EDGES(vertex)));
-    EDGES(VERTEX(EDGES(vertex))) = edge;
-   }
+      edge = NewEdge();
+      WEIGHT(edge) = weight;
+      SOURCE(edge) = VERTEX(EDGES(vertex));
+      VERTEX(edge) = vertex;
+      NEXT_EDGE(edge) = EDGES(VERTEX(EDGES(vertex)));
+      EDGES(VERTEX(EDGES(vertex))) = edge;
+    }
 
-  return(graph);
+  return (graph);
 }
 
-Vertices *
-AddEdges(Vertices * graph, int nVertex, int nEdge)
+Vertices *AddEdges(Vertices *graph, int nVertex, int nEdge)
 {
-  int       i;
-  Vertices * vertex1;
-  Vertices * vertex2;
+  int i;
+  Vertices *vertex1;
+  Vertices *vertex2;
 
   assert(graph != NULL_VERTEX);
   assert(nEdge >= 0);
 
-  for(i = 0; i < nEdge; i++)
-  {
-    do
+  for (i = 0; i < nEdge; i++)
     {
-      vertex1 = PickVertex(graph, random() % nVertex);
-      vertex2 = PickVertex(NEXT_VERTEX(vertex1), (random() % nVertex) - 1);
-      assert(vertex1 != vertex2);
+      do
+        {
+          vertex1 = PickVertex(graph, random() % nVertex);
+          vertex2 = PickVertex(NEXT_VERTEX(vertex1), (random() % nVertex) - 1);
+          assert(vertex1 != vertex2);
+        }
+      while (Duplicate(vertex1, vertex2));
+
+      Connect(vertex1, vertex2);
     }
-    while(Duplicate(vertex1, vertex2));
 
-    Connect(vertex1, vertex2);
-  }
-  
-  return(graph);
+  return (graph);
 }
 
-Vertices *
-PickVertex(Vertices * graph, int whichVertex)
+Vertices *PickVertex(Vertices *graph, int whichVertex)
 {
-  int       i;
+  int i;
 
-  for(i = 0; i < whichVertex; i++)
-  {
-    graph = NEXT_VERTEX(graph);
-  }
+  for (i = 0; i < whichVertex; i++)
+    {
+      graph = NEXT_VERTEX(graph);
+    }
 
-  return(graph);
+  return (graph);
 }
 
-void
-Connect(Vertices * vertex1, Vertices * vertex2)
+void Connect(Vertices *vertex1, Vertices *vertex2)
 {
-  int    weight;
-  Edges * edge;
+  int weight;
+  Edges *edge;
 
   weight = GET_WEIGHT;
 
@@ -190,7 +185,7 @@ Connect(Vertices * vertex1, Vertices * vertex2)
   VERTEX(edge) = vertex2;
   NEXT_EDGE(edge) = EDGES(vertex1);
   EDGES(vertex1) = edge;
-  
+
   edge = NewEdge();
   WEIGHT(edge) = weight;
   SOURCE(edge) = vertex2;
@@ -199,94 +194,88 @@ Connect(Vertices * vertex1, Vertices * vertex2)
   EDGES(vertex2) = edge;
 }
 
-int
-Duplicate(Vertices * vertex1, Vertices * vertex2)
+int Duplicate(Vertices *vertex1, Vertices *vertex2)
 {
-  Edges * edge;
+  Edges *edge;
 
   edge = EDGES(vertex1);
 
-  while(edge != NULL_EDGE)
-  {
-    if(VERTEX(edge) == vertex2)
+  while (edge != NULL_EDGE)
     {
-      return(TRUE);
+      if (VERTEX(edge) == vertex2)
+        {
+          return (TRUE);
+        }
+
+      edge = NEXT_EDGE(edge);
     }
 
-    edge = NEXT_EDGE(edge);
-  }
-
-  return(FALSE);
+  return (FALSE);
 }
 
-Vertices *
-NewVertex()
+Vertices *NewVertex()
 {
-  Vertices * vertex;
+  Vertices *vertex;
 
   vertex = (Vertices *)malloc(sizeof(Vertices));
 
-  if(vertex == NULL)
-  {
-    fprintf(stderr, "Could not malloc\n");
-    exit(1);
-  }
+  if (vertex == NULL)
+    {
+      fprintf(stderr, "Could not malloc\n");
+      exit(1);
+    }
 
   ID(vertex) = id++;
   EDGES(vertex) = NULL;
   NEXT_VERTEX(vertex) = NULL;
 
-  return(vertex);
+  return (vertex);
 }
 
-Edges *
-NewEdge()
+Edges *NewEdge()
 {
-  Edges * edge;
+  Edges *edge;
 
   edge = (Edges *)malloc(sizeof(Edges));
 
-  if(edge == NULL)
-  {
-    fprintf(stderr, "Could not malloc\n");
-    exit(1);
-  }
+  if (edge == NULL)
+    {
+      fprintf(stderr, "Could not malloc\n");
+      exit(1);
+    }
 
   WEIGHT(edge) = 0;
   VERTEX(edge) = NULL;
   NEXT_EDGE(edge) = NULL;
-  
-  return(edge);
+
+  return (edge);
 }
 
-void
-PrintGraph(Vertices * graph)
+void PrintGraph(Vertices *graph)
 {
-  Vertices * vertex;
+  Vertices *vertex;
 
   assert(graph != NULL);
 
   vertex = graph;
   do
-  {
-    printf("Vertex %d is connected to:", ID(vertex));
-    PrintNeighbors(vertex);
-    printf("\n");
-    vertex = NEXT_VERTEX(vertex);
-  }
-  while(vertex != graph);
+    {
+      printf("Vertex %d is connected to:", ID(vertex));
+      PrintNeighbors(vertex);
+      printf("\n");
+      vertex = NEXT_VERTEX(vertex);
+    }
+  while (vertex != graph);
 }
 
-void
-PrintNeighbors(Vertices * vertex)
+void PrintNeighbors(Vertices *vertex)
 {
-  Edges * edge;
+  Edges *edge;
 
   edge = EDGES(vertex);
-  while(edge != NULL)
-  {
-    printf(" %d(%d)[%d]", ID(VERTEX(edge)), WEIGHT(edge), ID(SOURCE(edge)));
-    edge = NEXT_EDGE(edge);
-  }
+  while (edge != NULL)
+    {
+      printf(" %d(%d)[%d]", ID(VERTEX(edge)), WEIGHT(edge), ID(SOURCE(edge)));
+      edge = NEXT_EDGE(edge);
+    }
 }
-
