@@ -10,18 +10,19 @@
  * different JPEG file formats.
  */
 
-#include "cdjpeg.h" /* Common decls for cjpeg/djpeg applications */
-#include "jversion.h" /* for version message */
+#include "cdjpeg.h"		/* Common decls for cjpeg/djpeg applications */
+#include "jversion.h"		/* for version message */
 
-#ifdef USE_CCOMMAND /* command-line reader for Macintosh */
+#ifdef USE_CCOMMAND		/* command-line reader for Macintosh */
 #ifdef __MWERKS__
-#include <SIOUX.h> /* Metrowerks needs this */
-#include <console.h> /* ... and this */
+#include <SIOUX.h>              /* Metrowerks needs this */
+#include <console.h>		/* ... and this */
 #endif
 #ifdef THINK_C
-#include <console.h> /* Think declares it here */
+#include <console.h>		/* Think declares it here */
 #endif
 #endif
+
 
 /*
  * Argument-parsing code.
@@ -31,11 +32,13 @@
  * The main program in this file doesn't actually use this capability...
  */
 
-static const char *progname; /* program name for error messages */
-static char *outfilename; /* for -outfile switch */
+
+static const char * progname;	/* program name for error messages */
+static char * outfilename;	/* for -outfile switch */
+
 
 LOCAL(void)
-usage(void)
+usage (void)
 /* complain about bad command line */
 {
   fprintf(stderr, "usage: %s [switches] ", progname);
@@ -47,17 +50,13 @@ usage(void)
 
   fprintf(stderr, "Switches (names may be abbreviated):\n");
 #ifdef ENTROPY_OPT_SUPPORTED
-  fprintf(stderr,
-          "  -optimize      Optimize Huffman table (smaller file, but slow "
-          "compression)\n");
+  fprintf(stderr, "  -optimize      Optimize Huffman table (smaller file, but slow compression)\n");
 #endif
 #ifdef C_PROGRESSIVE_SUPPORTED
   fprintf(stderr, "  -progressive   Create progressive JPEG file\n");
 #endif
   fprintf(stderr, "Switches for advanced users:\n");
-  fprintf(
-      stderr,
-      "  -restart N     Set restart interval in rows, or in blocks with B\n");
+  fprintf(stderr, "  -restart N     Set restart interval in rows, or in blocks with B\n");
   fprintf(stderr, "  -maxmemory N   Maximum memory to use (in kbytes)\n");
   fprintf(stderr, "  -outfile name  Specify name for output file\n");
   fprintf(stderr, "  -verbose  or  -debug   Emit debug output\n");
@@ -71,9 +70,10 @@ usage(void)
   exit(EXIT_FAILURE);
 }
 
+
 LOCAL(int)
-parse_switches(j_compress_ptr cinfo, int argc, char **argv,
-               int last_file_arg_seen, boolean for_real)
+parse_switches (j_compress_ptr cinfo, int argc, char **argv,
+		int last_file_arg_seen, boolean for_real)
 /* Parse optional switches.
  * Returns argv[] index of first file-name argument (== argc if none).
  * Any file names with indexes <= last_file_arg_seen are ignored;
@@ -84,9 +84,9 @@ parse_switches(j_compress_ptr cinfo, int argc, char **argv,
  */
 {
   int argn;
-  char *arg;
+  char * arg;
   boolean simple_progressive;
-  char *scansarg = NULL; /* saves -scans parm if any */
+  char * scansarg = NULL;	/* saves -scans parm if any */
 
   /* Set up default JPEG parameters. */
   simple_progressive = FALSE;
@@ -95,178 +95,143 @@ parse_switches(j_compress_ptr cinfo, int argc, char **argv,
 
   /* Scan command line options, adjust parameters */
 
-  for (argn = 1; argn < argc; argn++)
-    {
-      arg = argv[argn];
-      if (*arg != '-')
-        {
-          /* Not a switch, must be a file name argument */
-          if (argn <= last_file_arg_seen)
-            {
-              outfilename = NULL; /* -outfile applies to just one input file */
-              continue; /* ignore this name if previously processed */
-            }
-          break; /* else done parsing switches */
-        }
-      arg++; /* advance past switch marker character */
-
-      if (keymatch(arg, "arithmetic", 1))
-        {
-/* Use arithmetic coding. */
-#ifdef C_ARITH_CODING_SUPPORTED
-          cinfo->arith_code = TRUE;
-#else
-          fprintf(stderr, "%s: sorry, arithmetic coding not supported\n", progname);
-          exit(EXIT_FAILURE);
-#endif
-        }
-      else if (keymatch(arg, "debug", 1) || keymatch(arg, "verbose", 1))
-        {
-          /* Enable debug printouts. */
-          /* On first -d, print version identification */
-          static boolean printed_version = FALSE;
-
-          if (!printed_version)
-            {
-              fprintf(stderr, "Independent JPEG Group's JPEGTRAN, version %s\n%s\n",
-                      JVERSION, JCOPYRIGHT);
-              printed_version = TRUE;
-            }
-          cinfo->err->trace_level++;
-        }
-      else if (keymatch(arg, "maxmemory", 3))
-        {
-          /* Maximum memory in Kb (or Mb with 'm'). */
-          long lval;
-          char ch = 'x';
-
-          if (++argn >= argc)
-            { /* advance to next argument */
-              usage();
-            }
-          if (sscanf(argv[argn], "%ld%c", &lval, &ch) < 1)
-            {
-              usage();
-            }
-          if (ch == 'm' || ch == 'M')
-            {
-              lval *= 1000L;
-            }
-          cinfo->mem->max_memory_to_use = lval * 1000L;
-        }
-      else if (keymatch(arg, "optimize", 1) || keymatch(arg, "optimise", 1))
-        {
-/* Enable entropy parm optimization. */
-#ifdef ENTROPY_OPT_SUPPORTED
-          cinfo->optimize_coding = TRUE;
-#else
-          fprintf(stderr, "%s: sorry, entropy optimization was not compiled\n",
-                  progname);
-          exit(EXIT_FAILURE);
-#endif
-        }
-      else if (keymatch(arg, "outfile", 4))
-        {
-          /* Set output file name. */
-          if (++argn >= argc)
-            { /* advance to next argument */
-              usage();
-            }
-          outfilename = argv[argn]; /* save it away for later use */
-        }
-      else if (keymatch(arg, "progressive", 1))
-        {
-/* Select simple progressive mode. */
-#ifdef C_PROGRESSIVE_SUPPORTED
-          simple_progressive = TRUE;
-/* We must postpone execution until num_components is known. */
-#else
-          fprintf(stderr, "%s: sorry, progressive output was not compiled\n",
-                  progname);
-          exit(EXIT_FAILURE);
-#endif
-        }
-      else if (keymatch(arg, "restart", 1))
-        {
-          /* Restart interval in MCU rows (or in MCUs with 'b'). */
-          long lval;
-          char ch = 'x';
-
-          if (++argn >= argc)
-            { /* advance to next argument */
-              usage();
-            }
-          if (sscanf(argv[argn], "%ld%c", &lval, &ch) < 1)
-            {
-              usage();
-            }
-          if (lval < 0 || lval > 65535L)
-            {
-              usage();
-            }
-          if (ch == 'b' || ch == 'B')
-            {
-              cinfo->restart_interval = (unsigned int)lval;
-              cinfo->restart_in_rows = 0; /* else prior '-restart n' overrides me */
-            }
-          else
-            {
-              cinfo->restart_in_rows = (int)lval;
-              /* restart_interval will be computed during startup */
-            }
-        }
-      else if (keymatch(arg, "scans", 2))
-        {
-/* Set scan script. */
-#ifdef C_MULTISCAN_FILES_SUPPORTED
-          if (++argn >= argc)
-            { /* advance to next argument */
-              usage();
-            }
-          scansarg = argv[argn];
-/* We must postpone reading the file in case -progressive appears. */
-#else
-          fprintf(stderr, "%s: sorry, multi-scan output was not compiled\n",
-                  progname);
-          exit(EXIT_FAILURE);
-#endif
-        }
-      else
-        {
-          usage(); /* bogus switch */
-        }
+  for (argn = 1; argn < argc; argn++) {
+    arg = argv[argn];
+    if (*arg != '-') {
+      /* Not a switch, must be a file name argument */
+      if (argn <= last_file_arg_seen) {
+	outfilename = NULL;	/* -outfile applies to just one input file */
+	continue;		/* ignore this name if previously processed */
+      }
+      break;			/* else done parsing switches */
     }
+    arg++;			/* advance past switch marker character */
+
+    if (keymatch(arg, "arithmetic", 1)) {
+      /* Use arithmetic coding. */
+#ifdef C_ARITH_CODING_SUPPORTED
+      cinfo->arith_code = TRUE;
+#else
+      fprintf(stderr, "%s: sorry, arithmetic coding not supported\n",
+	      progname);
+      exit(EXIT_FAILURE);
+#endif
+
+    } else if (keymatch(arg, "debug", 1) || keymatch(arg, "verbose", 1)) {
+      /* Enable debug printouts. */
+      /* On first -d, print version identification */
+      static boolean printed_version = FALSE;
+
+      if (! printed_version) {
+	fprintf(stderr, "Independent JPEG Group's JPEGTRAN, version %s\n%s\n",
+		JVERSION, JCOPYRIGHT);
+	printed_version = TRUE;
+      }
+      cinfo->err->trace_level++;
+
+    } else if (keymatch(arg, "maxmemory", 3)) {
+      /* Maximum memory in Kb (or Mb with 'm'). */
+      long lval;
+      char ch = 'x';
+
+      if (++argn >= argc)	/* advance to next argument */
+	usage();
+      if (sscanf(argv[argn], "%ld%c", &lval, &ch) < 1)
+	usage();
+      if (ch == 'm' || ch == 'M')
+	lval *= 1000L;
+      cinfo->mem->max_memory_to_use = lval * 1000L;
+
+    } else if (keymatch(arg, "optimize", 1) || keymatch(arg, "optimise", 1)) {
+      /* Enable entropy parm optimization. */
+#ifdef ENTROPY_OPT_SUPPORTED
+      cinfo->optimize_coding = TRUE;
+#else
+      fprintf(stderr, "%s: sorry, entropy optimization was not compiled\n",
+	      progname);
+      exit(EXIT_FAILURE);
+#endif
+
+    } else if (keymatch(arg, "outfile", 4)) {
+      /* Set output file name. */
+      if (++argn >= argc)	/* advance to next argument */
+	usage();
+      outfilename = argv[argn];	/* save it away for later use */
+
+    } else if (keymatch(arg, "progressive", 1)) {
+      /* Select simple progressive mode. */
+#ifdef C_PROGRESSIVE_SUPPORTED
+      simple_progressive = TRUE;
+      /* We must postpone execution until num_components is known. */
+#else
+      fprintf(stderr, "%s: sorry, progressive output was not compiled\n",
+	      progname);
+      exit(EXIT_FAILURE);
+#endif
+
+    } else if (keymatch(arg, "restart", 1)) {
+      /* Restart interval in MCU rows (or in MCUs with 'b'). */
+      long lval;
+      char ch = 'x';
+
+      if (++argn >= argc)	/* advance to next argument */
+	usage();
+      if (sscanf(argv[argn], "%ld%c", &lval, &ch) < 1)
+	usage();
+      if (lval < 0 || lval > 65535L)
+	usage();
+      if (ch == 'b' || ch == 'B') {
+	cinfo->restart_interval = (unsigned int) lval;
+	cinfo->restart_in_rows = 0; /* else prior '-restart n' overrides me */
+      } else {
+	cinfo->restart_in_rows = (int) lval;
+	/* restart_interval will be computed during startup */
+      }
+
+    } else if (keymatch(arg, "scans", 2)) {
+      /* Set scan script. */
+#ifdef C_MULTISCAN_FILES_SUPPORTED
+      if (++argn >= argc)	/* advance to next argument */
+	usage();
+      scansarg = argv[argn];
+      /* We must postpone reading the file in case -progressive appears. */
+#else
+      fprintf(stderr, "%s: sorry, multi-scan output was not compiled\n",
+	      progname);
+      exit(EXIT_FAILURE);
+#endif
+
+    } else {
+      usage();			/* bogus switch */
+    }
+  }
 
   /* Post-switch-scanning cleanup */
 
-  if (for_real)
-    {
+  if (for_real) {
+
 #ifdef C_PROGRESSIVE_SUPPORTED
-      if (simple_progressive)
-        { /* process -progressive; -scans can override */
-          jpeg_simple_progression(cinfo);
-        }
+    if (simple_progressive)	/* process -progressive; -scans can override */
+      jpeg_simple_progression(cinfo);
 #endif
 
 #ifdef C_MULTISCAN_FILES_SUPPORTED
-      if (scansarg != NULL)
-        { /* process -scans if it was present */
-          if (!read_scan_script(cinfo, scansarg))
-            {
-              usage();
-            }
-        }
+    if (scansarg != NULL)	/* process -scans if it was present */
+      if (! read_scan_script(cinfo, scansarg))
+	usage();
 #endif
-    }
+  }
 
-  return argn; /* return index of next arg (file name) */
+  return argn;			/* return index of next arg (file name) */
 }
+
 
 /*
  * The main program.
  */
 
-int main(int argc, char **argv)
+int
+main (int argc, char **argv)
 {
   struct jpeg_decompress_struct srcinfo;
   struct jpeg_compress_struct dstinfo;
@@ -274,34 +239,32 @@ int main(int argc, char **argv)
 #ifdef PROGRESS_REPORT
   struct cdjpeg_progress_mgr progress;
 #endif
-  jvirt_barray_ptr *coef_arrays;
+  jvirt_barray_ptr * coef_arrays;
   int file_index;
-  FILE *input_file;
-  FILE *output_file;
+  FILE * input_file;
+  FILE * output_file;
 
-/* On Mac, fetch a command line. */
+  /* On Mac, fetch a command line. */
 #ifdef USE_CCOMMAND
   argc = ccommand(&argv);
 #endif
 
   progname = argv[0];
   if (progname == NULL || progname[0] == 0)
-    {
-      progname = "jpegtran"; /* in case C library doesn't provide it */
+    progname = "jpegtran";	/* in case C library doesn't provide it */
 
-      /* Initialize the JPEG decompression object with default error handling. */
-    }
+  /* Initialize the JPEG decompression object with default error handling. */
   srcinfo.err = jpeg_std_error(&jsrcerr);
   jpeg_create_decompress(&srcinfo);
   /* Initialize the JPEG compression object with default error handling. */
   dstinfo.err = jpeg_std_error(&jdsterr);
   jpeg_create_compress(&dstinfo);
 
-/* Now safe to enable signal catcher.
- * Note: we assume only the decompression object will have virtual arrays.
- */
+  /* Now safe to enable signal catcher.
+   * Note: we assume only the decompression object will have virtual arrays.
+   */
 #ifdef NEED_SIGNAL_CATCHER
-  enable_signal_catcher((j_common_ptr)&srcinfo);
+  enable_signal_catcher((j_common_ptr) &srcinfo);
 #endif
 
   /* Scan command line to find file names.
@@ -316,73 +279,59 @@ int main(int argc, char **argv)
 
 #ifdef TWO_FILE_COMMANDLINE
   /* Must have either -outfile switch or explicit output file name */
-  if (outfilename == NULL)
-    {
-      if (file_index != argc - 2)
-        {
-          fprintf(stderr, "%s: must name one input and one output file\n",
-                  progname);
-          usage();
-        }
-      outfilename = argv[file_index + 1];
-    }
-  else
-    {
-      if (file_index != argc - 1)
-        {
-          fprintf(stderr, "%s: must name one input and one output file\n",
-                  progname);
-          usage();
-        }
-    }
-#else
-  /* Unix style: expect zero or one file name */
-  if (file_index < argc - 1)
-    {
-      fprintf(stderr, "%s: only one input file\n", progname);
+  if (outfilename == NULL) {
+    if (file_index != argc-2) {
+      fprintf(stderr, "%s: must name one input and one output file\n",
+	      progname);
       usage();
     }
+    outfilename = argv[file_index+1];
+  } else {
+    if (file_index != argc-1) {
+      fprintf(stderr, "%s: must name one input and one output file\n",
+	      progname);
+      usage();
+    }
+  }
+#else
+  /* Unix style: expect zero or one file name */
+  if (file_index < argc-1) {
+    fprintf(stderr, "%s: only one input file\n", progname);
+    usage();
+  }
 #endif /* TWO_FILE_COMMANDLINE */
 
   /* Open the input file. */
-  if (file_index < argc)
-    {
-      if ((input_file = fopen(argv[file_index], READ_BINARY)) == NULL)
-        {
-          fprintf(stderr, "%s: can't open %s\n", progname, argv[file_index]);
-          exit(EXIT_FAILURE);
-        }
+  if (file_index < argc) {
+    if ((input_file = fopen(argv[file_index], READ_BINARY)) == NULL) {
+      fprintf(stderr, "%s: can't open %s\n", progname, argv[file_index]);
+      exit(EXIT_FAILURE);
     }
-  else
-    {
-      /* default input file is stdin */
-      input_file = read_stdin();
-    }
+  } else {
+    /* default input file is stdin */
+    input_file = read_stdin();
+  }
 
   /* Open the output file. */
-  if (outfilename != NULL)
-    {
-      if ((output_file = fopen(outfilename, WRITE_BINARY)) == NULL)
-        {
-          fprintf(stderr, "%s: can't open %s\n", progname, outfilename);
-          exit(EXIT_FAILURE);
-        }
+  if (outfilename != NULL) {
+    if ((output_file = fopen(outfilename, WRITE_BINARY)) == NULL) {
+      fprintf(stderr, "%s: can't open %s\n", progname, outfilename);
+      exit(EXIT_FAILURE);
     }
-  else
-    {
-      /* default output file is stdout */
-      output_file = write_stdout();
-    }
+  } else {
+    /* default output file is stdout */
+    output_file = write_stdout();
+  }
 
 #ifdef PROGRESS_REPORT
-  start_progress_monitor((j_common_ptr)&dstinfo, &progress);
+  start_progress_monitor((j_common_ptr) &dstinfo, &progress);
 #endif
 
   /* Specify data source for decompression */
   jpeg_stdio_src(&srcinfo, input_file);
 
   /* Read file header */
-  (void)jpeg_read_header(&srcinfo, TRUE);
+  (void) jpeg_read_header(&srcinfo, TRUE);
 
   /* Read source file as DCT coefficients */
   coef_arrays = jpeg_read_coefficients(&srcinfo);
@@ -404,25 +353,20 @@ int main(int argc, char **argv)
   /* Finish compression and release memory */
   jpeg_finish_compress(&dstinfo);
   jpeg_destroy_compress(&dstinfo);
-  (void)jpeg_finish_decompress(&srcinfo);
+  (void) jpeg_finish_decompress(&srcinfo);
   jpeg_destroy_decompress(&srcinfo);
 
   /* Close files, if we opened them */
   if (input_file != stdin)
-    {
-      fclose(input_file);
-    }
+    fclose(input_file);
   if (output_file != stdout)
-    {
-      fclose(output_file);
-    }
+    fclose(output_file);
 
 #ifdef PROGRESS_REPORT
-  end_progress_monitor((j_common_ptr)&dstinfo);
+  end_progress_monitor((j_common_ptr) &dstinfo);
 #endif
 
   /* All done. */
-  exit(jsrcerr.num_warnings + jdsterr.num_warnings ? EXIT_WARNING
-                                                   : EXIT_SUCCESS);
-  return 0; /* suppress no-return-value warnings */
+  exit(jsrcerr.num_warnings + jdsterr.num_warnings ?EXIT_WARNING:EXIT_SUCCESS);
+  return 0;			/* suppress no-return-value warnings */
 }
