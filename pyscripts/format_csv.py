@@ -11,9 +11,9 @@ def main(arg):
     df = pd.read_csv(arg, sep='\t')
     
     df.Command = df.Command.apply(format_run_cmd)
-    df = df.drop(['Seq', 'Host', 'Send', 'Receive'], axis=1)
+    df = df.drop(['Seq', 'Starttime', 'Host', 'Send', 'Receive'], axis=1)
     
-    df.reset_index(drop=True).to_csv(sys.stdout)
+    df.reset_index(drop=True).set_index('Command').to_csv(sys.stdout)
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
