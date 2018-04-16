@@ -42,7 +42,7 @@ if [[ $PIN -eq 1 ]]; then
   PIN_LIB="$HOME/Programs/C/faun/src/PinLib"
   
   # PIN_FLAGS  => Flags to pass to PIN
-  PIN_FLAGS=" -filter_no_shared_libs " ;
+  PIN_FLAGS=" " ;
 
   echo "PIN_PATH is set to $PIN_PATH"
   echo "PIN_LIB is set to $PIN_LIB"
