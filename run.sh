@@ -102,11 +102,14 @@ if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
   # replace the compile function
   source "instrument.sh"
   
+  curr_dir=$(pwd) 
   cd $FAUN_PATH/src/
   ./build.sh
-  cd $FAUN_PATH
+  cd $curr_dir
+  # cd $FAUN_PATH
   
 fi
+
 
 rm -f run.txt init.txt read.txt
 touch run.txt init.txt read.txt
