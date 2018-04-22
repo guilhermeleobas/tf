@@ -26,7 +26,7 @@ function compile() {
     # $LLVM_PATH/opt $btc_name -o $rbc_name ;
 
     # You can add llvm pass in the command above:
-    $LLVM_PATH/opt -mem2reg -load DCC888.$suffix -Instrument $btc_name -o $rbc_name ;
+    $LLVM_PATH/opt -load DCC888.$suffix -Instrument $btc_name -o $rbc_name ;
   done
 
   #Generate all the bcs into a big bc:

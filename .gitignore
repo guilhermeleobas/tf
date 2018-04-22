@@ -7,6 +7,7 @@
 *.o
 *.out
 table.csv
+count.csv
 feat.dat
 prof.dat
 .DS_Store

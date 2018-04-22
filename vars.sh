@@ -39,7 +39,7 @@ if [[ $PIN -eq 1 ]]; then
   PIN_PATH="$HOME/Programs/Pin"
   
   # PIN_LIB    => The place where I keep the Pin lib implemented.
-  PIN_LIB="$HOME/Programs/C/faun/src/PinLib"
+  PIN_LIB="$HOME/Programs/basilisk/PinLib"
   
   # PIN_FLAGS  => Flags to pass to PIN
   PIN_FLAGS=" " ;
