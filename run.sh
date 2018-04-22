@@ -103,16 +103,15 @@ if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
   source "instrument.sh"
   
   curr_dir=$(pwd) 
-  cd $FAUN_PATH/src/
+  cd $BASILISK_PATH
   ./build.sh
   cd $curr_dir
   # cd $FAUN_PATH
   
 fi
 
-
-rm -f run.txt init.txt read.txt
-touch run.txt init.txt read.txt
+rm -f run.txt
+touch run.txt
 
 if [[ "$#" -ne 0 ]]; then
   benchs="$@"

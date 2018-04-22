@@ -20,7 +20,7 @@ function compile() {
     btc_name="$base_name.bc" ;
     rbc_name="$base_name.rbc" ;
     # Convert the target program to LLVM IR:
-    $LLVM_PATH/$COMPILER $CXXFLAGS -g -c -emit-llvm $file_name -o $btc_name ;
+    $LLVM_PATH/$COMPILER $CXXFLAGS -S -g -c -emit-llvm $file_name -o $btc_name ;
     # Convert the target IR program to SSA form:
     $LLVM_PATH/opt -mem2reg -instnamer $btc_name -o $rbc_name ;
   done

@@ -52,10 +52,8 @@ fi
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
 # Instrumenting part 
-# Faun Path
-FAUN_PATH="$HOME/Programs/C/faun"
-# Prof_PATH
-PROF_PATH="$HOME/Programs/C/faun/src/ProfLib"
+# Basilisk Path
+BASILISK_PATH="$HOME/Programs/basilisk"
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 

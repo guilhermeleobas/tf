@@ -5,12 +5,11 @@ function compile() {
 
   if [[ -n $CPU2006 && $CPU2006 -eq 1 ]]; then
     # Convert the program to SSA form:
-    $LLVM_PATH/opt -debug-only=StoreTagger -instcount -load DCC888.${suffix} -ssProf \
-      $lnk_name -o $prf_name 2> /dev/null ;
+  $LLVM_PATH/opt -load DCC888.$suffix -Instrument $lnk_name -o $prf_name 2> /dev/null;
     # Compile our file, in IR format, to x86:
     $LLVM_PATH/llc -filetype=obj $prf_name -o $obj_name ;
     # Compile everything now, producing a final executable file:
-    $LLVM_PATH/$COMPILER -lm $obj_name $PROF_PATH/store_data_collector.o -o $exe_name ;
+    $LLVM_PATH/$COMPILER -lm $obj_name -o $exe_name ;
     
     return
   fi
@@ -22,23 +21,22 @@ function compile() {
     btc_name="$base_name.bc" ;
     rbc_name="$base_name.rbc" ;
     # Convert the target program to LLVM IR:
-    $LLVM_PATH/$COMPILER $CXXFLAGS -g -c -emit-llvm $file_name -o $btc_name ;
+    $LLVM_PATH/$COMPILER $CXXFLAGS -S -g -c -emit-llvm $file_name -o $btc_name ;
     # Convert the target IR program to SSA form:
-    $LLVM_PATH/opt $btc_name -o $rbc_name ;
+    # $LLVM_PATH/opt $btc_name -o $rbc_name ;
 
     # You can add llvm pass in the command above:
-    # $LLVM_PATH/opt -mem2reg -instnamer -load DCC888.$suffix -vssa $btc_name -o $rbc_name ;
+    $LLVM_PATH/opt -mem2reg -load DCC888.$suffix -Instrument $btc_name -o $rbc_name ;
   done
 
   #Generate all the bcs into a big bc:
   $LLVM_PATH/llvm-link *.rbc -o $lnk_name ;
 
   # Insert instrumentation in the program:
-  $LLVM_PATH/opt -debug-only=StoreTagger -instcount -load DCC888.$suffix -ssProf \
-    $lnk_name -o $prf_name 2> /dev/null ;
+  $LLVM_PATH/opt $lnk_name -o $prf_name 2> /dev/null;
     
   # Compile our instrumented file, in IR format, to x86:
   $LLVM_PATH/llc -filetype=obj $prf_name -o $obj_name ;
   # Compile everything now, producing a final executable file:
-  $LLVM_PATH/$COMPILER -lm $obj_name $PROF_PATH/store_data_collector.o -o INS_$exe_name ;
+  $LLVM_PATH/$COMPILER -lm $BASILISK_PATH/Collect/collect.o $obj_name -o INS_$exe_name ;
 }
