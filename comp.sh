@@ -22,7 +22,7 @@ function compile() {
     # Convert the target program to LLVM IR:
     $LLVM_PATH/$COMPILER $CXXFLAGS -S -g -c -emit-llvm $file_name -o $btc_name ;
     # Convert the target IR program to SSA form:
-    $LLVM_PATH/opt -mem2reg -instnamer $btc_name -o $rbc_name ;
+    $LLVM_PATH/opt -mem2reg $btc_name -o $rbc_name ;
   done
 
   #Generate all the bcs into a big bc:

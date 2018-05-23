@@ -8,6 +8,10 @@
 *.out
 table.csv
 count.csv
+stores.csv
+loads.csv
+br.csv
+binops.csv
 feat.dat
 prof.dat
 .DS_Store

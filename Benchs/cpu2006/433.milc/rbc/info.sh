@@ -13,4 +13,4 @@ exe_name="$bnc_name.exe" ;
 
 # source_files=($(ls *.c)) ;
 # CXXFLAGS=" -lm " ;
-RUN_OPTIONS=" ../data/test/input/su3imp.in " ;
+STDIN=" ../data/test/input/su3imp.in " ;

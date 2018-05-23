@@ -44,6 +44,9 @@ if [[ $PIN -eq 1 ]]; then
   # PIN_FLAGS  => Flags to pass to PIN
   PIN_FLAGS=" " ;
 
+  # PIN_TOOL => tool
+  [[ -n $PIN_TOOL ]] || PIN_TOOL="MyPinTool"
+
   echo "PIN_PATH is set to $PIN_PATH"
   echo "PIN_LIB is set to $PIN_LIB"
   PIN_ROOT=$PIN_PATH make -C $PIN_LIB

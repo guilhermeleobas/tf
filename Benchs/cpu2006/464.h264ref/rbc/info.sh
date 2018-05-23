@@ -13,4 +13,4 @@ exe_name="$bnc_name.exe" ;
 
 # source_files=($(ls *.c)) ;
 # CXXFLAGS=" -lm " ;
-RUN_OPTIONS=" 1397 8 " ;
+RUN_OPTIONS=" -d foreman_ref_encoder_baseline.cfg " ;

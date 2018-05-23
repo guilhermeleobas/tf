@@ -12,7 +12,7 @@ function execute() {
   fi
 
   cmd="$TIMEOUT --signal=TERM ${RUNTIME} \
-       $PIN_PATH/pin -t $PIN_LIB/obj-intel64/MyPinTool.${suffix} \
+       $PIN_PATH/pin -t $PIN_LIB/obj-intel64/${PIN_TOOL}.${suffix} \
        $PIN_FLAGS \
        -- ./$exe $RUN_OPTIONS < $STDIN > $STDOUT" ;
 
