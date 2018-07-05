@@ -17,7 +17,6 @@ Here is a list of benchmarks available in this repo:
 - BenchmarkGame
 - BitBench
 - CoyoteBench
-- ~~cpu2006~~ (**not available yet**)
 - Dhrystone
 - DOE_ProxyApps_C
 - Fhourstones
@@ -47,10 +46,18 @@ Here is a list of benchmarks available in this repo:
 - TSVC
 - VersaBench
 
+Benchmarks are stored in a different [repo](https://github.com/guilhermeleobas/Benchmarks).
+
 ## Requirements
 - timeout or [gtimeout](https://stackoverflow.com/questions/3504945/timeout-command-on-mac-os-x) if you're on OS X.
 - [gnu-parallel](http://brewformulas.org/Parallel)
 - Any version of LLVM.
+
+## Getting tf
+Simply clone this repository **recursively**
+```bash
+git clone --recursive https://github.com/guilhermeleobas/tf.git
+```
 
 ## Building LLVM (if you gonna use your pass)
 
