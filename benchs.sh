@@ -41,19 +41,20 @@ function mediabench() {
 }
 
 function cpu2006(){
-  dirs=("400.perlbench/rbc/" "401.bzip2/rbc/" "403.gcc/rbc" "429.mcf/rbc/"
-        "433.milc/rbc/" "456.hmmer/rbc/" "458.sjeng/rbc/" "462.libquantum/rbc/" 
+  dirs=("400.perlbench/rbc/" "401.bzip2/rbc/" "403.gcc/rbc/" "429.mcf/rbc/"
+        "433.milc/rbc/" "444.namd/rbc/" "445.gobmk/rbc/"
+        "456.hmmer/rbc/" "458.sjeng/rbc/" "462.libquantum/rbc/" 
         "464.h264ref/rbc/" "470.lbm/rbc/") ; 
-  export CPU2006=1
+  CPU2006=1
   walk "${dirs[@]}" ;
   unset CPU2006
 }
 
 benchs=( "ASC_Sequoia" "BenchmarkGame" "BitBench" "CoyoteBench" "DOE_ProxyApps_C" 
   "Dhrystone" "McGill" "MiBench" "Misc"  "Shootout" "Stanford" "Fhourstones" 
-  "Linpack" "mediabench" "ASCI_Purple" "Fhourstones_31" 
+  "Linpack" "mediabench" "cpu2006" "ASCI_Purple" "Fhourstones_31" 
   "SciMark2-C" "sim" "mafft" "tramp3d-v4" "llubenchmark" "nbench" "Ptrdist"
   "Trimaran" "TSVC" "PAQ8p" "NPB-serial" "VersaBench" "FreeBench"
   "MallocBench" "McCat" "Olden" "Prolangs-C");
 
-# benchs=("Stanford");
+# benchs=("cpu2006")
