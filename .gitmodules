@@ -1,0 +1,3 @@
+[submodule "Benchs"]
+	path = Benchs
+	url = https://github.com/guilhermeleobas/Benchmarks.git
