@@ -32,6 +32,10 @@ LLVM_PATH="$HOME/Programs/llvm38/build/bin"
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
+BASILISK_PATH="$HOME/Documents/GitHub/basilisk"
+
+# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
+
 # THIS PART IS LEFT AS AN EXAMPLE FOR THE PEOPLE WORKING WITH PIN!
 
 # PIN 
@@ -77,4 +81,5 @@ echo "COMPILE is set to $COMPILE"
 echo "suffix is set to $suffix"
 echo "BASEDIR is set to $BASEDIR"
 echo "TESTDIR is set to $TESTDIR"
+echo "BASILISK is set to $BASILISK_PATH"
 echo "#########################"
