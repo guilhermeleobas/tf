@@ -16,6 +16,9 @@
 # JOBS
 [[ -n $JOBS ]] || JOBS=1 ;
 
+# ANALYZE
+[[ -n $ANALYZE ]] || ANALYZE=1 ;
+
 # Set the lib suffix.
 suffix="dylib" ;
 if [[ $(uname -s) == "Linux" ]]; then
