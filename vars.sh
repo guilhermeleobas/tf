@@ -28,11 +28,11 @@ fi
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
 # LLVM_PATH  => The place where I have all the LLVM tools
-LLVM_PATH="$HOME/Programs/llvm38/build/bin"
+LLVM_PATH="/home/guilhermel/Programs/llvm38/build/bin"
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
-BASILISK_PATH="$HOME/Documents/GitHub/basilisk"
+BASILISK_PATH="$HOME/basilisk"
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
@@ -56,13 +56,21 @@ if [[ $PIN -eq 1 ]]; then
   PIN_ROOT=$PIN_PATH make -C $PIN_LIB
 fi
 
-# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
+# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # --
 
-# Instrumenting part 
-# Faun Path
-FAUN_PATH="$HOME/Programs/C/faun"
-# Prof_PATH
-PROF_PATH="$HOME/Programs/C/faun/src/ProfLib"
+# PERF
+[[ -n $PERF ]] || PERF=0 ;
+
+if [[ $PERF -eq 1 ]]; then
+  #PERF EVENT
+  PERF_TOOL="mem-stores"
+
+  #USER OR KERNEL SPACE
+  PERF_TYPE="u"
+
+  echo "PERF_TOOL is set to $PERF_TOOL"
+  echo "PERF_TYPE is set to $PERF_TYPE"
+fi
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
