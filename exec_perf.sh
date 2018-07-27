@@ -9,7 +9,7 @@ function execute() {
   fi
 
   cmd="$TIMEOUT --signal=TERM ${RUNTIME} \
-       perf stat -e $PERF_TOOL:$PERF_TYPE \
+       perf stat -e $PERF_TOOL:$PERF_TYPE -o $PERF_FILE \
        ./$exe $RUN_OPTIONS < $STDIN > $STDOUT" ;
 
   echo "$cmd"

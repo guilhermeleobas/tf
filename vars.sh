@@ -63,10 +63,13 @@ fi
 
 if [[ $PERF -eq 1 ]]; then
   #PERF EVENT
-  PERF_TOOL="mem-stores"
+  [[ -n $PERF_TOOL ]] || PERF_TOOL="mem-stores" ;
 
   #USER OR KERNEL SPACE
-  PERF_TYPE="u"
+  [[ -n $PERF_TYPE ]] || PERF_TYPE="u" ;
+
+  #OUTPUT FILE
+  PERF_FILE="perf_${PERF_TOOL}_${PERF_TYPE}.out"
 
   echo "PERF_TOOL is set to $PERF_TOOL"
   echo "PERF_TYPE is set to $PERF_TYPE"
