@@ -6,8 +6,6 @@
 *.bc
 *.o
 *.out
-table.csv
+*.csv
 feat.dat
 prof.dat
-.DS_Store
-Benchs/sim/Output/sim.res
