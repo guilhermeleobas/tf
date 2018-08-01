@@ -1,6 +1,7 @@
-#!/usr/bin/env xonsh
+#!/usr/bin/env python3
 
 import sys
+from src import source as s
 
 
 def process_args():
@@ -8,6 +9,12 @@ def process_args():
     import argparse
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest='command')
+
+    parser.add_argument('-c', '--config', help='Config File', action='store',
+                        default='config.sh')
+
+    # list benchmarks
+    list = subparsers.add_parser('list', help='List Benchmarks')
 
     # compile args
     compile = subparsers.add_parser('compile', help='Compile benchmarks')
@@ -50,7 +57,13 @@ def process_args():
     ##
     p = parser.parse_args()
 
-    if p.command == 'compile':
+    s.source_config(p.config)
+
+    if p.command == 'list':
+        from src import benchmark as b
+        for k, v in b.benchs.items():
+            print(v.benchmarks)
+    elif p.command == 'compile':
         from src import compile as c
     elif p.command == 'run':
         pass
@@ -66,8 +79,4 @@ def process_args():
 
 
 if __name__ == '__main__':
-    # I know, mixing python and shell script this is incredible odd!!
-    # and awesome :)
-    source-bash config.sh
-    echo $LLVM_PATH
     process_args()
