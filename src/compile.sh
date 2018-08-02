@@ -10,7 +10,7 @@ function compile() {
     $LLVM_PATH/llc -filetype=obj $prf_name -o $obj_name ;
     # Compile everything now, producing a final executable file:
     $LLVM_PATH/$COMPILER -g -lm $obj_name -o $exe_name ;
-    
+
     return
   fi
 
@@ -29,9 +29,24 @@ function compile() {
   $LLVM_PATH/llvm-link *.rbc -o $lnk_name ;
 
   $LLVM_PATH/opt $lnk_name -o $prf_name ;
-  
+
   # Compile our instrumented file, in IR format, to x86:
   $LLVM_PATH/llc -filetype=obj $prf_name -o $obj_name ;
   $LLVM_PATH/$COMPILER -lm $obj_name -o $exe_name ;
 
 }
+
+function cleanup() {
+  rm -f *.bc
+  rm -f *.rbc
+  rm -f *.ibc
+  rm -f *.o
+  rm -f *.exe
+}
+
+cd $BENCHMARK_PATH
+source info.sh
+echo $COMPILER
+cleanup
+compile
+cleanup

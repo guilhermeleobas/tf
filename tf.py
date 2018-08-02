@@ -2,6 +2,7 @@
 
 import sys
 from src import source as s
+from src import benchmark as b
 
 
 def process_args():
@@ -15,18 +16,21 @@ def process_args():
 
     # list benchmarks
     list = subparsers.add_parser('list', help='List Benchmarks')
+    list.add_argument('-o', '--only', action='store', type=str)
 
     # compile args
     compile = subparsers.add_parser('compile', help='Compile benchmarks')
     compile.add_argument('-p', '--parallel', action='store_true',
                          help='Enable parallel build')
+    compile.add_argument('-o', '--only', action='store', type=str,
+                         help='Compile only a single suite')
 
     # run args
     exec = subparsers.add_parser('exec', help='Run benchmarks')
     exec.add_argument('-j', '--jobs', action='store', default=2, type=int,
                       help='Number of processes used')
-    exec.add_argument('-r', '--run_only', action='store', type=str,
-                      help='Run only a single benchmark')
+    exec.add_argument('-o', '--only', action='store', type=str,
+                      help='Run only a single suite')
     exec.add_argument(
         '-t', '--timeout', action='store', type=str, default='8m',
         help='Time limit for each benchmark. Default is 8 minutes')
@@ -42,6 +46,8 @@ def process_args():
                     )  # For building purposes
     pin.add_argument('--pin_tool', action='store', default='', type=str,
                      help='The PinTool used')
+    pin.add_argument('-o', '--only', action='store', type=str,
+                     help='Run only a single suite')
 
     # perf args
     perf = subparsers.add_parser('perf', help='Run benchmarks with perf')
@@ -49,6 +55,8 @@ def process_args():
                       help='The perf event')
     perf.add_argument('--perf_type', action='store', default='u', type=str,
                       help='User space (u) or Kernel space (k)')
+    perf.add_argument('-o', '--only', action='store', type=str,
+                      help='Run only a single suite')
 
     # summary
     summary = subparsers.add_parser('summary',
@@ -60,11 +68,13 @@ def process_args():
     s.source_config(p.config)
 
     if p.command == 'list':
-        from src import benchmark as b
-        for k, v in b.benchs.items():
-            print(v.benchmarks)
+        suites = b.get_suites(p.only)
+        for k, v in suites.items():
+            print(v)
     elif p.command == 'compile':
-        from src import compile as c
+        suites = b.get_suites(p.only)
+        for k, v in suites.items():
+            v.compile_suite()
     elif p.command == 'run':
         pass
     elif p.command == 'pin':

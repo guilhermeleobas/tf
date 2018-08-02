@@ -1,4 +1,4 @@
-export LLVMPATH="${HOME}/Programs/llvm38/build/bin"
+export LLVM_PATH="$HOME/Programs/llvm38/build/bin"
 
 export BASEDIR="$(pwd)"
 

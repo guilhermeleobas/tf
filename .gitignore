@@ -9,3 +9,4 @@
 *.csv
 feat.dat
 prof.dat
+*.pyc

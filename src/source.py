@@ -20,8 +20,7 @@ def source(file):
 
     for line in proc.stdout:
         (key, _, value) = line.decode('utf-8').partition("=")
-        if key not in os.environ:
-            env[key] = value.strip()
+        env[key] = value.strip()
 
     proc.communicate()
 
