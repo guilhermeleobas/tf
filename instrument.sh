@@ -16,22 +16,11 @@ function compile() {
   fi
 
   # source_files is the variable with all the files we're gonna compile
-
-  for file_name in "${source_files[@]}"; do
-    base_name=$(basename $file_name .c) ;
-    btc_name="$base_name.bc" ;
-    rbc_name="$base_name.rbc" ;
-    # Convert the target program to LLVM IR:
-    $LLVM_PATH/$COMPILER $CXXFLAGS -g -c -emit-llvm $file_name -o $btc_name ;
-    # Convert the target IR program to SSA form:
-    # $LLVM_PATH/opt $btc_name -o $rbc_name ;
-
-    # You can add llvm pass in the command above:
-    $LLVM_PATH/opt -mem2reg -instnamer -load DCC888.$suffix $btc_name -o $rbc_name ;
-  done
+  parallel --tty --jobs=${JOBS} $LLVM_PATH/$COMPILER $CXXFLAGS -S -g -c -emit-llvm {} -o {.}.bc ::: "${source_files[@]}" ;
+  parallel --tty --jobs=${JOBS} $LLVM_PATH/opt -S -mem2reg {.}.bc -o {.}.rbc ::: "${source_files[@]}" ;
 
   #Generate all the bcs into a big bc:
-  $LLVM_PATH/llvm-link *.rbc -o $lnk_name ;
+  $LLVM_PATH/llvm-link -S *.rbc -o $lnk_name ;
 
   # Insert instrumentation in the program:
   $LLVM_PATH/opt -debug-only=StoreTagger -instcount -load DCC888.$suffix -ssProf \
