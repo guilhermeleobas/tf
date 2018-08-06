@@ -71,6 +71,7 @@ function walk() {
 
     if [[ $COMPILE -eq 1 ]]; then
       compile ;
+      cleanup ;
     fi
 
     execute ;
