@@ -101,13 +101,6 @@ fi
 if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
   # replace the compile function
   source "instrument.sh"
-  
-  curr_dir=$(pwd) 
-  cd $BASILISK_PATH
-  ./build.sh
-  cd $curr_dir
-  # cd $FAUN_PATH
-  
 fi
 
 rm -f run.txt
