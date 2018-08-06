@@ -2,7 +2,7 @@
 
 trap 'echo "Killing build_exec.sh script" ; exit' INT TERM
 
-# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
+# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # --
 
 function cleanup() {
   rm -f *.bc
@@ -31,7 +31,7 @@ function set_vars(){
   [[ -n $COMPILER ]] || COMPILER=clang ;
   # We can specify STDIN to something other than /dev/stdin
   [[ -n $STDIN ]] || STDIN=/dev/stdin ;
-  # And STDOUT default is /dev/null. 
+  # And STDOUT default is /dev/null.
   [[ -n $STDOUT ]] || STDOUT=/dev/null ;
   # But if we set DEBUG=1, than we ignore the previous definition of STDOUT
   if [[ $DEBUG == 1 ]]; then
@@ -46,7 +46,7 @@ function set_vars(){
   fi
 }
 
-# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
+# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # --
 
 function walk() {
 
@@ -65,7 +65,7 @@ function walk() {
 
     d=$(basename $(pwd))
     echo "Sourcing info.sh from $d" ;
-    
+
     set_vars ;
     cleanup ;
 
@@ -76,8 +76,8 @@ function walk() {
     execute ;
 
     unset_vars ;
-    
-    echo 
+
+    echo
     echo "###############"
     echo
 

@@ -10,44 +10,72 @@ class Type(Enum):
     SingleSource = 1
     MultiSource = 2
 
-
-class Compile():
-
-    def compile(self):
-        env = {
-            'COMPILER': 'clang',
-            'BENCHMARK_PATH': self.path,
-            # self.name: 1,
-        }
-        with Sultan.load(logging=False, env={**env, **s.env}) as cmd:
-            print('COMPILING %s' % self.name)
-            result = cmd.bash('src/compile.sh').run()
-            print('\n'.join(result.stdout))
-            print('\n'.join(result.stderr))
-            print()
-
-
-class Benchmark(Compile):
+class Benchmark():
 
     def __init__(self, name=None, path=None):
         self._name = name
         self._path = path
-        self._env = os.path.join(self._path, 'info.sh')
+        self._env = {
+            # compile
+            'COMPILER': 'clang',
+            'CXXFLAGS': '',
+            'BENCHMARK_PATH': self.path,
+            'BENCHMARK_NAME': self.name,
+            self.name.upper(): '1',
+            # exec
+            'RUN_OPTIONS': '',
+            'STDIN': s.env['STDIN'], # some benchmarks replaces this variable when info.sh is sourced
+            'STDOUT': s.env['STDOUT'] # can be either /dev/null or /dev/stdout for debugging purposes
+        }
+        # super(Compile, self).__init__()
+        # super(Execute, self).__init__()
 
     def __repr__(self):
-        return '  ' + self.name
+        return '- ' + self.name
 
     @property
     def name(self):
         return self._name
 
     @property
+    def path(self):
+        return self._path
+
+    @property
     def env(self):
         return self._env
 
-    @property
-    def path(self):
-        return self._path
+    def execute(self):
+        pass
+
+    def pin(self):
+        pass
+
+    def perf(self):
+        pass
+    
+
+    def compile(self):
+        with Sultan.load(capture_output=False, logging=False, env={
+                **self.env,
+                **s.env
+        }) as cmd:
+            print('###############################')
+            print('# COMPILING %s' % self.name)
+            print('###############################')
+            result = cmd.bash('src/compile.sh').run()
+            print()
+
+    def instrument(self):
+        with Sultan.load(capture_output=False, logging=False, env={
+                **self.env,
+                **s.env
+        }) as cmd:
+            print('###############################')
+            print('# INSTRUMENTING %s' % self.name)
+            print('###############################')
+            result = cmd.bash('src/compile.sh').run()
+            print()
 
 
 class Suite():
@@ -80,13 +108,40 @@ class Suite():
     def name(self):
         return self._name
 
-    def compile_suite(self):
+    @property
+    def type(self):
+        return self._type
+
+    # compile suite
+    def compile(self):
         for bench in self.benchmarks:
             bench.compile()
 
+    # instrument suite
+    def instrument(self):
+        for bench in self.benchmarks:
+            bench.instrument()
+
+    # execute suite
+    def exec(self):
+        pass
+
+    # execute suite with Intel Pin
+    def pin(self):
+        pass
+
+    # # execute suite with Perf
+    def perf(self):
+        pass
+
     def __repr__(self):
+        if self.type == Type.SingleSource:
+            return self.name
         return self.name + '\n' + reduce(
             lambda acc, bench: acc + str(bench) + '\n', self.benchmarks, '')
+
+    def list(self):
+        print(self.__repr__())
 
 
 def get_suites(selected=None):
@@ -114,7 +169,7 @@ def get_suites(selected=None):
         # 'MiBench': Suite(name='MiBench'),
         # 'Misc': Suite(name='Misc'),
         # 'Shootout': Suite(name='Shootout'),
-        # 'Stanford': Suite(name='Stanford'),
+        'Stanford': Suite(name='Stanford'),
         # 'Ptrdist': Suite(name='Ptrdist'),
         # 'Trimaran': Suite(name='Trimaran'),
         # 'TSVC': Suite(name='TSVC'),

@@ -32,7 +32,7 @@ function compile() {
 
   # Compile our instrumented file, in IR format, to x86:
   $LLVM_PATH/llc -filetype=obj $prf_name -o $obj_name ;
-  $LLVM_PATH/$COMPILER -lm $obj_name -o $exe_name ;
+  $LLVM_PATH/$COMPILER -stdlib=libstdc++ -lm $obj_name -o $exe_name ;
 
 }
 
@@ -41,12 +41,11 @@ function cleanup() {
   rm -f *.rbc
   rm -f *.ibc
   rm -f *.o
-  rm -f *.exe
 }
 
 cd $BENCHMARK_PATH
 source info.sh
-echo $COMPILER
+
 cleanup
 compile
 cleanup
