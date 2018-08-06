@@ -111,7 +111,6 @@ if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
   cd $BASILISK_PATH
   ./build.sh
   cd $curr_dir
-  # cd $FAUN_PATH
   
 fi
 
