@@ -1,3 +1,4 @@
+#!/bin/bash
 
 if [[ $EXEC -eq 1 ]]; then
   echo 'STARTING EXECUTION' ;

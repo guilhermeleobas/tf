@@ -32,7 +32,7 @@ LLVM_PATH="${HOME}/Programs/llvm38/build/bin"
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
-BASILISK_PATH="$HOME/basilisk"
+BASILISK_PATH="$HOME/Programs/basilisk"
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
@@ -43,16 +43,16 @@ BASILISK_PATH="$HOME/basilisk"
 
 if [[ $PIN -eq 1 ]]; then
   # PIN_PATH   => The place where I keep the pin source code
-  PIN_PATH="$HOME/Programs/Pin"
+  [[ -n $PIN_PATH ]] || PIN_PATH="$HOME/Programs/Pin"
   
   # PIN_LIB    => The place where I keep the Pin lib implemented.
-  PIN_LIB="$HOME/Programs/C/faun/src/PinLib"
+  [[ -n $PIN_LIB ]] || PIN_LIB="$HOME/Programs/C/faun/src/PinLib"
 
   # PIN_TOOL   => The tool used
-  PIN_TOOL="MyPinTool"
+  [[ -n $PIN_TOOL ]] || PIN_TOOL="MyPinTool"
   
   # PIN_FLAGS  => Flags to pass to PIN
-  PIN_FLAGS=" "
+  [[ -n $PIN_FLAGS ]] || PIN_FLAGS=" "
 
   echo "PIN_PATH is set to $PIN_PATH"
   echo "PIN_LIB is set to $PIN_LIB"
@@ -62,19 +62,22 @@ fi
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # --
 
-# PERF
-[[ -n $PERF ]] || PERF=0 ;
+# perf
+[[ -n $OCPERF ]] || OCPERF=0 ;
 
-if [[ $PERF -eq 1 ]]; then
+if [[ $OCPERF -eq 1 ]]; then
   #PERF EVENT
-  [[ -n $PERF_TOOL ]] || PERF_TOOL="mem-stores" ;
+  [[ -n $PERF_TOOL ]] || PERF_TOOL="mem_uops_retired.all_loads" ; # mem-stores
 
   #USER OR KERNEL SPACE
   [[ -n $PERF_TYPE ]] || PERF_TYPE="u" ;
 
   #OUTPUT FILE
-  PERF_FILE="perf_${PERF_TOOL}_${PERF_TYPE}.out"
-
+  [[ -n $PERF_FILE ]] || PERF_FILE="perf_${PERF_TOOL}_${PERF_TYPE}.out"
+  
+  PERF_BIN="$HOME/Programs/pmu-tools/ocperf.py"
+  
+  echo "PERF_BIN is set to $PERF_BIN"
   echo "PERF_TOOL is set to $PERF_TOOL"
   echo "PERF_TYPE is set to $PERF_TYPE"
 fi
