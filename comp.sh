@@ -22,7 +22,7 @@ function compile() {
   #Generate all the bcs into a big bc:
   $LLVM_PATH/llvm-link -S *.rbc -o $lnk_name ;
 
-  $LLVM_PATH/opt $lnk_name -o $prf_name ;
+  $LLVM_PATH/opt -S $lnk_name -o $prf_name ;
   
   # Compile our instrumented file, in IR format, to x86:
   $LLVM_PATH/llc -filetype=obj $prf_name -o $obj_name ;
