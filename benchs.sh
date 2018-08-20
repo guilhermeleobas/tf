@@ -52,9 +52,9 @@ function cpu2006(){
 
 benchs=( "ASC_Sequoia" "BenchmarkGame" "BitBench" "CoyoteBench" "DOE_ProxyApps_C" 
   "Dhrystone" "McGill" "MiBench" "Misc"  "Shootout" "Stanford" "Fhourstones" 
-  "Linpack" "mediabench" "cpu2006" "ASCI_Purple" "Fhourstones_31" 
+  "Linpack" "mediabench" "ASCI_Purple" "Fhourstones_31" 
   "SciMark2-C" "sim" "mafft" "tramp3d-v4" "llubenchmark" "nbench" "Ptrdist"
   "Trimaran" "TSVC" "PAQ8p" "NPB-serial" "VersaBench" "FreeBench"
-  "MallocBench" "McCat" "Olden" "Prolangs-C");
+  "MallocBench" "McCat" "Olden" "Prolangs-C" "cpu2006");
 
-benchs=("cpu2006")
+# benchs=("Shootout")

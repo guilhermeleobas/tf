@@ -13,7 +13,7 @@ function compile() {
     
     return
   fi
-
+  
   # source_files is the variable with all the files we're gonna compile
   parallel --tty --jobs=${JOBS} $LLVM_PATH/$COMPILER $CXXFLAGS -S -g -c -emit-llvm {} -o {.}.bc ::: "${source_files[@]}" ;
   parallel --tty --jobs=${JOBS} $LLVM_PATH/opt -S -mem2reg {.}.bc -o {.}.rbc ::: "${source_files[@]}" ;
@@ -26,6 +26,6 @@ function compile() {
   
   # Compile our instrumented file, in IR format, to x86:
   $LLVM_PATH/llc -filetype=obj $prf_name -o $obj_name ;
-  $LLVM_PATH/$COMPILER -lm $obj_name -o $exe_name ;
+  $LLVM_PATH/$COMPILER $CXXFLAGS -lm $obj_name -o $exe_name ;
 
 }
