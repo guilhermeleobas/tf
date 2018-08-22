@@ -110,6 +110,11 @@ if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
   curr_dir=$(pwd) 
   cd $BASILISK_PATH
   ./build.sh
+  if [[ $? -gt 0 ]]; then
+    echo "ERRORS"
+    exit 1
+  fi
+  
   cd $curr_dir
   
 fi
