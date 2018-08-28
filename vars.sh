@@ -36,6 +36,10 @@ BASILISK_PATH="$HOME/Programs/basilisk"
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
+[[ -n $SANITIZE ]] || SANITIZE=0 ;
+
+# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
+
 # THIS PART IS LEFT AS AN EXAMPLE FOR THE PEOPLE WORKING WITH PIN!
 
 # PIN 

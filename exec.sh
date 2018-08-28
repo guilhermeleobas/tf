@@ -7,6 +7,10 @@ function execute() {
   if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
     exe=INS_$exe_name ;
   fi
+  
+  if [[ -n $SANITIZE && $SANITIZE -eq 1 ]]; then
+    exe=SAN_$exe_name ;
+  fi
 
   cmd="$TIMEOUT --signal=TERM ${RUNTIME} ./$exe $RUN_OPTIONS < $STDIN > $STDOUT" ;
 

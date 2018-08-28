@@ -119,6 +119,11 @@ if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
   
 fi
 
+if [[ -n $SANITIZE && $SANITIZE -eq 1 ]]; then
+  # replace the compile function
+  source "sanitize.sh"
+fi
+
 rm -f run.txt
 touch run.txt
 
