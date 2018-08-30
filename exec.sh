@@ -15,6 +15,10 @@ function execute() {
   cmd="$TIMEOUT --signal=TERM ${RUNTIME} ./$exe $RUN_OPTIONS < $STDIN > $STDOUT" ;
 
   echo "$cmd"
-  echo "cd $(pwd) && $cmd" >> $BASEDIR/run.txt ;
   
+  if [[ -n $SANITIZE && $SANITIZE -eq 1 ]]; then
+    echo "cd $(pwd) && ASAN_OPTIONS=halt_on_error=0 $cmd" >> $BASEDIR/run.txt ;
+  else
+    echo "cd $(pwd) && $cmd" >> $BASEDIR/run.txt ;
+  fi
 }
