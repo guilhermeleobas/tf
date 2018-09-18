@@ -108,8 +108,10 @@ if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
   source "instrument.sh"
   
   curr_dir=$(pwd) 
-  cd $BASILISK_PATH
-  ./build.sh
+  cd $PHOENIX_PATH
+  
+  LLVM_DIR=$HOME/Documents/llvm61/build/lib/cmake cmake -H. -Bbuild && make -C build
+  
   if [[ $? -gt 0 ]]; then
     echo "ERRORS"
     exit 1

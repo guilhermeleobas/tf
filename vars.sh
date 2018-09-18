@@ -28,11 +28,11 @@ fi
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
 # LLVM_PATH  => The place where I have all the LLVM tools
-LLVM_PATH="${HOME}/Programs/llvm61/build/bin"
+LLVM_PATH="${HOME}/Documents/llvm61/build/bin"
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
-BASILISK_PATH="$HOME/Programs/basilisk"
+PHOENIX_PATH="$HOME/Documents/phoenix"
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
@@ -103,5 +103,5 @@ echo "COMPILE is set to $COMPILE"
 echo "suffix is set to $suffix"
 echo "BASEDIR is set to $BASEDIR"
 echo "TESTDIR is set to $TESTDIR"
-echo "BASILISK is set to $BASILISK_PATH"
+echo "PHOENIX is set to $PHOENIX_PATH"
 echo "#########################"
