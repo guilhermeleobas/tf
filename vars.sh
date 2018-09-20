@@ -19,6 +19,9 @@
 # ANALYZE
 [[ -n $ANALYZE ]] || ANALYZE=1 ;
 
+# NO_SSA
+[[ -n $NO_SSA ]] || NO_SSA=1 ;
+
 # Set the lib suffix.
 suffix="dylib" ;
 if [[ $(uname -s) == "Linux" ]]; then

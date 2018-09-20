@@ -30,7 +30,7 @@ function set_vars(){
   # sometimes we need to use clang++
   [[ -n $COMPILER ]] || COMPILER=clang ;
   # We can specify STDIN to something other than /dev/stdin
-  [[ -n $STDIN ]] || STDIN=/dev/stdin ;
+  [[ -n $STDIN ]] || STDIN=/dev/null ;
   # And STDOUT default is /dev/null. 
   [[ -n $STDOUT ]] || STDOUT=/dev/null ;
   # But if we set DEBUG=1, than we ignore the previous definition of STDOUT
@@ -122,6 +122,10 @@ fi
 if [[ -n $SANITIZE && $SANITIZE -eq 1 ]]; then
   # replace the compile function
   source "sanitize.sh"
+fi
+
+if [[ -n $NO_SSA && $NO_SSA -eq 1 ]]; then
+  source "no_ssa.sh"
 fi
 
 rm -f run.txt
