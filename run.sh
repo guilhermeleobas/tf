@@ -30,7 +30,7 @@ function set_vars(){
   # sometimes we need to use clang++
   [[ -n $COMPILER ]] || COMPILER=clang ;
   # We can specify STDIN to something other than /dev/stdin
-  [[ -n $STDIN ]] || STDIN=/dev/stdin ;
+  [[ -n $STDIN ]] || STDIN=/dev/null ;
   # And STDOUT default is /dev/null. 
   [[ -n $STDOUT ]] || STDOUT=/dev/null ;
   # But if we set DEBUG=1, than we ignore the previous definition of STDOUT
@@ -110,7 +110,8 @@ if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
   curr_dir=$(pwd) 
   cd $PHOENIX_PATH
   
-  LLVM_DIR=$HOME/Documents/llvm61/build/lib/cmake cmake -H. -Bbuild && make -C build
+  # LLVM_DIR=$HOME/Documents/llvm61/build/lib/cmake cmake -H. -Bbuild && make -C build
+  make -C build
   
   if [[ $? -gt 0 ]]; then
     echo "ERRORS"
