@@ -19,7 +19,7 @@ function compile() {
   parallel --tty --jobs=${JOBS} $LLVM_PATH/$COMPILER $CXXFLAGS -Xclang -disable-O0-optnone -S -c -emit-llvm {} -o {.}.bc ::: "${source_files[@]}" ;
   # -debug-only=Count
   # parallel --tty --jobs=${JOBS} $LLVM_PATH/opt -mem2reg -S -load $PHOENIX_PATH/build/Count/Count.$suffix -Count {.}.bc -o {.}.rbc ::: "${source_files[@]}" ;
-  parallel --tty --jobs=${JOBS} $LLVM_PATH/opt -mem2reg -S {.}.bc -o {.}.rbc ::: "${source_files[@]}" ;
+  parallel --tty --jobs=${JOBS} $LLVM_PATH/opt -mem2reg -memoryssa -S {.}.bc -o {.}.rbc ::: "${source_files[@]}" ;
   
   #Generate all the bcs into a big bc:
   $LLVM_PATH/llvm-link -S *.rbc -o $lnk_name ;
