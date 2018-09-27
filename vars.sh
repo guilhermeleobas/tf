@@ -32,7 +32,7 @@ LLVM_PATH="${HOME}/Programs/llvm/build/bin"
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
-PHOENIX_PATH="$HOME/Documents/phoenix"
+PHOENIX_PATH="$HOME/Programs/phoenix"
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
