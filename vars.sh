@@ -19,6 +19,12 @@
 # ANALYZE
 [[ -n $ANALYZE ]] || ANALYZE=1 ;
 
+# INSTRUMENT
+[[ -n $INSTRUMENT ]] || INSTRUMENT=0 ;
+
+# PASS NAME
+[[ -n $PASS ]] || $PASS="" ;
+
 # Set the lib suffix.
 suffix="dylib" ;
 if [[ $(uname -s) == "Linux" ]]; then
@@ -104,4 +110,5 @@ echo "suffix is set to $suffix"
 echo "BASEDIR is set to $BASEDIR"
 echo "TESTDIR is set to $TESTDIR"
 echo "PHOENIX is set to $PHOENIX_PATH"
+echo "PASS is set to $PASS"
 echo "#########################"
