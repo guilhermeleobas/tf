@@ -22,7 +22,7 @@ function compile() {
     # Compile our file, in IR format, to x86:
     $LLVM_PATH/llc -filetype=obj $prf_name -o $obj_name ;
     # Compile everything now, producing a final executable file:
-    $LLVM_PATH/$COMPILER -flto=thin -O3 $obj_name -o INS_$exe_name ;
+    $LLVM_PATH/$COMPILER -lm -flto=thin -O3 $obj_name -o INS_$exe_name ;
     # $LLVM_PATH/$COMPILER -lm -L $PHOENIX_PATH/build/Collect/ -l collect $obj_name -o INS_$exe_name ;
     
     return
@@ -48,6 +48,6 @@ function compile() {
   # Compile our instrumented file, in IR format, to x86:
   $LLVM_PATH/llc -filetype=obj $prf_name -o $obj_name ;
   # Compile everything now, producing a final executable file:
-  $LLVM_PATH/$COMPILER -flto=thin -O3 $obj_name -o INS_$exe_name ;
+  $LLVM_PATH/$COMPILER -lm -flto=thin -O3 $obj_name -o INS_$exe_name ;
   # $LLVM_PATH/$COMPILER -flto=thin -O3 -lm -L $PHOENIX_PATH/build/Collect -l Collect $obj_name -o INS_$exe_name ;
 }

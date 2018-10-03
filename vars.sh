@@ -23,7 +23,7 @@
 [[ -n $INSTRUMENT ]] || INSTRUMENT=0 ;
 
 # PASS NAME
-[[ -n $PASS ]] || $PASS="" ;
+[[ -n $PASS ]] || $PASS="SET_ME" ;
 
 # Set the lib suffix.
 suffix="dylib" ;
