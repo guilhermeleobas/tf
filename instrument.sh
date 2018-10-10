@@ -14,7 +14,7 @@ function compile() {
     $LLVM_PATH/opt $rbc_name -S -o $prf_name ;
     
     #Generate all the bcs into a big bc:
-    $LLVM_PATH/llvm-link -S $prf_name $PHOENIX_PATH/Collect.collect.bc -o $prf_name ;
+    $LLVM_PATH/llvm-link -S $prf_name $PHOENIX_PATH/Collect/collect.bc -o $prf_name ;
     
     # optimize prf ll
     $LLVM_PATH/opt -O3 -S $prf_name -o $prf_name
@@ -31,7 +31,7 @@ function compile() {
   # source_files is the variable with all the files we're gonna compile
   parallel --tty --jobs=${JOBS} $LLVM_PATH/$COMPILER $CXXFLAGS -Xclang -disable-O0-optnone -S -c -emit-llvm {} -o {.}.bc ::: "${source_files[@]}" ;
   # -debug-only=Count
-  parallel --tty --jobs=${JOBS} $LLVM_PATH/opt -S {.}.bc -o {.}.rbc ::: "${source_files[@]}" ;
+  parallel --tty --jobs=${JOBS} $LLVM_PATH/opt -mem2reg -S {.}.bc -o {.}.rbc ::: "${source_files[@]}" ;
   
   #Generate all the bcs into a big bc:
   $LLVM_PATH/llvm-link -S *.rbc -o $lnk_name ;
