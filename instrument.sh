@@ -10,7 +10,7 @@ function compile() {
   
   if [[ -n $CPU2006 && $CPU2006 -eq 1 ]]; then
     # Convert the program to SSA form:
-    $LLVM_PATH/opt -mem2reg -load $pass_path -$PASS -S $lnk_name -o $rbc_name ;
+    $LLVM_PATH/opt -O2 -mem2reg -load $pass_path -$PASS -S $lnk_name -o $rbc_name ;
     $LLVM_PATH/opt $rbc_name -S -o $prf_name ;
     
     #Generate all the bcs into a big bc:
@@ -37,7 +37,7 @@ function compile() {
   $LLVM_PATH/llvm-link -S *.rbc -o $lnk_name ;
 
   # Run llvm pass in the big bc:
-  $LLVM_PATH/opt -S -mem2reg -load $pass_path -$PASS $lnk_name -o $prf_name ;
+  $LLVM_PATH/opt -S -O2 -mem2reg -load $pass_path -$PASS $lnk_name -o $prf_name ;
   
   # merge the previous bc with instrumentation lib
   $LLVM_PATH/llvm-link -S $prf_name $PHOENIX_PATH/Collect/collect.bc -o $prf_name ;
