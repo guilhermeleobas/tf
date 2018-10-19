@@ -18,7 +18,12 @@ function compile() {
 
   # source_files is the variable with all the files we're gonna compile
   parallel --tty --jobs=${JOBS} $LLVM_PATH/$COMPILER $CXXFLAGS -Xclang -disable-O0-optnone -S -g -c -emit-llvm {} -o {.}.bc ::: "${source_files[@]}" ;
-  parallel --tty --jobs=${JOBS} $LLVM_PATH/opt -S -mem2reg -load DCCBasilisk.$suffix -Instrument {.}.bc -o {.}.rbc ::: "${source_files[@]}" ;
+
+  if [[ $SSA -eq 1 ]]; then
+    parallel --tty --jobs=${JOBS} $LLVM_PATH/opt -S -mem2reg -load DCCBasilisk.$suffix -Instrument {.}.bc -o {.}.rbc ::: "${source_files[@]}" ;
+  else
+    parallel --tty --jobs=${JOBS} $LLVM_PATH/opt -S -load DCCBasilisk.$suffix -Instrument {.}.bc -o {.}.rbc ::: "${source_files[@]}" ;
+  fi
   
   #Generate all the bcs into a big bc:
   $LLVM_PATH/llvm-link -S *.rbc -o $lnk_name ;

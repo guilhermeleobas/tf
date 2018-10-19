@@ -12,7 +12,7 @@ function execute() {
     exe=SAN_$exe_name ;
   fi
   
-  if [[ -n $NO_SSA && $NO_SSA -eq 1 ]]; then
+  if [[ $SSA -eq 0 ]]; then
     exe=NO_SSA_$exe_name ;
   fi
 

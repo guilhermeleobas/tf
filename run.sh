@@ -124,10 +124,6 @@ if [[ -n $SANITIZE && $SANITIZE -eq 1 ]]; then
   source "sanitize.sh"
 fi
 
-if [[ -n $NO_SSA && $NO_SSA -eq 1 ]]; then
-  source "no_ssa.sh"
-fi
-
 rm -f run.txt
 touch run.txt
 

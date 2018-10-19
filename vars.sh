@@ -13,14 +13,17 @@
 # Compile
 [[ -n $COMPILE ]] || COMPILE=1 ;
 
+# Instrument
+[[ -n $INSTRUMENT ]] || INSTRUMENT=0 ;
+
 # JOBS
 [[ -n $JOBS ]] || JOBS=1 ;
 
 # ANALYZE
 [[ -n $ANALYZE ]] || ANALYZE=1 ;
 
-# NO_SSA
-[[ -n $NO_SSA ]] || NO_SSA=1 ;
+# Whether run -mem2reg or not
+[[ -n $SSA ]] || SSA=1 ;
 
 # Set the lib suffix.
 suffix="dylib" ;
@@ -56,7 +59,10 @@ if [[ $PIN -eq 1 ]]; then
   [[ -n $PIN_LIB ]] || PIN_LIB="$HOME/Programs/basilisk/PinLib"
 
   # PIN_TOOL   => The tool used
-  [[ -n $PIN_TOOL ]] || PIN_TOOL="MyPinTool"
+  if [[ -z $PIN_TOOL ]]; then
+    echo "You must define a $PIN_TOOL variable before using `tf` with PIN"
+    exit 1
+  fi
   
   # PIN_FLAGS  => Flags to pass to PIN
   [[ -n $PIN_FLAGS ]] || PIN_FLAGS=" "
@@ -103,6 +109,8 @@ echo "RUNTIME is set to $RUNTIME"
 echo "PIN is set to $PIN"
 echo "EXEC is set to $EXEC"
 echo "COMPILE is set to $COMPILE"
+echo "INSTRUMENT is set to $INSTRUMENT"
+echo "SSA is set to $SSA"
 echo "suffix is set to $suffix"
 echo "BASEDIR is set to $BASEDIR"
 echo "TESTDIR is set to $TESTDIR"
