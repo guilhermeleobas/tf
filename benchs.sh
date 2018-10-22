@@ -45,7 +45,13 @@ function PolyBench(){
         "linear-algebra/kernels/bicg" "linear-algebra/kernels/cholesky" "linear-algebra/kernels/doitgen"
         "linear-algebra/kernels/gemm" "linear-algebra/kernels/gemver" "linear-algebra/kernels/gesummv"
         "linear-algebra/kernels/mvt" "linear-algebra/kernels/symm" "linear-algebra/kernels/syr2k"
-        "linear-algebra/kernels/syrk" "linear-algebra/kernels/trisolv" "linear-algebra/kernels/trmm")
+        "linear-algebra/kernels/syrk" "linear-algebra/kernels/trisolv" "linear-algebra/kernels/trmm"
+        "linear-algebra/solvers/durbin" "linear-algebra/solvers/dynprog" "linear-algebra/solvers/gramschmidt"
+        "linear-algebra/solvers/lu" "linear-algebra/solvers/ludcmp"
+        "datamining/correlation" "datamining/covariance"
+        "medley/floyd-warshall" "medley/reg_detect"
+        "stencils/adi" "stencils/fdtd-2d" "stencils/fdtd-apml" "stencils/jacobi-1d-imper" "stencils/jacobi-2d-imper"
+        "stencils/seidel-2d")
   walk "${dirs[@]}"
 }
 

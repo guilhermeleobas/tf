@@ -68,8 +68,7 @@ if [[ $PIN -eq 1 ]]; then
 
   # PIN_TOOL   => The tool used
   [[ -n $PIN_TOOL ]] || PIN_TOOL="MyPinTool"
-  
-  # PIN_FLAGS  => Flags to pass to PIN
+ # PIN_FLAGS  => Flags to pass to PIN
   [[ -n $PIN_FLAGS ]] || PIN_FLAGS=" "
 
   echo "PIN_PATH is set to $PIN_PATH"
@@ -111,6 +110,7 @@ BENCHSDIR="$BASEDIR/Benchs/"
 echo "#########################"
 echo "DEBUG is set to $DEBUG"
 echo "RUNTIME is set to $RUNTIME"
+echo "CLEAN is set to $CLEAN"
 echo "PIN is set to $PIN"
 echo "EXEC is set to $EXEC"
 echo "COMPILE is set to $COMPILE"

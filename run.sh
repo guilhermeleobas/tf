@@ -6,20 +6,25 @@ trap 'echo "Killing build_exec.sh script" ; exit' INT TERM
 
 function cleanup() {
   rm -f *.bc
-  rm -f *.rbc ;
-  rm -f *.ibc ;
-  rm -f *.o ;
-  # rm -f *.exe ;
-  # rm -f table.csv
-  # rm -f prof.dat ;
-  # rm -f feat.dat ;
+  rm -f *.rbc
+  rm -f *.ibc
+  rm -f *.o
+}
+
+function cleanup_all() {
+  rm -f *.bc
+  rm -f *.rbc 
+  rm -f *.ibc
+  rm -f *.o
+  rm -f *.exe
+  rm -f *.txt
 }
 
 function unset_vars() {
-  unset COMPILER ;
-  unset STDIN ;
-  unset STDOUT ;
-  unset RUN_OPTIONS ;
+  unset COMPILER
+  unset STDIN
+  unset STDOUT
+  unset RUN_OPTIONS
 }
 
 function set_vars(){
@@ -28,11 +33,11 @@ function set_vars(){
   # Let's set the variables that are unset
 
   # sometimes we need to use clang++
-  [[ -n $COMPILER ]] || COMPILER=clang ;
+  [[ -n $COMPILER ]] || COMPILER=clang
   # We can specify STDIN to something other than /dev/stdin
-  [[ -n $STDIN ]] || STDIN=/dev/null ;
+  [[ -n $STDIN ]] || STDIN=/dev/null
   # And STDOUT default is /dev/null. 
-  [[ -n $STDOUT ]] || STDOUT=/dev/null ;
+  [[ -n $STDOUT ]] || STDOUT=/dev/null
   # But if we set DEBUG=1, than we ignore the previous definition of STDOUT
   if [[ $DEBUG == 1 ]]; then
     STDOUT=/dev/stdout ;
@@ -63,13 +68,13 @@ function walk() {
   for dir in "${dirs[@]}"; do
     cd "$parent_dir"/"$dir" ;
 
-    if [[ -n $CLEAN && $CLEAN -eq 1 ]]; then
-      cleanup ;
-      continue ;
-    fi
-
     d=$(basename $(pwd))
     echo "Sourcing info.sh from $d" ;
+
+    if [[ -n $CLEAN && $CLEAN -eq 1 ]]; then
+      cleanup_all ;
+      continue ;
+    fi
     
     set_vars ;
     cleanup ;
@@ -106,6 +111,7 @@ if [[ -n $CLEAN && $CLEAN -eq 1 ]]; then
     echo "Removing from $bench" ;
     cd $bench ;
     $bench ;
+    echo "" ;
   done
 
   exit 0
