@@ -29,21 +29,25 @@ function compile() {
   fi
   
   # source_files is the variable with all the files we're gonna compile
-  parallel --tty --jobs=${JOBS} $LLVM_PATH/$COMPILER $CXXFLAGS -Xclang -disable-O0-optnone -fno-vectorize -S -c -emit-llvm {} -o {.}.bc ::: "${source_files[@]}" ;
+  parallel --tty --jobs=${JOBS} $LLVM_PATH/$COMPILER $CXXFLAGS \
+    -Xclang -disable-O0-optnone \
+    -fno-vectorize -fno-slp-vectorize -fno-tree-vectorize \
+    -S -c -emit-llvm {} -o {.}.bc ::: "${source_files[@]}" 
+  
   # -debug-only=Count
-  parallel --tty --jobs=${JOBS} $LLVM_PATH/opt -S {.}.bc -o {.}.rbc ::: "${source_files[@]}" ;
+  parallel --tty --jobs=${JOBS} $LLVM_PATH/opt -S {.}.bc -o {.}.rbc ::: "${source_files[@]}"
   
   #Generate all the bcs into a big bc:
-  $LLVM_PATH/llvm-link -S *.rbc -o $lnk_name ;
+  $LLVM_PATH/llvm-link -S *.rbc -o $lnk_name
 
   # Optmize 
-  $LLVM_PATH/opt -S -O2 $lnk_name -o $lnk_name ; 
+  $LLVM_PATH/opt -S -O2 $lnk_name -o $lnk_name 
 
   # Run llvm pass in the big bc:
-  $LLVM_PATH/opt -S -mem2reg -load $pass_path -$PASS $lnk_name -o $prf_name ;
+  $LLVM_PATH/opt -S -mem2reg -load $pass_path -$PASS $lnk_name -o $prf_name
   
   # merge the previous bc with instrumentation lib
-  $LLVM_PATH/llvm-link -S $prf_name $PHOENIX_PATH/Collect/collect.bc -o $prf_name ;
+  $LLVM_PATH/llvm-link -S $prf_name $PHOENIX_PATH/Collect/collect.bc -o $prf_name
   
   # Optimize
   $LLVM_PATH/opt -O3 -S $prf_name -o $prf_name
