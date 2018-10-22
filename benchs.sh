@@ -40,6 +40,15 @@ function mediabench() {
   walk "${dirs[@]}" ;
 }
 
+function PolyBench(){
+  dirs=("linear-algebra/kernels/2mm" "linear-algebra/kernels/3mm" "linear-algebra/kernels/atax"
+        "linear-algebra/kernels/bicg" "linear-algebra/kernels/cholesky" "linear-algebra/kernels/doitgen"
+        "linear-algebra/kernels/gemm" "linear-algebra/kernels/gemver" "linear-algebra/kernels/gesummv"
+        "linear-algebra/kernels/mvt" "linear-algebra/kernels/symm" "linear-algebra/kernels/syr2k"
+        "linear-algebra/kernels/syrk" "linear-algebra/kernels/trisolv" "linear-algebra/kernels/trmm")
+  walk "${dirs[@]}"
+}
+
 function cpu2006(){
   dirs=("400.perlbench/rbc/" "401.bzip2/rbc/" "403.gcc/rbc/" "429.mcf/rbc/"
         "433.milc/rbc/" "444.namd/rbc/" "445.gobmk/rbc/"
@@ -52,9 +61,11 @@ function cpu2006(){
 
 benchs=( "ASC_Sequoia" "BenchmarkGame" "BitBench" "CoyoteBench" "DOE_ProxyApps_C" 
   "Dhrystone" "McGill" "MiBench" "Misc"  "Shootout" "Stanford" "Fhourstones" 
-  "Linpack" "mediabench" "ASCI_Purple" "Fhourstones_31" 
+  "Linpack" "mediabench" "ASCI_Purple" "Fhourstones_31" "PolyBench"
   "SciMark2-C" "sim" "mafft" "tramp3d-v4" "llubenchmark" "nbench" "Ptrdist"
   "Trimaran" "TSVC" "PAQ8p" "NPB-serial" "VersaBench" "FreeBench"
   "MallocBench" "McCat" "Olden" "Prolangs-C" "cpu2006");
+
+benchs=( "PolyBench" )
 
 # benchs=("cpu2006")

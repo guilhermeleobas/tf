@@ -29,7 +29,7 @@ function compile() {
   fi
   
   # source_files is the variable with all the files we're gonna compile
-  parallel --tty --jobs=${JOBS} $LLVM_PATH/$COMPILER $CXXFLAGS -Xclang -disable-O0-optnone -S -c -emit-llvm {} -o {.}.bc ::: "${source_files[@]}" ;
+  parallel --tty --jobs=${JOBS} $LLVM_PATH/$COMPILER $CXXFLAGS -Xclang -disable-O0-optnone -fno-vectorize -S -c -emit-llvm {} -o {.}.bc ::: "${source_files[@]}" ;
   # -debug-only=Count
   parallel --tty --jobs=${JOBS} $LLVM_PATH/opt -S {.}.bc -o {.}.rbc ::: "${source_files[@]}" ;
   

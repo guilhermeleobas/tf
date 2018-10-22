@@ -23,7 +23,15 @@
 [[ -n $INSTRUMENT ]] || INSTRUMENT=0 ;
 
 # PASS NAME
-[[ -n $PASS ]] || $PASS="SET_ME" ;
+if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
+  if [[ -z $PASS ]]; then
+    echo "You must specify a pass to use when $INSTRUMENT=1"
+    exit 1
+  fi
+fi
+
+# Remove all temp files
+[[ -n CLEAN ]] || CLEAN=0 ;
 
 # Set the lib suffix.
 suffix="dylib" ;
@@ -96,7 +104,7 @@ fi
 
 BASEDIR="$(pwd)"
 
-TESTDIR="$BASEDIR/Benchs/"
+BENCHSDIR="$BASEDIR/Benchs/"
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
@@ -108,7 +116,7 @@ echo "EXEC is set to $EXEC"
 echo "COMPILE is set to $COMPILE"
 echo "suffix is set to $suffix"
 echo "BASEDIR is set to $BASEDIR"
-echo "TESTDIR is set to $TESTDIR"
+echo "BENCHSDIR is set to $BENCHSDIR"
 echo "PHOENIX is set to $PHOENIX_PATH"
 echo "PASS is set to $PASS"
 echo "#########################"

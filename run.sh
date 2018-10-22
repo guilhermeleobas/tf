@@ -63,6 +63,11 @@ function walk() {
   for dir in "${dirs[@]}"; do
     cd "$parent_dir"/"$dir" ;
 
+    if [[ -n $CLEAN && $CLEAN -eq 1 ]]; then
+      cleanup ;
+      continue ;
+    fi
+
     d=$(basename $(pwd))
     echo "Sourcing info.sh from $d" ;
     
@@ -92,6 +97,19 @@ source "vars.sh"
 source "benchs.sh"
 source "comp.sh"
 source "exec.sh"
+
+if [[ -n $CLEAN && $CLEAN -eq 1 ]]; then
+  echo "REMOVING ALL TEMP FILES!"
+  
+  for bench in "${benchs[@]}"; do
+    cd $BENCHSDIR
+    echo "Removing from $bench" ;
+    cd $bench ;
+    $bench ;
+  done
+
+  exit 0
+fi
 
 if [[ -n $PIN && $PIN -eq 1 ]]; then
   # replace the function `execute`
@@ -138,7 +156,7 @@ if [[ "$#" -ne 0 ]]; then
   done
 else
   for bench in "${benchs[@]}"; do
-    cd $TESTDIR
+    cd $BENCHSDIR
     echo "Starting $bench" ;
     cd $bench ;
     $bench ;
