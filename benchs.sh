@@ -42,15 +42,15 @@ function mediabench() {
 
 function PolyBench(){
   dirs=("linear-algebra/kernels/2mm" "linear-algebra/kernels/3mm" "linear-algebra/kernels/atax"
-        "linear-algebra/kernels/bicg" "linear-algebra/kernels/cholesky" "linear-algebra/kernels/doitgen"
-        "linear-algebra/kernels/gemm" "linear-algebra/kernels/gemver" "linear-algebra/kernels/gesummv"
-        "linear-algebra/kernels/mvt" "linear-algebra/kernels/symm" "linear-algebra/kernels/syr2k"
-        "linear-algebra/kernels/syrk" "linear-algebra/kernels/trisolv" "linear-algebra/kernels/trmm"
-        "linear-algebra/solvers/durbin" "linear-algebra/solvers/dynprog" "linear-algebra/solvers/gramschmidt"
-        "linear-algebra/solvers/lu" "linear-algebra/solvers/ludcmp"
+        "linear-algebra/kernels/bicg" "linear-algebra/kernels/doitgen" "linear-algebra/kernels/mvt" 
+        "linear-algebra/solvers/cholesky" "linear-algebra/solvers/durbin" "linear-algebra/solvers/gramschmidt"
+        "linear-algebra/solvers/lu" "linear-algebra/solvers/ludcmp" "linear-algebra/solvers/trisolv"
+        "linear-algebra/blas/gemm" "linear-algebra/blas/gemver" "linear-algebra/blas/gesummv"
+        "linear-algebra/blas/symm" "linear-algebra/blas/syr2k" "linear-algebra/blas/syrk"
+        "linear-algebra/blas/trmm"
         "datamining/correlation" "datamining/covariance"
-        "medley/floyd-warshall" "medley/reg_detect"
-        "stencils/adi" "stencils/fdtd-2d" "stencils/fdtd-apml" "stencils/jacobi-1d-imper" "stencils/jacobi-2d-imper"
+        "medley/floyd-warshall" "medley/deriche" "medley/nussinov"
+        "stencils/adi" "stencils/fdtd-2d" "stencils/heat-3d" "stencils/jacobi-1d" "stencils/jacobi-2d"
         "stencils/seidel-2d")
   walk "${dirs[@]}"
 }
@@ -72,4 +72,5 @@ benchs=( "ASC_Sequoia" "BenchmarkGame" "BitBench" "CoyoteBench" "DOE_ProxyApps_C
   "Trimaran" "TSVC" "PAQ8p" "NPB-serial" "VersaBench" "FreeBench"
   "MallocBench" "McCat" "Olden" "Prolangs-C" "cpu2006");
 
+benchs=("PolyBench")
 # benchs=("cpu2006")
