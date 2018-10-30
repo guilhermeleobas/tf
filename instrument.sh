@@ -32,7 +32,7 @@ function compile() {
   parallel --tty --jobs=${JOBS} $LLVM_PATH/$COMPILER $CXXFLAGS \
     -Xclang -disable-O0-optnone \
     -fno-vectorize -fno-slp-vectorize -fno-tree-vectorize \
-    -S -c -emit-llvm {} -o {.}.bc ::: "${source_files[@]}" 
+    -S -g -c -emit-llvm {} -o {.}.bc ::: "${source_files[@]}" 
   
   # -debug-only=Count
   parallel --tty --jobs=${JOBS} $LLVM_PATH/opt -S -mem2reg {.}.bc -o {.}.rbc ::: "${source_files[@]}"
