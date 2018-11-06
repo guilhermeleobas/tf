@@ -25,7 +25,7 @@
 # PASS NAME
 if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
   if [[ -z $PASS ]]; then
-    echo "You must specify a pass to use when $INSTRUMENT=1"
+    echo "You must specify a pass to use when INSTRUMENT=1"
     exit 1
   fi
 fi

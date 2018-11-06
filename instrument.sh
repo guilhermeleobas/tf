@@ -23,7 +23,6 @@ function compile() {
     $LLVM_PATH/llc -filetype=obj $prf_name -o $obj_name ;
     # Compile everything now, producing a final executable file:
     $LLVM_PATH/$COMPILER -lm -O3 $obj_name -o INS_$exe_name ;
-    # $LLVM_PATH/$COMPILER -lm -L $PHOENIX_PATH/build/Collect/ -l collect $obj_name -o INS_$exe_name ;
     
     return
   fi
@@ -34,14 +33,13 @@ function compile() {
     -fno-vectorize -fno-slp-vectorize -fno-tree-vectorize \
     -S -g -c -emit-llvm {} -o {.}.bc ::: "${source_files[@]}" 
   
-  # -debug-only=Count
   parallel --tty --jobs=${JOBS} $LLVM_PATH/opt -S -mem2reg {.}.bc -o {.}.rbc ::: "${source_files[@]}"
   
   #Generate all the bcs into a big bc:
   $LLVM_PATH/llvm-link -S *.rbc -o $lnk_name
 
   # Optmize 
-  $LLVM_PATH/opt -S -disable-loop-vectorization -disable-slp-vectorization -mem2reg \
+  $LLVM_PATH/opt -S -disable-loop-vectorization -disable-slp-vectorization -O2 -mem2reg \
     -load $pass_path -$PASS $lnk_name -o $prf_name
 
   # merge the previous bc with instrumentation lib
@@ -54,5 +52,4 @@ function compile() {
   $LLVM_PATH/llc -filetype=obj $prf_name -o $obj_name ;
   # Compile everything now, producing a final executable file:
   $LLVM_PATH/$COMPILER -lm -O3 $obj_name -o INS_$exe_name ;
-  # $LLVM_PATH/$COMPILER -flto=thin -O3 -lm -L $PHOENIX_PATH/build/Collect -l Collect $obj_name -o INS_$exe_name ;
 }
