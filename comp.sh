@@ -4,8 +4,7 @@ function compile() {
 
   if [[ -n $CPU2006 && $CPU2006 -eq 1 ]]; then
     # Convert the program to SSA form:
-    $LLVM_PATH/opt -mem2reg $lnk_name -o $rbc_name ;
-    $LLVM_PATH/opt $rbc_name -o $prf_name ;
+    $LLVM_PATH/opt -mem2reg $rbc_name -o $prf_name ;
     # Compile our file, in IR format, to x86:
     $LLVM_PATH/llc -filetype=obj $prf_name -o $obj_name ;
     # Compile everything now, producing a final executable file:

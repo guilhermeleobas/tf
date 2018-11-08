@@ -44,10 +44,16 @@ function set_vars(){
   fi
 
   # Common files used by comp.sh and instrument.sh
+  if [[ -n $CPU2006 && $CPU2006 -eq 1 ]]; then
+    rbc_name="$bench_name.linux"
+  else
+    rbc_name="$bench_name.rbc"
+  fi
   lnk_name="$bench_name.rbc"
   prf_name="$bench_name.ibc"
   obj_name="$bench_name.o"
   exe_name="$bench_name.exe"
+
 }
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
