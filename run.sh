@@ -74,7 +74,7 @@ function walk() {
     cd "$parent_dir"/"$dir" ;
 
     d=$(basename $(pwd))
-    echo "Sourcing info.sh from $d" ;
+    echo "Sourcing info.sh from $(pwd)" ;
 
     if [[ -n $CLEAN && $CLEAN -eq 1 ]]; then
       cleanup_all ;
