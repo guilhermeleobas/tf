@@ -156,8 +156,8 @@ if [[ -n $SANITIZE && $SANITIZE -eq 1 ]]; then
   source "sanitize.sh"
 fi
 
-rm -f run.txt
-touch run.txt
+rm -f /tmp/run.txt
+touch /tmp/run.txt
 
 if [[ "$#" -ne 0 ]]; then
   benchs="$@"
