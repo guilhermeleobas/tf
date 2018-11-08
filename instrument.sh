@@ -28,7 +28,7 @@ function compile() {
   fi
   
   # source_files is the variable with all the files we're gonna compile
-  parallel --tty --jobs=${JOBS} $LLVM_PATH/$COMPILER $CXXFLAGS \
+  parallel --tty --jobs=${JOBS} $LLVM_PATH/$COMPILER $COMPILE_FLAGS \
     -Xclang -disable-O0-optnone \
     -fno-vectorize -fno-slp-vectorize -fno-tree-vectorize \
     -S -g -c -emit-llvm {} -o {.}.bc ::: "${source_files[@]}" 

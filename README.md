@@ -97,7 +97,7 @@ Tip: Set `RUNTIME=0` to run indefinitely.
 
 We use gnu-parallel to run the benchmarks, even if you're running things sequentially. To run in parallel, change the variable `$JOBS` in `vars.sh` or call `JOBS=njobs ./run.sh` from the command line.
 
-### Using together with Intel PIN
+### Using with Intel PIN
 
 You need to set a few variables before. Go to the file `vars.sh` and change:
 - `PIN_PATH=/path/to/pin/`
@@ -106,6 +106,10 @@ You need to set a few variables before. Go to the file `vars.sh` and change:
 The later must point to where your Pintool **source code** is, this way we can easily build your Pintool for you.
 
 Now, call `PIN=1 ./run.sh`
+
+### Using with an LLVM pass
+
+tldr: Check the file `instrument.sh`. 
 
 ### Collecting stats
 
@@ -137,19 +141,24 @@ $LLVM_PATH/opt -mem2reg -instnamer -load DCC888.$suffix -vssa $btc_name -o $rbc_
 1) For each folder that contains .c files, i.e., the folder that will
    contain the executable file that you are creating, add the following
    `info.sh` file there:
-```bash
- bnc_name="XX" ;
- lnk_name="$bnc_name.rbc" ;
- prf_name="$bnc_name.ibc" ;
- obj_name="$bnc_name.o" ;
- exe_name="$bnc_name.exe" ;
 
- source_files=($(ls *.c)) ;
- CXXFLAGS=" -lm " ;
- COMPILER="clang"  # or clang++
- RUN_OPTIONS=" irsmk_input " ;
+```bash
+ bench_name="XX"
+
+ source_files=( "foo.c" "bar.c" "baz.c" "..." )
+ COMPILE_FLAGS=" -lm "
+ COMPILER="clang"  # or clang++ for C++ programs
+ RUN_OPTIONS=" irsmk_input "
  STDIN=" file.in "
+ DIFF_CMD=""
 ```
+
+The last two variables are used when `tf` creates the command that will be executed:
+
+```bash
+timeout -signal=TERM $RUNTIME ./$bench_name.exe $RUN_OPTIONS < $STDIN > /dev/null
+```
+
 2) Add a function into `benchs.sh`, for the new benchmark.
 
 If the benchmark does not contain subfolders, add:

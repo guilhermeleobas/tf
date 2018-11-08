@@ -17,7 +17,7 @@ function compile() {
   fi
 
   # source_files is the variable with all the files we're gonna compile
-  parallel --tty --jobs=${JOBS} $LLVM_PATH/$COMPILER $CXXFLAGS -Xclang -disable-O0-optnone -S -g -fsanitize=address -c -emit-llvm {} -o {.}.bc ::: "${source_files[@]}" ;
+  parallel --tty --jobs=${JOBS} $LLVM_PATH/$COMPILER $COMPILE_FLAGS -Xclang -disable-O0-optnone -S -g -fsanitize=address -c -emit-llvm {} -o {.}.bc ::: "${source_files[@]}" ;
   parallel --tty --jobs=${JOBS} $LLVM_PATH/opt -S -mem2reg {.}.bc -o {.}.rbc ::: "${source_files[@]}" ;
 
   #Generate all the bcs into a big bc:

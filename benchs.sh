@@ -56,13 +56,11 @@ function PolyBench(){
 }
 
 function cpu2006(){
-  dirs=("400.perlbench/rbc/" "401.bzip2/rbc/" "403.gcc/rbc/" "429.mcf/rbc/"
-        "433.milc/rbc/" "444.namd/rbc/" "445.gobmk/rbc/"
-        "456.hmmer/rbc/" "458.sjeng/rbc/" "462.libquantum/rbc/" 
-        "464.h264ref/rbc/" "470.lbm/rbc/") ; 
-  CPU2006=1
+  dirs=("400.perlbench/src/" "401.bzip2/src/" "403.gcc/src/" "429.mcf/src/"
+        "433.milc/src/" "444.namd/src/" "445.gobmk/src/"
+        "456.hmmer/src/" "458.sjeng/src/" "462.libquantum/src/" 
+        "464.h264ref/src/" "470.lbm/src/") ; 
   walk "${dirs[@]}" ;
-  unset CPU2006
 }
 
 benchs=( "ASC_Sequoia" "BenchmarkGame" "BitBench" "CoyoteBench" "DOE_ProxyApps_C" 
@@ -71,5 +69,7 @@ benchs=( "ASC_Sequoia" "BenchmarkGame" "BitBench" "CoyoteBench" "DOE_ProxyApps_C
   "SciMark2-C" "sim" "mafft" "tramp3d-v4" "llubenchmark" "nbench" "Ptrdist"
   "Trimaran" "TSVC" "PAQ8p" "NPB-serial" "VersaBench" "FreeBench"
   "MallocBench" "McCat" "Olden" "Prolangs-C" "cpu2006");
+
+benchs=("BenchmarkGame")
 
 # benchs=("cpu2006")

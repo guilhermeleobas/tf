@@ -2,25 +2,33 @@
 
 # if 0, redirect benchmark output to /dev/null
 # if 1, print benchmark output to stdout
-[[ -n $DEBUG ]] || DEBUG=0 ;
+[[ -n $DEBUG ]] || DEBUG=0
 
-# Specify the timeout
-[[ -n $RUNTIME ]] || RUNTIME=8m ;
+# Specify the timeout. Default is INF(0)
+[[ -n $RUNTIME ]] || RUNTIME=0
 
 # Execute the benchmark
-[[ -n $EXEC ]] || EXEC=1 ;
+[[ -n $EXEC ]] || EXEC=1
 
 # Compile
-[[ -n $COMPILE ]] || COMPILE=1 ;
+[[ -n $COMPILE ]] || COMPILE=1
 
 # JOBS
-[[ -n $JOBS ]] || JOBS=1 ;
+[[ -n $JOBS ]] || JOBS=1
 
 # ANALYZE
-[[ -n $ANALYZE ]] || ANALYZE=1 ;
+[[ -n $ANALYZE ]] || ANALYZE=1
 
 # INSTRUMENT
-[[ -n $INSTRUMENT ]] || INSTRUMENT=0 ;
+[[ -n $INSTRUMENT ]] || INSTRUMENT=0
+
+# Diff output with the expected one
+[[ -n $DIFF ]] || DIFF=0
+
+if [[ $DIFF -eq 1 && $DEBUG -eq 1 ]]; then
+  echo "You cannot specify DEBUG=1 and DIFF=1 at the same time"
+  exit 1
+fi
 
 # PASS NAME
 if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
@@ -31,13 +39,21 @@ if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
 fi
 
 # Remove all temp files
-[[ -n CLEAN ]] || CLEAN=0 ;
+[[ -n CLEAN ]] || CLEAN=0
 
 # Set the lib suffix.
-suffix="dylib" ;
+suffix="dylib"
 if [[ $(uname -s) == "Linux" ]]; then
-  suffix="so" ;
+  suffix="so"
 fi
+
+# if we're on osx, we must use `gtimeout` instead of `timeout`
+# `gtimeout` can be download from homebrew
+TIMEOUT=timeout
+if [[ $(uname -s) == "Darwin" ]]; then
+  TIMEOUT=gtimeout
+fi
+
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
@@ -50,14 +66,14 @@ PHOENIX_PATH="$HOME/Programs/phoenix"
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
-[[ -n $SANITIZE ]] || SANITIZE=0 ;
+[[ -n $SANITIZE ]] || SANITIZE=0
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
 # THIS PART IS LEFT AS AN EXAMPLE FOR THE PEOPLE WORKING WITH PIN!
 
 # PIN 
-[[ -n $PIN ]] || PIN=0 ;
+[[ -n $PIN ]] || PIN=0
 
 if [[ $PIN -eq 1 ]]; then
   # PIN_PATH   => The place where I keep the pin source code
@@ -80,14 +96,14 @@ fi
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # --
 
 # perf
-[[ -n $OCPERF ]] || OCPERF=0 ;
+[[ -n $OCPERF ]] || OCPERF=0
 
 if [[ $OCPERF -eq 1 ]]; then
   #PERF EVENT
-  [[ -n $PERF_TOOL ]] || PERF_TOOL="mem_uops_retired.all_loads" ; # mem-stores
+  [[ -n $PERF_TOOL ]] || PERF_TOOL="mem_uops_retired.all_loads" # mem-stores
 
   #USER OR KERNEL SPACE
-  [[ -n $PERF_TYPE ]] || PERF_TYPE="u" ;
+  [[ -n $PERF_TYPE ]] || PERF_TYPE="u"
 
   #OUTPUT FILE
   [[ -n $PERF_FILE ]] || PERF_FILE="perf_${PERF_TOOL}_${PERF_TYPE}.out"
@@ -119,4 +135,5 @@ echo "BASEDIR is set to $BASEDIR"
 echo "BENCHSDIR is set to $BENCHSDIR"
 echo "PHOENIX is set to $PHOENIX_PATH"
 echo "PASS is set to $PASS"
+echo "DIFF is set to $DIFF"
 echo "#########################"

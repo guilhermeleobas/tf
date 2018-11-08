@@ -43,12 +43,11 @@ function set_vars(){
     STDOUT=/dev/stdout ;
   fi
 
-  # if we're on osx, we must use `gtimeout` instead of `timeout`
-  # `gtimeout` can be download from homebrew
-  TIMEOUT=timeout
-  if [[ $(uname -s) == "Darwin" ]]; then
-    TIMEOUT=gtimeout
-  fi
+  # Common files used by comp.sh and instrument.sh
+  lnk_name="$bench_name.rbc"
+  prf_name="$bench_name.ibc"
+  obj_name="$bench_name.o"
+  exe_name="$bench_name.exe"
 }
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
@@ -58,12 +57,12 @@ function walk() {
   if [[ $# == 0 ]]; then
     echo "Error, you must specify the directories this script must compile"
     echo 'ex: walk $( ls -d */ )'
-    exit ;
+    exit
   else
-    dirs=("$@") ;
+    dirs=("$@")
   fi
 
-  parent_dir=$(pwd) ;
+  parent_dir=$(pwd)
 
   for dir in "${dirs[@]}"; do
     cd "$parent_dir"/"$dir" ;
