@@ -22,14 +22,6 @@
 # INSTRUMENT
 [[ -n $INSTRUMENT ]] || INSTRUMENT=0
 
-# Diff output with the expected one
-[[ -n $DIFF ]] || DIFF=0
-
-if [[ $DIFF -eq 1 && $DEBUG -eq 1 ]]; then
-  echo "You cannot specify DEBUG=1 and DIFF=1 at the same time"
-  exit 1
-fi
-
 # PASS NAME
 if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
   if [[ -z $PASS ]]; then
@@ -37,6 +29,9 @@ if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
     exit 1
   fi
 fi
+
+# DIFF
+[[ -n $DIFF ]] || DIFF=0
 
 # Remove all temp files
 [[ -n CLEAN ]] || CLEAN=0

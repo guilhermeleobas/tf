@@ -12,7 +12,11 @@ function execute() {
     exe=SAN_$exe_name
   fi
 
-  cmd="$TIMEOUT --signal=TERM ${RUNTIME} ./$exe $RUN_OPTIONS < $STDIN > $STDOUT"
+  if [[ $DIFF -eq 1 ]]; then
+    cmd="$TIMEOUT --signal=TERM ${RUNTIME} ./$exe $RUN_OPTIONS < $STDIN &> $bench_name.output"
+  else
+    cmd="$TIMEOUT --signal=TERM ${RUNTIME} ./$exe $RUN_OPTIONS < $STDIN > $STDOUT"
+  fi
 
   echo "$cmd"
   
