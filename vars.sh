@@ -75,7 +75,7 @@ if [[ $PIN -eq 1 ]]; then
   [[ -n $PIN_PATH ]] || PIN_PATH="$HOME/Programs/Pin"
   
   # PIN_LIB    => The place where I keep the Pin lib implemented.
-  [[ -n $PIN_LIB ]] || PIN_LIB="$HOME/Programs/basilisk/PinLib"
+  [[ -n $PIN_LIB ]] || PIN_LIB="$HOME/Programs/PinLib"
 
   # PIN_TOOL   => The tool used
   [[ -n $PIN_TOOL ]] || PIN_TOOL="MyPinTool"
