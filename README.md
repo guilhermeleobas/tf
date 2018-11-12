@@ -71,7 +71,7 @@ make -j8
 
 The first thing you need to do is select which benchmarks you want to execute. Open `benchs.sh` and add the benchmark you want to run into the variable `benchs`.
 
-Then, go to the file `vars.sh` and set the variable `$LLVM_PATH` to where you build LLVM. This path is something like `/path/to/llvm/build/Release+Asserts/bin` or `.../build/DEBUG+Asserts/bin`.
+Then, go to the file `vars.sh` and set the variable `$LLVM_PATH` to where you build LLVM. This path is something like `/path/to/llvm/build/Release+Asserts/bin` or `/path/to/llvm/build/bin` in newer versions.
 
 ### Compiling Benchmarks
 
@@ -93,6 +93,10 @@ After the specified time interval, **timeout** will send a `TERM` signal to the 
 
 Tip: Set `RUNTIME=0` to run indefinitely.
 
+### Compare output
+
+Just run with `DIFF=1` and **tf** will compare the output produced by the binary with a reference output.
+
 ### Parallel execution
 
 We use gnu-parallel to run the benchmarks, even if you're running things sequentially. To run in parallel, change the variable `$JOBS` in `vars.sh` or call `JOBS=njobs ./run.sh` from the command line.
@@ -106,10 +110,6 @@ You need to set a few variables before. Go to the file `vars.sh` and change:
 The later must point to where your Pintool **source code** is, this way we can easily build your Pintool for you.
 
 Now, call `PIN=1 ./run.sh`
-
-### Using with an LLVM pass
-
-tldr: Check the file `instrument.sh`. 
 
 ### Collecting stats
 
@@ -131,7 +131,7 @@ See `comp.sh` file. You can control how each benchmark is compiled there.
 Add your pass in the line we call `$LLVM_PATH/opt`:
 
 ```bash
-$LLVM_PATH/opt -mem2reg -instnamer -load DCC888.$suffix -vssa $btc_name -o $rbc_name ;
+$LLVM_PATH/opt -mem2reg -instnamer -load MyPass.$suffix -MyOptPass $btc_name -o $rbc_name ;
 ```
 
 ------------

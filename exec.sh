@@ -13,7 +13,8 @@ function execute() {
   fi
 
   if [[ $DIFF -eq 1 ]]; then
-    cmd="$TIMEOUT --signal=TERM ${RUNTIME} ./$exe $RUN_OPTIONS < $STDIN &> $bench_name.output"
+    cmd="$TIMEOUT --signal=TERM ${RUNTIME} ./$exe $RUN_OPTIONS < $STDIN &> $bench_name.output && \
+         $BASEDIR/DiffOutput.sh $bench_name $bench_name.reference_output $bench_name.output"
   else
     cmd="$TIMEOUT --signal=TERM ${RUNTIME} ./$exe $RUN_OPTIONS < $STDIN > $STDOUT"
   fi
