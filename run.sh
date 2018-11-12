@@ -6,20 +6,25 @@ trap 'echo "Killing build_exec.sh script" ; exit' INT TERM
 
 function cleanup() {
   rm -f *.bc
-  rm -f *.rbc ;
-  rm -f *.ibc ;
-  rm -f *.o ;
-  # rm -f *.exe ;
-  # rm -f table.csv
-  # rm -f prof.dat ;
-  # rm -f feat.dat ;
+  rm -f *.rbc
+  rm -f *.ibc
+  rm -f *.o
+}
+
+function cleanup_all() {
+  rm -f *.bc
+  rm -f *.rbc 
+  rm -f *.ibc
+  rm -f *.o
+  rm -f *.exe
+  rm -f *.txt
 }
 
 function unset_vars() {
-  unset COMPILER ;
-  unset STDIN ;
-  unset STDOUT ;
-  unset RUN_OPTIONS ;
+  unset COMPILER
+  unset STDIN
+  unset STDOUT
+  unset RUN_OPTIONS
 }
 
 function set_vars(){
@@ -28,22 +33,27 @@ function set_vars(){
   # Let's set the variables that are unset
 
   # sometimes we need to use clang++
-  [[ -n $COMPILER ]] || COMPILER=clang ;
+  [[ -n $COMPILER ]] || COMPILER=clang
   # We can specify STDIN to something other than /dev/stdin
-  [[ -n $STDIN ]] || STDIN=/dev/stdin ;
+  [[ -n $STDIN ]] || STDIN=/dev/null
   # And STDOUT default is /dev/null. 
-  [[ -n $STDOUT ]] || STDOUT=/dev/null ;
+  [[ -n $STDOUT ]] || STDOUT=/dev/null
   # But if we set DEBUG=1, than we ignore the previous definition of STDOUT
   if [[ $DEBUG == 1 ]]; then
     STDOUT=/dev/stdout ;
   fi
 
-  # if we're on osx, we must use `gtimeout` instead of `timeout`
-  # `gtimeout` can be download from homebrew
-  TIMEOUT=timeout
-  if [[ $(uname -s) == "Darwin" ]]; then
-    TIMEOUT=gtimeout
+  # Common files used by comp.sh and instrument.sh
+  if [[ -n $CPU2006 && $CPU2006 -eq 1 ]]; then
+    rbc_name="$bench_name.linux"
+  else
+    rbc_name="$bench_name.rbc"
   fi
+  lnk_name="$bench_name.rbc"
+  prf_name="$bench_name.ibc"
+  obj_name="$bench_name.o"
+  exe_name="$bench_name.exe"
+
 }
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
@@ -53,18 +63,23 @@ function walk() {
   if [[ $# == 0 ]]; then
     echo "Error, you must specify the directories this script must compile"
     echo 'ex: walk $( ls -d */ )'
-    exit ;
+    exit
   else
-    dirs=("$@") ;
+    dirs=("$@")
   fi
 
-  parent_dir=$(pwd) ;
+  parent_dir=$(pwd)
 
   for dir in "${dirs[@]}"; do
     cd "$parent_dir"/"$dir" ;
 
     d=$(basename $(pwd))
-    echo "Sourcing info.sh from $d" ;
+    echo "Sourcing info.sh from $(pwd)" ;
+
+    if [[ -n $CLEAN && $CLEAN -eq 1 ]]; then
+      cleanup_all ;
+      continue ;
+    fi
     
     set_vars ;
     cleanup ;
@@ -93,18 +108,56 @@ source "benchs.sh"
 source "comp.sh"
 source "exec.sh"
 
+if [[ -n $CLEAN && $CLEAN -eq 1 ]]; then
+  echo "REMOVING ALL TEMP FILES!"
+  
+  for bench in "${benchs[@]}"; do
+    cd $BENCHSDIR
+    echo "Removing from $bench" ;
+    cd $bench ;
+    $bench ;
+    echo "" ;
+  done
+
+  exit 0
+fi
+
 if [[ -n $PIN && $PIN -eq 1 ]]; then
   # replace the function `execute`
   source "exec_pin.sh"
 fi
 
+if [[ -n $OCPERF && $OCPERF -eq 1 ]]; then
+  # replace the function `execute`
+  source "exec_perf.sh"
+fi
+
 if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
   # replace the compile function
   source "instrument.sh"
+  
+  curr_dir=$(pwd) 
+  cd $PHOENIX_PATH
+  
+  # LLVM_DIR=$HOME/Documents/llvm61/build/lib/cmake cmake -H. -Bbuild && make -C build
+  make -C build -j4
+  
+  if [[ $? -gt 0 ]]; then
+    echo "ERRORS"
+    exit 1
+  fi
+  
+  cd $curr_dir
+  
 fi
 
-rm -f run.txt
-touch run.txt
+if [[ -n $SANITIZE && $SANITIZE -eq 1 ]]; then
+  # replace the compile function
+  source "sanitize.sh"
+fi
+
+rm -f /tmp/run.txt
+touch /tmp/run.txt
 
 if [[ "$#" -ne 0 ]]; then
   benchs="$@"
@@ -114,7 +167,7 @@ if [[ "$#" -ne 0 ]]; then
   done
 else
   for bench in "${benchs[@]}"; do
-    cd $TESTDIR
+    cd $BENCHSDIR
     echo "Starting $bench" ;
     cd $bench ;
     $bench ;
@@ -125,7 +178,3 @@ cd $BASEDIR ;
 
 source "parallel.sh"
 source "collect.sh"
-
-
-
-

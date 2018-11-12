@@ -9,11 +9,10 @@ function execute() {
   fi
 
   cmd="$TIMEOUT --signal=TERM ${RUNTIME} \
-       $PIN_PATH/pin -t $PIN_LIB/obj-intel64/${PIN_TOOL}.${suffix} \
-       $PIN_FLAGS \
-       -- ./$exe $RUN_OPTIONS < $STDIN > $STDOUT" ;
+       $PERF_BIN stat -e $PERF_TOOL:$PERF_TYPE \
+       ./$exe $RUN_OPTIONS < $STDIN > $STDOUT" ;
 
   echo "$cmd"
-  echo "cd $(pwd) && $cmd" >> /tmp/run.txt ;
-   
+  echo "cd $(pwd) && $cmd" >> $BASEDIR/run.txt ;
+  
 }
