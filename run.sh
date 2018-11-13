@@ -139,8 +139,11 @@ if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
   curr_dir=$(pwd) 
   cd $PHOENIX_PATH
   
-  # LLVM_DIR=$HOME/Documents/llvm61/build/lib/cmake cmake -H. -Bbuild && make -C build
+  
   make -C build -j4
+  # if [[ $? -ne 0 ]]; then
+    # LLVM_DIR=$HOME/Documents/llvm61/build/lib/cmake cmake -H. -Bbuild && make -C build
+  # fi
   
   if [[ $? -gt 0 ]]; then
     echo "ERRORS"
