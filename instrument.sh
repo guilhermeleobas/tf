@@ -10,7 +10,9 @@ function compile() {
   
   if [[ -n $CPU2006 && $CPU2006 -eq 1 ]]; then
     # Convert the program to SSA form:
-    $LLVM_PATH/opt -O2 -disable-loop-vectorization -disable-slp-vectorization -mem2reg -load $pass_path -$PASS -S $lnk_name -o $rbc_name ;
+    $LLVM_PATH/opt -O2 -disable-loop-vectorization -disable-slp-vectorization \
+      -mem2reg -early-cse -sink -simplifycfg \
+      -load $pass_path -$PASS -S $lnk_name -o $rbc_name ;
     $LLVM_PATH/opt $rbc_name -S -o $prf_name ;
     
     #Generate all the bcs into a big bc:
@@ -22,7 +24,7 @@ function compile() {
     # Compile our file, in IR format, to x86:
     $LLVM_PATH/llc -filetype=obj $prf_name -o $obj_name ;
     # Compile everything now, producing a final executable file:
-    $LLVM_PATH/$COMPILER -lm -O3 $obj_name -o INS_$exe_name ;
+    $LLVM_PATH/$COMPILER -lm $obj_name -o INS_$exe_name ;
     
     return
   fi
@@ -38,9 +40,11 @@ function compile() {
   #Generate all the bcs into a big bc:
   $LLVM_PATH/llvm-link -S *.rbc -o $lnk_name
 
-  # Optmize 
   $LLVM_PATH/opt -S -disable-loop-vectorization -disable-slp-vectorization -O2 \
-    -mem2reg -early-cse -sink -simplifycfg \
+   -mem2reg -instcombine -early-cse $lnk_name -o $lnk_name
+
+  # Optmize 
+  $LLVM_PATH/opt -S \
     -load $pass_path -debug-only=Optimize -$PASS -verify $lnk_name -o $prf_name
 
   # merge the previous bc with instrumentation lib
@@ -52,5 +56,5 @@ function compile() {
   # Compile our instrumented file, in IR format, to x86:
   $LLVM_PATH/llc -filetype=obj $prf_name -o $obj_name ;
   # Compile everything now, producing a final executable file:
-  $LLVM_PATH/$COMPILER -lm -O3 $obj_name -o INS_$exe_name ;
+  $LLVM_PATH/$COMPILER -lm $obj_name -o INS_$exe_name ;
 }
