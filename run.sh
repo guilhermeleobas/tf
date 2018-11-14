@@ -25,6 +25,8 @@ function unset_vars() {
   unset STDIN
   unset STDOUT
   unset RUN_OPTIONS
+
+  unset CPU2006
 }
 
 function set_vars(){
@@ -41,6 +43,11 @@ function set_vars(){
   # But if we set DEBUG=1, than we ignore the previous definition of STDOUT
   if [[ $DEBUG == 1 ]]; then
     STDOUT=/dev/stdout ;
+  fi
+
+  if [[ $(pwd) =~ "cpu2006" ]]; then
+    echo "Setting CPU2006=1"
+    CPU2006=1
   fi
 
   # Common files used by comp.sh and instrument.sh
@@ -163,11 +170,17 @@ rm -f /tmp/run.txt
 touch /tmp/run.txt
 
 if [[ "$#" -ne 0 ]]; then
-  benchs="$@"
-  for dir in "$@"; do
-    cd $dir ;
-    walk "." ;
-  done
+  # check if the input is a file
+  if [[ -f "$@" ]]; then
+    echo "Reading input file..."
+    # Read the content into "${benchs[@]}" array
+    IFS=$'\n' read -d '' -r -a benchs < "$@"
+  else
+    benchs=( "$@" )
+  fi
+
+  walk "${benchs[@]}" ;
+
 else
   for bench in "${benchs[@]}"; do
     cd $BENCHSDIR
