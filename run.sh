@@ -51,10 +51,10 @@ function set_vars(){
   fi
 
   # Common files used by comp.sh and instrument.sh
-  if [[ -n $CPU2006 && $CPU2006 -eq 1 ]]; then
+  if [[ -n $CPU2006 && $CPU2006 -eq 1 && $(uname -s) == "Linux" ]]; then
     rbc_name="$bench_name.linux"
   else
-    rbc_name="$bench_name.rbc"
+    rbc_name="$bench_name.llvm"
   fi
   lnk_name="$bench_name.rbc"
   prf_name="$bench_name.ibc"

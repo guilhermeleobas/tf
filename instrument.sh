@@ -12,8 +12,7 @@ function compile() {
     # Convert the program to SSA form:
     $LLVM_PATH/opt -O2 -disable-loop-vectorization -disable-slp-vectorization \
       -mem2reg -early-cse -sink -simplifycfg \
-      -load $pass_path -$PASS -S $lnk_name -o $rbc_name ;
-    $LLVM_PATH/opt $rbc_name -S -o $prf_name ;
+      -load $pass_path -$PASS -S $rbc_name -o $prf_name ;
     
     #Generate all the bcs into a big bc:
     # $LLVM_PATH/llvm-link -S $prf_name $PHOENIX_PATH/Collect/collect.bc -o $prf_name ;
