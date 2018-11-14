@@ -40,7 +40,7 @@ function compile() {
   $LLVM_PATH/llvm-link -S *.rbc -o $lnk_name
 
   $LLVM_PATH/opt -S -disable-loop-vectorization -disable-slp-vectorization -O2 \
-   -mem2reg -instcombine -early-cse $lnk_name -o $lnk_name
+   -mem2reg -instcombine -early-cse -instnamer $lnk_name -o $lnk_name
 
   # Optmize 
   $LLVM_PATH/opt -S \
