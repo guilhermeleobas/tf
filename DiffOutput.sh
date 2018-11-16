@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Command line parameters:
 DIFF="diff"
@@ -21,6 +21,5 @@ else
   echo "Execution Context Diff:"
   head -n 10 $DIFFOUTPUT | cat -v
   # rm $DIFFOUTPUT
-  echo "******************** TEST '$PROG' ****************************"
   exit 1
 fi

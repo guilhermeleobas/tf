@@ -32,7 +32,7 @@ function compile() {
   parallel --tty --jobs=${JOBS} $LLVM_PATH/$COMPILER $COMPILE_FLAGS \
     -Xclang -disable-O0-optnone \
     -fno-vectorize -fno-slp-vectorize -fno-tree-vectorize \
-    -S -g -c -emit-llvm {} -o {.}.bc ::: "${source_files[@]}" 
+    -S -c -emit-llvm {} -o {.}.bc ::: "${source_files[@]}" 
   
   parallel --tty --jobs=${JOBS} $LLVM_PATH/opt -S -mem2reg {.}.bc -o {.}.rbc ::: "${source_files[@]}"
   
@@ -44,7 +44,7 @@ function compile() {
 
   # Optmize 
   $LLVM_PATH/opt -S \
-    -load $pass_path -debug-only=Optimize -$PASS -verify $lnk_name -o $prf_name
+    -load $pass_path -debug-only=$PASS -$PASS -verify $lnk_name -o $prf_name
 
   # merge the previous bc with instrumentation lib
   # $LLVM_PATH/llvm-link -S $prf_name $PHOENIX_PATH/Collect/collect.bc -o $prf_name
