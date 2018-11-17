@@ -23,7 +23,7 @@ function compile() {
     # Compile our file, in IR format, to x86:
     $LLVM_PATH/llc -filetype=obj $prf_name -o $obj_name
     # Compile everything now, producing a final executable file:
-    $LLVM_PATH/$COMPILER -lm $obj_name -o INS_$exe_name
+    $LLVM_PATH/$COMPILER -lm $obj_name -o $exe_name
     
     return
   fi
@@ -54,5 +54,5 @@ function compile() {
   # Compile our instrumented file, in IR format, to x86:
   $LLVM_PATH/llc -filetype=obj $prf_name -o $obj_name
   # Compile everything now, producing a final executable file:
-  $LLVM_PATH/$COMPILER -lm $obj_name -o INS_$exe_name
+  $LLVM_PATH/$COMPILER -lm $obj_name -o $exe_name
 }

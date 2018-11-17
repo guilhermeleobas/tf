@@ -56,10 +56,24 @@ function set_vars(){
   else
     rbc_name="$bench_name.llvm"
   fi
+
   lnk_name="$bench_name.rbc"
   prf_name="$bench_name.ibc"
   obj_name="$bench_name.o"
   exe_name="$bench_name.exe"
+
+  # options for exe name
+  if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
+    exe_name=INS_$exe_name
+  fi
+  
+  if [[ -n $ASAN && $ASAN -eq 1 ]]; then
+    exe_name=ASAN_$exe_name
+  fi
+  
+  if [[ $SSA -eq 0 ]]; then
+    exe_name=NO_SSA_$exe_name ;
+  fi
 
 }
 
