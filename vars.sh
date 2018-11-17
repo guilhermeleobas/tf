@@ -103,7 +103,13 @@ if [[ $PIN -eq 1 ]]; then
   echo "PIN_PATH is set to $PIN_PATH"
   echo "PIN_LIB is set to $PIN_LIB"
   echo "PIN_TOOL is set to $PIN_TOOL"
-  PIN_ROOT=$PIN_PATH make -C $PIN_LIB
+  
+  echo "Compiling PIN TOOLS"
+  PIN_ROOT=$PIN_PATH make -C $PIN_LIB || {
+    echo "Error compiling PIN TOOLS"
+    exit 1
+  }
+  
 fi
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # --
