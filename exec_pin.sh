@@ -14,6 +14,6 @@ function execute() {
        -- ./$exe $RUN_OPTIONS < $STDIN > $STDOUT" ;
 
   echo "$cmd"
-  echo "cd $(pwd) && $cmd" >> $BASEDIR/run.txt ;
+  echo "cd $(pwd) && $cmd" >> /tmp/run.txt ;
    
 }
