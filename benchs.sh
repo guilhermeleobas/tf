@@ -60,9 +60,7 @@ function cpu2006(){
         "433.milc/rbc/" "444.namd/rbc/" "445.gobmk/rbc/"
         "456.hmmer/rbc/" "458.sjeng/rbc/" "462.libquantum/rbc/" 
         "464.h264ref/rbc/" "470.lbm/rbc/")
-  CPU2006=1
   walk "${dirs[@]}"
-  unset CPU2006
 }
 
 benchs=( "ASC_Sequoia" "BenchmarkGame" "BitBench" "CoyoteBench" "DOE_ProxyApps_C" 

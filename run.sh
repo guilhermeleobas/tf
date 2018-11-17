@@ -25,6 +25,8 @@ function unset_vars() {
   unset STDIN
   unset STDOUT
   unset RUN_OPTIONS
+
+  unset CPU2006
 }
 
 function set_vars(){
@@ -43,11 +45,16 @@ function set_vars(){
     STDOUT=/dev/stdout ;
   fi
 
+  if [[ $(pwd) =~ "cpu2006" ]]; then
+    echo "Setting CPU2006=1"
+    CPU2006=1
+  fi
+
   # Common files used by comp.sh and instrument.sh
-  if [[ -n $CPU2006 && $CPU2006 -eq 1 ]]; then
+  if [[ -n $CPU2006 && $CPU2006 -eq 1 && $(uname -s) == "Linux" ]]; then
     rbc_name="$bench_name.linux"
   else
-    rbc_name="$bench_name.rbc"
+    rbc_name="$bench_name.llvm"
   fi
   lnk_name="$bench_name.rbc"
   prf_name="$bench_name.ibc"
@@ -139,8 +146,11 @@ if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
   curr_dir=$(pwd) 
   cd $PHOENIX_PATH
   
-  # LLVM_DIR=$HOME/Documents/llvm61/build/lib/cmake cmake -H. -Bbuild && make -C build
+  
   make -C build -j4
+  # if [[ $? -ne 0 ]]; then
+    # LLVM_DIR=$HOME/Documents/llvm61/build/lib/cmake cmake -H. -Bbuild && make -C build
+  # fi
   
   if [[ $? -gt 0 ]]; then
     echo "ERRORS"
@@ -160,11 +170,17 @@ rm -f /tmp/run.txt
 touch /tmp/run.txt
 
 if [[ "$#" -ne 0 ]]; then
-  benchs="$@"
-  for dir in "$@"; do
-    cd $dir ;
-    walk "." ;
-  done
+  # check if the input is a file
+  if [[ -f "$@" ]]; then
+    echo "Reading input file..."
+    # Read the content into "${benchs[@]}" array
+    IFS=$'\n' read -d '' -r -a benchs < "$@"
+  else
+    benchs=( "$@" )
+  fi
+
+  walk "${benchs[@]}" ;
+
 else
   for bench in "${benchs[@]}"; do
     cd $BENCHSDIR

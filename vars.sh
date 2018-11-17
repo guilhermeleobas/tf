@@ -33,6 +33,11 @@ fi
 # DIFF
 [[ -n $DIFF ]] || DIFF=0
 
+[[ $DIFF -eq 1 && $DEBUG -eq 1 ]] && {
+  echo "Can't use DIFF=1 & DEBUG=1 at the same time"
+  exit 1
+}
+
 # Remove all temp files
 [[ -n CLEAN ]] || CLEAN=0
 
