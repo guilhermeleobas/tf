@@ -14,13 +14,13 @@
 [[ -n $COMPILE ]] || COMPILE=1
 
 # Instrument
-[[ -n $INSTRUMENT ]] || INSTRUMENT=0 ;
+[[ -n $INSTRUMENT ]] || INSTRUMENT=0
 
 # JOBS
 [[ -n $JOBS ]] || JOBS=1
 
 # ANALYZE
-[[ -n $ANALYZE ]] || ANALYZE=1
+[[ -n $ANALYZE ]] || ANALYZE=0
 
 # INSTRUMENT
 [[ -n $INSTRUMENT ]] || INSTRUMENT=0
@@ -71,7 +71,7 @@ LLVM_PATH="${HOME}/Programs/llvm/build/bin"
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
-PHOENIX_PATH="$HOME/Programs/phoenix"
+BASILISK_PATH="$HOME/Programs/basilisk"
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
@@ -89,11 +89,11 @@ if [[ $PIN -eq 1 ]]; then
   [[ -n $PIN_PATH ]] || PIN_PATH="$HOME/Programs/Pin"
   
   # PIN_LIB    => The place where I keep the Pin lib implemented.
-  [[ -n $PIN_LIB ]] || PIN_LIB="$HOME/Programs/PinLib"
+  [[ -n $PIN_LIB ]] || PIN_LIB="$HOME/Programs/basilisk/PinLib"
 
   # PIN_TOOL   => The tool used
   if [[ -z $PIN_TOOL ]]; then
-    echo "You must define a $PIN_TOOL variable before using `tf` with PIN"
+    echo "You must define a PIN_TOOL variable before using tf with PIN"
     exit 1
   fi
   
@@ -156,7 +156,7 @@ echo "SSA is set to $SSA"
 echo "suffix is set to $suffix"
 echo "BASEDIR is set to $BASEDIR"
 echo "BENCHSDIR is set to $BENCHSDIR"
-echo "PHOENIX is set to $PHOENIX_PATH"
+echo "BASILISK is set to $BASILISK_PATH"
 echo "PASS is set to $PASS"
 echo "DIFF is set to $DIFF"
 echo "#########################"

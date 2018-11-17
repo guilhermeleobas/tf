@@ -2,7 +2,7 @@
 
 function execute() {
   
-  exe=$exe_name ;
+  exe=$exe_name
 
   if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
     exe=INS_$exe_name

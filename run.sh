@@ -144,13 +144,9 @@ if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
   source "instrument.sh"
   
   curr_dir=$(pwd) 
-  cd $PHOENIX_PATH
+  cd $BASILISK_PATH
   
-  
-  make -C build -j4
-  # if [[ $? -ne 0 ]]; then
-    # LLVM_DIR=$HOME/Documents/llvm61/build/lib/cmake cmake -H. -Bbuild && make -C build
-  # fi
+  LLVM_DIR=$HOME/Documents/llvm61/build/lib/cmake cmake -H. -Bbuild && make -C build
   
   if [[ $? -gt 0 ]]; then
     echo "ERRORS"
