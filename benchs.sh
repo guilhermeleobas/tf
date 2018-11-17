@@ -37,7 +37,7 @@ function PAQ8p() { walk "." ; }
 function mediabench() {
   dirs=("adpcm/rawcaudio" "adpcm/rawdaudio" "g721/g721encode" "jpeg/jpeg-6a" 
         "gsm/toast" "mpeg2/mpeg2dec")
-  walk "${dirs[@]}" ;
+  walk "${dirs[@]}"
 }
 
 function PolyBench(){
@@ -68,4 +68,4 @@ benchs=( "ASC_Sequoia" "BenchmarkGame" "BitBench" "CoyoteBench" "DOE_ProxyApps_C
   "Linpack" "mediabench" "ASCI_Purple" "Fhourstones_31" "PolyBench"
   "SciMark2-C" "sim" "mafft" "tramp3d-v4" "llubenchmark" "nbench" "Ptrdist"
   "Trimaran" "TSVC" "PAQ8p" "NPB-serial" "VersaBench" "FreeBench"
-  "MallocBench" "McCat" "Olden" "Prolangs-C" "cpu2006");
+  "MallocBench" "McCat" "Olden" "Prolangs-C" "cpu2006")

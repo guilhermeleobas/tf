@@ -13,14 +13,21 @@
 # Compile
 [[ -n $COMPILE ]] || COMPILE=1
 
+# Instrument
+[[ -n $INSTRUMENT ]] || INSTRUMENT=0
+
 # JOBS
 [[ -n $JOBS ]] || JOBS=1
 
 # ANALYZE
-[[ -n $ANALYZE ]] || ANALYZE=1
+[[ -n $ANALYZE ]] || ANALYZE=0
 
 # INSTRUMENT
 [[ -n $INSTRUMENT ]] || INSTRUMENT=0
+
+# Address Sanitizer
+[[ -n $ASAN ]] || ASAN=0
+
 
 # PASS NAME
 if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
@@ -44,6 +51,9 @@ fi
 # ANALYZE
 [[ -n $ANALYZE ]] || ANALYZE=1 ;
 
+# Whether run -mem2reg or not
+[[ -n $SSA ]] || SSA=1 ;
+
 # Set the lib suffix.
 suffix="dylib"
 if [[ $(uname -s) == "Linux" ]]; then
@@ -65,11 +75,7 @@ LLVM_PATH="${HOME}/Programs/llvm/build/bin"
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
-PHOENIX_PATH="$HOME/Programs/phoenix"
-
-# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
-
-[[ -n $SANITIZE ]] || SANITIZE=0
+BASILISK_PATH="$HOME/Programs/basilisk"
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
@@ -83,17 +89,27 @@ if [[ $PIN -eq 1 ]]; then
   [[ -n $PIN_PATH ]] || PIN_PATH="$HOME/Programs/Pin"
   
   # PIN_LIB    => The place where I keep the Pin lib implemented.
-  [[ -n $PIN_LIB ]] || PIN_LIB="$HOME/Programs/PinLib"
+  [[ -n $PIN_LIB ]] || PIN_LIB="$HOME/Programs/basilisk/PinLib"
 
   # PIN_TOOL   => The tool used
-  [[ -n $PIN_TOOL ]] || PIN_TOOL="MyPinTool"
- # PIN_FLAGS  => Flags to pass to PIN
+  if [[ -z $PIN_TOOL ]]; then
+    echo "You must define a PIN_TOOL variable before using tf with PIN"
+    exit 1
+  fi
+  
+  # PIN_FLAGS  => Flags to pass to PIN
   [[ -n $PIN_FLAGS ]] || PIN_FLAGS=" "
 
   echo "PIN_PATH is set to $PIN_PATH"
   echo "PIN_LIB is set to $PIN_LIB"
   echo "PIN_TOOL is set to $PIN_TOOL"
-  PIN_ROOT=$PIN_PATH make -C $PIN_LIB
+  
+  echo "Compiling PIN TOOLS"
+  PIN_ROOT=$PIN_PATH make -C $PIN_LIB || {
+    echo "Error compiling PIN TOOLS"
+    exit 1
+  }
+  
 fi
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # --
@@ -141,10 +157,12 @@ echo "CLEAN is set to $CLEAN"
 echo "PIN is set to $PIN"
 echo "EXEC is set to $EXEC"
 echo "COMPILE is set to $COMPILE"
+echo "INSTRUMENT is set to $INSTRUMENT"
+echo "SSA is set to $SSA"
 echo "suffix is set to $suffix"
 echo "BASEDIR is set to $BASEDIR"
 echo "BENCHSDIR is set to $BENCHSDIR"
-echo "PHOENIX is set to $PHOENIX_PATH"
+echo "BASILISK is set to $BASILISK_PATH"
 echo "PASS is set to $PASS"
 echo "DIFF is set to $DIFF"
 echo "#########################"
