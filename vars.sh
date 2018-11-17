@@ -25,6 +25,10 @@
 # INSTRUMENT
 [[ -n $INSTRUMENT ]] || INSTRUMENT=0
 
+# Address Sanitizer
+[[ -n $ASAN ]] || ASAN=0
+
+
 # PASS NAME
 if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
   if [[ -z $PASS ]]; then
@@ -72,10 +76,6 @@ LLVM_PATH="${HOME}/Programs/llvm/build/bin"
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
 BASILISK_PATH="$HOME/Programs/basilisk"
-
-# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
-
-[[ -n $SANITIZE ]] || SANITIZE=0
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 

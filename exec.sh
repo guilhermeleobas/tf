@@ -8,7 +8,7 @@ function execute() {
     exe=INS_$exe_name
   fi
   
-  if [[ -n $SANITIZE && $SANITIZE -eq 1 ]]; then
+  if [[ -n $ASAN && $ASAN -eq 1 ]]; then
     exe=SAN_$exe_name
   fi
   
@@ -25,7 +25,7 @@ function execute() {
 
   echo "$cmd"
   
-  if [[ -n $SANITIZE && $SANITIZE -eq 1 ]]; then
+  if [[ -n $ASAN && $ASAN -eq 1 ]]; then
     echo "cd $(pwd) && ASAN_SYMBOLIZER_PATH=$HOME/Programs/llvm61/build/bin/llvm-symbolizer \
       ASAN_OPTIONS=halt_on_error=false:print_stats=true $cmd" >> /tmp/run.txt
   else
