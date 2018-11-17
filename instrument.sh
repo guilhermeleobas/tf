@@ -24,12 +24,8 @@ function compile() {
   #Generate all the bcs into a big bc:
   $LLVM_PATH/llvm-link -S *.rbc -o $lnk_name
 
-  $LLVM_PATH/opt -S -disable-loop-vectorization -disable-slp-vectorization -O2 \
-   -mem2reg -instcombine -early-cse -instnamer $lnk_name -o $lnk_name
-
   # Optmize 
-  $LLVM_PATH/opt -S \
-    -load $pass_path -debug-only=$PASS -$PASS -verify $lnk_name -o $prf_name
+  $LLVM_PATH/opt -S -load $pass_path -$PASS -verify $lnk_name -o $prf_name
 
   # Compile our instrumented file, in IR format, to x86:
   $LLVM_PATH/llc -filetype=obj $prf_name -o $obj_name
