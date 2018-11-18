@@ -160,7 +160,7 @@ if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
   curr_dir=$(pwd) 
   cd $BASILISK_PATH
   
-  LLVM_DIR=$HOME/Documents/llvm61/build/lib/cmake cmake -H. -Bbuild && make -C build
+  LLVM_DIR=$HOME/Programs/llvm61/build/lib/cmake cmake -H. -Bbuild && make -C build
   
   if [[ $? -gt 0 ]]; then
     echo "ERRORS"
