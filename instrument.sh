@@ -11,7 +11,7 @@ function compile() {
   if [[ -n $CPU2006 && $CPU2006 -eq 1 ]]; then
     # Convert the program to SSA form:
     $LLVM_PATH/opt -O2 -disable-loop-vectorization -disable-slp-vectorization \
-      -mem2reg -early-cse -sink -simplifycfg \
+      -mem2reg -instcombine -early-cse \
       -load $pass_path -$PASS -S $rbc_name -o $prf_name ;
     
     #Generate all the bcs into a big bc:
