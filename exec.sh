@@ -6,7 +6,7 @@ function execute() {
     cmd="$TIMEOUT --signal=TERM ${RUNTIME} ./$exe_name $RUN_OPTIONS < $STDIN &> $bench_name.output && \
          $BASEDIR/DiffOutput.sh $bench_name $bench_name.reference_output $bench_name.output"
   else
-    cmd="$TIMEOUT --signal=TERM ${RUNTIME} ./$exe_name $RUN_OPTIONS < $STDIN > $STDOUT"
+    cmd="$TIMEOUT --signal=TERM ${RUNTIME} ./$exe_name $RUN_OPTIONS < $STDIN &> $STDOUT"
   fi
 
   echo "$cmd"
