@@ -4,7 +4,7 @@ function compile() {
 
   if [[ -n $CPU2006 && $CPU2006 -eq 1 ]]; then
     # Convert the program to SSA form:
-    $LLVM_PATH/opt -mem2reg $rbc_name -o $prf_name ;
+    $LLVM_PATH/opt -O3 $rbc_name -o $prf_name ;
     # Compile our file, in IR format, to x86:
     $LLVM_PATH/llc -filetype=obj $prf_name -o $obj_name ;
     # Compile everything now, producing a final executable file:
@@ -21,7 +21,7 @@ function compile() {
   #Generate all the bcs into a big bc:
   $LLVM_PATH/llvm-link -S *.rbc -o $lnk_name ;
 
-  $LLVM_PATH/opt -S -disable-loop-vectorization -disable-slp-vectorization -O2 $lnk_name -o $prf_name ;
+  $LLVM_PATH/opt -S -O3 $lnk_name -o $prf_name ;
   
   # Compile our instrumented file, in IR format, to x86:
   $LLVM_PATH/llc -filetype=obj $prf_name -o $obj_name ;

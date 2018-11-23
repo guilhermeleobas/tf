@@ -18,6 +18,7 @@ function cleanup_all() {
   rm -f *.o
   rm -f *.exe
   rm -f *.txt
+  rm -f *.csv
 }
 
 function unset_vars() {
