@@ -1,5 +1,3 @@
-#!/bash/bin
-
 # if 0, redirect benchmark output to /dev/null
 # if 1, print benchmark output to stdout
 [[ -n $DEBUG ]] || DEBUG=0
@@ -28,14 +26,6 @@
 # Address Sanitizer
 [[ -n $ASAN ]] || ASAN=0
 
-
-# PASS NAME
-if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
-  if [[ -z $PASS ]]; then
-    echo "You must specify a pass to use when INSTRUMENT=1"
-    exit 1
-  fi
-fi
 
 # DIFF
 [[ -n $DIFF ]] || DIFF=0
@@ -71,11 +61,12 @@ fi
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
 # LLVM_PATH  => The place where I have all the LLVM tools
-LLVM_PATH="${HOME}/Programs/llvm/build/bin"
+LLVM_PATH=""
 
-# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
-
-BASILISK_PATH="$HOME/Programs/basilisk"
+[[ -d "${LLVM_PATH}" ]] || {
+	echo "One must define LLVM_PATH before running tf"
+	exit 1
+}
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
@@ -86,17 +77,25 @@ BASILISK_PATH="$HOME/Programs/basilisk"
 
 if [[ $PIN -eq 1 ]]; then
   # PIN_PATH   => The place where I keep the pin source code
-  [[ -n $PIN_PATH ]] || PIN_PATH="$HOME/Programs/Pin"
+	PIN_PATH=""
+  [[ -n $PIN_PATH ]] || {
+		echo "One must define the PIN before when PIN=1"
+		exit 1
+	}
   
   # PIN_LIB    => The place where I keep the Pin lib implemented.
-  [[ -n $PIN_LIB ]] || PIN_LIB="$HOME/Programs/basilisk/PinLib"
+	PIN_LIB=""
+  [[ -n $PIN_LIB ]] || {
+		echo "One must define PIN_LIB when PIN=1"
+		exit 1
+	}
 
   # PIN_TOOL   => The tool used
-  if [[ -z $PIN_TOOL ]]; then
+  [[ -z $PIN_TOOL ]] || {
     echo "You must define a PIN_TOOL variable before using tf with PIN"
     exit 1
-  fi
-  
+  }
+
   # PIN_FLAGS  => Flags to pass to PIN
   [[ -n $PIN_FLAGS ]] || PIN_FLAGS=" "
 
@@ -127,20 +126,16 @@ if [[ $OCPERF -eq 1 ]]; then
   #OUTPUT FILE
   [[ -n $PERF_FILE ]] || PERF_FILE="perf_${PERF_TOOL}_${PERF_TYPE}.out"
   
-  PERF_BIN="$HOME/Programs/pmu-tools/ocperf.py"
+	PERF_BIN=""
+	[[ -n $PERF_BIN ]] || {
+		echo "One must define PERF_BIN when PERF=1"
+		exit 1
+	}
   
   echo "PERF_BIN is set to $PERF_BIN"
   echo "PERF_TOOL is set to $PERF_TOOL"
   echo "PERF_TYPE is set to $PERF_TYPE"
 fi
-
-# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
-
-# Instrumenting part 
-# Faun Path
-FAUN_PATH="$HOME/Programs/C/faun"
-# Prof_PATH
-PROF_PATH="$HOME/Programs/C/faun/src/ProfLib"
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 

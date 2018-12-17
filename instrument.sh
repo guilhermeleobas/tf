@@ -3,6 +3,18 @@
 # this is left as an example 
 function compile() {
 
+	pass_path=""
+
+	[[ -n $pass_path ]] || {
+		echo "One must define the pass path when INSTRUMENT=1"
+		exit 1
+	}
+
+	[[ -n $PASS ]] || {
+		echo "One must define PASS when INSTRUMENT=1"
+		exit 1
+	}
+
   if [[ -n $CPU2006 && $CPU2006 -eq 1 ]]; then
     # Convert the program to SSA form:
     $LLVM_PATH/opt -mem2reg -load $pass_path -$PASS -S $rbc_name -o $prf_name

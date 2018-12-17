@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 trap 'echo "Killing build_exec.sh script" ; exit' INT TERM
 
@@ -156,19 +156,6 @@ fi
 if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
   # replace the compile function
   source "instrument.sh"
-  
-  curr_dir=$(pwd) 
-  cd $BASILISK_PATH
-  
-  # LLVM_DIR=$HOME/Documents/llvm61/build/lib/cmake cmake -H. -Bbuild && make -C build
-  
-  if [[ $? -gt 0 ]]; then
-    echo "ERRORS"
-    exit 1
-  fi
-  
-  cd $curr_dir
-  
 fi
 
 if [[ -n $SANITIZE && $SANITIZE -eq 1 ]]; then

@@ -45,6 +45,7 @@ Here is a list of benchmarks available in this repo:
 - Trimaran
 - TSVC
 - VersaBench
+- PolyBench
 
 Benchmarks are stored in a different [repo](https://github.com/guilhermeleobas/Benchmarks).
 
