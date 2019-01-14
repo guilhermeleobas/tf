@@ -9,14 +9,14 @@ def format_run_cmd(cmd):
 
 def main(arg):
     df = pd.read_csv(arg, sep='\t')
-    
+
     df.Command = df.Command.apply(format_run_cmd)
     df = df.drop(['Seq', 'Host', 'Send', 'Receive'], axis=1)
-    
+
     df.reset_index(drop=True).to_csv(sys.stdout)
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print ('Usage: python3 format_csv.py file')
     main(sys.argv[1])
-    
+

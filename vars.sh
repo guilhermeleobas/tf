@@ -19,6 +19,14 @@
 # TaskMiner => replace the compile function when = 1
 [[ -n $TASKMINER ]] || TASKMINER=0;
 
+# DIFF
+[[ -n $DIFF ]] || DIFF=0
+
+[[ $DIFF -eq 1 && $DEBUG -eq 1 ]] && {
+  echo "Can't use DIFF=1 & DEBUG=1 at the same time"
+  exit 1
+}
+
 # JOBS
 [[ -n $JOBS ]] || JOBS=1 ;
 

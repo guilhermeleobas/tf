@@ -1,7 +1,7 @@
 #!/bin/bash
 
 THIS=$(pwd)
-LLVM_PATH="$HOME/Programs/llvm37/build/bin"
+LLVM_PATH="$HOME/lge/llvm-3.7-src/build-debug/bin"
 
 export CLANG="$LLVM_PATH/clang"
 export CLANGFORM="$LLVM_PATH/clang-format"
@@ -9,7 +9,9 @@ export OPT="$LLVM_PATH/opt"
 export LINKER="$LLVM_PATH/llvm-link"
 export DIS="$LLVM_PATH/llvm-dis"
 
-export BUILD="$HOME/Programs/taskminer/build-debug"
+export BUILD="$HOME/lge/taskminer/build-debug"
+echo $HOME
+echo $BUILD
 
 export PRA="$BUILD/PtrRangeAnalysis/libLLVMPtrRangeAnalysis.so"
 export AI="$BUILD/AliasInstrumentation/libLLVMAliasInstrumentation.so"
@@ -23,8 +25,8 @@ export ST="$BUILD/ScopeTree/libLLVMScopeTree.so"
 export WTM="$BUILD/libLLVMTaskFinder.so"
 
 export XCL="-Xclang -load -Xclang"
-# export OMP="-I/home/kezia/2015/openmp/runtime/exports/common/include"
-export OMP="-I $HOME/Programs/llvm38/build-omp/projects/openmp/runtime/src"
+export OMP="-I/home/kezia/2015/openmp/runtime/exports/common/include"
+# export OMP="-I $HOME/Programs/llvm38/build-omp/projects/openmp/runtime/src"
 export FLAGS="-mem2reg -tbaa -scoped-noalias -basicaa -functionattrs -gvn -loop-rotate -instcombine -licm"
 export FLAGSAI="-mem2reg -loop-rotate"
 #-instnamer -loop-rotate"
@@ -45,7 +47,7 @@ $CLANGFORM -style="{BasedOnStyle: llvm, IndentWidth: 2, ColumnLimit: 0}" ${THIS}
 
 # mv tmp.txt ${THIS}/$1
 
-bash $HOME/Programs/tf_taskminer/scopetest.sh ${THIS}/$TMP_FILE
+bash $HOME/tf/scopetest.sh ${THIS}/$TMP_FILE
 
 $CLANG $OMP $COMP_FLAGS -lm -g -S -emit-llvm ${THIS}/$TMP_FILE -o result.bc 
 

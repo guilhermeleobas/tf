@@ -52,4 +52,6 @@ benchs=( "ASC_Sequoia" "BenchmarkGame" "BitBench" "CoyoteBench" "DOE_ProxyApps_C
 # benchs=( "Fhourstones" "Fhourstones_31" "Linpack" "ASCI_Purple" "SciMark2-C"
 #   "sim" "mafft" "llubenchmark" "nbench")
 
-benchs=("Misc")
+#benchs=("Misc")
+
+#benchs=("SciMark2-C")

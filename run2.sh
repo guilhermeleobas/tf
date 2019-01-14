@@ -25,23 +25,11 @@ function cleanup() {
   # rm -f feat.dat ;
 }
 
-function cleanup_all() {
-  rm -f *.bc
-  rm -f *.rbc 
-  rm -f *.ibc
-  rm -f *.o
-  rm -f *.exe
-  rm -f *.txt
-}
-
 function unset_vars() {
   unset COMPILER ;
   unset STDIN ;
   unset STDOUT ;
   unset RUN_OPTIONS ;
-
-  unset CPU2006 ;
-
 }
 
 function set_vars(){
@@ -61,36 +49,6 @@ function set_vars(){
   # But if we set DEBUG=1, than we ignore the previous definition of STDOUT
   if [[ $DEBUG == 1 ]]; then
     STDOUT=/dev/stdout ;
-  fi
-
-  if [[ $(pwd) =~ "cpu2006" ]]; then
-    echo "Setting CPU2006=1"
-    CPU2006=1
-  fi
-
-  # Common files used by comp.sh and instrument.sh
-  if [[ -n $CPU2006 && $CPU2006 -eq 1 && $(uname -s) == "Linux" ]]; then
-    rbc_name="$bench_name.linux"
-  else
-    rbc_name="$bench_name.llvm"
-  fi
-
-  lnk_name="$bench_name.rbc"
-  prf_name="$bench_name.ibc"
-  obj_name="$bench_name.o"
-  exe_name="$bench_name.exe"
-
-  # options for exe name
-  if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
-    exe_name=INS_$exe_name
-  fi
-  
-  if [[ -n $ASAN && $ASAN -eq 1 ]]; then
-    exe_name=ASAN_$exe_name
-  fi
-  
-  if [[ $SSA -eq 0 ]]; then
-    exe_name=NO_SSA_$exe_name ;
   fi
 
   # if we're on osx, we must use `gtimeout` instead of `timeout`
@@ -167,19 +125,6 @@ source "benchs.sh"
 source "comp.sh"
 source "exec.sh"
 
-if [[ -n $CLEAN && $CLEAN -eq 1 ]]; then
-  echo "REMOVING ALL TEMP FILES!"
-  
-  for bench in "${benchs[@]}"; do
-    cd $BENCHSDIR
-    echo "Removing from $bench" ;
-    cd $bench ;
-    $bench ;
-    echo "" ;
-  done
-
-  exit 0
-fi
 
 if [[ -n $PIN && $PIN -eq 1 ]]; then
   # replace the function `execute`
@@ -200,29 +145,25 @@ rm -f run.txt
 touch run.txt
 
 if [[ "$#" -ne 0 ]]; then
-  # check if the input is a file
-  if [[ -f "$@" ]]; then
-    echo "Reading input file..."
-    # Read the content into "${benchs[@]}" array
-    IFS=$'\n' read -d '' -r -a benchs < "$@"
-  else
-    benchs=( "$@" )
-  fi
-
-  walk "${benchs[@]}" ;
-
-else
+  for dir in "$@"; do
+    cd $dir ;
+    walk "." ;
+  done
+else 
   for bench in "${benchs[@]}"; do
-    cd $BENCHSDIR
+    cd $TESTDIR
     echo "Starting $bench" ;
     cd $bench ;
     $bench ;
   done
 fi
 
+
 cd $BASEDIR ;
 
 source "parallel.sh"
 source "collect.sh"
+
+
 
 

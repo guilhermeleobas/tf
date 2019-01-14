@@ -19,12 +19,12 @@ function annotate() {
     if [[ $? -ne 0 ]]; then
       report="file $file_name broke during annotation phrase. Jumping to next benchmarks"
       echo $report
-      echo $report >> report.txt
+      echo "$file_name,broken" >> /home/gleison/tf/report.csv
       return 1 ;
     else
       report="file $file_name annotated"
       echo $report
-      echo $report >> report.txt
+      echo "$file_name,annotated" >> /home/gleison/tf/report.csv
     fi
   done
   
