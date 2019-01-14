@@ -28,6 +28,9 @@
 # Address Sanitizer
 [[ -n $ASAN ]] || ASAN=0
 
+# Optimization level
+[[ -n $OPT ]] || OPT="-O0"
+
 
 # PASS NAME
 if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
@@ -165,4 +168,5 @@ echo "BENCHSDIR is set to $BENCHSDIR"
 echo "BASILISK is set to $BASILISK_PATH"
 echo "PASS is set to $PASS"
 echo "DIFF is set to $DIFF"
+echo "OPT is set to $OPT"
 echo "#########################"

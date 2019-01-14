@@ -5,9 +5,9 @@ function compile() {
   if [[ -n $CPU2006 && $CPU2006 -eq 1 ]]; then
     # Convert the program to SSA form:
     if [[ $SSA -eq 1 ]]; then
-      $LLVM_PATH/opt -O1 -mem2reg $rbc_name -o $prf_name
+      $LLVM_PATH/opt ${OPT} -mem2reg $rbc_name -o $prf_name
     else
-      $LLVM_PATH/opt -O1 $rbc_name -o $prf_name
+      $LLVM_PATH/opt ${OPT} $rbc_name -o $prf_name
     fi
   else
     # source_files is the variable with all the files we're gonna compile
@@ -18,9 +18,9 @@ function compile() {
     $LLVM_PATH/llvm-link -S *.rbc -o $lnk_name
 
     if [[ $SSA -eq 1 ]]; then
-      $LLVM_PATH/opt -S -O1 -mem2reg $lnk_name -o $prf_name
+      $LLVM_PATH/opt -S ${OPT} -mem2reg $lnk_name -o $prf_name
     else
-      $LLVM_PATH/opt -S -O1 $lnk_name -o $prf_name
+      $LLVM_PATH/opt -S ${OPT} $lnk_name -o $prf_name
     fi
   fi
   

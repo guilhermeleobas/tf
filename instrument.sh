@@ -8,9 +8,9 @@ function compile() {
   
   if [[ -n $CPU2006 && $CPU2006 -eq 1 ]]; then
     if [[ $SSA -eq 1 ]]; then
-      $LLVM_PATH/opt -O1 -mem2reg -load $pass_path -$PASS -S $rbc_name -o $prf_name
+      $LLVM_PATH/opt ${OPT} -mem2reg -load $pass_path -$PASS -S $rbc_name -o $prf_name
     else
-      $LLVM_PATH/opt -O1 -load $pass_path -$PASS -S $rbc_name -o $prf_name
+      $LLVM_PATH/opt ${OPT} -load $pass_path -$PASS -S $rbc_name -o $prf_name
     fi
   else
     # source_files is the variable with all the files we're gonna compile
@@ -25,9 +25,9 @@ function compile() {
 
     # Optimize 
     if [[ $SSA -eq 1 ]]; then
-      $LLVM_PATH/opt -S -O1 -mem2reg -load $pass_path -$PASS -verify $lnk_name -o $prf_name
+      $LLVM_PATH/opt -S ${OPT} -mem2reg -load $pass_path -$PASS -verify $lnk_name -o $prf_name
     else
-      $LLVM_PATH/opt -S -O1 -load $pass_path -$PASS -verify $lnk_name -o $prf_name
+      $LLVM_PATH/opt -S ${OPT} -load $pass_path -$PASS -verify $lnk_name -o $prf_name
     fi
   fi
 
