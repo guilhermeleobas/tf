@@ -132,14 +132,14 @@ pd.read_csv('run.log', sep='\t').to_csv('run.csv')
 
 You can also add your own code in the file `collect.sh`. **tf** will execute this file after all benchmarks have finished executing.
 
-### Compiling with your own LLVM pass
+### Compiling benchmarks with your own LLVM pass
 
-See `comp.sh` file. You can control how each benchmark is compiled there.
+See `instrument.sh`file. You can control how each benchmark is compiled there.
 
-Add your pass in the line we call `$LLVM_PATH/opt`:
+Add the path of your pass to the variable `pass_path` at the beginning of the `instrument.sh` file. Then, call **tf** with `INSTRUMENT=1 PASS=YourPassNameHere`
 
 ```bash
-$LLVM_PATH/opt -mem2reg -instnamer -load MyPass.$suffix -MyOptPass $btc_name -o $rbc_name ;
+COMPILE=1 INSTRUMENT=1 PASS=YourPassNameHere EXEC=1 ./run.sh
 ```
 
 ------------
