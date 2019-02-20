@@ -22,6 +22,9 @@
 # INSTRUMENT
 [[ -n $INSTRUMENT ]] || INSTRUMENT=0
 
+# Optimization level
+[[ -n $OPT ]] || OPT="-O3"
+
 # PASS NAME
 if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
   if [[ -z $PASS ]]; then
@@ -140,4 +143,5 @@ echo "PHOENIX is set to $PHOENIX_PATH"
 echo "PASS is set to $PASS"
 echo "DIFF is set to $DIFF"
 echo "HYPERFINE is set to $HYPERFINE"
+echo "OPT is set to $OPT"
 echo "#########################"

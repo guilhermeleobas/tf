@@ -28,10 +28,17 @@ function compile() {
   $LLVM_PATH/opt -S -mem2reg -instcombine -early-cse -instnamer $lnk_name -o $prf_name.opt.1
   # my optimization
   $LLVM_PATH/opt -S -load $pass_path -$PASS $prf_name.opt.1 -o $prf_name.opt.2
-  # -O3
-  $LLVM_PATH/opt -S -O3 $prf_name.opt.2 -o $prf_name.opt.3
-  # Compile our instrumented file, in IR format, to x86:
-  $LLVM_PATH/llc -filetype=obj $prf_name.opt.3 -o $obj_name.opt ;
+  # Opt
+  $LLVM_PATH/opt -S ${OPT} $prf_name.opt.2 -o $prf_name.opt.3
+  
+  if [[ $PASS -eq "CountArith" ]]; then
+    # Compile our instrumented file, in IR format, to x86:
+    $LLVM_PATH/llvm-link -S $prf_name.opt.3 $PHOENIX_PATH/Collect/collect.bc -o $obj_name.opt ;
+    $LLVM_PATH/llc -filetype=obj $obj_name.opt -o $obj_name.opt ;
+  else
+    $LLVM_PATH/llc -filetype=obj $prf_name.opt.3 -o $obj_name.opt ;
+  fi
+  
   # Compile everything now, producing a final executable file:
   $LLVM_PATH/$COMPILER -lm $obj_name.opt -o INS_$exe_name ;
   
