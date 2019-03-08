@@ -1,6 +1,14 @@
 #!/bin/bash
 
 function execute() {
+  
+  if [[ $(pwd) =~ "cBench" ]]; then
+    for i in $(seq 1 $CBENCH); do
+      cmd="./__run $i"
+      echo "cd $(pwd) && $cmd" >> /tmp/run.txt
+    done
+    return
+  fi
 
   if [[ $DIFF -eq 1 ]]; then
     cmd="$TIMEOUT --signal=TERM ${RUNTIME} ./$exe_name $RUN_OPTIONS < $STDIN &> $bench_name.output && \

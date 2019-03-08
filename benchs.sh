@@ -55,6 +55,20 @@ function PolyBench(){
   walk "${dirs[@]}"
 }
 
+function cBench(){
+dirs=("office_ispell/src" "security_rijndael_d/src" "security_pgp_d/src" "automotive_susan_c/src"
+      "security_rijndael_e/src" "consumer_jpeg_c/src" "telecom_gsm/src" "consumer_lame/src"
+      "consumer_mad/src" "bzip2e/src" "telecom_adpcm_d/src" "bzip2d/src"
+      "security_pgp_e/src" "network_dijkstra/src" "office_stringsearch1/src"
+      "consumer_tiffdither/src" "automotive_qsort1/src" "office_ghostscript/src"
+      "consumer_jpeg_d/src" "automotive_susan_e/src" "office_rsynth/src"
+      "automotive_bitcount/src" "security_blowfish_e/src" "consumer_tiff2bw/src"
+      "telecom_CRC32/src" "security_sha/src" "consumer_tiffmedian/src"
+      "automotive_susan_s/src" "network_patricia/src" "telecom_adpcm_c/src"
+      "consumer_tiff2rgba/src" "security_blowfish_d/src")
+  walk "${dirs[@]}"
+}
+
 function cpu2006(){
   dirs=("400.perlbench/rbc/" "401.bzip2/rbc/" "403.gcc/rbc/" "429.mcf/rbc/"
         "433.milc/rbc/" "444.namd/rbc/" "445.gobmk/rbc/"
@@ -69,3 +83,11 @@ benchs=( "ASC_Sequoia" "BenchmarkGame" "BitBench" "CoyoteBench" "DOE_ProxyApps_C
   "SciMark2-C" "sim" "mafft" "tramp3d-v4" "llubenchmark" "nbench" "Ptrdist"
   "Trimaran" "TSVC" "PAQ8p" "NPB-serial" "VersaBench" "FreeBench"
   "MallocBench" "McCat" "Olden" "Prolangs-C" "cpu2006")
+
+
+
+
+
+
+
+

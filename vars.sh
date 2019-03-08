@@ -26,6 +26,8 @@
 # Address Sanitizer
 [[ -n $ASAN ]] || ASAN=0
 
+# cBench run all inputs
+[[ -n $CBENCH ]] || CBENCH=1
 
 # DIFF
 [[ -n $DIFF ]] || DIFF=0
@@ -61,7 +63,7 @@ fi
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
 # LLVM_PATH  => The place where I have all the LLVM tools
-LLVM_PATH=""
+LLVM_PATH="$HOME/Programs/llvm61/build/bin"
 
 [[ -d "${LLVM_PATH}" ]] || {
 	echo "One must define LLVM_PATH before running tf"
@@ -160,4 +162,5 @@ echo "BENCHSDIR is set to $BENCHSDIR"
 echo "BASILISK is set to $BASILISK_PATH"
 echo "PASS is set to $PASS"
 echo "DIFF is set to $DIFF"
+echo "CBENCH is set to $CBENCH"
 echo "#########################"

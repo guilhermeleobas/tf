@@ -18,12 +18,21 @@ function compile() {
   fi
   
   # source_files is the variable with all the files we're gonna compile
-  parallel --tty --jobs=${JOBS} $LLVM_PATH/$COMPILER $COMPILE_FLAGS \
+  parallel --halt-on-error now,fail=1 --tty --jobs=${JOBS} $LLVM_PATH/$COMPILER $COMPILE_FLAGS \
 		-Xclang -disable-O0-optnone \
 		-g -S -c -emit-llvm {} -o {.}.bc ::: "${source_files[@]}" ;
+  
+  if [[ $? -eq 1 ]]; then
+    echo "Halting compilation for $bench_name due to some error"
+    return
+  fi
 
-  parallel --tty --jobs=${JOBS} $LLVM_PATH/opt -S -mem2reg {.}.bc -o {.}.rbc ::: "${source_files[@]}" ;
-
+  parallel --halt-on-error now,fail=1 --tty --jobs=${JOBS} $LLVM_PATH/opt -S -mem2reg {.}.bc -o {.}.rbc ::: "${source_files[@]}" ;
+  
+  if [[ $? -eq 1 ]]; then
+    echo "Halting compilation for $bench_name due to some error"
+    return
+  fi
   
   #Generate all the bcs into a big bc:
   $LLVM_PATH/llvm-link -S *.rbc -o $lnk_name
@@ -37,5 +46,10 @@ function compile() {
   # Compile our instrumented file, in IR format, to x86:
   $LLVM_PATH/llc -filetype=obj $prf_name -o $obj_name
   $LLVM_PATH/$COMPILER $COMPILE_FLAGS -lm $obj_name -o $exe_name
+  
+  if [[ $(pwd) =~ "cBench" ]]; then
+    cp $exe_name a.out
+  fi
+
 
 }
