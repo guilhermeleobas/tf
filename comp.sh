@@ -46,10 +46,4 @@ function compile() {
   # Compile our instrumented file, in IR format, to x86:
   $LLVM_PATH/llc -filetype=obj $prf_name -o $obj_name
   $LLVM_PATH/$COMPILER $COMPILE_FLAGS -lm $obj_name -o $exe_name
-  
-  if [[ $(pwd) =~ "cBench" ]]; then
-    cp $exe_name a.out
-  fi
-
-
 }

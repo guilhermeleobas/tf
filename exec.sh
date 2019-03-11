@@ -4,7 +4,7 @@ function execute() {
   
   if [[ $(pwd) =~ "cBench" ]]; then
     for i in $(seq 1 $CBENCH); do
-      cmd="./__run $i"
+      cmd="./__run $i $exe_name"
       echo "cd $(pwd) && $cmd" >> /tmp/run.txt
     done
     return
