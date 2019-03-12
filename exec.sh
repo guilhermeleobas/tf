@@ -11,6 +11,14 @@ function execute() {
   if [[ -n $SANITIZE && $SANITIZE -eq 1 ]]; then
     exe=SAN_$exe_name
   fi
+  
+  if [[ $(pwd) =~ "cBench" ]]; then
+    for i in $(seq 1 $CBENCH); do
+      cmd="./__run $i $exe"
+      echo "cd $(pwd) && $cmd" >> /tmp/run.txt
+    done
+    return
+  fi
 
   if [[ $DIFF -eq 1 ]]; then
     cmd="$TIMEOUT --signal=TERM ${RUNTIME} ./$exe $RUN_OPTIONS < $STDIN &> $bench_name.output && \

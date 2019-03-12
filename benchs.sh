@@ -37,7 +37,7 @@ function PAQ8p() { walk "." ; }
 function mediabench() {
   dirs=("adpcm/rawcaudio" "adpcm/rawdaudio" "g721/g721encode" "jpeg/jpeg-6a" 
         "gsm/toast" "mpeg2/mpeg2dec")
-  walk "${dirs[@]}" ;
+  walk "${dirs[@]}"
 }
 
 function PolyBench(){
@@ -55,6 +55,24 @@ function PolyBench(){
   walk "${dirs[@]}"
 }
 
+function cBench(){
+  dirs=("security_rijndael_d/src" "automotive_susan_c/src"
+        "security_rijndael_e/src" "consumer_jpeg_c/src" "consumer_lame/src"
+        "bzip2e/src" "telecom_adpcm_d/src" "bzip2d/src"
+        "network_dijkstra/src" "office_stringsearch1/src"
+        "consumer_tiffdither/src" "automotive_qsort1/src" 
+        "consumer_jpeg_d/src" "automotive_susan_e/src" 
+        "automotive_bitcount/src" "security_blowfish_e/src" "consumer_tiff2bw/src"
+        "telecom_CRC32/src" "security_sha/src" "consumer_tiffmedian/src"
+        "automotive_susan_s/src" "network_patricia/src" "telecom_adpcm_c/src"
+        "consumer_tiff2rgba/src" "security_blowfish_d/src")
+      
+  cant=("consumer_mad/src" "office_ispell/src" "office_ghostscript/src" "office_rsynth/src"
+  "security_pgp_d/src" "security_pgp_e/src" "telecom_gsm/src")
+  
+  walk "${dirs[@]}"
+}
+
 function cpu2006(){
   dirs=("400.perlbench/rbc/" "401.bzip2/rbc/" "403.gcc/rbc/" "429.mcf/rbc/"
         "433.milc/rbc/" "444.namd/rbc/" "445.gobmk/rbc/"
@@ -67,7 +85,7 @@ benchs=( "ASC_Sequoia" "BenchmarkGame" "BitBench" "CoyoteBench" "DOE_ProxyApps_C
   "Dhrystone" "McGill" "MiBench" "Misc"  "Shootout" "Stanford" "Fhourstones" 
   "Linpack" "mediabench" "ASCI_Purple" "Fhourstones_31" "PolyBench"
   "SciMark2-C" "sim" "mafft" "tramp3d-v4" "llubenchmark" "nbench" "Ptrdist"
-  "Trimaran" "TSVC" "PAQ8p" "NPB-serial" "VersaBench" "FreeBench"
-  "MallocBench" "McCat" "Olden" "Prolangs-C" "cpu2006");
-
-# benchs=("Stanford")
+  "Trimaran" "TSVC" "PAQ8p" "NPB-serial" "VersaBench" "FreeBench" "cBench"
+  "MallocBench" "McCat" "Olden" "Prolangs-C" "cpu2006")
+  
+benchs=("cBench")

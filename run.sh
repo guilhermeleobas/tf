@@ -16,6 +16,7 @@ function cleanup_all() {
   rm -f *.rbc 
   rm -f *.ibc
   rm -f *.ibc.opt.*
+  rm -f *.ibc.*
   rm -f *.opt
   rm -f *.o
   rm -f *.exe
