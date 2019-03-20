@@ -88,4 +88,4 @@ benchs=( "ASC_Sequoia" "BenchmarkGame" "BitBench" "CoyoteBench" "DOE_ProxyApps_C
   "Trimaran" "TSVC" "PAQ8p" "NPB-serial" "VersaBench" "FreeBench" "cBench"
   "MallocBench" "McCat" "Olden" "Prolangs-C" "cpu2006")
   
-benchs=("cBench")
+# benchs=("cBench")
