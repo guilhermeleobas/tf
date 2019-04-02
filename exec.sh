@@ -12,7 +12,7 @@ function execute() {
     exe=SAN_$exe_name
   fi
   
-  if [[ $(pwd) =~ "cBench" ]]; then
+  if [[ "$(pwd)" =~ "/cBench/" ]]; then
     for i in $(seq 1 $CBENCH); do
       cmd="./__run $i $exe"
       echo "cd $(pwd) && $cmd" >> /tmp/run.txt
