@@ -31,7 +31,7 @@ function compile() {
   # Opt
   $LLVM_PATH/opt -S ${OPT} $prf_name.opt.2 -o $prf_name.opt.3
   
-  if [[ $PASS -eq "CountArith" ]]; then
+  if [[ $PASS = "CountArith" ]]; then
     # Compile our instrumented file, in IR format, to x86:
     $LLVM_PATH/llvm-link -S $prf_name.opt.3 $PHOENIX_PATH/Collect/collect.bc -o $obj_name.opt ;
     $LLVM_PATH/llc -filetype=obj $obj_name.opt -o $obj_name.opt ;
@@ -41,18 +41,4 @@ function compile() {
   
   # Compile everything now, producing a final executable file:
   $LLVM_PATH/$COMPILER -lm $obj_name.opt -o INS_$exe_name ;
-  
-  
-  # $LLVM_PATH/opt -S -disable-loop-vectorization -disable-slp-vectorization -O2 \
-  #  -mem2reg -instcombine -early-cse -instnamer $lnk_name -o $lnk_name
-  #
-  # # Optmize 
-  # $LLVM_PATH/opt -S \
-  #   -load $pass_path -debug-only=$PASS -$PASS -verify $lnk_name -o $prf_name
-
-  # merge the previous bc with instrumentation lib
-  # $LLVM_PATH/llvm-link -S $prf_name $PHOENIX_PATH/Collect/collect.bc -o $prf_name
-  
-  # Optimize
-  # $LLVM_PATH/opt -O3 -S $prf_name -o $prf_name
 }
