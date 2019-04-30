@@ -31,6 +31,15 @@ if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
     echo "You must specify a pass to use when INSTRUMENT=1"
     exit 1
   fi
+  
+  if [[ $PASS = "DAG"  ]]; then
+    if [[ -z $PASS_OPT ]]; then
+      echo "You must specify the pass option for DAG"
+      exit 1
+    fi
+  else
+    PASS_OPT=""
+  fi
 fi
 
 # DIFF

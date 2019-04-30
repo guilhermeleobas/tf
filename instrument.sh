@@ -26,10 +26,10 @@ function compile() {
   
   # common optimizations
   $LLVM_PATH/opt -S -mem2reg -instcombine -early-cse -instnamer $lnk_name -o $prf_name.opt.1
-  # Opt
-  $LLVM_PATH/opt -S ${OPT} $prf_name.opt.1 -o $prf_name.opt.2
   # my optimization
-  $LLVM_PATH/opt -S -load $pass_path -$PASS -O3 $prf_name.opt.2 -o $prf_name.opt.3
+  $LLVM_PATH/opt -S -load $pass_path -${PASS} -dag-opt=${PASS_OPT} -O3 $prf_name.opt.1 -o $prf_name.opt.2
+  # Opt
+  $LLVM_PATH/opt -S ${OPT} $prf_name.opt.2 -o $prf_name.opt.3
   
   if [[ $PASS = "CountArith" ]]; then
     # Compile our instrumented file, in IR format, to x86:
