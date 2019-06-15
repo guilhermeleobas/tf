@@ -28,7 +28,7 @@ function compile() {
   $LLVM_PATH/opt -S -mem2reg -instcombine -early-cse -indvars -loop-simplify -instnamer $lnk_name -o $prf_name.opt.1
   # my optimization
   if [[ ${PASS} =~ "DAG" ]]; then
-    $LLVM_PATH/opt -S -load $pass_path -${PASS} -dag-opt=${PASS_OPT} -dce -unreachableblockelim $prf_name.opt.1 -o $prf_name.opt.2
+    $LLVM_PATH/opt -S -load $pass_path -${PASS} -dag-opt=${PASS_OPT} $prf_name.opt.1 -o $prf_name.opt.2
   else
     $LLVM_PATH/opt -S -load $pass_path -${PASS} $prf_name.opt.1 -o $prf_name.opt.2
   fi
