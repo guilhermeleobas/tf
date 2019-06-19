@@ -30,11 +30,11 @@ done
 ###
 
 CLEAN=1 ./run.sh
-COMPILE=1 INSTRUMENT=1 EXEC=0 JOBS=1 PASS=DAG PASS_OPT="no" ./run.sh benchs.txt
+COMPILE=1 INSTRUMENT=1 EXEC=0 JOBS=1 PASS=DAG PASS_OPT="noprofile" ./run.sh benchs.txt
 
 for i in `seq 1 5`; do
-  COMPILE=0 INSTRUMENT=1 EXEC=1 JOBS=1 PASS=DAG PASS_OPT="no" ./run.sh benchs.txt
-  mv run.log runs/run_dag_no_$i.log
+  COMPILE=0 INSTRUMENT=1 EXEC=1 JOBS=1 PASS=DAG PASS_OPT="noprofile" ./run.sh benchs.txt
+  mv run.log runs/run_dag_noprofile_$i.log
 done
 
 ###

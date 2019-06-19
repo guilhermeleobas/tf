@@ -25,6 +25,9 @@
 # Optimization level
 [[ -n $OPT ]] || OPT="-O3"
 
+# CBench
+[[ -n $CBENCH ]] || CBENCH=1
+
 # PASS NAME
 if [[ -n $INSTRUMENT && $INSTRUMENT -eq 1 ]]; then
   if [[ -z $PASS ]]; then
