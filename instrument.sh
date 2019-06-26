@@ -35,7 +35,7 @@ function compile() {
   # Opt
   $LLVM_PATH/opt -S ${OPT} $prf_name.opt.2 -o $prf_name.opt.3
   
-  if [[ $PASS = "CountArith" ]]; then
+  if [[ $PASS = "CountArith" || $PASS = "CountStores" ]]; then
     # Compile our instrumented file, in IR format, to x86:
     $LLVM_PATH/llvm-link -S $prf_name.opt.3 $PHOENIX_PATH/Collect/collect.bc -o $obj_name.opt ;
     $LLVM_PATH/llc -filetype=obj $obj_name.opt -o $obj_name.opt ;
