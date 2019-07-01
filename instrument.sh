@@ -33,7 +33,7 @@ function compile() {
     $LLVM_PATH/opt -S -load $pass_path -${PASS} $prf_name.opt.1 -o $prf_name.opt.2
   fi
   # Opt
-  $LLVM_PATH/opt -S ${OPT} $prf_name.opt.2 -o $prf_name.opt.3
+  $LLVM_PATH/opt -S ${OPT} -load-store-vectorizer -loop-vectorize -slp-vectorizer $prf_name.opt.2 -o $prf_name.opt.3
   
   if [[ $PASS = "CountArith" || $PASS = "CountStores" ]]; then
     # Compile our instrumented file, in IR format, to x86:
