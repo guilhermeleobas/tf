@@ -11,7 +11,7 @@ function compile() {
   else
     # source_files is the variable with all the files we're gonna compile
     parallel --tty --jobs=${JOBS} $LLVM_PATH/$COMPILER $COMPILE_FLAGS \
-      -Xclang -disable-O0-optnone -ffast-math \
+      -Xclang -disable-O0-optnone \
       -S -c -emit-llvm {} -o {.}.bc ::: "${source_files[@]}" 
     
     parallel --tty --jobs=${JOBS} $LLVM_PATH/opt -S {.}.bc -o {.}.rbc ::: "${source_files[@]}"
@@ -23,7 +23,7 @@ function compile() {
   # common optimizations
   $LLVM_PATH/opt -S -mem2reg -instcombine -early-cse -loop-simplify -instnamer $lnk_name -o $prf_name.1
   # -O3
-  $LLVM_PATH/opt -S ${OPT} -march=native -load-store-vectorizer -loop-vectorize -slp-vectorizer $prf_name.1 -o $prf_name.3
+  $LLVM_PATH/opt -S ${OPT} -load-store-vectorizer -loop-vectorize $prf_name.1 -o $prf_name.3
   # Compile our instrumented file, in IR format, to x86:
   $LLVM_PATH/llc -filetype=obj $prf_name.3 -o $obj_name ;
   # Compile everything now, producing a final executable file:

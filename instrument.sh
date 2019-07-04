@@ -14,7 +14,7 @@ function compile() {
   else
     # source_files is the variable with all the files we're gonna compile
     parallel --tty --jobs=${JOBS} $LLVM_PATH/$COMPILER $COMPILE_FLAGS \
-      -Xclang -disable-O0-optnone -ffast-math \
+      -Xclang -disable-O0-optnone \
       -S -c -emit-llvm {} -o {.}.bc ::: "${source_files[@]}" 
     # -fno-vectorize -fno-slp-vectorize -fno-tree-vectorize \
     
@@ -33,7 +33,7 @@ function compile() {
     $LLVM_PATH/opt -S -load $pass_path -${PASS} $prf_name.opt.1 -o $prf_name.opt.2
   fi
   # Opt
-  $LLVM_PATH/opt -S ${OPT} -march=native -load-store-vectorizer -loop-vectorize -slp-vectorizer $prf_name.opt.2 -o $prf_name.opt.3
+  $LLVM_PATH/opt -S ${OPT} -load-store-vectorizer -loop-vectorize $prf_name.opt.2 -o $prf_name.opt.3
   
   if [[ $PASS = "CountArith" || $PASS = "CountStores" ]]; then
     # Compile our instrumented file, in IR format, to x86:
