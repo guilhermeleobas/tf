@@ -21,7 +21,7 @@ function compile() {
   fi
   
   # common optimizations
-  $LLVM_PATH/opt -S -mem2reg -instcombine -early-cse -loop-simplify -instnamer $lnk_name -o $prf_name.1
+  $LLVM_PATH/opt -S -mem2reg -instcombine -early-cse -indvars -loop-simplify -instnamer $lnk_name -o $prf_name.1
   # -O3
   $LLVM_PATH/opt -S ${OPT} -load-store-vectorizer -loop-vectorize $prf_name.1 -o $prf_name.3
   # Compile our instrumented file, in IR format, to x86:
