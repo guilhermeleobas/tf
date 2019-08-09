@@ -23,12 +23,6 @@
 # INSTRUMENT
 [[ -n $INSTRUMENT ]] || INSTRUMENT=0
 
-# Address Sanitizer
-[[ -n $ASAN ]] || ASAN=0
-
-# cBench run all inputs
-[[ -n $CBENCH ]] || CBENCH=1
-
 # DIFF
 [[ -n $DIFF ]] || DIFF=0
 
@@ -39,12 +33,6 @@
 
 # Remove all temp files
 [[ -n CLEAN ]] || CLEAN=0
-
-# ANALYZE
-[[ -n $ANALYZE ]] || ANALYZE=1 ;
-
-# Whether run -mem2reg or not
-[[ -n $SSA ]] || SSA=1 ;
 
 # Set the lib suffix.
 suffix="dylib"
@@ -63,7 +51,7 @@ fi
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
 # LLVM_PATH  => The place where I have all the LLVM tools
-LLVM_PATH="$HOME/Programs/llvm61/build/bin"
+LLVM_PATH=""
 
 [[ -d "${LLVM_PATH}" ]] || {
 	echo "One must define LLVM_PATH before running tf"
@@ -143,7 +131,7 @@ fi
 
 BASEDIR="$(pwd)"
 
-BENCHSDIR="$BASEDIR/Benchs/"
+BENCHSDIR="$BASEDIR/Benchmarks/"
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
@@ -155,12 +143,9 @@ echo "PIN is set to $PIN"
 echo "EXEC is set to $EXEC"
 echo "COMPILE is set to $COMPILE"
 echo "INSTRUMENT is set to $INSTRUMENT"
-echo "SSA is set to $SSA"
-echo "suffix is set to $suffix"
+echo "suffix is set to $suffix" # .so or .dylib
 echo "BASEDIR is set to $BASEDIR"
-echo "BENCHSDIR is set to $BENCHSDIR"
-echo "BASILISK is set to $BASILISK_PATH"
+echo "Benchmarks dir is set to $BENCHSDIR"
 echo "PASS is set to $PASS"
 echo "DIFF is set to $DIFF"
-echo "CBENCH is set to $CBENCH"
 echo "#########################"
