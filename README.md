@@ -193,4 +193,4 @@ COMPILE=1 EXEC=0 ./run.sh   # To compile
 COMPILE=0 EXEC=1 ./run.sh   # To execute
 ```
 
-Also, run benchmarks in parallel whenever you can. Running 220 benchmarks with a time limit of 8 minutes takes 29 hours to complete.
+Also, run benchmarks in parallel whenever you can. Running 220 benchmarks sequentially with a time limit of 8 minutes takes 29 hours to complete.
