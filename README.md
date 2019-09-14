@@ -91,7 +91,7 @@ Tip: You can skip compilation by setting `COMPILE=0` before calling `run.sh`.
 
 `RUNTIME=8m ./run.sh` or change the file `vars.sh`.
 
-`RUNTIME` receives a floating point number followed by an optional unit:
+`RUNTIME` receives a number followed by an optional unit:
 - `s` for seconds (the default)
 - `m` for minutes
 - `h` for hours
