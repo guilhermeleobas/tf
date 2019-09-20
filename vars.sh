@@ -131,7 +131,7 @@ fi
 
 BASEDIR="$(pwd)"
 
-BENCHSDIR="$BASEDIR/Benchmarks/"
+BENCHSDIR="$BASEDIR/Benchs/"
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
