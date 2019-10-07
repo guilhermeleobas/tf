@@ -158,13 +158,12 @@ COMPILE=1 INSTRUMENT=1 PASS=YourPassNameHere EXEC=1 ./run.sh
  COMPILER="clang"  # or clang++ for C++ programs
  RUN_OPTIONS=" irsmk_input "
  STDIN=" file.in "
- DIFF_CMD=""
 ```
 
 The last two variables are used when `tf` creates the command that will be executed:
 
 ```bash
-timeout -signal=TERM $RUNTIME ./$bench_name.exe $RUN_OPTIONS < $STDIN > /dev/null
+timeout -signal=TERM ${RUNTIME} ./${bench_name}.exe ${RUN_OPTIONS} < ${STDIN} > /dev/null
 ```
 
 2) Add a function into `benchs.sh`, for the new benchmark.
