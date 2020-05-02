@@ -48,9 +48,6 @@ fi
 # DIFF
 [[ -n $DIFF ]] || DIFF=0
 
-# HYPERFINE
-[[ -n $HYPERFINE ]] || HYPERFINE=0
-
 [[ $DIFF -eq 1 && $DEBUG -eq 1 ]] && {
   echo "Can't use DIFF=1 & DEBUG=1 at the same time"
   exit 1
@@ -76,7 +73,12 @@ fi
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
 # LLVM_PATH  => The place where I have all the LLVM tools
-LLVM_PATH="${HOME}/Programs/llvm/build/bin"
+LLVM_PATH=""
+
+[[ -d "${LLVM_PATH}" ]] || {
+	echo "One must define LLVM_PATH before running tf"
+	exit 1
+}
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
@@ -95,13 +97,24 @@ PHOENIX_PATH="$HOME/Programs/phoenix"
 
 if [[ $PIN -eq 1 ]]; then
   # PIN_PATH   => The place where I keep the pin source code
-  [[ -n $PIN_PATH ]] || PIN_PATH="$HOME/Programs/Pin"
+	PIN_PATH=""
+  [[ -n $PIN_PATH ]] || {
+		echo "One must define the PIN before when PIN=1"
+		exit 1
+	}
   
   # PIN_LIB    => The place where I keep the Pin lib implemented.
-  [[ -n $PIN_LIB ]] || PIN_LIB="$HOME/Programs/PinLib"
+	PIN_LIB=""
+  [[ -n $PIN_LIB ]] || {
+		echo "One must define PIN_LIB when PIN=1"
+		exit 1
+	}
 
   # PIN_TOOL   => The tool used
-  [[ -n $PIN_TOOL ]] || PIN_TOOL="MyPinTool"
+  [[ -z $PIN_TOOL ]] || {
+    echo "You must define a PIN_TOOL variable before using tf with PIN"
+    exit 1
+  }"
  # PIN_FLAGS  => Flags to pass to PIN
   [[ -n $PIN_FLAGS ]] || PIN_FLAGS=" "
 
@@ -154,6 +167,5 @@ echo "BENCHSDIR is set to $BENCHSDIR"
 echo "PHOENIX is set to $PHOENIX_PATH"
 echo "PASS is set to $PASS"
 echo "DIFF is set to $DIFF"
-echo "HYPERFINE is set to $HYPERFINE"
 echo "OPT is set to $OPT"
 echo "#########################"

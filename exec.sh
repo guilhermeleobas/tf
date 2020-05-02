@@ -23,8 +23,6 @@ function execute() {
   if [[ $DIFF -eq 1 ]]; then
     cmd="$TIMEOUT --signal=TERM ${RUNTIME} ./$exe $RUN_OPTIONS < $STDIN &> $bench_name.output && \
          $BASEDIR/DiffOutput.sh $bench_name $bench_name.reference_output $bench_name.output"
-  elif [[ $HYPERFINE -eq 1 ]]; then
-    cmd="hyperfine \"./$exe $RUN_OPTIONS < $STDIN > $STDOUT 2> $STDOUT \" -w 1 -r 4 --show-output --export-csv time_$exe.csv -u second  "
   else
     cmd="$TIMEOUT --signal=TERM ${RUNTIME} ./$exe $RUN_OPTIONS < $STDIN &> $STDOUT"
   fi
