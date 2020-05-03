@@ -138,7 +138,7 @@ if [[ -n $PIN && $PIN -eq 1 ]]; then
   source "exec_pin.sh"
 fi
 
-if [[ -n $OCPERF && $OCPERF -eq 1 ]]; then
+if [[ -n $PERF && $PERF -eq 1 ]]; then
   # replace the function `execute`
   source "exec_perf.sh"
 fi

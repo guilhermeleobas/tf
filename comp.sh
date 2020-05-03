@@ -2,7 +2,7 @@
 
 # this is left as an example 
 function compile() {
-  
+
   pass_path=( $(find $PHOENIX_PATH/build -name $PASS.$suffix) )
   
   if [[ -n $CPU2006 && $CPU2006 -eq 1 ]]; then
@@ -10,11 +10,11 @@ function compile() {
     $LLVM_PATH/opt -S $rbc_name -o $lnk_name
   else
     # source_files is the variable with all the files we're gonna compile
-    parallel --tty --jobs=${JOBS} $LLVM_PATH/$COMPILER $COMPILE_FLAGS \
+    parallel --will-cite --tty --jobs=${JOBS} $LLVM_PATH/$COMPILER $COMPILE_FLAGS \
       -Xclang -disable-O0-optnone \
       -S -c -emit-llvm {} -o {.}.bc ::: "${source_files[@]}" 
     
-    parallel --tty --jobs=${JOBS} $LLVM_PATH/opt -S {.}.bc -o {.}.rbc ::: "${source_files[@]}"
+    parallel --will-cite --tty --jobs=${JOBS} $LLVM_PATH/opt -S {.}.bc -o {.}.rbc ::: "${source_files[@]}"
   
     #Generate all the bcs into a big bc:
     $LLVM_PATH/llvm-link -S *.rbc -o $lnk_name

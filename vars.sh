@@ -73,16 +73,21 @@ fi
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
 # LLVM_PATH  => The place where I have all the LLVM tools
-LLVM_PATH=""
+LLVM_PATH="${HOME}/llvm/bin"
 
-[[ -d "${LLVM_PATH}" ]] || {
+[[ -n "${LLVM_PATH}" ]] || {
 	echo "One must define LLVM_PATH before running tf"
 	exit 1
 }
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
-PHOENIX_PATH="$HOME/Programs/phoenix"
+PHOENIX_PATH="${HOME}/phoenix"
+
+[[ -n "${PHOENIX_PATH}" ]] || {
+  echo "One must define PHOENIX_PATH before running tf"
+  exit 1
+}
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
@@ -114,8 +119,9 @@ if [[ $PIN -eq 1 ]]; then
   [[ -z $PIN_TOOL ]] || {
     echo "You must define a PIN_TOOL variable before using tf with PIN"
     exit 1
-  }"
- # PIN_FLAGS  => Flags to pass to PIN
+  }
+
+  # PIN_FLAGS  => Flags to pass to PIN
   [[ -n $PIN_FLAGS ]] || PIN_FLAGS=" "
 
   echo "PIN_PATH is set to $PIN_PATH"
@@ -127,9 +133,9 @@ fi
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # --
 
 # perf
-[[ -n $OCPERF ]] || OCPERF=0
+[[ -n $PERF ]] || PERF=0
 
-if [[ $OCPERF -eq 1 ]]; then
+if [[ $PERF -eq 1 ]]; then
   #PERF EVENT
   [[ -n $PERF_TOOL ]] || PERF_TOOL="mem_uops_retired.all_loads" # mem-stores
 
@@ -139,7 +145,7 @@ if [[ $OCPERF -eq 1 ]]; then
   #OUTPUT FILE
   [[ -n $PERF_FILE ]] || PERF_FILE="perf_${PERF_TOOL}_${PERF_TYPE}.out"
   
-  PERF_BIN="$HOME/Programs/pmu-tools/ocperf.py"
+  PERF_BIN="${HOME}/pmu-tools/ocperf.py"
   
   echo "PERF_BIN is set to $PERF_BIN"
   echo "PERF_TOOL is set to $PERF_TOOL"
@@ -168,4 +174,5 @@ echo "PHOENIX is set to $PHOENIX_PATH"
 echo "PASS is set to $PASS"
 echo "DIFF is set to $DIFF"
 echo "OPT is set to $OPT"
+echo "PERF is set to $PERF"
 echo "#########################"
