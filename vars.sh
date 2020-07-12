@@ -73,7 +73,7 @@ fi
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
 # LLVM_PATH  => The place where I have all the LLVM tools
-LLVM_PATH="${HOME}/llvm/bin"
+LLVM_PATH=""
 
 [[ -n "${LLVM_PATH}" ]] || {
 	echo "One must define LLVM_PATH before running tf"
@@ -82,7 +82,7 @@ LLVM_PATH="${HOME}/llvm/bin"
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
-PHOENIX_PATH="${HOME}/phoenix"
+PHOENIX_PATH=""
 
 [[ -n "${PHOENIX_PATH}" ]] || {
   echo "One must define PHOENIX_PATH before running tf"
