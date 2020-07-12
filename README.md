@@ -57,7 +57,7 @@ Benchmarks are stored in a different [repo](https://github.com/guilhermeleobas/B
 ## Getting tf
 Simply clone this repository **recursively**
 ```bash
-git clone --recursive https://github.com/guilhermeleobas/tf.git
+git clone --recursive git@github.com:guilhermeleobas/tf.git
 ```
 
 ## Building LLVM (if you gonna use your pass)
