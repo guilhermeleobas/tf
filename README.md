@@ -17,7 +17,6 @@ Here is a list of benchmarks available in this repo:
 - BenchmarkGame
 - BitBench
 - CoyoteBench
-- ~~cpu2006~~ (**not available yet**)
 - Dhrystone
 - DOE_ProxyApps_C
 - Fhourstones
@@ -46,11 +45,20 @@ Here is a list of benchmarks available in this repo:
 - Trimaran
 - TSVC
 - VersaBench
+- PolyBench
+
+Benchmarks are stored in a different [repo](https://github.com/guilhermeleobas/Benchmarks).
 
 ## Requirements
 - timeout or [gtimeout](https://stackoverflow.com/questions/3504945/timeout-command-on-mac-os-x) if you're on OS X.
 - [gnu-parallel](http://brewformulas.org/Parallel)
 - Any version of LLVM.
+
+## Getting tf
+Simply clone this repository **recursively**
+```bash
+git clone --recursive git@github.com:guilhermeleobas/tf.git
+```
 
 ## Building LLVM (if you gonna use your pass)
 
@@ -83,7 +91,7 @@ Tip: You can skip compilation by setting `COMPILE=0` before calling `run.sh`.
 
 `RUNTIME=8m ./run.sh` or change the file `vars.sh`.
 
-`RUNTIME` receives a floating point number followed by an optional unit:
+`RUNTIME` receives a number followed by an optional unit:
 - `s` for seconds (the default)
 - `m` for minutes
 - `h` for hours
@@ -124,14 +132,14 @@ pd.read_csv('run.log', sep='\t').to_csv('run.csv')
 
 You can also add your own code in the file `collect.sh`. **tf** will execute this file after all benchmarks have finished executing.
 
-### Compiling with your own LLVM pass
+### Compiling benchmarks with your own LLVM pass
 
-See `comp.sh` file. You can control how each benchmark is compiled there.
+See `instrument.sh`file. You can control how each benchmark is compiled there.
 
-Add your pass in the line we call `$LLVM_PATH/opt`:
+Add the path of your pass to the variable `pass_path` at the beginning of the `instrument.sh` file. Then, call **tf** with `INSTRUMENT=1 PASS=YourPassNameHere`
 
 ```bash
-$LLVM_PATH/opt -mem2reg -instnamer -load MyPass.$suffix -MyOptPass $btc_name -o $rbc_name ;
+COMPILE=1 INSTRUMENT=1 PASS=YourPassNameHere EXEC=1 ./run.sh
 ```
 
 ------------
@@ -150,13 +158,12 @@ $LLVM_PATH/opt -mem2reg -instnamer -load MyPass.$suffix -MyOptPass $btc_name -o 
  COMPILER="clang"  # or clang++ for C++ programs
  RUN_OPTIONS=" irsmk_input "
  STDIN=" file.in "
- DIFF_CMD=""
 ```
 
 The last two variables are used when `tf` creates the command that will be executed:
 
 ```bash
-timeout -signal=TERM $RUNTIME ./$bench_name.exe $RUN_OPTIONS < $STDIN > /dev/null
+timeout -signal=TERM ${RUNTIME} ./${bench_name}.exe ${RUN_OPTIONS} < ${STDIN} > /dev/null
 ```
 
 2) Add a function into `benchs.sh`, for the new benchmark.
@@ -185,4 +192,4 @@ COMPILE=1 EXEC=0 ./run.sh   # To compile
 COMPILE=0 EXEC=1 ./run.sh   # To execute
 ```
 
-Also, run benchmarks in parallel whenever you can. Running 220 benchmarks with a time limit of 8 minutes takes 29 hours to complete.
+Also, run benchmarks in parallel whenever you can. Running 220 benchmarks sequentially with a time limit of 8 minutes takes 29 hours to complete.
