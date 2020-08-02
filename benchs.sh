@@ -41,26 +41,26 @@ function mediabench() {
 }
 
 function PolyBench(){
-  # dirs=("linear-algebra/kernels/2mm" "linear-algebra/kernels/3mm" "linear-algebra/kernels/atax"
-  #       "linear-algebra/kernels/bicg" "linear-algebra/kernels/doitgen" "linear-algebra/kernels/mvt" 
-  #       "linear-algebra/solvers/cholesky" "linear-algebra/solvers/durbin" "linear-algebra/solvers/gramschmidt"
-  #       "linear-algebra/solvers/lu" "linear-algebra/solvers/ludcmp" "linear-algebra/solvers/trisolv"
-  #       "linear-algebra/blas/gemm" "linear-algebra/blas/gemver" "linear-algebra/blas/gesummv"
-  #       "linear-algebra/blas/symm" "linear-algebra/blas/syr2k" "linear-algebra/blas/syrk"
-  #       "linear-algebra/blas/trmm"
-  #       "datamining/correlation" "datamining/covariance"
-  #       "medley/floyd-warshall" "medley/deriche" "medley/nussinov"
-  #       "stencils/adi" "stencils/fdtd-2d" "stencils/heat-3d" "stencils/jacobi-1d" "stencils/jacobi-2d"
-  #       "stencils/seidel-2d")
+  dirs=("linear-algebra/kernels/2mm" "linear-algebra/kernels/3mm" "linear-algebra/kernels/atax"
+        "linear-algebra/kernels/bicg" "linear-algebra/kernels/doitgen" "linear-algebra/kernels/mvt" 
+        "linear-algebra/solvers/cholesky" "linear-algebra/solvers/durbin" "linear-algebra/solvers/gramschmidt"
+        "linear-algebra/solvers/lu" "linear-algebra/solvers/ludcmp" "linear-algebra/solvers/trisolv"
+        "linear-algebra/blas/gemm" "linear-algebra/blas/gemver" "linear-algebra/blas/gesummv"
+        "linear-algebra/blas/symm" "linear-algebra/blas/syr2k" "linear-algebra/blas/syrk"
+        "linear-algebra/blas/trmm"
+        "datamining/correlation" "datamining/covariance"
+        "medley/floyd-warshall" "medley/deriche" "medley/nussinov"
+        "stencils/adi" "stencils/fdtd-2d" "stencils/heat-3d" "stencils/jacobi-1d" "stencils/jacobi-2d"
+        "stencils/seidel-2d")
 
-  dirs=("datamining/correlation" "datamining/covariance" "linear-algebra/blas/gemm" 
-      "linear-algebra/blas/gemver" "linear-algebra/blas/gesummv" "linear-algebra/blas/symm" 
-      "linear-algebra/blas/syrk" "linear-algebra/blas/trmm" "linear-algebra/kernels/2mm" 
-      "linear-algebra/kernels/3mm" "linear-algebra/kernels/atax" "linear-algebra/kernels/bicg" 
-      "linear-algebra/kernels/doitgen" "linear-algebra/kernels/mvt" 
-      "linear-algebra/solvers/cholesky" "linear-algebra/solvers/gramschmidt"
-      "linear-algebra/solvers/lu" "linear-algebra/solvers/ludcmp"
-      "linear-algebra/solvers/trisolv" "stencils/fdtd-2d")
+  # dirs=("datamining/correlation" "datamining/covariance" "linear-algebra/blas/gemm" 
+  #     "linear-algebra/blas/gemver" "linear-algebra/blas/gesummv" "linear-algebra/blas/symm" 
+  #     "linear-algebra/blas/syrk" "linear-algebra/blas/trmm" "linear-algebra/kernels/2mm" 
+  #     "linear-algebra/kernels/3mm" "linear-algebra/kernels/atax" "linear-algebra/kernels/bicg" 
+  #     "linear-algebra/kernels/doitgen" "linear-algebra/kernels/mvt" 
+  #     "linear-algebra/solvers/cholesky" "linear-algebra/solvers/gramschmidt"
+  #     "linear-algebra/solvers/lu" "linear-algebra/solvers/ludcmp"
+  #     "linear-algebra/solvers/trisolv" "stencils/fdtd-2d")
   
   walk "${dirs[@]}"
 }
@@ -68,6 +68,7 @@ function PolyBench(){
 function cpu2006(){
   dirs=("400.perlbench/rbc/" "401.bzip2/rbc/" "403.gcc/rbc/" "429.mcf/rbc/"
         "433.milc/rbc/" "444.namd/rbc/" "445.gobmk/rbc/"
+        "447.dealii/rbc", "450.soplex/rbc",
         "456.hmmer/rbc/" "458.sjeng/rbc/" "462.libquantum/rbc/" 
         "464.h264ref/rbc/" "470.lbm/rbc/")
   walk "${dirs[@]}"
