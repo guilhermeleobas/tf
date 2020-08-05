@@ -1,5 +1,0 @@
-[submodule "Benchs"]
-    path = Benchs
-    url = https://github.com/guilhermeleobas/Benchmarks.git
-    branch = master
-    ignore = all
