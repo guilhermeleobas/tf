@@ -1,5 +1,5 @@
 [submodule "Benchmarks"]
     ignore = dirty
     path = Benchs
-    url = https://github.com/guilhermeleobas/Benchmarks.git
+    url = https://github.com/lac-dcc/Benchmarks
     branch = master
