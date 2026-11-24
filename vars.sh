@@ -40,21 +40,20 @@ if [[ $(uname -s) == "Linux" ]]; then
   suffix="so"
 fi
 
-# if we're on osx, we must use `gtimeout` instead of `timeout`
-# `gtimeout` can be download from homebrew
+# Homebrew installs GNU timeout as gtimeout on macOS; Pixi uses timeout.
 TIMEOUT=timeout
-if [[ $(uname -s) == "Darwin" ]]; then
+if [[ $(uname -s) == "Darwin" ]] && command -v gtimeout >/dev/null 2>&1; then
   TIMEOUT=gtimeout
 fi
 
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- 
 
-# LLVM_PATH  => The place where I have all the LLVM tools
-LLVM_PATH=""
+# Use the active Pixi or conda environment unless LLVM_PATH is set explicitly.
+LLVM_PATH="${LLVM_PATH:-${CONDA_PREFIX:+$CONDA_PREFIX/bin}}"
 
 [[ -d "${LLVM_PATH}" ]] || {
-	echo "One must define LLVM_PATH before running tf"
+	echo "Activate the Pixi environment or set LLVM_PATH before running tf" >&2
 	exit 1
 }
 
