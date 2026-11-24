@@ -1,0 +1,13 @@
+[workspace]
+name = "tf"
+channels = ["conda-forge"]
+platforms = ["linux-64", "linux-aarch64", "osx-64", "osx-arm64"]
+
+[dependencies]
+clang = ">=21,<22"
+clangxx = ">=21,<22"
+llvm-tools = ">=21,<22"
+parallel = "*"
+coreutils = "*"
+python = ">=3.10"
+pandas = "*"

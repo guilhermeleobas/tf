@@ -50,9 +50,7 @@ Here is a list of benchmarks available in this repo:
 Benchmarks are stored in a different [repo](https://github.com/guilhermeleobas/Benchmarks).
 
 ## Requirements
-- timeout or [gtimeout](https://stackoverflow.com/questions/3504945/timeout-command-on-mac-os-x) if you're on OS X.
-- [gnu-parallel](http://brewformulas.org/Parallel)
-- Any version of LLVM.
+- [Pixi](https://pixi.sh/) to install the prebuilt dependencies.
 
 ## Getting tf
 Simply clone this repository **recursively**
@@ -60,26 +58,28 @@ Simply clone this repository **recursively**
 git clone --recursive git@github.com:guilhermeleobas/tf.git
 ```
 
-## Building LLVM (if you gonna use your pass)
+## Pixi environment
 
-Below is a set of instructions to build LLVM 3.8 from source. Remember the path you build LLVM because you gonna need later.
+Install [Pixi](https://pixi.sh/), then run `pixi install` and `pixi shell`
+from the repository root. The environment provides prebuilt LLVM 21 from
+conda-forge, GNU Parallel, GNU timeout, and Python with pandas for the
+statistics example. Initialize the benchmark submodule if needed with
+`git submodule update --init --recursive`.
+The environment supports Linux and macOS on x86-64 and ARM64; on macOS,
+install the Apple Command Line Tools for the linker and system SDK.
 
-```bash
-svn co http://llvm.org/svn/llvm-project/llvm/tags/RELEASE_380/final llvm38
-cd llvm38/tools
-svn co http://llvm.org/svn/llvm-project/cfe/tags/RELEASE_380/final clang
-cd ..
-mkdir build
-cd build
-../configure
-make -j8
-```
+Inside the Pixi environment, `LLVM_PATH` defaults to its `bin` directory.
+Set `LLVM_PATH` before running tf to use a different LLVM installation instead.
+Custom LLVM passes must be compatible with the selected LLVM version; Intel
+PIN and its tools must be installed separately.
 
 ## Usage
 
 The first thing you need to do is select which benchmarks you want to execute. Open `benchs.sh` and add the benchmark you want to run into the variable `benchs`.
 
-Then, go to the file `vars.sh` and set the variable `$LLVM_PATH` to where you build LLVM. This path is something like `/path/to/llvm/build/Release+Asserts/bin` or `/path/to/llvm/build/bin` in newer versions.
+Alternatively, run commands with `pixi run`, for example `pixi run ./run.sh`.
+If you are not using the Pixi environment, install the requirements separately
+and set `LLVM_PATH` to your LLVM binary directory before running tf.
 
 ### Compiling Benchmarks
 
